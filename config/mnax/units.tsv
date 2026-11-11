@@ -1,9 +1,9 @@
 unit	state
 kernel/dds3KernelMain	.sdata start ambiguous
-kernel/dds3KernelCore	has USA assembly fallbacks
+kernel/dds3KernelCore	C with fallbacks
 sdf/sdfDefaultMain	C
-kernel/dds3KernelProcess	has USA assembly fallbacks
-kernel/dds3AdminiProcess	has USA assembly fallbacks
+kernel/dds3KernelProcess	C with fallbacks
+kernel/dds3AdminiProcess	C with fallbacks
 kernel/dds3DebugMenu	C
 kernel/dds3KernelMisc	C
 kernel/dds3PadManager	C
@@ -36,37 +36,37 @@ basic/dds3PathBasic	C
 basic/dds3PointBasic	C
 kernel/dds3GlobalWork	9 functions differ in Maniax
 kernel/dds3DebugStuff	C
-field/fldTest	has USA assembly fallbacks
-field/fldGlobal	has USA assembly fallbacks
-field/fldMain	has USA assembly fallbacks
-field/fldProcess	has USA assembly fallbacks
+field/fldTest	1 functions differ in Maniax
+field/fldGlobal	20 functions differ in Maniax
+field/fldMain	21 functions differ in Maniax
+field/fldProcess	C with fallbacks
 field/fldFileResolver	C
-field/fldDraw	has USA assembly fallbacks
+field/fldDraw	C with fallbacks
 field/fldEnc	C
-field/fldCamera	has USA assembly fallbacks
-field/fldPlayer	has USA assembly fallbacks
-field/fldSky	has USA assembly fallbacks
-field/fldHit	has USA assembly fallbacks
-field/fldEveHit	has USA assembly fallbacks
+field/fldCamera	C with fallbacks
+field/fldPlayer	.text did not move rigidly
+field/fldSky	C with fallbacks
+field/fldHit	.text did not move rigidly
+field/fldEveHit	2 functions differ in Maniax
 field/fldInf	C
-field/fldWap	has USA assembly fallbacks
+field/fldWap	2 functions differ in Maniax
 field/fldPanel	1 functions differ in Maniax
 field/fldSe	.sdata bytes differ
-field/fldAutoMap	has USA assembly fallbacks
-field/fld_Npc	has USA assembly fallbacks
+field/fldAutoMap	7 functions differ in Maniax
+field/fld_Npc	C with fallbacks
 field/fldTitle	1 functions differ in Maniax
-field/fldSnow	has USA assembly fallbacks
-mc/slMain	has USA assembly fallbacks
-field/fldCommand	has USA assembly fallbacks
+field/fldSnow	C with fallbacks
+mc/slMain	14 functions differ in Maniax
+field/fldCommand	C with fallbacks
 effect/effManager	C
-effect/billManager	has USA assembly fallbacks
-effect/parManager	has USA assembly fallbacks
+effect/billManager	C with fallbacks
+effect/parManager	C with fallbacks
 effect/polyManager	C
 effect/effPacket	C
 effect/effBattle	C
-effect/effBattleMisc	has USA assembly fallbacks
-effect/effBattleLight	has USA assembly fallbacks
-effect/effBattleSystem	has USA assembly fallbacks
+effect/effBattleMisc	C with fallbacks
+effect/effBattleLight	C with fallbacks
+effect/effBattleSystem	C with fallbacks
 effect/effPart	C
 effect/effPCPThunder	C
 effect/effPCPBezier	C
@@ -74,38 +74,38 @@ effect/effPCPFlash	C
 effect/effPCPScatter	1 functions differ in Maniax
 effect/effPCPNeedle	C
 effect/effPCPMisc	1 functions differ in Maniax
-effect/effPCPBoss	has USA assembly fallbacks
+effect/effPCPBoss	3 functions differ in Maniax
 effect/effBlur_Filter	C
-effect/effModelTrackPoly	has USA assembly fallbacks
-effect/effMagatuhi	has USA assembly fallbacks
+effect/effModelTrackPoly	C with fallbacks
+effect/effMagatuhi	5 functions differ in Maniax
 newbattle/nbCameraHelper	C
 effect/effMath	C
 effect/effDebug	C
 effect/effEvent	C
 effect/effSpline	C
 newbattle/nbCameraProcess	C
-newbattle/nbCameraStartEnd	has USA assembly fallbacks
-newbattle/nbCameraSkill	has USA assembly fallbacks
+newbattle/nbCameraStartEnd	2 functions differ in Maniax
+newbattle/nbCameraSkill	2 functions differ in Maniax
 newbattle/nbCameraNego	C
-newbattle/nbCameraCommand	has USA assembly fallbacks
-newbattle/nbCameraPress	has USA assembly fallbacks
-newbattle/nbCameraBoss	has USA assembly fallbacks
+newbattle/nbCameraCommand	1 functions differ in Maniax
+newbattle/nbCameraPress	C with fallbacks
+newbattle/nbCameraBoss	C with fallbacks
 code_001C55F8	1 functions differ in Maniax
 interface/fmGslCont	8 functions differ in Maniax
-interface/frFont	has USA assembly fallbacks
+interface/frFont	36 functions differ in Maniax
 interface/frName	9 functions differ in Maniax
 interface/frWrap	12 functions differ in Maniax
 interface/frTestFont	C
 interface/itfMisc	1 functions differ in Maniax
 interface/itfPanel	C
-interface/itfMesManager	has USA assembly fallbacks
+interface/itfMesManager	11 functions differ in Maniax
 interface/itfTestMesManager	C
 pb/pbCamera	C
-pb/pbModel	has USA assembly fallbacks
+pb/pbModel	4 functions differ in Maniax
 pb/pbDraw	C
 pb/pbMain	6 functions differ in Maniax
 pb/pbMenu	2 functions differ in Maniax
-pb/pbGame	has USA assembly fallbacks
+pb/pbGame	C with fallbacks
 pb/pbGameDraw	C
 pb/pbRecord	C
 pb/pbHelp	C
@@ -120,26 +120,26 @@ event/evtBitEditor	C
 event/evtStage	C
 event/evtUnitManager	C
 event/evtCommand	1 functions differ in Maniax
-event/evtMoon	has USA assembly fallbacks
-event/evtDebug	has USA assembly fallbacks
-event/evtEventViewer	has USA assembly fallbacks
+event/evtMoon	12 functions differ in Maniax
+event/evtDebug	1 functions differ in Maniax
+event/evtEventViewer	C with fallbacks
 event/evtPolygonMovie	C
 event/evtPicture	1 functions differ in Maniax
 event/evtSky	C
 event/evtEventViewerFrameVar	C
-event/evtEventViewerMenu	has USA assembly fallbacks
+event/evtEventViewerMenu	C with fallbacks
 event/evtSound	C
 event/evtEventPack	.rodata bytes differ
-facility/fclCombineInit	has USA assembly fallbacks
+facility/fclCombineInit	29 functions differ in Maniax
 facility/fclShopInit	.sdata start ambiguous
-facility/fclShopCalc	has USA assembly fallbacks
+facility/fclShopCalc	5 functions differ in Maniax
 facility/fclShopUpdate	3 functions differ in Maniax
-facility/fclRagInit	has USA assembly fallbacks
-facility/fclRagCalc	has USA assembly fallbacks
+facility/fclRagInit	1 functions differ in Maniax
+facility/fclRagCalc	2 functions differ in Maniax
 facility/fclRagDraw	C
 facility/fclRagUpdate	4 functions differ in Maniax
 facility/fclRecoverInit	1 functions differ in Maniax
-facility/fclRecoverCalc	has USA assembly fallbacks
+facility/fclRecoverCalc	2 functions differ in Maniax
 facility/fclRecoverDraw	C
 facility/fclRecoverUpdate	2 functions differ in Maniax
 facility/fclTerminalInit	.rodata bytes differ
@@ -149,48 +149,48 @@ facility/fclTerminalUpdate	.rodata bytes differ
 facility/fclDraw	2 functions differ in Maniax
 interface/lstListWindow	.rodata bytes differ
 facility/fclMisc	2 functions differ in Maniax
-facility/fclShare	has USA assembly fallbacks
-facility/fclPanel	has USA assembly fallbacks
+facility/fclShare	C with fallbacks
+facility/fclPanel	C with fallbacks
 facility/fclDebug	C
-facility/fclEncyc	has USA assembly fallbacks
+facility/fclEncyc	31 functions differ in Maniax
 facility/fclRibbon	C
 result/rstinit	5 functions differ in Maniax
-result/rstcalc	has USA assembly fallbacks
+result/rstcalc	27 functions differ in Maniax
 result/rstdraw	C
-result/rstupdate	has USA assembly fallbacks
+result/rstupdate	12 functions differ in Maniax
 sound/sndManager	3 functions differ in Maniax
-kernel/dds3TitleMain	has USA assembly fallbacks
+kernel/dds3TitleMain	4 functions differ in Maniax
 kernel/ModeSelect	9 functions differ in Maniax
 kernel/dds3CreateData	C
 staff/stfMain	1 functions differ in Maniax
-movie/mviManager	has USA assembly fallbacks
+movie/mviManager	.sdata did not move rigidly
 movie/MovieViewer	1 functions differ in Maniax
-code_0022C578	has USA assembly fallbacks
-newdata/datCalc	has USA assembly fallbacks
+code_0022C578	66 functions differ in Maniax
+newdata/datCalc	37 functions differ in Maniax
 newdata/datDebugUnit	3 functions differ in Maniax
 newbattle/nbInit	C
-newbattle/nbMainProcess	has USA assembly fallbacks
+newbattle/nbMainProcess	6 functions differ in Maniax
 newbattle/nbMaeProcess	C
 newbattle/nbAtoProcess	1 functions differ in Maniax
-newbattle/nbResultProcess	has USA assembly fallbacks
+newbattle/nbResultProcess	2 functions differ in Maniax
 newbattle/nbStageProcess	C
 newbattle/nbUnitProcess	1 functions differ in Maniax
-newbattle/nbActionProcess	has USA assembly fallbacks
-newbattle/nbMisc	has USA assembly fallbacks
-newbattle/nbCommSelProcess	has USA assembly fallbacks
-newbattle/nbTarSelProcess	has USA assembly fallbacks
+newbattle/nbActionProcess	12 functions differ in Maniax
+newbattle/nbMisc	3 functions differ in Maniax
+newbattle/nbCommSelProcess	8 functions differ in Maniax
+newbattle/nbTarSelProcess	.rodata did not move rigidly
 newbattle/nbKoukaProcess	C
-newbattle/nbMakePacket	has USA assembly fallbacks
-newbattle/nbCalc	has USA assembly fallbacks
+newbattle/nbMakePacket	C with fallbacks
+newbattle/nbCalc	6 functions differ in Maniax
 newbattle/nbNegoProcess	1 functions differ in Maniax
 newbattle/NbNegoFlowOne	2 functions differ in Maniax
-newbattle/NbNegoFlowTwo	has USA assembly fallbacks
+newbattle/NbNegoFlowTwo	C with fallbacks
 newbattle/NbNegoFlowOk	1 functions differ in Maniax
 newbattle/NbNegoFlowNg	C
 newbattle/NbNegoFlowFullMoon	1 functions differ in Maniax
 newbattle/NbNegoFlowStock	C
 newbattle/NbNegoFlowDouchara	C
-newbattle/NbNegoFlowInnen	has USA assembly fallbacks
+newbattle/NbNegoFlowInnen	C with fallbacks
 newbattle/NbNegoFlowQuestion	1 functions differ in Maniax
 newbattle/NbNegoFlowFight	C
 newbattle/NbNegoFlowDrain	C
@@ -199,20 +199,20 @@ newbattle/NbNegoFlowMukan	C
 newbattle/NbNegoFlowSensei	C
 newbattle/NbNegoFlowInoti	C
 newbattle/NbNegoFlowKoketa	C
-newbattle/nbPanelProcess	has USA assembly fallbacks
-newbattle/nbDebugProcess	has USA assembly fallbacks
-newbattle/nbAi	has USA assembly fallbacks
+newbattle/nbPanelProcess	2 functions differ in Maniax
+newbattle/nbDebugProcess	1 functions differ in Maniax
+newbattle/nbAi	C with fallbacks
 newbattle/nbAiScript	C
 newbattle/nbHelpProcess	3 functions differ in Maniax
 newbattle/nbAutoCommProcess	C
-newbattle/nbFormation	has USA assembly fallbacks
-newbattle/nbTest	has USA assembly fallbacks
+newbattle/nbFormation	C with fallbacks
+newbattle/nbTest	6 functions differ in Maniax
 newbattle/nbEncount	3 functions differ in Maniax
-newbattle/nbSound	has USA assembly fallbacks
-newbattle/nbEncProcess	has USA assembly fallbacks
-newbattle/nbMakaProcess	has USA assembly fallbacks
+newbattle/nbSound	C with fallbacks
+newbattle/nbEncProcess	1 functions differ in Maniax
+newbattle/nbMakaProcess	2 functions differ in Maniax
 newbattle/nbEventProcess	1 functions differ in Maniax
-newbattle/nbSkillError	has USA assembly fallbacks
+newbattle/nbSkillError	1 functions differ in Maniax
 newbattle/nbE901	C
 newbattle/nbE902	C
 newbattle/nbE903	C
@@ -229,23 +229,23 @@ newbattle/nbE913	C
 newbattle/nbE914	C
 newbattle/nbE915	C
 file/fileManager	.rodata bytes differ
-nme/Nme_Init	has USA assembly fallbacks
-nme/Nme_Calc	has USA assembly fallbacks
-nme/Nme_Draw	has USA assembly fallbacks
+nme/Nme_Init	9 functions differ in Maniax
+nme/Nme_Calc	11 functions differ in Maniax
+nme/Nme_Draw	10 functions differ in Maniax
 nme/Nme_Update	C
 mc/mcManager	C
-code_0029B780	has USA assembly fallbacks
+code_0029B780	7 functions differ in Maniax
 kernel/dds3ConfigMain	2 functions differ in Maniax
 pipe/pipeMain	C
-pipe/pipeSection	has USA assembly fallbacks
+pipe/pipeSection	1 functions differ in Maniax
 pipe/pipeSelect	1 functions differ in Maniax
-pipe/pipeObject	has USA assembly fallbacks
+pipe/pipeObject	.rodata did not move rigidly
 pipe/pipePosTable	2 functions differ in Maniax
 pipe/pipeCamera	C
 pipe/pipeResult	C
 pipe/pipeModel	C
 pipe/pipeEffect	C
-pipe/pipeMakaAnim	has USA assembly fallbacks
+pipe/pipeMakaAnim	C with fallbacks
 pipe/mnMyLink	C
 sdf/sdfSystem	1 functions differ in Maniax
 sdf/sdfChip	C
@@ -254,18 +254,18 @@ sdf/sdfIop	C
 sdf/sdfGraph	C
 sdf/sdfGsMemory	C
 sdf/sdfImageSet	C
-sdf/sdfTex	has USA assembly fallbacks
+sdf/sdfTex	C with fallbacks
 sdf/sdfGsMemIO	C
 sdf/sdfDelayedResrc	C
 sdf/sdfPacketBuff	C
-sdf/sdfDraw	has USA assembly fallbacks
+sdf/sdfDraw	C with fallbacks
 sdf/sdfPrim	C
-sdf/sdfModel	has USA assembly fallbacks
+sdf/sdfModel	C with fallbacks
 sdf/sdfMat	C
 sdf/sdfMotion	2 functions differ in Maniax
 sdf/sdfVu0	C
-sdf/sdfVu1	has USA assembly fallbacks
-sdf/sdfCoreDraw	has USA assembly fallbacks
+sdf/sdfVu1	1 functions differ in Maniax
+sdf/sdfCoreDraw	C with fallbacks
 sdf/sdf2D	C
 sdf/sdf3D	C
 sdf/sdf3DPrim	C
@@ -277,33 +277,33 @@ sdf/sdfCd	C
 sdf/sdfFile	C
 sdf/sdfFileIO	C
 sdf/sdfHdd	C
-sdf/sdfDev9	has USA assembly fallbacks
+sdf/sdfDev9	C with fallbacks
 sdf/sdfMisc	C
 sdf/sdfMath	C
 sdf/sdfQuat	C
 code_002C0BA8	C
 sdf/sdfRand	C
-sdf/sdfSound	has USA assembly fallbacks
+sdf/sdfSound	1 functions differ in Maniax
 sdf/sdfDevFile	C
 sdf/sdfAddrResolve	C
-sdf/sdfIpu	has USA assembly fallbacks
+sdf/sdfIpu	C with fallbacks
 sdf/sdfMovie	C
 sdf/sdfPacDecode	C
 sdf/sdf_Decomp	C
 sdf/sdfTmx	C
 sdf/sdfSortOt	C
-sdk/libgraph	has USA assembly fallbacks
-sdk/libdma	has USA assembly fallbacks
-sdk/libpad	has USA assembly fallbacks
-sdk/libcdvd	has USA assembly fallbacks
+sdk/libgraph	C with fallbacks
+sdk/libdma	C with fallbacks
+sdk/libpad	C with fallbacks
+sdk/libcdvd	C with fallbacks
 sdk/libmrpc	C
 sdk/libipu	C
-sdk/libmc	has USA assembly fallbacks
-sdk/libm	has USA assembly fallbacks
-sdk/libgcc	has USA assembly fallbacks
-sdk/libc	has USA assembly fallbacks
-sdk/libkernl	has USA assembly fallbacks
-sdk/libgcc_longlong	has USA assembly fallbacks
+sdk/libmc	C with fallbacks
+sdk/libm	C with fallbacks
+sdk/libgcc	C with fallbacks
+sdk/libc	.text did not move rigidly
+sdk/libkernl	5 functions differ in Maniax
+sdk/libgcc_longlong	.rodata did not move rigidly
 sdk/libgcc_fixunsdfdi	C
 sdk/libgcc_dpdiv	C
 sdk/libgcc_floatdidf	C

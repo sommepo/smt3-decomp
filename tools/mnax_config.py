@@ -127,11 +127,15 @@ def main() -> None:
             usa_extent[unit][sec] = b - a
     units = [name for rom, kind, name in usa_yaml if kind == "c"]
     good, verdict = {}, {}
+    demote = ROOT / "config/mnax/demote.txt"
+    demoted = dict(line.split("\t", 1) for line in demote.read_text().splitlines() if "\t" in line) \
+        if demote.exists() else {}
     for unit in units:
         src = ROOT / "src/smt3" / (unit + ".c")
         obj = ROOT / "build/probe" / (unit + ".o")
-        if re.search(r"^\s*INCLUDE_(ASM|RODATA|SDATA)\(", src.read_text(errors="replace"), re.M):
-            verdict[unit] = "has USA assembly fallbacks"
+        fallbacks = bool(re.search(r"^\s*INCLUDE_(ASM|RODATA|SDATA)\(", src.read_text(errors="replace"), re.M))
+        if unit in demoted:
+            verdict[unit] = "demoted: " + demoted[unit]
             continue
         if not obj.exists():
             verdict[unit] = "does not compile standalone"
@@ -146,6 +150,42 @@ def main() -> None:
             verdict[unit] = "%d functions differ in Maniax" % sum(v is None for v in placed[unit].values())
             continue
         starts, why = {}, None
+        if fallbacks:
+            # The object lacks the fallback pieces, so its sections cannot be compared
+            # whole. Admit the unit when every USA section of it moved rigidly: all
+            # anchors inside share one delta, and both ends map with it. The build's
+            # checksum is the real test; a unit that fails it is listed in demote.txt.
+            for name, u0 in usa_start[unit].items():
+                size = usa_extent[unit][name]
+                i = bisect.bisect_left(amap.keys, u0)
+                deltas = set()
+                while i < len(amap.keys) and amap.keys[i] < u0 + size:
+                    deltas.add(amap.pairs[i][1] - amap.keys[i])
+                    i += 1
+                ends = {amap.get(u0, same), amap.get(u0 + size - 4, same)}
+                if None in ends or len(deltas) > 1 or len({e - a for e, a in zip(sorted(ends), sorted({u0, u0 + size - 4}))} | deltas) != 1:
+                    why = f"{name} did not move rigidly"
+                    break
+                m0 = min(ends)
+                if name == ".rodata":
+                    # Real end of the object's .rodata (see the note below on blob
+                    # alignment): from the last build's object when there is one,
+                    # else the last non-zero byte, which a rebuild then corrects.
+                    body = raw[m0 - DELTA:m0 - DELTA + size].rstrip(b"\0")
+                    real = (len(body) + 8) & ~7
+                    built = ROOT / "build/mnax/src/mnax" / (unit + ".o")
+                    if built.exists():
+                        sec = ELFFile(built.open("rb")).get_section_by_name(".rodata")
+                        if sec is not None and (sec["sh_size"] + 7) & ~7 >= len(body):
+                            real = (sec["sh_size"] + 7) & ~7
+                    size = min(size, real)
+                starts[name] = (m0, size, u0)
+            if why:
+                verdict[unit] = why
+            else:
+                good[unit] = starts
+                verdict[unit] = "C with fallbacks"
+            continue
         for sec in elf.iter_sections():
             if sec.name not in SECS + (".bss", ".sbss") or not sec["sh_size"]:
                 continue
@@ -288,6 +328,9 @@ def main() -> None:
         for sym in elf.get_section_by_name(".symtab").iter_symbols():
             if re.fullmatch(r"(?:D|func|jtbl)_[0-9A-F]{8}", sym.name):
                 auto.add(sym.name)
+        # Fallback functions are not in the probe object; their names are in the source.
+        auto.update(re.findall(r"INCLUDE_(?:ASM|RODATA|SDATA)\([^,]+,[^,]+,\s*((?:D|func|jtbl)_[0-9A-F]{8})\)",
+                               (ROOT / "src/smt3" / (unit + ".c")).read_text(errors="replace")))
     have = {line.split(" = ")[0] for line in out}
     spans = sorted((u0, u0 + usa_extent[u][sec], m0) for u in good for sec, (m0, size, u0) in good[u].items())
     carried = {}
@@ -307,9 +350,14 @@ def main() -> None:
     clash = set(int(x, 16) for x in renames.read_text().split()) if renames.exists() else set()
     named = {line.split(" = ")[0]: int(line.split(" = ")[1][:10], 16) for line in out}
     for path in (ROOT / "asm/mnax").rglob("*.s"):
-        for label in re.findall(r"^(?:dlabel|glabel|jlabel) ((?:D|func|jtbl)_[0-9A-F]{8})\b", path.read_text(), re.M):
-            if label in named and named[label] != int(label.split("_")[1], 16):
-                clash.add(int(label.split("_")[1], 16))
+        for label, at in re.findall(r"^(?:dlabel|glabel|jlabel) ((?:D|func|jtbl)_[0-9A-F]{8})\n\s*/\* [0-9A-F]+ ([0-9A-F]{8})",
+                                    path.read_text(), re.M):
+            # Automatic (the name is the address it sits at) yet carried to elsewhere.
+            if int(at, 16) == int(label.split("_")[1], 16) and named.get(label, int(at, 16)) != int(at, 16):
+                if label.startswith("jtbl_"):
+                    print(f"jump table name clash left alone: {label}", file=sys.stderr)
+                else:
+                    clash.add(int(at, 16))
     renames.write_text("".join(f"0x{x:08X}\n" for x in sorted(clash)))
     # Inside a C-built unit the automatic name only appears in its reference
     # disassembly, and a real name there would make include_rodata.py claim it.
