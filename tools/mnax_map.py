@@ -99,6 +99,8 @@ class Unit:
             return self.layout[sec] + sym["st_value"] + addend, ""
         if shndx == "SHN_UNDEF":
             base = self.usa.get(sym.name, defined.get(sym.name))
+            if base is None and re.fullmatch(r"(?:D|func)_[0-9A-F]{8}", sym.name):
+                base = int(sym.name.split("_")[1], 16)      # splat's automatic USA name
             if base is None:
                 skipped["undef:" + sym.name] += 1
                 return None, ""

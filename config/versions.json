@@ -7,5 +7,14 @@
     "elf_size": 4551696,
     "entry": "0x00100008",
     "gp": "0x00554170"
+  },
+  "mnax": {
+    "title": "Shin Megami Tensei III: Nocturne Maniax (Japan)",
+    "serial": "SLPM_654.62",
+    "iso_glob": "*Nocturne Maniax (Japan)*.iso",
+    "elf_sha1": "a2dee659dcf6111f4e4ff82b6c5b3ebe086d9c13",
+    "elf_size": 4543376,
+    "entry": "0x00100008",
+    "gp": "0x00552470"
   }
 }

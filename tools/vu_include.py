@@ -87,6 +87,10 @@ def main(argv=None):
     ap.add_argument("--coverage", action="store_true",
                     help="report the microcode counters instead of writing the unit")
     args = ap.parse_args(argv)
+    if args.elf == vutext.DEFAULT_ELF and args.version != "smt3":
+        import json
+        serial = json.loads((ROOT / "config" / "versions.json").read_text())[args.version]["serial"]
+        args.elf = ROOT / "orig" / args.version / serial
 
     if args.coverage:
         vu = coverage(args.version, args.elf)

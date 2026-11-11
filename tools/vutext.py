@@ -25,6 +25,7 @@ DEFAULT_ELF = ROOT / "orig" / "smt3" / "SLUS_209.11"
 # The two packets, from the code that sends them: sdfCoreDrawInit DMAs
 # vu0MicroPacket..vu1MicroPacket to channel 0, and sdf3DLinkInitPacket REFs
 # vu1MicroPacket..D_002F5600 into the draw chain.
+USA_VUTEXT = 0x002E6E50
 PACKETS = [("vu0MicroPacket", 0, 0x002F1350, 0x002F18E0),
            ("vu1MicroPacket", 1, 0x002F18E0, 0x002F5600)]
 
@@ -129,7 +130,11 @@ def vif_walk(elf, secs, start, end):
 def images(elf, secs):
     """One entry per packet: the micro memory it uploads, and the data writes it makes."""
     out = []
+    # PACKETS holds USA addresses; .vutext is the same bytes at another base in the
+    # other Nocturne builds (docs/maniax-build.md), so shift by this ELF's base.
+    shift = secs[".vutext"][0] - USA_VUTEXT
     for name, vu, start, end in PACKETS:
+        start, end = start + shift, end + shift
         codes = vif_walk(elf, secs, start, end)
         micro, chunks, unpacks = bytearray(), [], []
         for at, _, text, body in codes:

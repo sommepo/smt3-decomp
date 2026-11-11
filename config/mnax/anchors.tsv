@@ -3960,6 +3960,7 @@ usa	mnax	delta	source
 0x001D2CB0	0x001D1FF0	-3264	pb/pbModel function
 0x001D2CC8	0x001D2008	-3264	pb/pbModel function
 0x001D2CE0	0x001D2020	-3264	pb/pbModel function
+0x001D2D00	0x001D2040	-3264	pb/pbGame+0x150 type 4
 0x001D2D10	0x001D2050	-3264	pb/pbModel function
 0x001D2D18	0x001D2058	-3264	pb/pbModel function
 0x001D2D40	0x001D2080	-3264	pb/pbModel function
@@ -5386,6 +5387,7 @@ usa	mnax	delta	source
 0x0021FD78	0x0021F030	-3400	result/rstcalc+0x910 type 4
 0x0021FD98	0x0021F050	-3400	result/rstinit function
 0x0021FDB8	0x0021F070	-3400	result/rstinit function
+0x0021FE30	0x0021F0E8	-3400	result/rstcalc+0x68 type 4
 0x0021FE50	0x0021F108	-3400	result/rstinit function
 0x0021FF38	0x0021F1F0	-3400	result/rstinit function
 0x0021FF48	0x0021F200	-3400	result/rstcalc function
@@ -5569,6 +5571,7 @@ usa	mnax	delta	source
 0x0022C588	0x0022B770	-3608	result/rstinit+0x5A8 type 4
 0x0022C598	0x0022B780	-3608	kernel/dds3KernelMain+0x1BC type 4
 0x0022C610	0x0022B7F8	-3608	code_0022C578 function
+0x0022C658	0x0022B840	-3608	kernel/dds3SequenceList+0x798 type 4
 0x0022C660	0x0022B848	-3608	kernel/dds3SequenceList+0x790 type 4
 0x0022CAE8	0x0022BCD0	-3608	code_0022C578 function
 0x0022CB10	0x0022BCF8	-3608	code_0022C578 function
@@ -6123,6 +6126,7 @@ usa	mnax	delta	source
 0x0024D490	0x0024C4B0	-4064	newbattle/nbUnitProcess+0x230 type 4
 0x0024D550	0x0024C570	-4064	newbattle/nbUnitProcess+0xA80 type 4
 0x0024D8C0	0x0024C8E0	-4064	newbattle/nbUnitProcess function
+0x0024D938	0x0024C958	-4064	newbattle/nbE904+0x5B4 type 4
 0x0024D980	0x0024C9A0	-4064	newbattle/nbUnitProcess+0xAE0 type 4
 0x0024DBF0	0x0024CC10	-4064	newbattle/nbUnitProcess function
 0x0024DC80	0x0024CCA0	-4064	newbattle/nbUnitProcess function
@@ -9209,6 +9213,7 @@ usa	mnax	delta	source
 0x002FC222	0x002FB8A2	-2432	facility/fclTerminalUpdate+0x1A8 type 6
 0x002FC350	0x002FB9D0	-2432	field/fldMain+0x10C0 type 6
 0x002FC360	0x002FB9E0	-2432	field/fldMain+0x158C type 6
+0x002FC3D8	0x002FBA58	-2432	field/fldMain+0x10A8 type 6
 0x002FC3E0	0x002FBA60	-2432	field/fldMain+0x1DC type 6
 0x002FC480	0x002FBB00	-2432	field/fldMain+0x1A0 type 6
 0x002FC4A0	0x002FBB20	-2432	field/fldDraw+0x34 type 6
@@ -9225,6 +9230,7 @@ usa	mnax	delta	source
 0x002FCA00	0x002FC080	-2432	field/fldCamera+0x8D8 type 6
 0x002FCA10	0x002FC090	-2432	field/fldCamera+0x94C type 6
 0x002FCA60	0x002FC0E0	-2432	field/fldSky+0x994 type 6
+0x002FCAA0	0x002FC120	-2432	field/fldSky+0x1374 type 6
 0x002FCAB0	0x002FC130	-2432	field/fldSky+0x998 type 6
 0x002FCAC0	0x002FC140	-2432	field/fldSky+0x1358 type 6
 0x002FCAE0	0x002FC160	-2432	field/fldHit+0x19F4 type 6
@@ -9282,6 +9288,7 @@ usa	mnax	delta	source
 0x0030D710	0x0030CE30	-2272	field/fldGlobal+0x1708 type 6
 0x0030FBD0	0x0030F2F0	-2272	field/fldGlobal+0x1760 type 6
 0x00311450	0x00310B70	-2272	facility/fclTerminalCalc+0x154 type 6
+0x00311850	0x00310F70	-2272	facility/fclTerminalCalc+0x170 type 6
 0x00312050	0x00309CF0	-33632	field/fldAutoMap+0x5E8 type 6
 0x00312150	0x00311770	-2528	field/fldAutoMap+0x420 type 6
 0x003129D0	0x00311FF0	-2528	field/fld_Npc+0x1E60 type 6
@@ -9482,6 +9489,8 @@ usa	mnax	delta	source
 0x0031FEB0	0x0031F4D0	-2528	effect/effPCPMisc+0x9590 type 6
 0x0031FEF8	0x0031F518	-2528	effect/effPCPMisc+0x9634 type 6
 0x0031FF10	0x0031F530	-2528	effect/effPCPMisc+0xC31C type 6
+0x0031FF20	0x0031F540	-2528	effect/effPCPBoss+0x370 type 6
+0x0031FF70	0x0031F590	-2528	effect/effPCPBoss+0xF00 type 6
 0x0031FF80	0x0031F5A0	-2528	effect/effPCPBoss+0x183C type 6
 0x0031FF90	0x0031F5B0	-2528	effect/effPCPBoss+0x31C0 type 6
 0x0031FFA0	0x0031F5C0	-2528	effect/effPCPBoss+0x4294 type 6
@@ -9578,7 +9587,15 @@ usa	mnax	delta	source
 0x00326710	0x00326918	520	interface/itfMesManager+0x1AD8 type 6
 0x00326778	0x00326980	520	interface/itfMesManager+0x3874 type 6
 0x00326788	0x00326990	520	interface/itfMesManager+0x3824 type 6
+0x00326798	0x003269A0	520	interface/itfMesManager+0x3B30 type 6
 0x003267A8	0x003269B0	520	interface/itfTestMesManager+0x20 type 6
+0x00326BC8	0x00326C80	184	interface/itfTestMesManager+0xE4 type 6
+0x00326BD8	0x00326C90	184	interface/itfTestMesManager+0x188 type 6
+0x00326BE8	0x00326CA0	184	interface/itfTestMesManager+0x18C type 6
+0x00326BF8	0x00326CB0	184	interface/itfTestMesManager+0x190 type 6
+0x00326C08	0x00326CC0	184	interface/itfTestMesManager+0x5CC type 6
+0x00326C20	0x00326CD0	176	interface/itfTestMesManager+0xB10 type 6
+0x00326C50	0x00326D00	176	interface/itfTestMesManager+0xB18 type 6
 0x00326C60	0x00326D10	176	pb/pbModel+0x36C type 6
 0x00326C70	0x00326D20	176	pb/pbModel+0x84C type 6
 0x00326CD0	0x00326D80	176	pb/pbModel+0x848 type 6
@@ -9652,6 +9669,9 @@ usa	mnax	delta	source
 0x0032CB48	0x0032CBF8	176	event/evtEventViewerMenu+0x2EB8 type 6
 0x0032CB80	0x0032CC30	176	facility/fclCombineInit+0x1D4 type 6
 0x0032D190	0x0032D240	176	facility/fclCombineInit+0x3D80 type 6
+0x0032D1A8	0x0032D258	176	facility/fclCombineInit+0x618 type 6
+0x0032D1B8	0x0032D268	176	facility/fclCombineInit+0x668 type 6
+0x0032D1C8	0x0032D278	176	facility/fclCombineInit+0x690 type 6
 0x0032D1F0	0x0032D2A0	176	facility/fclCombineInit+0x328 type 6
 0x0032D24F	0x0032D2FF	176	facility/fclCombineInit+0x246C type 6
 0x0032D64F	0x0032D6FF	176	facility/fclCombineInit+0x244C type 6
@@ -9661,6 +9681,7 @@ usa	mnax	delta	source
 0x0032DBB8	0x0032DC68	176	facility/fclCombineInit+0x1C38 type 6
 0x0032DBD8	0x0032DC88	176	facility/fclCombineInit+0x1E0C type 6
 0x0032DBE0	0x0032DC90	176	facility/fclCombineInit+0x2084 type 6
+0x0032DC18	0x0032DCC8	176	facility/fclCombineInit+0x2114 type 6
 0x0032DC90	0x0032DD40	176	facility/fclCombineInit+0x1F20 type 6
 0x0032DCC0	0x0032DD70	176	facility/fclCombineInit+0x1B58 type 6
 0x0032DDD0	0x0032DE80	176	facility/fclCombineInit+0x3A48 type 6
@@ -9677,6 +9698,7 @@ usa	mnax	delta	source
 0x0032F650	0x0032F700	176	facility/fclShopInit+0x6F0 type 6
 0x0032F652	0x0032F702	176	facility/fclShopInit+0x6B8 type 6
 0x0032F680	0x0032F730	176	facility/fclShopInit+0x8A4 type 6
+0x0032F682	0x0032F732	176	facility/fclShopInit+0x73C type 6
 0x0032FA90	0x0032FB40	176	facility/fclShopCalc+0xDE0 type 6
 0x0032FA94	0x0032FB44	176	facility/fclShopCalc+0xED8 type 6
 0x0032FBC0	0x0032FC70	176	facility/fclShopCalc+0x228 type 6
@@ -9751,6 +9773,7 @@ usa	mnax	delta	source
 0x00332458	0x00332508	176	result/rstcalc+0x1C type 6
 0x00333CF8	0x00333DA8	176	result/rstcalc+0x21B4 type 6
 0x00333D00	0x00333DB0	176	result/rstcalc+0x289C type 6
+0x00339638	0x003396E8	176	result/rstcalc+0x23D8 type 6
 0x00339640	0x003396F0	176	result/rstcalc+0x2368 type 6
 0x00339658	0x00339708	176	result/rstcalc+0x2528 type 6
 0x003399E8	0x00339A98	176	result/rstcalc+0x2418 type 6
@@ -9761,9 +9784,11 @@ usa	mnax	delta	source
 0x00339DF8	0x00339EA8	176	result/rstcalc+0x1A48 type 6
 0x00339E00	0x00339EB0	176	result/rstcalc+0x1B24 type 6
 0x00339E02	0x00339EB2	176	result/rstcalc+0x1D20 type 6
+0x00339E06	0x00339EB6	176	result/rstcalc+0x1D7C type 6
+0x00339E0C	0x00339EBC	176	result/rstcalc+0x1D64 type 6
 0x00339E10	0x00339EC0	176	result/rstcalc+0x201C type 6
 0x00339E19	0x00339EC9	176	result/rstcalc+0x19DC type 6
-0x00339E1A	0x00339ECA	176	result/rstcalc+0x1F80 type 6
+0x00339E1A	0x00339ECA	176	result/rstcalc+0x1CF4 type 6
 0x00339E1C	0x00339ECC	176	result/rstcalc+0x1B54 type 6
 0x0033A540	0x0033A5F0	176	sound/sndManager+0x7C type 6
 0x00342FA0	0x00343050	176	sound/sndManager+0x68 type 6
@@ -9791,10 +9816,13 @@ usa	mnax	delta	source
 0x00345F40	0x00345EF0	-80	facility/fclEncyc+0x53F8 type 6
 0x00345F50	0x00345F00	-80	facility/fclEncyc+0x53E4 type 6
 0x00345F58	0x00345F08	-80	code_0022C578+0xD768 type 6
+0x00345F60	0x00345F10	-80	facility/fclEncyc+0x4BBC type 6
 0x00345F70	0x00345F20	-80	code_0022C578+0xCB68 type 6
 0x00345F78	0x00345F28	-80	code_0022C578+0xCC5C type 6
+0x00349300	0x003492B0	-80	code_0022C578+0xD2DC type 6
 0x00349380	0x00349330	-80	code_0022C578+0xDBA0 type 6
 0x00349388	0x00349338	-80	code_0022C578+0xE1E8 type 6
+0x003493A0	0x00349350	-80	newbattle/nbUnitProcess+0x420 type 6
 0x003494B0	0x00349460	-80	newbattle/nbMisc+0x15F4 type 6
 0x003494C0	0x00349470	-80	event/evtEventPack+0x274 type 6
 0x003497C0	0x00349770	-80	facility/fclCombineInit+0x1DD0 type 6
@@ -9803,6 +9831,7 @@ usa	mnax	delta	source
 0x003497CE	0x0034977E	-80	newdata/datCalc+0x136C type 6
 0x003497D6	0x00349786	-80	newdata/datCalc+0x12EC type 6
 0x003497EA	0x0034979A	-80	newbattle/nbNegoProcess+0x32C type 6
+0x0034F1C0	0x0034F170	-80	newbattle/nbUnitProcess+0x438 type 6
 0x0034F1E0	0x0034F190	-80	event/evtCommand+0x163C type 6
 0x0034F1F0	0x0034F1A0	-80	event/evtEventPack+0x280 type 6
 0x0034F1F8	0x0034F1A8	-80	facility/fclCombineInit+0x7BA8 type 6
@@ -9907,7 +9936,10 @@ usa	mnax	delta	source
 0x003E28BE	0x003E286E	-80	newbattle/NbNegoFlowQuestion+0x568 type 6
 0x003E28CA	0x003E287A	-80	newbattle/NbNegoFlowQuestion+0x5A8 type 6
 0x003E3158	0x003E3108	-80	newbattle/nbNegoProcess+0x1608 type 6
+0x003E315E	0x003E310E	-80	newbattle/NbNegoFlowInnen+0x250 type 6
 0x003E3166	0x003E3116	-80	newbattle/NbNegoFlowInnen+0x184 type 6
+0x003E317C	0x003E312C	-80	newbattle/NbNegoFlowInnen+0x3D4 type 6
+0x003E317E	0x003E312E	-80	newbattle/NbNegoFlowInnen+0x378 type 6
 0x003E4058	0x003E4008	-80	newbattle/nbNegoProcess+0x1394 type 6
 0x003E7028	0x003E6FD8	-80	newbattle/nbSound+0x84 type 6
 0x003E7328	0x003E72D8	-80	facility/fclCombineInit+0x92F0 type 6
@@ -9948,6 +9980,22 @@ usa	mnax	delta	source
 0x004EE8B0	0x004EBF98	-10520	newbattle/nbNegoProcess+0x23C0 type 6
 0x004EF0C8	0x004EC738	-10640	newbattle/nbNegoProcess+0x23E0 type 6
 0x004EF468	0x004ECAC8	-10656	newbattle/nbNegoProcess+0x1CD4 type 6
+0x004EF4B0	0x004ECB10	-10656	newbattle/NbNegoFlowOne+0x1D70 type 6
+0x004EF550	0x004ECBB0	-10656	newbattle/NbNegoFlowTwo+0x3650 type 6
+0x004EF698	0x004ECCF8	-10656	newbattle/NbNegoFlowOk+0xA78 type 6
+0x004EF6F8	0x004ECD58	-10656	newbattle/NbNegoFlowNg+0x1040 type 6
+0x004EF780	0x004ECDE0	-10656	newbattle/NbNegoFlowFullMoon+0xC50 type 6
+0x004EF7C8	0x004ECE28	-10656	newbattle/NbNegoFlowStock+0x90 type 6
+0x004EF7D8	0x004ECE38	-10656	newbattle/NbNegoFlowDouchara+0x830 type 6
+0x004EF810	0x004ECE70	-10656	newbattle/NbNegoFlowInnen+0x4B0 type 6
+0x004EF868	0x004ECEC8	-10656	newbattle/NbNegoFlowQuestion+0x950 type 6
+0x004EF8D8	0x004ECF38	-10656	newbattle/NbNegoFlowFight+0x590 type 6
+0x004EF928	0x004ECF88	-10656	newbattle/NbNegoFlowDrain+0x698 type 6
+0x004EF950	0x004ECFB0	-10656	newbattle/NbNegoFlowBinjo+0xD8 type 6
+0x004EF960	0x004ECFC0	-10656	newbattle/NbNegoFlowMukan+0x1288 type 6
+0x004EFA28	0x004ED088	-10656	newbattle/NbNegoFlowSensei+0x558 type 6
+0x004EFA60	0x004ED0C0	-10656	newbattle/NbNegoFlowInoti+0x7E0 type 6
+0x004EFAC0	0x004ED120	-10656	newbattle/NbNegoFlowKoketa+0x1C8 type 6
 0x004EFE70	0x004ED4D0	-10656	newbattle/nbPanelProcess+0x20F4 type 6
 0x004EFE80	0x004ED4E0	-10656	newbattle/nbPanelProcess+0x1FB4 type 6
 0x004F00A0	0x004ED700	-10656	newbattle/nbPanelProcess+0x25FC type 6
@@ -9956,6 +10004,7 @@ usa	mnax	delta	source
 0x004F0614	0x004EDC74	-10656	newbattle/nbPanelProcess+0x2024 type 6
 0x004F06D8	0x004EDD38	-10656	newbattle/nbDebugProcess+0x300 type 6
 0x004F0758	0x004EDDB8	-10656	newbattle/nbDebugProcess+0x184 type 6
+0x004F0788	0x004EDDE8	-10656	newbattle/nbAi+0x138C type 6
 0x004F0800	0x004EDE60	-10656	newbattle/nbAiScript+0x1024 type 6
 0x005263F8	0x00523BE8	-10256	newbattle/nbHelpProcess+0x278 type 6
 0x00526420	0x00523C10	-10256	newbattle/nbFormation+0x878 type 6
@@ -9965,26 +10014,43 @@ usa	mnax	delta	source
 0x00526540	0x00523D30	-10256	newbattle/nbTest+0xADC type 6
 0x005266A8	0x00523E98	-10256	newbattle/nbTest+0xAE0 type 6
 0x00526B50	0x00524340	-10256	newbattle/nbTest+0xC type 6
+0x00526BF4	0x005243E4	-10256	newbattle/nbTest+0xCC type 6
+0x00526C98	0x00524488	-10256	newbattle/nbTest+0x18C type 6
+0x00526D3C	0x0052452C	-10256	newbattle/nbTest+0x24C type 6
+0x00526DE0	0x005245D0	-10256	newbattle/nbTest+0x534 type 6
+0x00526E84	0x00524674	-10256	newbattle/nbTest+0x5F4 type 6
+0x00526F28	0x00524718	-10256	newbattle/nbTest+0x6B4 type 6
+0x00526FCC	0x005247BC	-10256	newbattle/nbTest+0x774 type 6
+0x00527070	0x00524860	-10256	newbattle/nbTest+0x834 type 6
+0x00527114	0x00524904	-10256	newbattle/nbTest+0x8F4 type 6
+0x005271B8	0x005249A8	-10256	newbattle/nbTest+0x9B4 type 6
 0x00527260	0x00524A50	-10256	newbattle/nbMakaProcess+0x324 type 6
 0x00527274	0x00524A64	-10256	newbattle/nbEventProcess+0x270 type 6
 0x00527276	0x00524A66	-10256	newbattle/nbEventProcess+0x2A8 type 6
 0x00527278	0x00524A68	-10256	newbattle/nbEventProcess+0x318 type 6
 0x0052727A	0x00524A6A	-10256	newbattle/nbEventProcess+0x2E0 type 6
+0x00527420	0x00524C10	-10256	newbattle/nbE901+0x88C type 6
 0x00527450	0x00524C40	-10256	newbattle/nbE902+0x5CC type 6
 0x00527470	0x00524C60	-10256	newbattle/nbE903+0x54C type 6
+0x00527490	0x00524C80	-10256	newbattle/nbE903+0x804 type 6
 0x005274A0	0x00524C90	-10256	newbattle/nbE904+0x30 type 6
 0x005274A8	0x00524C98	-10256	newbattle/nbE905+0x30 type 6
 0x005274C8	0x00524CB8	-10256	newbattle/nbE906+0x30 type 6
 0x005274D0	0x00524CC0	-10256	newbattle/nbE907+0x30 type 6
 0x005274F0	0x00524CE0	-10256	newbattle/nbE908+0x30 type 6
 0x005274F8	0x00524CE8	-10256	newbattle/nbE909+0x2C type 6
+0x00527518	0x00524D08	-10256	newbattle/nbE910+0x28 type 6
 0x00527520	0x00524D10	-10256	newbattle/nbE911+0x230 type 6
 0x00527530	0x00524D20	-10256	newbattle/nbE911+0x67C type 6
 0x00527540	0x00524D30	-10256	newbattle/nbE912+0xBC type 6
 0x00527640	0x00524E30	-10256	newbattle/nbE911+0x72C type 6
+0x00527650	0x00524E40	-10256	newbattle/nbE912+0xF0 type 6
 0x00527660	0x00524E50	-10256	newbattle/nbE912+0x3A4 type 6
+0x00527664	0x00524E54	-10256	newbattle/nbE912+0x3D4 type 6
 0x00527670	0x00524E60	-10256	newbattle/nbE912+0x524 type 6
+0x00527688	0x00524E78	-10256	newbattle/nbE913+0x2C type 6
 0x00527690	0x00524E80	-10256	newbattle/nbE914+0x34 type 6
+0x00527698	0x00524E88	-10256	newbattle/nbE915+0x2C type 6
 0x005276C4	0x00524EB4	-10256	nme/Nme_Init+0x3C8 type 6
 0x00528D60	0x00526678	-9960	code_0029B780+0x5A4 type 6
 0x00528D68	0x00526680	-9960	code_0029B780+0x3E4 type 6
@@ -10755,6 +10821,7 @@ usa	mnax	delta	source
 0x0054AE00	0x005490C0	-7488	sdk/libmrpc+0x604 type 6
 0x0054AE38	0x005490F8	-7488	sdk/libmrpc+0x608 type 6
 0x0054AE48	0x00549108	-7488	sdk/libmrpc+0x624 type 6
+0x0054AEE8	0x005491A8	-7488	sdk/libmc+0xC6C type 6
 0x0054B460	0x00549720	-7488	sdk/libgcc+0x21C type 6
 0x0054B551	0x00549811	-7488	model/mdlManager+0x256C type 6
 0x0054B8D8	0x00549B98	-7488	sdk/libc+0x26B0 type 6
@@ -12090,6 +12157,7 @@ usa	mnax	delta	source
 0x00551F40	0x0054FEC0	-8320	facility/fclRagInit+0xFB4 type 7
 0x00551F44	0x0054FEC4	-8320	facility/fclRagCalc+0x400 type 7
 0x00551F48	0x0054FEC8	-8320	facility/fclRagUpdate+0x0 type 7
+0x00551F51	0x0054FED1	-8320	facility/fclRecoverInit+0x30C type 7
 0x00551F58	0x0054FED8	-8320	facility/fclRecoverCalc+0x5DC type 7
 0x00551F5C	0x0054FEDC	-8320	facility/fclRecoverCalc+0x6B8 type 7
 0x00551F60	0x0054FEE0	-8320	facility/fclRecoverUpdate+0x0 type 7
@@ -12342,6 +12410,7 @@ usa	mnax	delta	source
 0x0056B1F8	0x00569158	-8352	newbattle/nbCameraStartEnd+0x14C type 6
 0x0056B200	0x00569160	-8352	newbattle/nbCameraStartEnd+0x324 type 6
 0x0056B238	0x00569198	-8352	newbattle/nbCameraStartEnd+0x318 type 6
+0x0056B270	0x005691D0	-8352	newbattle/nbCameraStartEnd+0x60C type 6
 0x0056B2D0	0x00569230	-8352	newbattle/nbCameraSkill+0x1EC4 type 6
 0x0056B2E0	0x00569240	-8352	newbattle/nbCameraSkill+0x2D58 type 6
 0x0056B310	0x00569270	-8352	newbattle/nbCameraSkill+0x2E10 type 6
