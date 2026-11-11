@@ -11,14 +11,14 @@ kernel/dds3StartMenu	C
 kernel/dds3Randomize	C
 kernel/dds3KernelDraw	C
 kernel/dds3SequenceList	C
-script/scrScriptProcess	1 functions differ in Maniax
-script/scrTraceCode	9 functions differ in Maniax
+script/scrScriptProcess	C with fallbacks, 1 functions kept as Maniax assembly
+script/scrTraceCode	C with fallbacks, 9 functions kept as Maniax assembly
 script/scrCommonCommand	C
-script/scrParameterCommand	7 functions differ in Maniax
+script/scrParameterCommand	C with fallbacks, 7 functions kept as Maniax assembly
 basic/dds3DbgBasic	C
 basic/dds3Basic	C
 basic/dds3WorldBasic	C
-basic/dds3SceneBasic	1 functions differ in Maniax
+basic/dds3SceneBasic	demoted: .text bytes differ from Maniax
 basic/dds3AreaBasic	C
 basic/dds3MoverBasic	C
 basic/dds3ObjectBase	.sdata bytes differ
@@ -34,29 +34,29 @@ basic/dds3ModelRangeBasic	C
 basic/dds3EventBasic	C
 basic/dds3PathBasic	C
 basic/dds3PointBasic	C
-kernel/dds3GlobalWork	9 functions differ in Maniax
+kernel/dds3GlobalWork	demoted: .sdata bytes differ from Maniax
 kernel/dds3DebugStuff	C
-field/fldTest	1 functions differ in Maniax
-field/fldGlobal	20 functions differ in Maniax
-field/fldMain	21 functions differ in Maniax
+field/fldTest	demoted: does not compile for Maniax
+field/fldGlobal	demoted: does not compile for Maniax
+field/fldMain	C with fallbacks, 21 functions kept as Maniax assembly
 field/fldProcess	C with fallbacks
 field/fldFileResolver	C
 field/fldDraw	C with fallbacks
 field/fldEnc	C
 field/fldCamera	C with fallbacks
-field/fldPlayer	.text did not move rigidly
+field/fldPlayer	C with fallbacks
 field/fldSky	C with fallbacks
-field/fldHit	.text did not move rigidly
-field/fldEveHit	2 functions differ in Maniax
+field/fldHit	demoted: .text links at a different size than its place in Maniax
+field/fldEveHit	C with fallbacks, 2 functions kept as Maniax assembly
 field/fldInf	C
-field/fldWap	2 functions differ in Maniax
-field/fldPanel	1 functions differ in Maniax
+field/fldWap	.rodata bounds unknown in Maniax
+field/fldPanel	C with fallbacks, 1 functions kept as Maniax assembly
 field/fldSe	.sdata bytes differ
-field/fldAutoMap	7 functions differ in Maniax
+field/fldAutoMap	C with fallbacks, 7 functions kept as Maniax assembly
 field/fld_Npc	C with fallbacks
-field/fldTitle	1 functions differ in Maniax
+field/fldTitle	C with fallbacks, 1 functions kept as Maniax assembly
 field/fldSnow	C with fallbacks
-mc/slMain	14 functions differ in Maniax
+mc/slMain	demoted: does not compile for Maniax
 field/fldCommand	C with fallbacks
 effect/effManager	C
 effect/billManager	C with fallbacks
@@ -71,40 +71,40 @@ effect/effPart	C
 effect/effPCPThunder	C
 effect/effPCPBezier	C
 effect/effPCPFlash	C
-effect/effPCPScatter	1 functions differ in Maniax
+effect/effPCPScatter	C
 effect/effPCPNeedle	C
-effect/effPCPMisc	1 functions differ in Maniax
-effect/effPCPBoss	3 functions differ in Maniax
+effect/effPCPMisc	C
+effect/effPCPBoss	C with fallbacks
 effect/effBlur_Filter	C
 effect/effModelTrackPoly	C with fallbacks
-effect/effMagatuhi	5 functions differ in Maniax
+effect/effMagatuhi	C with fallbacks
 newbattle/nbCameraHelper	C
 effect/effMath	C
 effect/effDebug	C
 effect/effEvent	C
 effect/effSpline	C
 newbattle/nbCameraProcess	C
-newbattle/nbCameraStartEnd	2 functions differ in Maniax
-newbattle/nbCameraSkill	2 functions differ in Maniax
+newbattle/nbCameraStartEnd	C with fallbacks
+newbattle/nbCameraSkill	C with fallbacks
 newbattle/nbCameraNego	C
-newbattle/nbCameraCommand	1 functions differ in Maniax
+newbattle/nbCameraCommand	C with fallbacks
 newbattle/nbCameraPress	C with fallbacks
 newbattle/nbCameraBoss	C with fallbacks
-code_001C55F8	1 functions differ in Maniax
-interface/fmGslCont	8 functions differ in Maniax
-interface/frFont	36 functions differ in Maniax
-interface/frName	9 functions differ in Maniax
-interface/frWrap	12 functions differ in Maniax
+code_001C55F8	C
+interface/fmGslCont	.sdata bounds unknown in Maniax
+interface/frFont	.rodata bounds unknown in Maniax
+interface/frName	.rodata bounds unknown in Maniax
+interface/frWrap	demoted: no Maniax assembly for func_001C9410
 interface/frTestFont	C
-interface/itfMisc	1 functions differ in Maniax
+interface/itfMisc	.rodata bounds unknown in Maniax
 interface/itfPanel	C
-interface/itfMesManager	11 functions differ in Maniax
+interface/itfMesManager	.rodata bounds unknown in Maniax
 interface/itfTestMesManager	C
 pb/pbCamera	C
-pb/pbModel	4 functions differ in Maniax
+pb/pbModel	C with fallbacks
 pb/pbDraw	C
-pb/pbMain	6 functions differ in Maniax
-pb/pbMenu	2 functions differ in Maniax
+pb/pbMain	C
+pb/pbMenu	C
 pb/pbGame	C with fallbacks
 pb/pbGameDraw	C
 pb/pbRecord	C
@@ -115,83 +115,83 @@ pb/pbErrorDraw	C
 pb/pbDebugMode	C
 model/mdlManager	C
 model/mdlEffect	C
-event/EventBit	4 functions differ in Maniax
+event/EventBit	C with fallbacks, 4 functions kept as Maniax assembly
 event/evtBitEditor	C
 event/evtStage	C
 event/evtUnitManager	C
-event/evtCommand	1 functions differ in Maniax
-event/evtMoon	12 functions differ in Maniax
-event/evtDebug	1 functions differ in Maniax
+event/evtCommand	C with fallbacks, 1 functions kept as Maniax assembly
+event/evtMoon	C with fallbacks, 12 functions kept as Maniax assembly
+event/evtDebug	C with fallbacks
 event/evtEventViewer	C with fallbacks
 event/evtPolygonMovie	C
-event/evtPicture	1 functions differ in Maniax
+event/evtPicture	C
 event/evtSky	C
 event/evtEventViewerFrameVar	C
 event/evtEventViewerMenu	C with fallbacks
 event/evtSound	C
 event/evtEventPack	.rodata bytes differ
-facility/fclCombineInit	29 functions differ in Maniax
+facility/fclCombineInit	.rodata bounds unknown in Maniax
 facility/fclShopInit	.sdata start ambiguous
-facility/fclShopCalc	5 functions differ in Maniax
-facility/fclShopUpdate	3 functions differ in Maniax
-facility/fclRagInit	1 functions differ in Maniax
-facility/fclRagCalc	2 functions differ in Maniax
+facility/fclShopCalc	.sdata bounds unknown in Maniax
+facility/fclShopUpdate	.rodata bounds unknown in Maniax
+facility/fclRagInit	.rodata bounds unknown in Maniax
+facility/fclRagCalc	.rodata bounds unknown in Maniax
 facility/fclRagDraw	C
-facility/fclRagUpdate	4 functions differ in Maniax
-facility/fclRecoverInit	1 functions differ in Maniax
-facility/fclRecoverCalc	2 functions differ in Maniax
+facility/fclRagUpdate	demoted: .rodata links at a different size than its place in Maniax
+facility/fclRecoverInit	.rodata bounds unknown in Maniax
+facility/fclRecoverCalc	.rodata bounds unknown in Maniax
 facility/fclRecoverDraw	C
-facility/fclRecoverUpdate	2 functions differ in Maniax
+facility/fclRecoverUpdate	demoted: .rodata links at a different size than its place in Maniax
 facility/fclTerminalInit	.rodata bytes differ
 facility/fclTerminalCalc	C
 facility/fclTerminalDraw	C
 facility/fclTerminalUpdate	.rodata bytes differ
-facility/fclDraw	2 functions differ in Maniax
+facility/fclDraw	C with fallbacks, 2 functions kept as Maniax assembly
 interface/lstListWindow	.rodata bytes differ
-facility/fclMisc	2 functions differ in Maniax
+facility/fclMisc	demoted: .sdata links at a different size than its place in Maniax
 facility/fclShare	C with fallbacks
 facility/fclPanel	C with fallbacks
-facility/fclDebug	C
-facility/fclEncyc	31 functions differ in Maniax
+facility/fclDebug	demoted: .sdata links at a different size than its place in Maniax
+facility/fclEncyc	.rodata bounds unknown in Maniax
 facility/fclRibbon	C
-result/rstinit	5 functions differ in Maniax
-result/rstcalc	27 functions differ in Maniax
+result/rstinit	demoted: .text bytes differ from Maniax
+result/rstcalc	cannot locate func_00222120 in Maniax
 result/rstdraw	C
-result/rstupdate	12 functions differ in Maniax
-sound/sndManager	3 functions differ in Maniax
-kernel/dds3TitleMain	4 functions differ in Maniax
-kernel/ModeSelect	9 functions differ in Maniax
+result/rstupdate	.rodata bounds unknown in Maniax
+sound/sndManager	.rodata bounds unknown in Maniax
+kernel/dds3TitleMain	.rodata bounds unknown in Maniax
+kernel/ModeSelect	.rodata bounds unknown in Maniax
 kernel/dds3CreateData	C
-staff/stfMain	1 functions differ in Maniax
-movie/mviManager	.sdata did not move rigidly
-movie/MovieViewer	1 functions differ in Maniax
-code_0022C578	66 functions differ in Maniax
-newdata/datCalc	37 functions differ in Maniax
-newdata/datDebugUnit	3 functions differ in Maniax
+staff/stfMain	C with fallbacks, 1 functions kept as Maniax assembly
+movie/mviManager	.sdata bounds unknown in Maniax
+movie/MovieViewer	.rodata bounds unknown in Maniax
+code_0022C578	.rodata bounds unknown in Maniax
+newdata/datCalc	.rodata bounds unknown in Maniax
+newdata/datDebugUnit	.rodata bounds unknown in Maniax
 newbattle/nbInit	C
-newbattle/nbMainProcess	6 functions differ in Maniax
+newbattle/nbMainProcess	demoted: does not compile for Maniax
 newbattle/nbMaeProcess	C
-newbattle/nbAtoProcess	1 functions differ in Maniax
-newbattle/nbResultProcess	2 functions differ in Maniax
+newbattle/nbAtoProcess	demoted: does not compile for Maniax
+newbattle/nbResultProcess	demoted: .text bytes differ from Maniax
 newbattle/nbStageProcess	C
-newbattle/nbUnitProcess	1 functions differ in Maniax
-newbattle/nbActionProcess	12 functions differ in Maniax
-newbattle/nbMisc	3 functions differ in Maniax
-newbattle/nbCommSelProcess	8 functions differ in Maniax
-newbattle/nbTarSelProcess	.rodata did not move rigidly
+newbattle/nbUnitProcess	.rodata bounds unknown in Maniax
+newbattle/nbActionProcess	.rodata bounds unknown in Maniax
+newbattle/nbMisc	.rodata bounds unknown in Maniax
+newbattle/nbCommSelProcess	.rodata bounds unknown in Maniax
+newbattle/nbTarSelProcess	.rodata bounds unknown in Maniax
 newbattle/nbKoukaProcess	C
 newbattle/nbMakePacket	C with fallbacks
-newbattle/nbCalc	6 functions differ in Maniax
-newbattle/nbNegoProcess	1 functions differ in Maniax
-newbattle/NbNegoFlowOne	2 functions differ in Maniax
+newbattle/nbCalc	demoted: does not compile for Maniax
+newbattle/nbNegoProcess	demoted: .rodata links at a different size than its place in Maniax
+newbattle/NbNegoFlowOne	C with fallbacks, 2 functions kept as Maniax assembly
 newbattle/NbNegoFlowTwo	C with fallbacks
-newbattle/NbNegoFlowOk	1 functions differ in Maniax
+newbattle/NbNegoFlowOk	C with fallbacks, 1 functions kept as Maniax assembly
 newbattle/NbNegoFlowNg	C
-newbattle/NbNegoFlowFullMoon	1 functions differ in Maniax
+newbattle/NbNegoFlowFullMoon	C with fallbacks, 1 functions kept as Maniax assembly
 newbattle/NbNegoFlowStock	C
 newbattle/NbNegoFlowDouchara	C
 newbattle/NbNegoFlowInnen	C with fallbacks
-newbattle/NbNegoFlowQuestion	1 functions differ in Maniax
+newbattle/NbNegoFlowQuestion	C with fallbacks, 1 functions kept as Maniax assembly
 newbattle/NbNegoFlowFight	C
 newbattle/NbNegoFlowDrain	C
 newbattle/NbNegoFlowBinjo	C
@@ -199,20 +199,20 @@ newbattle/NbNegoFlowMukan	C
 newbattle/NbNegoFlowSensei	C
 newbattle/NbNegoFlowInoti	C
 newbattle/NbNegoFlowKoketa	C
-newbattle/nbPanelProcess	2 functions differ in Maniax
-newbattle/nbDebugProcess	1 functions differ in Maniax
+newbattle/nbPanelProcess	C with fallbacks, 2 functions kept as Maniax assembly
+newbattle/nbDebugProcess	C with fallbacks, 1 functions kept as Maniax assembly
 newbattle/nbAi	C with fallbacks
 newbattle/nbAiScript	C
-newbattle/nbHelpProcess	3 functions differ in Maniax
+newbattle/nbHelpProcess	C with fallbacks, 3 functions kept as Maniax assembly
 newbattle/nbAutoCommProcess	C
 newbattle/nbFormation	C with fallbacks
-newbattle/nbTest	6 functions differ in Maniax
-newbattle/nbEncount	3 functions differ in Maniax
+newbattle/nbTest	C with fallbacks, 4 functions kept as Maniax assembly
+newbattle/nbEncount	C with fallbacks, 3 functions kept as Maniax assembly
 newbattle/nbSound	C with fallbacks
-newbattle/nbEncProcess	1 functions differ in Maniax
-newbattle/nbMakaProcess	2 functions differ in Maniax
-newbattle/nbEventProcess	1 functions differ in Maniax
-newbattle/nbSkillError	1 functions differ in Maniax
+newbattle/nbEncProcess	C with fallbacks, 1 functions kept as Maniax assembly
+newbattle/nbMakaProcess	C with fallbacks, 2 functions kept as Maniax assembly
+newbattle/nbEventProcess	C with fallbacks, 1 functions kept as Maniax assembly
+newbattle/nbSkillError	demoted: .rodata links at a different size than its place in Maniax
 newbattle/nbE901	C
 newbattle/nbE902	C
 newbattle/nbE903	C
@@ -229,25 +229,25 @@ newbattle/nbE913	C
 newbattle/nbE914	C
 newbattle/nbE915	C
 file/fileManager	.rodata bytes differ
-nme/Nme_Init	9 functions differ in Maniax
-nme/Nme_Calc	11 functions differ in Maniax
-nme/Nme_Draw	10 functions differ in Maniax
+nme/Nme_Init	.rodata bounds unknown in Maniax
+nme/Nme_Calc	.rodata bounds unknown in Maniax
+nme/Nme_Draw	cannot locate func_0029A108 in Maniax
 nme/Nme_Update	C
 mc/mcManager	C
-code_0029B780	7 functions differ in Maniax
-kernel/dds3ConfigMain	2 functions differ in Maniax
+code_0029B780	.rodata bounds unknown in Maniax
+kernel/dds3ConfigMain	C with fallbacks, 2 functions kept as Maniax assembly
 pipe/pipeMain	C
-pipe/pipeSection	1 functions differ in Maniax
-pipe/pipeSelect	1 functions differ in Maniax
-pipe/pipeObject	.rodata did not move rigidly
-pipe/pipePosTable	2 functions differ in Maniax
+pipe/pipeSection	.rodata bounds unknown in Maniax
+pipe/pipeSelect	C
+pipe/pipeObject	.rodata bounds unknown in Maniax
+pipe/pipePosTable	C
 pipe/pipeCamera	C
 pipe/pipeResult	C
 pipe/pipeModel	C
 pipe/pipeEffect	C
 pipe/pipeMakaAnim	C with fallbacks
 pipe/mnMyLink	C
-sdf/sdfSystem	1 functions differ in Maniax
+sdf/sdfSystem	C
 sdf/sdfChip	C
 sdf/sdfMemory	C
 sdf/sdfIop	C
@@ -262,9 +262,9 @@ sdf/sdfDraw	C with fallbacks
 sdf/sdfPrim	C
 sdf/sdfModel	C with fallbacks
 sdf/sdfMat	C
-sdf/sdfMotion	2 functions differ in Maniax
+sdf/sdfMotion	C
 sdf/sdfVu0	C
-sdf/sdfVu1	1 functions differ in Maniax
+sdf/sdfVu1	C with fallbacks
 sdf/sdfCoreDraw	C with fallbacks
 sdf/sdf2D	C
 sdf/sdf3D	C
@@ -283,7 +283,7 @@ sdf/sdfMath	C
 sdf/sdfQuat	C
 code_002C0BA8	C
 sdf/sdfRand	C
-sdf/sdfSound	1 functions differ in Maniax
+sdf/sdfSound	.lit4 bounds unknown in Maniax
 sdf/sdfDevFile	C
 sdf/sdfAddrResolve	C
 sdf/sdfIpu	C with fallbacks
@@ -301,9 +301,9 @@ sdk/libipu	C
 sdk/libmc	C with fallbacks
 sdk/libm	C with fallbacks
 sdk/libgcc	C with fallbacks
-sdk/libc	.text did not move rigidly
-sdk/libkernl	5 functions differ in Maniax
-sdk/libgcc_longlong	.rodata did not move rigidly
+sdk/libc	.rodata bounds unknown in Maniax
+sdk/libkernl	.rodata bounds unknown in Maniax
+sdk/libgcc_longlong	.rodata bounds unknown in Maniax
 sdk/libgcc_fixunsdfdi	C
 sdk/libgcc_dpdiv	C
 sdk/libgcc_floatdidf	C

@@ -75,6 +75,86 @@ class Map:
         return None
 
 
+def skip_noncode(text: str, i: int) -> int:
+    """Index after the comment, string or character literal starting at i, else i."""
+    if text.startswith("//", i):
+        j = text.find("\n", i)
+        return len(text) if j < 0 else j
+    if text.startswith("/*", i):
+        j = text.find("*/", i + 2)
+        return len(text) if j < 0 else j + 2
+    if text[i] in "\"'":
+        q, j = text[i], i + 1
+        while j < len(text) and text[j] != q:
+            j += 2 if text[j] == "\\" else 1
+        return j + 1
+    return i
+
+
+def match_close(text: str, i: int, open_: str, close: str) -> int:
+    """Index after the bracket that closes the one at i, or -1."""
+    depth = 0
+    while i < len(text):
+        j = skip_noncode(text, i)
+        if j != i:
+            i = j
+            continue
+        if text[i] == open_:
+            depth += 1
+        elif text[i] == close:
+            depth -= 1
+            if depth == 0:
+                return i + 1
+        i += 1
+    return -1
+
+
+def find_definition(text: str, name: str):
+    """(start, end) of the C definition of function `name`, or None."""
+    for m in re.finditer(r"^[A-Za-z_][^\n;{}()#=]*?\b" + re.escape(name) + r"\s*\(", text, re.M):
+        close = match_close(text, m.end() - 1, "(", ")")
+        if close < 0:
+            continue
+        k = close
+        while k < len(text):
+            j = skip_noncode(text, k)
+            if j != k:
+                k = j
+            elif text[k].isspace():
+                k += 1
+            else:
+                break
+        if k < len(text) and text[k] == "{":
+            end = match_close(text, k, "{", "}")
+            if end > 0:
+                return m.start(), end
+    return None
+
+
+def adapt_source(text: str, unit: str, keep_asm, absent, extra):
+    """The unit's source for Maniax: `keep_asm` functions become INCLUDE_ASM, `absent`
+    ones go, and `extra` [(after function, name)] Maniax-only functions are included.
+    Returns (text, None) or (None, reason)."""
+    line = lambda name: f'INCLUDE_ASM(const s32, "{unit}", {name});'
+    for name in keep_asm:
+        span = find_definition(text, name)
+        if span is None:
+            return None, f"cannot isolate {name} in the source"
+        text = text[:span[0]] + line(name) + text[span[1]:]
+    for name in absent:
+        span = find_definition(text, name)
+        if span is not None:
+            text = text[:span[0]] + text[span[1]:]
+        text = re.sub(r"^INCLUDE_ASM\([^,]+,[^,]+,\s*" + re.escape(name) + r"\);\n", "", text, flags=re.M)
+    for after, name in reversed(extra):
+        m = re.search(r"^INCLUDE_ASM\([^,]+,[^,]+,\s*" + re.escape(after) + r"\);", text, re.M)
+        span = (m.start(), m.end()) if m else find_definition(text, after)
+        if span is None:
+            return None, f"cannot place Maniax-only {name} after {after}"
+        text = text[:span[1]] + "\n\n" + line(name) + text[span[1]:]
+    return text, None
+
+
 def main() -> None:
     raw = (ROOT / "orig/mnax" / SERIAL).read_bytes()
     target = ELFFile((ROOT / "orig/mnax" / SERIAL).open("rb"))
@@ -111,8 +191,21 @@ def main() -> None:
     same = lambda a, b: region(a) is not None and region(a) == region(b)
 
     placed = defaultdict(dict)
+    missed = defaultdict(list)      # compiled from C but not found in Maniax
     for r in csv.DictReader((ROOT / "config/mnax/functions.tsv").open(), delimiter="\t"):
         placed[r["unit"]][r["function"]] = int(r["mnax"], 16) if r["mnax"].startswith("0x") else None
+        if r["mnax"] == "miss":
+            missed[r["unit"]].append(r["function"])
+    # Every USA function's Maniax counterpart (tools/mnax_funcs.py).
+    funcs, maniax_only = [], []
+    for r in csv.DictReader((ROOT / "config/mnax/funcs.tsv").open(), delimiter="\t"):
+        if r["usa"] == "-":
+            maniax_only.append((int(r["mnax"], 16), r["name"]))
+        else:
+            funcs.append((int(r["usa"], 16), r["name"], int(r["mnax"], 16) if r["mnax"].startswith("0x") else r["mnax"]))
+    funcs.sort()
+    func_keys = [a for a, _, _ in funcs]
+    func_at = {name: at for _, name, at in funcs}
 
     # ---- which units build from C ------------------------------------------------
     usa_start = defaultdict(dict)
@@ -126,7 +219,20 @@ def main() -> None:
         if sec in SECS:
             usa_extent[unit][sec] = b - a
     units = [name for rom, kind, name in usa_yaml if kind == "c"]
-    good, verdict = {}, {}
+    good, verdict, sources = {}, {}, {}
+    # Maniax start of each USA .text entry: its first function that exists in Maniax.
+    text_end_m = 0x100000 + msec[".text"][1]
+    mregion_end = {".data": msec[".eh_frame"][0], ".rodata": msec[".lit4"][0], ".lit4": msec[".sdata"][0],
+                   ".sdata": (msec[".sdata"][0] + msec[".sdata"][1]) & ~3}
+    text_entries = sorted(order[".text"]) + [(fixed["text_tail_padding"], None)]
+    text_start, text_next = {}, {}
+    firsts = []
+    for (a, unit), (b, _) in zip(text_entries, text_entries[1:]):
+        lo, hi = bisect.bisect_left(func_keys, a), bisect.bisect_left(func_keys, b)
+        firsts.append(next((at for _, _, at in funcs[lo:hi] if isinstance(at, int)), None))
+    firsts.append(text_end_m)
+    for i, (a, unit) in enumerate(text_entries[:-1]):
+        text_start[unit], text_next[unit] = firsts[i], firsts[i + 1]
     demote = ROOT / "config/mnax/demote.txt"
     demoted = dict(line.split("\t", 1) for line in demote.read_text().splitlines() if "\t" in line) \
         if demote.exists() else {}
@@ -146,45 +252,72 @@ def main() -> None:
         if any(s["st_shndx"] == "SHN_COMMON" for s in syms):
             verdict[unit] = "defines common symbols"
             continue
-        if any(v is None for v in placed[unit].values()):
-            verdict[unit] = "%d functions differ in Maniax" % sum(v is None for v in placed[unit].values())
-            continue
         starts, why = {}, None
-        if fallbacks:
-            # The object lacks the fallback pieces, so its sections cannot be compared
-            # whole. Admit the unit when every USA section of it moved rigidly: all
-            # anchors inside share one delta, and both ends map with it. The build's
-            # checksum is the real test; a unit that fails it is listed in demote.txt.
-            for name, u0 in usa_start[unit].items():
-                size = usa_extent[unit][name]
-                i = bisect.bisect_left(amap.keys, u0)
-                deltas = set()
-                while i < len(amap.keys) and amap.keys[i] < u0 + size:
-                    deltas.add(amap.pairs[i][1] - amap.keys[i])
-                    i += 1
-                ends = {amap.get(u0, same), amap.get(u0 + size - 4, same)}
-                if None in ends or len(deltas) > 1 or len({e - a for e, a in zip(sorted(ends), sorted({u0, u0 + size - 4}))} | deltas) != 1:
-                    why = f"{name} did not move rigidly"
-                    break
-                m0 = min(ends)
-                if name == ".rodata":
-                    # Real end of the object's .rodata (see the note below on blob
-                    # alignment): from the last build's object when there is one,
-                    # else the last non-zero byte, which a rebuild then corrects.
-                    body = raw[m0 - DELTA:m0 - DELTA + size].rstrip(b"\0")
-                    real = (len(body) + 8) & ~7
-                    built = ROOT / "build/mnax/src/mnax" / (unit + ".o")
-                    if built.exists():
-                        sec = ELFFile(built.open("rb")).get_section_by_name(".rodata")
-                        if sec is not None and (sec["sh_size"] + 7) & ~7 >= len(body):
-                            real = (sec["sh_size"] + 7) & ~7
-                    size = min(size, real)
-                starts[name] = (m0, size, u0)
+        if fallbacks or missed[unit]:
+            # The object lacks the pieces that stay assembly, so its sections cannot be
+            # compared whole. Admit the unit when both ends of each section are known in
+            # Maniax; the build's checksum is the real test, and tools/mnax_settle.py
+            # lists a unit that fails it in demote.txt.
+            t0 = usa_start[unit][".text"]
+            lo = bisect.bisect_left(func_keys, t0)
+            hi = bisect.bisect_left(func_keys, t0 + usa_extent[unit][".text"])
+            mine = funcs[lo:hi]
+            if any(at == "unknown" for _, _, at in mine):
+                why = "a function's Maniax address is unknown"
+            present = [(at, name) for _, name, at in mine if isinstance(at, int)]
+            m_text = text_start.get(unit)
+            m_next = text_next.get(unit)
+            if why is None and (m_text is None or m_next is None or m_next <= m_text):
+                why = ".text bounds unknown in Maniax"
+            if why is None:
+                starts[".text"] = (m_text, m_next - m_text, t0)
+                for name, u0 in usa_start[unit].items():
+                    if name == ".text":
+                        continue
+                    size = usa_extent[unit][name]
+                    m0 = amap.get(u0, same)
+                    m1 = mregion_end[name] if u0 + size == bounds[name][1] else amap.get(u0 + size, same)
+                    if m0 is None or m1 is None or m1 <= m0:
+                        why = f"{name} bounds unknown in Maniax"
+                        break
+                    size = m1 - m0
+                    if name == ".rodata":
+                        # Real end of the object's .rodata (see the note below on blob
+                        # alignment): from the last build's object when there is one,
+                        # else the last non-zero byte, which a rebuild then corrects.
+                        body = raw[m0 - DELTA:m0 - DELTA + size].rstrip(b"\0")
+                        real = (len(body) + 8) & ~7
+                        built = ROOT / "build/mnax/src/mnax" / (unit + ".o")
+                        if built.exists() and built.read_bytes()[:4] == b"\x7fELF":   # a failed compile leaves a stub
+                            sec = ELFFile(built.open("rb")).get_section_by_name(".rodata")
+                            if sec is not None and (sec["sh_size"] + 7) & ~7 >= len(body):
+                                real = (sec["sh_size"] + 7) & ~7
+                        size = min(size, real)
+                    starts[name] = (m0, size, u0)
+            if why is None:
+                keep = [n for n in missed[unit] if isinstance(func_at.get(n), int)]
+                gone = [name for _, name, at in mine if at == "absent"]
+                lost = [n for n in missed[unit] if func_at.get(n) not in ("absent",) and not isinstance(func_at.get(n), int)]
+                extra = []
+                for at, name in maniax_only:
+                    if m_text <= at < m_next:
+                        before = [n for a, n in present if a < at]
+                        if not before:
+                            why = f"Maniax-only {name} precedes the unit's first function"
+                            break
+                        extra.append((before[-1], name))
+                if lost:
+                    why = f"cannot locate {lost[0]} in Maniax"
+                if why is None:
+                    text, why = adapt_source(src.read_text(errors="replace"), unit, keep, gone, extra)
+                    if why is None:
+                        sources[unit] = text
             if why:
                 verdict[unit] = why
             else:
                 good[unit] = starts
-                verdict[unit] = "C with fallbacks"
+                kept = len(missed[unit])
+                verdict[unit] = "C with fallbacks" + (f", {kept} functions kept as Maniax assembly" if kept else "")
             continue
         for sec in elf.iter_sections():
             if sec.name not in SECS + (".bss", ".sbss") or not sec["sh_size"]:
@@ -203,7 +336,8 @@ def main() -> None:
             if sec.name == ".text":
                 tidx = names.index(".text")
                 for s in syms:
-                    if s["st_info"]["type"] == "STT_FUNC" and s["st_shndx"] == tidx and s["st_size"]:
+                    if s["st_info"]["type"] == "STT_FUNC" and s["st_shndx"] == tidx and s["st_size"] \
+                            and placed[unit].get(s.name) is not None:
                         votes.add(placed[unit][s.name] - s["st_value"])
             else:
                 i = bisect.bisect_left(amap.keys, u0)
@@ -305,6 +439,8 @@ def main() -> None:
             continue
         name, usa, attrs = m.group(1), int(m.group(2), 16), m.group(3) or ""
         at = amap.get(usa, same)
+        if "type:func" in attrs and name in func_at:
+            at = func_at[name] if isinstance(func_at[name], int) else None
         if at is None or at in seen_addr:
             dropped += 1
             continue
@@ -385,12 +521,15 @@ def main() -> None:
     shutil.rmtree(dst, ignore_errors=True)
     for unit in good:
         (dst / unit).parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(ROOT / "src/smt3" / (unit + ".c"), dst / (unit + ".c"))
+        if unit in sources:
+            (dst / (unit + ".c")).write_text(sources[unit])
+        else:
+            shutil.copyfile(ROOT / "src/smt3" / (unit + ".c"), dst / (unit + ".c"))
     shutil.copytree(ROOT / "src/smt3/sdf/vu", dst / "sdf/vu", dirs_exist_ok=True)
 
     tally = defaultdict(int)
     for unit in units:
-        tally[re.sub(r"\d+ functions", "functions", verdict[unit])] += 1
+        tally[re.sub(r"\d+ functions", "N functions", re.sub(r"(isolate|locate|only|after) \w+", r"\1 X", verdict[unit]))] += 1
     for k, v in sorted(tally.items(), key=lambda kv: -kv[1]):
         print(f"{v:4d} units: {k}")
     text_c = sum(good[u][".text"][1] for u in good if ".text" in good[u])

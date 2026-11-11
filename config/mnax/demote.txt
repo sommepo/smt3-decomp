@@ -1,0 +1,18 @@
+interface/frWrap	no Maniax assembly for func_001C9410
+field/fldGlobal	does not compile for Maniax
+field/fldTest	does not compile for Maniax
+mc/slMain	does not compile for Maniax
+newbattle/nbAtoProcess	does not compile for Maniax
+newbattle/nbCalc	does not compile for Maniax
+newbattle/nbMainProcess	does not compile for Maniax
+facility/fclDebug	.sdata links at a different size than its place in Maniax
+facility/fclMisc	.sdata links at a different size than its place in Maniax
+facility/fclRagUpdate	.rodata links at a different size than its place in Maniax
+facility/fclRecoverUpdate	.rodata links at a different size than its place in Maniax
+field/fldHit	.text links at a different size than its place in Maniax
+newbattle/nbNegoProcess	.rodata links at a different size than its place in Maniax
+newbattle/nbSkillError	.rodata links at a different size than its place in Maniax
+basic/dds3SceneBasic	.text bytes differ from Maniax
+kernel/dds3GlobalWork	.sdata bytes differ from Maniax
+newbattle/nbResultProcess	.text bytes differ from Maniax
+result/rstinit	.text bytes differ from Maniax
