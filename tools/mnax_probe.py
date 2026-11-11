@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Locate every C-matched USA function in another Nocturne build.
 
-    python tools/maniax_probe.py [--elf orig/maniax/SLPM_654.62] [--jobs 6]
+    python tools/mnax_probe.py [--elf orig/mnax/SLPM_654.62] [--jobs 6]
 
 Compiles each src/smt3 unit with -DSKIP_ASM (asm fallbacks drop out, so the USA
 executable is not needed), masks exactly the instruction fields its relocations
 cover, and searches the target build's .text for each function. A function found
 at one address compiles from the USA source unchanged in the target build.
-Writes config/maniax/probe.tsv: unit, function, size, usa address, status,
+Writes config/mnax/probe.tsv: unit, function, size, usa address, status,
 target address(es)."""
 from __future__ import annotations
 
@@ -88,10 +88,10 @@ def find(text: np.ndarray, words: np.ndarray, mask: np.ndarray) -> np.ndarray:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--elf", type=Path, default=ROOT / "orig" / "maniax" / "SLPM_654.62")
+    ap.add_argument("--elf", type=Path, default=ROOT / "orig" / "mnax" / "SLPM_654.62")
     ap.add_argument("--text-size", type=lambda s: int(s, 0), default=1991876)
     ap.add_argument("--jobs", type=int, default=6)
-    ap.add_argument("--out", type=Path, default=ROOT / "config" / "maniax" / "probe.tsv")
+    ap.add_argument("--out", type=Path, default=ROOT / "config" / "mnax" / "probe.tsv")
     args = ap.parse_args()
 
     raw = args.elf.read_bytes()
@@ -120,7 +120,7 @@ def main() -> None:
             status = "unique" if len(hits) == 1 else "multi" if len(hits) else "miss"
             tally[status][0] += 1
             tally[status][1] += len(words) * 4
-            addrs = ",".join(f"0x{TEXT_START + int(h) * 4:08X}" for h in hits[:8])
+            addrs = ",".join(f"0x{TEXT_START + int(h) * 4:08X}" for h in hits[:256])
             u = usa.get(name)
             rows.append((unit, name, len(words) * 4, f"0x{u:08X}" if u else "-", status, addrs or "-"))
 
