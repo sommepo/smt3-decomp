@@ -105,6 +105,12 @@ def drop_duplicate_pieces() -> int:
         # Objects the C defines whose Maniax address and size the symbol file knows:
         # a piece starting inside one is part of it.
         spans = [named[n] for n in set(DATA_DEF.findall(text)) if n in named]
+        # Maniax-only objects carry their address in their name (mnax_<address>).
+        for sym in elf.get_section_by_name(".symtab").iter_symbols():
+            mm = re.fullmatch(r"mnax_([0-9A-F]{8})", sym.name)
+            if mm and sym["st_info"]["type"] == "STT_OBJECT" and sym["st_size"]:
+                lo = int(mm.group(1), 16)
+                spans.append((lo, lo + sym["st_size"]))
 
         def keep(m):
             nonlocal dropped

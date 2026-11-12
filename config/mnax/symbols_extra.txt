@@ -147,3 +147,6 @@ cmpTextIntelligence = 0x0054E150; // size:0x8
 cmpTextStrength = 0x0054E158; // size:0x4
 campStatusActive = 0x0054E15C; // size:0x4
 cmbRaceTable = 0x0054E160; // size:0x4
+// nbActionProcess small data (0x54F058..0x54F070)
+StkSelId = 0x0054F058; // size:0x4
+nbDebugNewline = 0x0054F060; // size:0x8
