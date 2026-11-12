@@ -2547,7 +2547,7 @@ const char slBaseIconName[9] = "base.ico";
 
 #ifdef VERSION_MNAX
 extern char mnax_00526120[], mnax_00526130[], mnax_00526140[], mnax_00526150[];
-extern char mnax_0054D398[], mnax_0054D3A0[];
+extern char D_0054F098[], D_0054F0A0[];
 
 s32 slFileSelDraw(s32 id)
 {
@@ -2728,9 +2728,9 @@ s32 slFileSelDraw(s32 id)
             s32 cycle;
             if (slFileRecs[row].newfile == 0) {
                 if (slFileRecs[row].mode != 0) {
-                    fldKanjiDraw(0x14D, (y + 0x1D) / 2, color, (const u8 *)mnax_0054D398);
+                    fldKanjiDraw(0x14D, (y + 0x1D) / 2, color, (const u8 *)D_0054F098);
                 } else {
-                    fldKanjiDraw(0x14D, (y + 0x1D) / 2, color, (const u8 *)mnax_0054D3A0);
+                    fldKanjiDraw(0x14D, (y + 0x1D) / 2, color, (const u8 *)D_0054F0A0);
                 }
             }
             cycle = slFileRecs[row].endcnt + 1;

@@ -34,3 +34,4 @@ event/evtEventPack       .rodata  0x00539F38  0x300
 facility/fclCombineInit  .rodata  0x0053A240  0x6B0
 facility/fclCombineInit  .sdata   0x0054DDAC  0x34
 facility/fclCombineInit  .lit4    0x0054C6E4  0x28
+event/evtEventPack       .sdata   0x0054DD90  0x1C
