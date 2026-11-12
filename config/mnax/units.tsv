@@ -1,5 +1,5 @@
 unit	state
-kernel/dds3KernelMain	C
+kernel/dds3KernelMain	demoted: .sdata is 0x50 bytes where Maniax has room for 0x4C
 kernel/dds3KernelCore	C with fallbacks
 sdf/sdfDefaultMain	C
 kernel/dds3KernelProcess	C with fallbacks
@@ -92,14 +92,14 @@ newbattle/nbCameraPress	C with fallbacks
 newbattle/nbCameraBoss	C with fallbacks
 code_001C55F8	C
 interface/fmGslCont	.sdata bounds unknown in Maniax
-interface/frFont	.rodata bounds overlap interface/frName (frFont 0x533298+0xE0, frName 0x533308)
+interface/frFont	demoted: .text is 0x2B10 bytes where Maniax has room for 0x2B40
 interface/frName	C
 interface/frWrap	C
 interface/frTestFont	C
 interface/itfMisc	C
 interface/itfPanel	C
-interface/itfMesManager	C with fallbacks
-interface/itfTestMesManager	.rodata bounds overlap interface/itfMesManager (itfMesManager 0x533410+0xF0, itfTestMesManager 0x5334E0)
+interface/itfMesManager	demoted: .rodata is 0xCB bytes where Maniax has room for 0xF0
+interface/itfTestMesManager	C
 pb/pbCamera	C
 pb/pbModel	C with fallbacks
 pb/pbDraw	C
@@ -152,15 +152,15 @@ facility/fclMisc	C
 facility/fclShare	C with fallbacks
 facility/fclPanel	C with fallbacks
 facility/fclDebug	C
-facility/fclEncyc	demoted: .rodata is 0x217 bytes where Maniax has room for 0x1E8
+facility/fclEncyc	demoted: .sdata is 0x68 bytes where Maniax has room for 0x40
 facility/fclRibbon	C
 result/rstinit	C
 result/rstcalc	C with fallbacks
 result/rstdraw	C
 result/rstupdate	demoted: .rodata must start 16-aligned; Maniax place 0x0053B5C8 is not
 sound/sndManager	C
-kernel/dds3TitleMain	demoted: .text bytes differ from Maniax
-kernel/ModeSelect	demoted: .text bytes differ from Maniax
+kernel/dds3TitleMain	C with fallbacks
+kernel/ModeSelect	C
 kernel/dds3CreateData	C
 staff/stfMain	C
 movie/mviManager	demoted: no Maniax assembly for movieDebugRowFmt
