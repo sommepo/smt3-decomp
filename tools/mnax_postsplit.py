@@ -56,6 +56,17 @@ def main() -> None:
         new = line.sub(keep, text)
         if new != text:
             src.write_text(new)
+    # include_sdata turns every small-data gap into an SDATA_PAD at an estimated source
+    # position; where Maniax's gap is only the next array's 8-byte alignment, a pad
+    # placed before the variables shifts them all (config/mnax/no_sdata_pad.txt).
+    nopad = ROOT / "config/mnax/no_sdata_pad.txt"
+    for unit in (nopad.read_text().split() if nopad.exists() else []):
+        src = ROOT / "src/mnax" / (unit + ".c")
+        if src.exists():
+            text = src.read_text(errors="replace")
+            new = re.sub(r"^SDATA_PAD\(\d+\);\n\n?", "", text, flags=re.M)
+            if new != text:
+                src.write_text(new)
     duplicates = drop_duplicate_pieces()
     print(f"mnax: {removed} migrated rodata blocks left to their C definitions, {dropped} dangling include lines dropped, "
           f"{duplicates} pieces the C already defines dropped")
