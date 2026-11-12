@@ -5992,7 +5992,95 @@ INCLUDE_ASM(const s32, "newbattle/nbCameraBoss", nbCameraHero_Cut2_Run);
  * (sdfport 73e010f, tools/funcvec, tests/funcvec.sh). */
 const f32 nbCameraBossForwardVec[4] __attribute__((aligned(16))) = { 0.0, 0.0, 1.0, 0.0 };
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+extern void ToMatrix(void);
+extern void effBTLModelLook2(nbFormation_t *pFormation, sdfVector4_t *pTargetPos, f32 angle);
+extern const f32 nbCameraBossForwardVec[4];
+
+s32 nbCameraDANTE_Init(void)
+{
+    nbFormation_t *invoke = effBTLSkillGetInvokeFormation();
+    nbFormation_t *target;
+    sdfVector4_t invokePos;
+    sdfVector4_t targetPos;
+    u32 state;
+    s32 id;
+    f32 distance;
+    f32 offset;
+    f32 z;
+
+    switch ((u32)effBTLModelGetID(invoke)) {
+    case 0xC0:
+    case 0x153:
+    case 0x154:
+    case 0x155:
+        break;
+    default:
+        return 0;
+    }
+    state = effBTLSkillGetState();
+    if (effBTLModelGetBadStatus(invoke) & 0x40) {
+        return 0;
+    }
+    if (state & 0xC) {
+        return 0;
+    }
+    switch (effBTLSkillGetID()) {
+    case 0x107:
+        target = effBTLSkillGetTargetFormation(0);
+        effBTLModelTargetPartyShow();
+        effBTLModelInvokeGroupHide();
+        id = effBTLModelGetID(target);
+        if (id == 0x156 || id == 0x124 || id == 0x103) {
+            effBTLGetGroupPos(invoke, &invokePos);
+            effBTLModelLook(target, &invokePos);
+        } else {
+            target = effBTLSkillGetTargetFormation(0);
+            effBTLGetGroupPos(invoke, &invokePos);
+            effBTLGetGroupPos(target, &targetPos);
+            if (nbCameraBoss_CheckRotate(target) != 0) {
+                effBTLModelLook2(target, &invokePos, 0.08726646f);
+            }
+            SDF_VU0_LOADVECTOR(&target->rot);
+            ToMatrix();
+            SDF_VU0_LOADVECTOR(&nbCameraBossForwardVec);
+            SDF_VU0_APPLYMATRIX_XYZ();
+            distance = target->r * target->scl + invoke->cr * invoke->scl;
+            SDF_VU0_SCALEVECTOR(distance);
+            SDF_VU0_LOADVECTOR_B(&targetPos);
+            SDF_VU0_ADDVECTOR();
+            SDF_VU0_SETVECTOR_Y(invokePos.y);
+            SDF_VU0_STOREVECTOR(&invokePos);
+            effBTLModelSetPosition(invoke, &invokePos);
+            effBTLModelLook(invoke, &targetPos);
+        }
+        return 1;
+    case 0x10B:
+        effBTLModelTargetPartyShow();
+        effBTLModelInvokeGroupHide();
+        effBTLGetGroupPos(invoke, &invokePos);
+        z = invokePos.z;
+        if (invoke->stat & 0x100) {
+            offset = z + -300.0f;
+        } else {
+            offset = z + 300.0f;
+        }
+        invokePos.z = offset;
+        effBTLModelSetPosition(invoke, &invokePos);
+        return 1;
+    case 0x10D:
+        effBTLModelTargetPartyShow();
+        effBTLModelInvokeGroupHide();
+        return 1;
+    /* Retail's jump table spans 0x106..0x10D; 0x106, 0x108-0x10A and
+     * 0x10C all select the in-range default. */
+    case 0x106:
+    case 0x10C:
+        return 0;
+    }
+    return 0;
+}
+#elif defined(NON_MATCHING)
 extern void ToMatrix(void);
 extern void effBTLModelLook2(nbFormation_t *pFormation, sdfVector4_t *pTargetPos, f32 angle);
 extern const f32 nbCameraBossForwardVec[4];

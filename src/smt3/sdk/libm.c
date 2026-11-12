@@ -329,11 +329,73 @@ s32 __ieee754_rem_pio2f(f32 x, f32 *y)
     return n;
 }
 
+#if defined(VERSION_MNAX)
+/* fdlibm/newlib ef_sqrt.c for the EE float format, which has no infinities
+ * and no subnormals: every word below 0x00800000 in magnitude is a zero and
+ * the subnormal normalization is compiled out (FLT_UWORD_IS_SUBNORMAL is 0).
+ * Keeping that block, as the library source has it, gives the native
+ * scheduling of the normalization. Retail has no one/tiny constants, so the
+ * rounding is the direct round-half-even step. */
+#define SQRTF_UWORD_IS_SUBNORMAL(x) 0
+
+f32 __ieee754_sqrtf(f32 x)
+{
+    f32 z;
+    u32 r, hx;
+    s32 ix, s, q, m, t, i;
+
+    GET_FLOAT_WORD(ix, x);
+    hx = ix & 0x7FFFFFFF;
+
+    if (hx < 0x00800000) {
+        return x;
+    }
+    if (ix < 0) {
+        return (x - x) / (x - x);
+    }
+
+    m = ix >> 23;
+    if (SQRTF_UWORD_IS_SUBNORMAL(hx)) {
+        for (i = 0; (ix & 0x00800000) == 0; i++) {
+            ix <<= 1;
+        }
+        m -= i - 1;
+    }
+    m -= 127;
+    ix = (ix & 0x007FFFFF) | 0x00800000;
+    if (m & 1) {
+        ix += ix;
+    }
+    m >>= 1;
+
+    ix += ix;
+    q = s = 0;
+    r = 0x01000000;
+
+    while (r != 0) {
+        t = s + r;
+        if (t <= ix) {
+            s = t + r;
+            ix -= t;
+            q += r;
+        }
+        ix += ix;
+        r >>= 1;
+    }
+
+    if (ix != 0) {
+        q += q & 1;
+    }
+    ix = (q >> 1) + 0x3F000000;
+    ix += m << 23;
+    SET_FLOAT_WORD(z, ix);
+    return z;
+}
 /* NON_MATCHING: 34 of 51 words differ (first at +0x4). */
 /* NON_MATCHING. Behaviour checked against retail: 3 PCSX2 call vectors give the same return and memory,
  * capture_006, covering only the paths those calls took.
  * (sdfport 73e010f, tools/funcvec, tests/funcvec.sh). */
-#ifdef NON_MATCHING
+#elif defined(NON_MATCHING)
 f32 __ieee754_sqrtf(f32 x)
 {
     union { f32 f; s32 i; } input;

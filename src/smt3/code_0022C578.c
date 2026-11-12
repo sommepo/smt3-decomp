@@ -1486,7 +1486,49 @@ s32 cmpGetKugatatiMsg(void)
     return 31;
 }
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+s32 cmpStartItemMsg(u16 item, s32 errorFlags)
+{
+    datItemEntry_t *table = datItemTable;
+    u16 skill = table[cmpGetSelectItemID()].skill;
+    s32 guide;
+    s32 mode;
+    s32 index;
+
+    if (item != 0x3A) {
+        guide = cmpClearButtonGuide(skill, errorFlags);
+        switch (guide) {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+            mode = 1;
+            break;
+        default:
+            mode = 0;
+            break;
+        }
+        if (cmpStartItemTokusyuMsg(item) != 0) {
+            return 2;
+        }
+        index = cmpFindItemMsgIndex(mode, item);
+        if (index > 0) {
+            if (mode == 0) {
+                fclStartMessage(index + 0x13);
+            } else {
+                fclStartMessage(index + 0x20);
+            }
+            return mode;
+        }
+        if (skill == 0) {
+            return 0;
+        }
+        return cmpStartSkillMsg(skill, errorFlags);
+    }
+    fclStartMessage(cmpGetKugatatiMsg());
+    return 0;
+}
+#elif defined(NON_MATCHING)
 s32 cmpStartItemMsg(u16 item, s32 errorFlags)
 {
     u16 skill = datItemTable[cmpGetSelectItemID()].skill;
@@ -1648,7 +1690,30 @@ s32 cmpItemIsStockFull(u16 id)
 }
 
 /* NON_MATCHING: 13 of 28 words differ, 112 bytes against retail's 140. */
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+s32 cmpItemIsUsable(u16 item)
+{
+    u8 flags = datItemTable[item].flags;
+    u8 usable = flags & 1;
+
+    if (usable == 0) {
+        return 1;
+    }
+    switch (campWork->page[0].cursor.unk_22 + (u8)campWork->page[0].cursor.unk_24) {
+    case 0:
+        if (cmpItemIsStockFull(item) != 0) {
+            return 1;
+        }
+        break;
+    case 1:
+        if ((flags & 2) == 0) {
+            return 1;
+        }
+        break;
+    }
+    return 0;
+}
+#elif defined(NON_MATCHING)
 s32 cmpItemIsUsable(u16 item)
 {
     u8 flags = datItemTable[item].flags;
@@ -9215,7 +9280,62 @@ INCLUDE_ASM(const s32, "code_0022C578", campDrawStockRow1);
 /* NON_MATCHING. Behaviour checked against retail: 3 PCSX2 call vectors give the same return and memory,
  * menu main savestate, covering only the paths those calls took.
  * (sdfport bc29478, tools/funcvec, tests/funcvec.sh). */
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+extern s32 campDrawStockLabel2(s32 x, s32 y, s32 z, s8 slot, s8 localSlot,
+                               cmpCursorSlot_t *cursor, s32 mode, s32 alpha);
+
+void campDrawStockRow2(s32 x, s32 y, s32 z, s8 *rows, s8 *cols, s8 force, void *work)
+{
+    s32 i;
+    s32 visibleRow;
+    u8 *cursorBase = (u8 *)work + 0x10E8;
+
+    for (i = 0; i < DDS3_GBWK->maxstock; i++) {
+        s8 index = (s8)i;
+        s32 scale = campCalcStockScale(index, 1);
+        s32 color = campDrawStockCell(0x80808080, index, 1);
+        s32 colors[4];
+
+        colors[0] = color;
+        colors[1] = color;
+        colors[2] = color;
+        colors[3] = color;
+        fclDrawSpriteRes(scale, i * 0xC0, 0, colors, 0, 7,
+                         D_00345D88, fclSpriteTable, 0x47);
+        fclDrawSpriteRes(scale, i * 0xC0, 0, colors, 0, 8,
+                         D_00345D88, fclSpriteTable, 0x47);
+    }
+
+    visibleRow = 0;
+    i = campWork->drawStock.PartyCnt;
+    while (i < (s32)campWork->drawStock.PartyCnt + campWork->drawStock.StockCnt) {
+        u8 partyCount = (u8)campWork->drawStock.PartyCnt;
+        s8 localSlot = (s8)(i - partyCount);
+        s32 iconResult = campDrawStockIcon(0, (s8)visibleRow, rows, cols, force);
+        s8 slot = campWork->drawStock.StockIdx[i];
+        u32 flag;
+        s32 mode;
+        s32 alpha;
+        cmpCursorSlot_t *cursor;
+        datUnitWork_t *unit;
+
+        i++;
+        unit = &DDS3_GBWK->party[slot].unit;
+        flag = unit->flag;
+        mode = 0;
+        if ((flag & 0x10) == 0) {
+            mode = iconResult;
+        }
+        if ((flag & 0x2) != 0) {
+            mode = 0;
+        }
+        alpha = campGetStockAlpha(localSlot, 1);
+        cursor = (cmpCursorSlot_t *)(cursorBase + 0x3C + 0x10 * visibleRow);
+        visibleRow = (s8)(visibleRow + campDrawStockLabel2(x, y, z, slot, localSlot,
+                                                           cursor, mode, alpha));
+    }
+}
+#elif defined(NON_MATCHING)
 extern s32 campDrawStockLabel2(s32 x, s32 y, s32 z, s8 slot, s8 localSlot,
                                cmpCursorSlot_t *cursor, s32 mode, s32 alpha);
 
@@ -9891,7 +10011,49 @@ void cmpDrawPanelEffRing(cmpPanelEffState_t *state, s32 ot)
     fclDrawPanelSprite2(0x44, ot);
 }
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+extern const s32 cmpPanelEffCoords[];
+
+void cmpDrawPanelEffQuad(cmpPanelEffState_t *state, s32 ot)
+{
+    s32 frame = state->frame;
+    s32 offset = (frame << 8) - 0x2000;
+    s32 neutralColor = 0x80;
+    u32 colorA;
+    u32 colorB;
+    u32 coords[12];
+    u32 corners[3];
+    s32 radius;
+
+    memcpy(coords, cmpPanelEffCoords, sizeof(coords));
+    colorA = state->color8;
+    colorB = state->color4;
+    if (frame >= 0x21) {
+        colorA = fclBlendColor(neutralColor, colorA,
+                               offset / 0xE0);
+        colorB = fclBlendColor(neutralColor, colorB,
+                               offset / 0xE0);
+    }
+
+    /* One geometry scalar holds both the converted radius and the inset. */
+    radius = (s32)(fsqrtf(3200.0f) * (f32)(0x100 - frame) * 0.00390625f);
+    radius = 0xC80 - radius * radius;
+    fclDrawPanelSprite2(0x48, ot);
+    colorA = fclBlendColor(colorA, colorB, frame);
+
+    corners[0] = colorA;
+    corners[1] = neutralColor;
+    corners[2] = neutralColor;
+    coords[1] -= radius * 2;
+    coords[5] -= radius;
+    cmpDrawTriG(coords, coords + 3, state->z, corners, ot);
+
+    coords[7] += radius * 2;
+    coords[11] += radius;
+    cmpDrawTriG(coords + 6, coords + 9, state->z, corners, ot);
+    fclDrawPanelSprite2(0x44, ot);
+}
+#elif defined(NON_MATCHING)
 /* NON_MATCHING: 128 of 131 words match at the native 524-byte size. */
 extern const s32 cmpPanelEffCoords[];
 

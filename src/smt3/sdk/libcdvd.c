@@ -139,9 +139,61 @@ cdvdCallback_t sceCdCallback(cdvdCallback_t func)
     return old;
 }
 
+#ifdef VERSION_MNAX
+/* The word after the callback reason is its own variable (its own %hi/%lo
+ * pair, not reason+4 off a shared base): the reason number handed to the user
+ * callback. The interrupt-side accesses to the reason, the state word and the
+ * semaphores are volatile: the reloads after each store and the call and
+ * branch delay slots left empty are those accesses. */
+extern volatile s32 mnax_00527958;
+extern s32 mnax_005969CC;
+extern s32 cdvdScmdSema __attribute__((section(".data")));
+extern void ExitDeleteThread(void);
+#define CDVD_VOLATILE(x) (*(volatile s32 *)&(x))
+
+void _sceCd_cd_callback(s32 *reason)
+{
+    CDVD_VOLATILE(cdvdCallbackReason) = *reason;
+    mnax_00527958 = CDVD_VOLATILE(cdvdCallbackReason);
+    if (CDVD_VOLATILE(cdvdCallbackReason) == 11) {
+        CDVD_VOLATILE(cdvdCallbackReason) = 0;
+        CDVD_VOLATILE(cdvdNcmdState) = 0;
+        return;
+    }
+    iSignalSema(CDVD_VOLATILE(cdvdNcmdSema));
+    if (cdvdCallbackThreadId != 0 && cdvdCallback != NULL) {
+        iSignalSema(CDVD_VOLATILE(cdvdScmdSema));
+    } else {
+        CDVD_VOLATILE(cdvdNcmdState) = 0;
+    }
+    CDVD_VOLATILE(cdvdCallbackReason) = 0;
+}
+
+void _Cdvd_cbLoop(void)
+{
+    while (1) {
+        WaitSema(cdvdScmdSema);
+        if (cdvdCallbackReason == -1) {
+            CDVD_VOLATILE(cdvdNcmdState) = 0;
+            cdvdCallbackReason = 0;
+            cdvdCallbackThreadId = 0;
+            mnax_005969CC = 0;
+            ExitDeleteThread();
+        }
+        if (cdvdDebugLevel > 0) {
+            scePrintf("sceCdCbfunc= %d sceCdCbfunc_num= %d\n", cdvdCallback, mnax_00527958);
+        }
+        if (cdvdCallback != NULL && mnax_00527958 != 0) {
+            cdvdCallback(mnax_00527958);
+        }
+        CDVD_VOLATILE(cdvdNcmdState) = 0;
+    }
+}
+#else
 INCLUDE_ASM(const s32, "sdk/libcdvd", _sceCd_cd_callback);
 
 INCLUDE_ASM(const s32, "sdk/libcdvd", _Cdvd_cbLoop);
+#endif
 
 s32 sceCdInitEeCB(s32 priority, void *stack, s32 stackSize)
 {

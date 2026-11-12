@@ -597,10 +597,27 @@ void fclDrawPanelBorder(void *work, s32 z, s32 inset, s32 ot)
                      fclSpriteTable, ot);
 }
 
+#ifdef VERSION_MNAX
+extern void fclDrawPanelSprite();
+#else
 extern void fclDrawPanelSprite(s32 id, s32 ot);
+#endif
 extern void fclDrawPhaseValue(void *work, s32 color, s32 ot);
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+void fclDrawPhaseHeader(u8 *work, s32 color, s32 mode, s32 ot)
+{
+    /* Maniax passes both sprite ids as 64-bit (long) values: retail builds
+       them with one unsplit dli each. */
+    fclDrawPanelSprite(0x33001L, ot);
+    if (mode == 1) {
+        fclDrawPhaseValue(work, color, ot);
+    } else {
+        fclDrawPhaseValue(work, 0x141D2D4C, ot);
+    }
+    fclDrawPanelSprite(0x5101BL, ot);
+}
+#elif defined(NON_MATCHING)
 void fclDrawPhaseHeader(u8 *work, s32 color, s32 mode, s32 ot)
 {
     fclDrawPanelSprite(0x33001, ot);

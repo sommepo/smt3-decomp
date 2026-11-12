@@ -464,6 +464,17 @@ extern s32 frFindTagCode(u16 code);
 
 extern s32 frFindTagCode2(u16 code);
 
+#ifdef VERSION_MNAX
+/* Maniax name providers take no first-option argument; frAnalyzeTag sets
+ * the colour with frSetFontColorNo afterwards. */
+extern frFontHandle_t *frGetNameFRQ(s8 target, frFontHandle_t *chain);
+
+extern frFontHandle_t *frGetName1NFRQ(s8 target, frFontHandle_t *chain);
+
+extern frFontHandle_t *frGetName2NFRQ(s8 target, frFontHandle_t *chain);
+
+extern frFontHandle_t *frGetCNameFRQ(s8 nameIndex, s8 fontIndex, frFontHandle_t *chain);
+#else
 extern frFontHandle_t *frGetNameFRQ(s8 target, frFontHandle_t *chain, s32 firstOption);
 
 extern frFontHandle_t *frGetName1NFRQ(s8 target, frFontHandle_t *chain, s32 firstOption);
@@ -471,6 +482,7 @@ extern frFontHandle_t *frGetName1NFRQ(s8 target, frFontHandle_t *chain, s32 firs
 extern frFontHandle_t *frGetName2NFRQ(s8 target, frFontHandle_t *chain, s32 firstOption);
 
 extern frFontHandle_t *frGetCNameFRQ(s8 nameIndex, s8 fontIndex, frFontHandle_t *chain, s32 firstOption);
+#endif
 
 extern s32 frAnalyzeTag(s32 code, frMsgInfo_t *mi);
 
@@ -2252,7 +2264,120 @@ void frPushTagChar(frMsgInfo_t *ctx, u16 code) {
 }
 
 /* NON_MATCHING: 280 of 322 words differ (first at +0x44). */
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+s32 frAnalyzeTag(s32 code, frMsgInfo_t *mi) {
+    s32 *offset = &mi->Ofs;
+    s32 argCount = code & 0xF;
+    s32 pos = *offset;
+    u8 *text = mi->pMsg;
+    s8 firstOption = mi->ColNo;
+    s32 nameIndex;
+
+    code = (code << FR_FONT_BYTE_SHIFT) | text[pos];
+    pos++;
+    *offset = pos;
+    switch (code) {
+    case 0xF206:
+        mi->Style = text[pos] - 1;
+        *offset = pos + 2;
+        break;
+    case 0xF202:
+        mi->ColNo = text[pos] - 1;
+        *offset = pos + 2;
+        break;
+    case 0xF209:
+        mi->Tp = text[pos] - 1;
+        *offset = pos + 2;
+        break;
+    case 0xF207:
+        mi->Spd = text[pos] - 1;
+        *offset = pos + 2;
+        break;
+    case 0xF203:
+        if (gVarStr[text[pos] - 1] != 0) {
+            frCreateNewHandle(mi);
+            frCreateVariableRequest(mi->pMsg[*offset] - 1, mi);
+        }
+        *offset += 2;
+        break;
+    case 0xF20A: {
+        s32 c = text[pos];
+
+        *offset = pos + 2;
+        nameIndex = c - 1;
+        frCreateNewHandle(mi);
+        mi->pFRQ = frGetNameFRQ(nameIndex, mi->pFRQ);
+        frSetFontColorNo(mi->pFRQ, firstOption);
+        frSetFontSpace(mi->pFRQ, gMessageSpaceX);
+        break;
+    }
+    case 0xF20B: {
+        s32 c = text[pos];
+
+        *offset = pos + 2;
+        nameIndex = c - 1;
+        frCreateNewHandle(mi);
+        mi->pFRQ = frGetName1NFRQ(nameIndex, mi->pFRQ);
+        frSetFontColorNo(mi->pFRQ, firstOption);
+        frSetFontSpace(mi->pFRQ, gMessageSpaceX);
+        break;
+    }
+    case 0xF20C: {
+        s32 c = text[pos];
+
+        *offset = pos + 2;
+        nameIndex = c - 1;
+        frCreateNewHandle(mi);
+        mi->pFRQ = frGetName2NFRQ(nameIndex, mi->pFRQ);
+        frSetFontColorNo(mi->pFRQ, firstOption);
+        frSetFontSpace(mi->pFRQ, gMessageSpaceX);
+        break;
+    }
+    case 0xF20D: {
+        s32 c = text[pos];
+
+        *offset = pos + 2;
+        nameIndex = c - 1;
+        frCreateNewHandle(mi);
+        mi->pFRQ = frGetCNameFRQ(nameIndex, mi->Style, mi->pFRQ);
+        frEnableMode(1);
+        frSetFontColorNo(mi->pFRQ, firstOption);
+        frSetFontSpace(mi->pFRQ, gMessageSpaceX);
+        frSetDrawSpeed(mi->pFRQ, mi->Spd);
+        break;
+    }
+    case 0xF20E:
+        *offset = pos + 1;
+        break;
+    case 0xF10F:
+        if ((gModeFlag & 4) == 0) {
+            frMessageReturnCode(mi);
+        }
+        break;
+    case 0xF110:
+        gMessageRequestResult |= 2;
+        return 1;
+    case 0xF111:
+        if ((gModeFlag & 8) == 0) {
+            break;
+        }
+        /* fallthrough */
+    case 0xF104:
+        gMessageRequestResult |= 1;
+        return 1;
+    case 0xF112:
+        gMessageRequestResult |= 4;
+        break;
+    default:
+        mi->Ofs = mi->Ofs + ((argCount - 1) << 1);
+        break;
+    }
+    if (mi->FrqFlag == 0) {
+        mi->FrqFlag = 1;
+    }
+    return 0;
+}
+#elif defined(NON_MATCHING)
 s32 frAnalyzeTag(s32 code, frMsgInfo_t *mi) {
     s32 *offset = &mi->Ofs;
     s32 argCount = code & 0xF;
@@ -2492,7 +2617,66 @@ s32 frCalcStringHash(s8 *text) {
 }
 
 /* NON_MATCHING: 7 of 128 words differ (first at +0x6C). */
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+frFontHandle_t *frAnalyzeMessage(frMsgInfo_t *pMsgInfo) {
+    u8 encoded[3];
+
+    if (((pMsgInfo->pMsg[0] & 0xF0) != 0xF0) && (pMsgInfo->pMsg[1] == 8)) {
+        pMsgInfo->Ofs += 4;
+    }
+    gMessageRequestResult &= ~1;
+    gMessageRequestResult &= ~2;
+    gMessageRequestResult &= ~4;
+    frEnableMode(1);
+    frDisableMode(2);
+    while (1) {
+        s32 *offset = &pMsgInfo->Ofs;
+        s32 code = pMsgInfo->pMsg[*offset];
+
+        (*offset)++;
+        if (code == 0) {
+            break;
+        }
+        if ((code & 0xF0) == 0xF0) {
+            if (frAnalyzeTag(code, pMsgInfo) != 0) {
+                break;
+            }
+            continue;
+        }
+        if (code == 0xA) {
+            if ((gModeFlag & 4) != 0) {
+                frMessageReturnCode(pMsgInfo);
+            }
+            continue;
+        }
+        frCreateNewHandle(pMsgInfo);
+        if (code < 0x80) {
+            encoded[0] = code;
+            encoded[1] = 0;
+            pMsgInfo->pFRQ = FR_SET_FONT_STRING(encoded, pMsgInfo->Style, pMsgInfo->ColNo, pMsgInfo->Tp, pMsgInfo->pFRQ, 0);
+        } else {
+            code = (code << FR_FONT_BYTE_SHIFT) | pMsgInfo->pMsg[(*offset)++];
+            if (code <= 0xC07F) {
+                encoded[0] = (u32)code >> FR_FONT_BYTE_SHIFT;
+                encoded[1] = code;
+                encoded[2] = 0;
+                pMsgInfo->pFRQ = FR_SET_FONT_STRING(encoded, pMsgInfo->Style, pMsgInfo->ColNo, pMsgInfo->Tp, pMsgInfo->pFRQ, 0);
+            } else {
+                code -= 0x4000;
+                encoded[0] = (u32)code >> FR_FONT_BYTE_SHIFT;
+                encoded[1] = code;
+                encoded[2] = 0;
+                pMsgInfo->pFRQ = FR_SET_FONT_STRING(encoded, FR_FONT_TEMPORARY_SLOT, pMsgInfo->ColNo, pMsgInfo->Tp, pMsgInfo->pFRQ, 0);
+            }
+        }
+        frSetFontSpace(pMsgInfo->pFRQ, gMessageSpaceX);
+        frSetPriority(pMsgInfo->pFRQ, pMsgInfo->Z);
+    }
+    frDisableMode(1);
+    frEnableMode(2);
+    return pMsgInfo->pFRQ;
+}
+#elif defined(NON_MATCHING)
 frFontHandle_t *frAnalyzeMessage(frMsgInfo_t *pMsgInfo) {
     u8 encoded[3];
     s32 isFirst = 1;

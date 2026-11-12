@@ -67,6 +67,26 @@ void nmeDrawSymbolRow(s32 x, s32 y, s32 unused)
                      (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, ot);
 }
 
+#ifdef VERSION_MNAX
+/* Maniax keeps each input row as sixteen bytes (eight two-byte characters;
+ * USA: sixteen characters), so the rows end 0x30 bytes earlier. */
+typedef struct {
+    u8 unk0[0x5151];
+    u8 inputChars[3][16];
+} nmeMnaxCharView_t;
+
+extern void *memcpy(void *dest, const void *src, size_t size);
+extern const s8 nmeNameTextTemplate[];
+extern s32 nmeGetCursorPos(nmeWork_t *work);
+extern s32 nmeGetInputMode(nmeWork_t *work);
+extern frFontHandle_t *frLinkFontString(u8 *text, s8 style, s8 color, s8 type,
+                                        frFontHandle_t *chain);
+extern void frSetDrawPosition(frFontHandle_t *request, u32 x, u32 y);
+extern void frSetPriority(frFontHandle_t *request, u32 priority);
+extern s32 frDrawFontOt(frFontHandle_t *request, s8 mode, u32 ot);
+extern s32 frDestroyFontRequestAfter(frFontHandle_t *request);
+#endif
+
 /* NON_MATCHING. Behaviour checked against retail: 3 PCSX2 call vectors give the same return and memory,
  * seq33, covering only the paths those calls took.
  * (sdfport 73e010f, tools/funcvec, tests/funcvec.sh). */
@@ -84,7 +104,62 @@ extern s32 frDestroyFontRequestAfter(frFontHandle_t *request);
 extern s32 nmeGetInputMode(nmeWork_t *work);
 extern u8 frDisableMode(u8 flag);
 extern u8 frEnableMode(s32 flag);
+#endif
 
+#if defined(VERSION_MNAX)
+void nmeDrawNameText(s32 x, s32 y, s32 secondX, s32 secondY, u32 color, s32 mode)
+{
+    u8 text[3];
+    s32 cursor, i;
+    frFontHandle_t *font;
+    /* As in nmeDrawNameString: stride and priority are locals. */
+    s32 step = 0x15, z = 0;
+
+    memcpy(text, nmeNameTextTemplate, 3);
+    cursor = nmeGetCursorPos(namelist_buttonAnim_end);
+    nmeDrawCharRow((x - 0x25) << 4, (y - 4) << 3, 0);
+    for (i = 0; i < 4; i++) {
+        s32 sprite = 8;
+        if (mode == 0 && nmeGetInputMode(namelist_buttonAnim_end) == 0 && cursor == i) {
+            sprite = 9;
+        }
+        fclDrawSpriteRes((x + i * 0x15) << 4, (y + 0x16) << 3, 0, NULL, 0, sprite,
+                         (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
+    }
+    for (i = 0; i < 4; i++) {
+        s32 sprite = 8;
+        if (mode == 0 && nmeGetInputMode(namelist_buttonAnim_end) == 1 && cursor == i) {
+            sprite = 9;
+        }
+        fclDrawSpriteRes((secondX + i * 0x15) << 4, (secondY + 0x16) << 3, 0, NULL, 0, sprite,
+                         (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
+    }
+    fclDrawSpriteRes((x - 0x13) << 4, (y + 9) << 3, 0, NULL, 0, 0x11,
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
+    for (i = 0; i < namelist_buttonAnim_end->inputRowEnabled[0]; i++) {
+        text[0] = ((nmeMnaxCharView_t *)namelist_buttonAnim_end)->inputChars[0][i * 2];
+        text[1] = ((nmeMnaxCharView_t *)namelist_buttonAnim_end)->inputChars[0][i * 2 + 1];
+        font = frLinkFontString(text, 4, 0, 0, NULL);
+        frSetDrawPosition(font, (x + i * step) << 4, y << 3);
+        frSetFontColor(font, color);
+        frSetPriority(font, z << 4);
+        frDrawFontOt(font, 0, 0x47);
+        frDestroyFontRequestAfter(font);
+    }
+    fclDrawSpriteRes((secondX - 0x13) << 4, (secondY + 9) << 3, 0, NULL, 0, 0x12,
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
+    for (i = 0; i < namelist_buttonAnim_end->inputRowEnabled[1]; i++) {
+        text[0] = ((nmeMnaxCharView_t *)namelist_buttonAnim_end)->inputChars[1][i * 2];
+        text[1] = ((nmeMnaxCharView_t *)namelist_buttonAnim_end)->inputChars[1][i * 2 + 1];
+        font = frLinkFontString(text, 4, 0, 0, NULL);
+        frSetDrawPosition(font, (secondX + i * step) << 4, secondY << 3);
+        frSetFontColor(font, color);
+        frSetPriority(font, z << 4);
+        frDrawFontOt(font, 0, 0x47);
+        frDestroyFontRequestAfter(font);
+    }
+}
+#elif defined(NON_MATCHING)
 void nmeDrawNameText(s32 x, s32 y, s32 secondX, s32 secondY, u32 color, s32 mode)
 {
     volatile s32 first = nmeNameTextTemplate[0];
@@ -151,7 +226,40 @@ void nmeDrawNameText(s32 x, s32 y, s32 secondX, s32 secondY, u32 color, s32 mode
 INCLUDE_ASM(const s32, "nme/Nme_Calc", nmeDrawNameText);
 #endif
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+void nmeDrawNameString(s32 x, s32 y, u32 color, s32 mode)
+{
+    u8 text[3];
+    s32 cursor, i;
+    frFontHandle_t *font;
+    /* The character stride and priority are locals: retail computes the
+     * stride's 0x12 << 4 at run time and keeps the zero priority in a
+     * saved register. */
+    s32 step = 0x12, z = 0;
+
+    memcpy(text, nmeNameTextTemplate, 3);
+    cursor = nmeGetCursorPos(namelist_buttonAnim_end);
+    nmeDrawCharRow((x - 0x36) << 4, (y - 8) << 3, 0);
+    for (i = 0; i < 8; i++) {
+        s32 sprite = 0x41;
+        if (mode == 0 && cursor == i) {
+            sprite = 0x42;
+        }
+        fclDrawSpriteRes((x + i * 0x12) << 4, (y + 0x12) << 3, 0, NULL, 0, sprite,
+                         (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
+    }
+    for (i = 0; i < namelist_buttonAnim_end->inputRowEnabled[2]; i++) {
+        text[0] = ((nmeMnaxCharView_t *)namelist_buttonAnim_end)->inputChars[2][i * 2];
+        text[1] = ((nmeMnaxCharView_t *)namelist_buttonAnim_end)->inputChars[2][i * 2 + 1];
+        font = frLinkFontString(text, 1, 0, 0, NULL);
+        frSetDrawPosition(font, (x + i * step) << 4, y << 3);
+        frSetFontColor(font, color);
+        frSetPriority(font, z << 4);
+        frDrawFontOt(font, 0, 0x47);
+        frDestroyFontRequestAfter(font);
+    }
+}
+#elif defined(NON_MATCHING)
 void nmeDrawNameString(s32 x, s32 y, u32 color, s32 mode)
 {
     volatile s32 first = nmeNameTextTemplate[0];

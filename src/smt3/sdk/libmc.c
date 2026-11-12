@@ -413,9 +413,39 @@ void mcDelayThread(u16 ticks)
     SleepThread();
 }
 
+#if defined(VERSION_MNAX)
+/* One variable holds the RPC status and then the completion flag; the loop
+ * exit's ret = 0 is what retail keeps in the branch delay slot. */
+s32 sceMcSync(s32 a, s32 *b, s32 *c)
+{
+    s32 ret;
+
+    if (mcLastCmd == 0) {
+        return -1;
+    }
+    ret = sceSifCheckStatRpc(&mcRpcClient);
+    if (a == 0 && ret != 0) {
+        while (sceSifCheckStatRpc(&mcRpcClient) != 0) {
+            mcDelayThread(60);
+        }
+        ret = 0;
+    }
+    ret = ret == 0;
+    if (b != NULL) {
+        *b = mcLastCmd;
+    }
+    if (ret) {
+        mcLastCmd = 0;
+        if (c != NULL) {
+            *c = mcReplyBuf.result;
+        }
+        SignalSema(mcSema);
+    }
+    return ret;
+}
 /* NON_MATCHING: 224 bytes, retail's size, with the loop's done = 0 landing in
  * the branch delay slot where retail keeps a nop. */
-#ifdef NON_MATCHING
+#elif defined(NON_MATCHING)
 s32 sceMcSync(s32 a, s32 *b, s32 *c)
 {
     s32 done;

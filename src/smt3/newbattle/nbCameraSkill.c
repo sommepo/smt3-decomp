@@ -527,7 +527,146 @@ void nbCameraShot_TargetParty_Set2(nbCamera_t *pNbCamera, nbCameraSkillInfo_t *p
     }
 }
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+/* Maniax match. shortestPos is stored with the form without a memory clobber;
+ * with the clobbering store cc1 shares the 0.5f of the two targetPos.y lines
+ * across effBTLModelGetSphereCenter in a fifth saved FPR, where retail loads
+ * it twice. The formation table is walked through a local pointer, read once. */
+void nbCameraShot_InvokeTargetParty_Set2(nbCamera_t *pNbCamera, nbCameraSkillInfo_t *pNBSInfo)
+{
+    sdfVector4_t targetPos;
+    sdfVector4_t shortestPos;
+    sdfVector4_t invokePos;
+    sdfVector4_t pos;
+    nbCamera_AllTable_t *table;
+    nbMainProcessData_t *data;
+    nbFormation_t *invoke;
+    nbFormation_t *shortest;
+    nbFormation_t *form;
+    u32 invokeParty, targetParty, count, i;
+    f32 minHeight;
+    f32 maxHeight;
+    f32 height, radius, invokeRadius, distance, change;
+    f32 angle;
+    f32 limit;
+
+    effBTLModelTargetPartyShow();
+    effBTLModelInvokeGroupHide();
+    data = nbGetMainProcessData();
+    if (data == NULL) {
+        return;
+    }
+    maxHeight = 0.0f;
+    minHeight = 1000000.0f;
+    invoke = effBTLSkillGetInvokeFormation();
+    shortest = NULL;
+    invokeParty = effBTLSkillGetInvokeParty();
+    targetParty = effBTLSkillGetTargetParty();
+    table = nbCameraGetModelAllTable(invoke);
+    count = effBTLSkillGetTargetNumber();
+    for (i = 0; i < count; i++) {
+        form = effBTLSkillGetTargetFormation(i);
+        if ((form->stat & 3) == 3) {
+            height = effBTLModelGetHeight(form);
+            if (height < minHeight) {
+                shortest = form;
+                minHeight = height;
+            }
+            if (maxHeight < height) {
+                maxHeight = height;
+            }
+        }
+    }
+    if (shortest == NULL) {
+        return;
+    }
+    radius = effBTLModelGroupGetSphere(targetParty);
+    SDF_VU0_STOREVECTOR_NOMEM(&targetPos);
+    if (150.0f < minHeight) {
+        targetPos.y = -(minHeight * 0.5f);
+        effBTLModelGetSphereCenter(shortest);
+        SDF_VU0_STOREVECTOR_NOMEM(&shortestPos);
+        targetPos.y = (targetPos.y + shortestPos.y) * 0.5f;
+    } else {
+        targetPos.y = 0.0f;
+    }
+    effBTLModelGetSphereCenter(invoke);
+    SDF_VU0_STOREVECTOR(&invokePos);
+    invokePos.y = -effBTLModelGetHeight(invoke);
+    invokePos.y += table->up * invoke->scl;
+    SDF_VU0_LOADVECTOR(&targetPos);
+    SDF_VU0_STOREVECTOR(&pNbCamera->target);
+    SDF_VU0_LOADVECTOR_B(&invokePos);
+    SDF_VU0_SUBVECTOR();
+    SDF_VU0_COPYVECTOR_A_TO_C();
+    SDF_VU0_GETLENGTH(distance);
+    pNbCamera->distance = distance;
+    angle = sdfAtan(0.34906582f);
+    invokeRadius = invoke->r * invoke->scl;
+    if (table->distance == 0.0f) {
+        if (150.0f < invokeRadius) {
+            pNbCamera->distance += invokeRadius / angle;
+        } else if (90.0f < invokeRadius) {
+            pNbCamera->distance += invokeRadius * 1.5f / angle;
+        } else {
+            pNbCamera->distance += (invokeRadius + invokeRadius) / angle;
+        }
+    } else {
+        pNbCamera->distance += table->distance * invoke->scl;
+    }
+    angle = sdfAtan(0.4712388f);
+    if (minHeight < 150.0f && 150.0f < maxHeight && radius < 550.0f) {
+        radius = 550.0f;
+    }
+    limit = radius / angle;
+    if (pNbCamera->distance < limit) {
+        if (invokeParty & 0x100) {
+            change = -(limit - pNbCamera->distance);
+        } else {
+            change = limit - pNbCamera->distance;
+        }
+        form = data->form;
+        for (i = 0; i < 32; i++, form++) {
+            if ((form->stat & invokeParty) && (form->stat & 1) && (form->stat & 2)) {
+                effBTLGetGroupPos(form, &pos.x);
+                pos.z += change;
+                effBTLModelSetPosition(form, &pos);
+            }
+        }
+        invokePos.z += change;
+        pNbCamera->distance = limit;
+    }
+    SDF_VU0_LOADVECTOR(&targetPos);
+    SDF_VU0_LOADVECTOR_B(&invokePos);
+    SDF_VU0_SUBVECTOR();
+    SDF_VU0_NORMALIZE();
+    SDF_VU0_STOREVECTOR(&pNbCamera->direction);
+    if (pNbCamera->frame == 0) {
+        pNbCamera->angle = sdfAtan((invoke->r * invoke->scl * 1.5f) / pNbCamera->distance);
+        if (invokePos.x <= 0.0f || (invokePos.x < invokeRadius && -invokeRadius < invokePos.x)) {
+            pNbCamera->angle = -pNbCamera->angle;
+        }
+    }
+    SetRotateMatrixY(pNbCamera->angle);
+    SDF_VU0_LOADVECTOR(&pNbCamera->direction);
+    SDF_VU0_APPLYMATRIX();
+    SDF_VU0_STOREVECTOR(&pNbCamera->direction);
+    pNbCamera->fovy = 0.69813163f;
+    if (nbCameraBoss_CheckRotate(invoke)) {
+        effBTLModelLook(invoke, &targetPos);
+    }
+    effBTLGetGroupPos(invoke, &pos.x);
+    count = effBTLSkillGetTargetNumber();
+    for (i = 0; i < count; i++) {
+        form = effBTLSkillGetTargetFormation(i);
+        if (nbCameraBoss_CheckRotate(form) && (form->stat & 3) == 3 && form != invoke) {
+            if (nbCameraBoss_CheckRotate(form)) {
+                effBTLModelLook2(form, &pos, 0.5235987f);
+            }
+        }
+    }
+}
+#elif defined(NON_MATCHING)
 void nbCameraShot_InvokeTargetParty_Set2(nbCamera_t *pNbCamera, nbCameraSkillInfo_t *pNBSInfo)
 {
     sdfVector4_t targetPos;
