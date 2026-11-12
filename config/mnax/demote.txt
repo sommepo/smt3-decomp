@@ -1,8 +1,5 @@
-sdk/libkernl	.text must start 64-aligned; Maniax place 0x002DB0F8 is not
-sdk/libgcc_longlong	.text must start 8-aligned; links 4 bytes late
 facility/fclCombineInit	Maniax has a TU boundary inside the unit (rodata base 0x53A1A8 vs jump tables at 0x53A1B0)
 movie/mviManager	no Maniax assembly for movieDebugRowFmt
-newbattle/nbActionProcess	.rodata range holds a jump table into code it does not own
 result/rstupdate	.rodata must start 16-aligned; Maniax place 0x0053B5C8 is not
 kernel/dds3GlobalWork	defines dds3FontReqBoxTable, which the split also puts in a blob
 interface/lstListWindow	.rodata bytes differ from Maniax
@@ -17,3 +14,4 @@ code_0022C578	.rodata is 0x4480 bytes where Maniax has room for 0x4520
 interface/frFont	.text is 0x2B10 bytes where Maniax has room for 0x2B40
 interface/itfMesManager	.rodata is 0xCB bytes where Maniax has room for 0xF0
 kernel/dds3KernelMain	.sdata is 0x50 bytes where Maniax has room for 0x4C
+newbattle/nbActionProcess	.rodata is 0xA60 bytes where Maniax has room for 0xAE0

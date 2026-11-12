@@ -175,7 +175,7 @@ newbattle/nbAtoProcess	C
 newbattle/nbResultProcess	C with fallbacks
 newbattle/nbStageProcess	C
 newbattle/nbUnitProcess	C
-newbattle/nbActionProcess	demoted: .rodata range holds a jump table into code it does not own
+newbattle/nbActionProcess	demoted: .rodata is 0xA60 bytes where Maniax has room for 0xAE0
 newbattle/nbMisc	C with fallbacks
 newbattle/nbCommSelProcess	C with fallbacks
 newbattle/nbTarSelProcess	C with fallbacks
@@ -302,8 +302,8 @@ sdk/libmc	C with fallbacks
 sdk/libm	C with fallbacks
 sdk/libgcc	C with fallbacks
 sdk/libc	C with fallbacks
-sdk/libkernl	demoted: .text must start 64-aligned; Maniax place 0x002DB0F8 is not
-sdk/libgcc_longlong	demoted: .text must start 8-aligned; links 4 bytes late
+sdk/libkernl	C with fallbacks
+sdk/libgcc_longlong	C with fallbacks
 sdk/libgcc_fixunsdfdi	C
 sdk/libgcc_dpdiv	C
 sdk/libgcc_floatdidf	C
