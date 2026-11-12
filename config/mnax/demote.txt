@@ -4,14 +4,3 @@ facility/fclCombineInit	Maniax has a TU boundary inside the unit (rodata base 0x
 movie/mviManager	no Maniax assembly for movieDebugRowFmt
 newbattle/nbActionProcess	.rodata range holds a jump table into code it does not own
 result/rstupdate	.rodata must start 16-aligned; Maniax place 0x0053B5C8 is not
-kernel/dds3GlobalWork	defines dds3FontReqBoxTable, which the split also puts in a blob
-kernel/dds3KernelMain	.sdata is 0x50 bytes where Maniax has room for 0x4C
-nme/Nme_Calc	.text is 0x19D0 bytes where Maniax has room for 0x1B10
-nme/Nme_Init	.rodata is 0x98 bytes where Maniax has room for 0x90
-facility/fclRagInit	.text bytes differ from Maniax
-facility/fclShopCalc	.text bytes differ from Maniax
-interface/lstListWindow	.rodata bytes differ from Maniax
-nme/Nme_Draw	.text bytes differ from Maniax
-facility/fclRagCalc	ragDrawList2: undefined reference to ragDrawListRows
-pb/pbDebugMode	defines D_0053A0E0, which the split also puts in a blob
-event/evtEventPack	defines D_0053A0E0, which the split also puts in a blob

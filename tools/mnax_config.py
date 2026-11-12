@@ -441,6 +441,15 @@ def main() -> None:
     good, verdict, sources = {}, {}, {}
     guessed = set()      # (unit, section) whose Maniax start came from nearby anchors only
     anchor_size = {}     # (unit, section) -> size from the anchors, where an old object gave another
+    # Measured Maniax placements (config/mnax/placement.txt, kept in git): unit,
+    # section, start, size; size 0 means Maniax has no such section for the unit.
+    override = {}
+    ov = ROOT / "config/mnax/placement.txt"
+    if ov.exists():
+        for line in ov.read_text().splitlines():
+            f = line.split("#", 1)[0].split()
+            if len(f) == 4:
+                override[(f[0], f[1])] = (int(f[2], 16), int(f[3], 16))
     # Maniax start of each USA .text entry: its first function that exists in Maniax.
     text_end_m = 0x100000 + msec[".text"][1]
     mregion_end = {".data": msec[".eh_frame"][0], ".rodata": msec[".lit4"][0], ".lit4": msec[".sdata"][0],
@@ -494,6 +503,11 @@ def main() -> None:
                 starts[".text"] = (m_text, m_next - m_text, t0)
                 for name, u0 in usa_start[unit].items():
                     if name == ".text":
+                        continue
+                    if (unit, name) in override:
+                        m0, size = override[(unit, name)]
+                        if size:
+                            starts[name] = (m0, size, u0)
                         continue
                     size = usa_extent[unit][name]
                     placed_by_name = named_place(unit, name, clean=False)
@@ -595,6 +609,8 @@ def main() -> None:
                     guess = amap.get(u0, same)
                     if guess is not None:
                         votes.add(guess)
+            if (unit, sec.name) in override:
+                votes = {override[(unit, sec.name)][0]}
             if len(votes) != 1 and sec.name != ".text":
                 byname = named_place(unit, sec.name, clean=True)
                 if byname is not None:
@@ -618,8 +634,11 @@ def main() -> None:
             size = (sec["sh_size"] + 7) & ~7 if sec.name == ".rodata" else (sec["sh_size"] + 3) & ~3
             if sec.name == ".text":
                 size = sec["sh_size"]
+            if override.get((unit, sec.name), (0, 0))[1]:
+                size = override[(unit, sec.name)][1]
             starts[sec.name] = (m0, size, u0)
-        if why is None and set(usa_start[unit]) - set(starts):
+        absent = {name for (u, name), (_, z) in override.items() if u == unit and not z}
+        if why is None and set(usa_start[unit]) - set(starts) - absent:
             why = "USA config has " + ",".join(sorted(set(usa_start[unit]) - set(starts))) + " the object lacks"
         if why:
             verdict[unit] = why
@@ -651,13 +670,18 @@ def main() -> None:
                 # A start guessed from nearby anchors that falls inside the unit before it
                 # (in a byte or a stray anchor) moves to where that unit ends, aligned as
                 # the object's section is aligned; a wrong guess fails the byte check later.
-                if s1 < s0 + z0 and (b, sec) in guessed and shifted[(b, sec)] < 8:
+                if s1 < s0 + z0 and (b, sec) in guessed and (b, sec) not in override and shifted[(b, sec)] < 8:
                     shifted[(b, sec)] += 1
                     al = section_align(b, sec)
                     good[b][sec] = ((s0 + z0 + al - 1) & ~(al - 1), z1, good[b][sec][2])
                     clash = "retry"
                     break
                 if s1 < s0 + z0:
+                    if ((a, sec) in override) != ((b, sec) in override):
+                        loser = b if (a, sec) in override else a
+                        clash = (loser, a if loser == b else b, sec,
+                                 f"{a.rsplit('/', 1)[-1]} 0x{s0:X}+0x{z0:X}, {b.rsplit('/', 1)[-1]} 0x{s1:X}")
+                        break
                     clash = (b if verdict[b] != "C" else a, a if verdict[b] != "C" else b, sec,
                              f"{a.rsplit('/', 1)[-1]} 0x{s0:X}+0x{z0:X}, {b.rsplit('/', 1)[-1]} 0x{s1:X}")
                     break
