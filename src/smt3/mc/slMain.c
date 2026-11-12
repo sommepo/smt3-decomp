@@ -2527,7 +2527,11 @@ extern char D_00311450[][0x20], D_00311850[][0x20];
 extern void cmpSetSkillListRows(s32 rows);
 extern void fldKanjiDraw(s32 x, s32 y, u32 rgba, const u8 *text);
 
+#ifdef VERSION_MNAX
+const char slSaveDirFmt[20] = "BISLPM-%05d-dds3-%d";
+#else
 const char slSaveDirFmt[20] = "BASLUS-%05d-dds3-%d";
+#endif
 
 const char slConvert03Msg[38] = "==== Memoca ConvertStart!! 03-> ====\n";
 
