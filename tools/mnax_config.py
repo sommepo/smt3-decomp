@@ -209,7 +209,7 @@ def near(amap, usa, same_region):
     return None
 
 
-def built_obj(unit: str) -> Path:
+def built_obj(unit: str, probe_ok: bool = False) -> Path:
     """The unit's object from the last full build, or a path that does not exist when
     that object is older than the unit's source: a unit demoted in an earlier round
     is not rebuilt, so its old object would describe code and data since changed."""
@@ -217,7 +217,10 @@ def built_obj(unit: str) -> Path:
     src = (ROOT / SRC if not SRC.is_absolute() else SRC) / (unit + ".c")
     try:
         if path.stat().st_mtime < src.stat().st_mtime:
-            return path.with_suffix(".o.stale")
+            # For data sizes the probe object (compiled from the current source) is
+            # the next best thing; it lacks only the assembly pieces.
+            probe = ROOT / "build/probe" / (unit + ".o")
+            return probe if probe_ok and probe.exists() else path.with_suffix(".o.stale")
     except FileNotFoundError:
         pass
     return path
@@ -468,7 +471,7 @@ def main() -> None:
                     size = m1 - m0
                     # The object of the last build (even from a round where the unit was
                     # demoted) knows the unit's real Maniax size better than the anchors.
-                    built = built_obj(unit)
+                    built = built_obj(unit, probe_ok=True)
                     if name != ".rodata" and built.exists() and built.read_bytes()[:4] == b"\x7fELF":
                         bsec = ELFFile(built.open("rb")).get_section_by_name(name)
                         if bsec is not None and bsec["sh_size"]:
@@ -481,7 +484,7 @@ def main() -> None:
                         # else the last non-zero byte, which a rebuild then corrects.
                         body = raw[m0 - DELTA:m0 - DELTA + size].rstrip(b"\0")
                         real = (len(body) + 8) & ~7
-                        built = built_obj(unit)
+                        built = built_obj(unit, probe_ok=True)
                         if built.exists() and built.read_bytes()[:4] == b"\x7fELF":   # a failed compile leaves a stub
                             sec = ELFFile(built.open("rb")).get_section_by_name(".rodata")
                             if sec is not None and (sec["sh_size"] + 7) & ~7 >= len(body):
@@ -699,6 +702,23 @@ def main() -> None:
                 attrs = re.sub(r"\s*size:0x[0-9A-Fa-f]+", "", attrs)
         seen_addr[at] = name
         out.append(f"{name} = 0x{at:08X}; {attrs}".rstrip())
+    # Data objects the C-built units define get their size, so that splat writes a
+    # word pointing inside one (event bytecode that looks like a pointer) as
+    # name + offset instead of inventing a D_ label there, which a unit would then
+    # include a second time.
+    obj_size = {}
+    for unit in good:
+        path = ROOT / "build/probe" / (unit + ".o")
+        if not path.exists() or path.read_bytes()[:4] != b"\x7fELF":
+            continue
+        elf = ELFFile(path.open("rb"))
+        for sym in elf.get_section_by_name(".symtab").iter_symbols():
+            if sym["st_info"]["type"] == "STT_OBJECT" and sym["st_size"] and sym["st_info"]["bind"] == "STB_GLOBAL":
+                obj_size[sym.name] = sym["st_size"]
+    for i, line in enumerate(out):
+        name = line.split(" = ")[0]
+        if name in obj_size and "type:func" not in line and "size:" not in line:
+            out[i] = (line + " //" if "//" not in line else line) + f" size:0x{obj_size[name]:X}"
     # Names that carry a USA address (D_XXXXXXXX, func_XXXXXXXX) are splat's automatic
     # ones in the USA build; the shared sources use them, so Maniax needs them by name.
     # Only the names the C-built units define or reference are needed.

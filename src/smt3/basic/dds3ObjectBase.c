@@ -1195,15 +1195,11 @@ char dds3ObjectBaseChiakiNodeName[7] = "chiaki";
 
 char dds3ObjectBaseTiakiANodeName[8] = "tiaki_a";
 
-#ifdef VERSION_MNAX
-u16 frMessageCode = 0x4247;
-#else
+/* Maniax has no frMessageCode: its frAnalyzeTag does not look the tag up, and
+ * dds3GlobalWork's small data starts right after the node names. */
+#ifndef VERSION_MNAX
 u16 frMessageCode = 0;
-#endif
 
-#ifdef VERSION_MNAX
-SDATA_PAD(2);
-#else
 SDATA_PAD(6);
 #endif
 
