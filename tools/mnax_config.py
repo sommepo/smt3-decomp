@@ -439,7 +439,7 @@ def main() -> None:
                     if name == ".text":
                         continue
                     size = usa_extent[unit][name]
-                    placed_by_name = reloc_place(unit, name) or named_place(unit, name, clean=False)
+                    placed_by_name = named_place(unit, name, clean=False)
                     if placed_by_name is not None and placed_by_name[1] is not None:
                         starts[name] = (placed_by_name[0], placed_by_name[1], u0)
                         continue
@@ -527,7 +527,7 @@ def main() -> None:
                     if guess is not None:
                         votes.add(guess)
             if len(votes) != 1 and sec.name != ".text":
-                byname = reloc_place(unit, sec.name) or named_place(unit, sec.name, clean=True)
+                byname = named_place(unit, sec.name, clean=True)
                 if byname is not None:
                     votes = {byname[0]}
             if len(votes) != 1:
