@@ -11,3 +11,4 @@ nme/Nme_Calc	.text is 0x1A18 bytes where Maniax has room for 0x1B10
 nme/Nme_Init	.sdata is 0x78 bytes where Maniax has room for 0x70
 nme/Nme_Draw	.text bytes differ from Maniax
 interface/frFont	.rodata is 0x190 bytes where Maniax has room for 0xA8
+facility/fclShopCalc	.sdata is 0x1C bytes where Maniax has room for 0xC
