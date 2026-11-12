@@ -378,6 +378,8 @@ s32 movieViewerDebugDraw(void)
     return 0;
 }
 
+/* In Maniax these cell strings and the tmx path belong to code_0022C578. */
+#ifndef VERSION_MNAX
 const char D_0053F438[16] = "Magatama";
 
 const char D_0053F448[16] = "SP Items";
@@ -387,6 +389,7 @@ const char D_0053F458[16] = "Part with";
 const char D_0053F468[16] = "Return to stock";
 
 const char cmpCampTmxPath[24] = "/camp/tmx/camp_01.tmx";
+#endif
 
 s32 movieViewerPhase = 0;
 
