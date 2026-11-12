@@ -164,7 +164,7 @@ kernel/ModeSelect	C
 kernel/dds3CreateData	C
 staff/stfMain	C
 movie/mviManager	C with fallbacks
-movie/MovieViewer	.rodata bounds overlap code_0022C578 (MovieViewer 0x53CCB0+0x98, code_0022C578 0x53CCF0)
+movie/MovieViewer	demoted: .sdata is 0x20 bytes where Maniax has room for 0x18
 code_0022C578	C with fallbacks
 newdata/datCalc	C with fallbacks
 newdata/datDebugUnit	C
