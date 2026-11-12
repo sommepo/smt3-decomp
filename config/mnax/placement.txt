@@ -11,7 +11,7 @@ facility/fclEncyc        .sdata   0x0054DF40  0x34
 kernel/dds3TitleMain     .rodata  0x0         0x0
 kernel/dds3TitleMain     .sdata   0x0054DFC8  0x44
 code_0029B780            .sdata   0x0054F608  -
-interface/frFont         .sdata   0x0054D6F8  -
+interface/frFont         .sdata   0x0054D6F8  0x30
 interface/itfMesManager  .rodata  0x00533410  0xD0
 field/fldWap             .rodata  0x0052F7E0  0x208
 facility/fclRecoverUpdate .rodata 0x0053AE20  -
@@ -29,3 +29,4 @@ sdk/libkernl             .rodata  0x00549DA0  0x298
 newbattle/nbActionProcess .sdata  0x0054F058  0x18
 facility/fclShopInit     .sdata   0x0054DDE0  0x30
 interface/frFont         .rodata  0x005331E0  0x128
+kernel/dds3GlobalWork    .sdata   0x0054CD00  0x38
