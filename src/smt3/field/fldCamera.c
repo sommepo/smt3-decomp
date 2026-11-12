@@ -276,8 +276,8 @@ void resetCamNormal(void) {
     SDF_VU0_COPYVECTOR_F32(fldCamEye, &eye);
     SDF_VU0_COPYVECTOR_F32(fldCamTarget, &tgt);
     fldCamDirLock = 0.0f;
-    fldHitChkMatter = -1;
     fldHitChkSlope = -1;
+    fldHitChkMatter = -1;
     eyeBase.x = gb->x;
     eyeBase.y = gb->y +
         fldCamParamTable[gb->cameraParamIndex].eyeHeight;

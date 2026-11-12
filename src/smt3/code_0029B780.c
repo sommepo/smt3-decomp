@@ -491,7 +491,40 @@ void dds3DrawConfigValue(s32 x, s32 y, s32 z, s32 index, s32 selected, s32 ot)
 /* NON_MATCHING. Behaviour checked against retail: 3 PCSX2 call vectors give the same return and memory,
  * seq17, covering only the paths those calls took.
  * (sdfport 73e010f, tools/funcvec, tests/funcvec.sh). */
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+void dds3DrawConfigText(s32 x, s32 y, s32 z, s32 count, s32 index, s32 value, s32 ot)
+{
+    s32 selected = index == (*(s16 *)(GBWK + 0x3E) + GBWK[0x40]);
+    s32 colors[4];
+    s32 color;
+    s32 startY;
+    s32 i;
+
+    dds3DrawConfigValue(x, y, z, index, selected, ot);
+    if (index < 3 && value >= 0)
+        dds3DrawConfigBar(x, y, z, index, value, ot);
+    color = dds3GetConfigFadeAlpha() | 0x80808000;
+    colors[0] = color;
+    colors[1] = color;
+    colors[2] = color;
+    colors[3] = color;
+    if (index < 3) {
+        y += 0xA8;
+        startY = y;
+        for (i = 0; i < count; i++) {
+            fclDrawSpriteFilter(x, y, z << 4, 0, colors, 0, 0,
+                               D_00345D88, dds3ConfigLayoutTable, ot);
+            fclDrawSpriteFilter(x, y, z << 4, 0, colors, 0, 1,
+                               D_00345D88, dds3ConfigLayoutTable, ot);
+            y += 0xB0;
+        }
+        dds3DrawConfigLabel(x + 0x540, startY + 8, z, index, selected, ot);
+        fclDrawSpriteRes(0, y, z << 4, colors, 0, 10, D_00345D88, dds3ConfigLayoutTable, ot);
+        fclDrawSpriteRes(0, y, z << 4, colors, 0, 11, D_00345D88, dds3ConfigLayoutTable, ot);
+        fclDrawSpriteRes(0, y, z << 4, colors, 0, 12, D_00345D88, dds3ConfigLayoutTable, ot);
+    }
+}
+#elif defined(NON_MATCHING)
 void dds3DrawConfigText(s32 x, s32 y, s32 z, s32 count, s32 index, s32 value, s32 ot)
 {
     s32 drawOptions = index < 3;

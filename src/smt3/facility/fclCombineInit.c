@@ -3285,7 +3285,13 @@ void cmbDrawTopSprite(s32 unusedX, s32 unusedY, u32 unusedZ, s32 unusedOt)
 
 extern const char *cmbTopTextTable[];
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+/* Maniax: the only caller, cmbDrawSequence, ignores the result at all three
+ * call sites (it reloads $v0 before reading it), so the drawing helper is
+ * declared with its actual void contract. */
+extern void cmbDrawTopText(s8 index);
+INCLUDE_ASM(const s32, "facility/fclCombineInit", cmbDrawTopText);
+#elif defined(NON_MATCHING)
 s32 cmbDrawTopText(s8 index)
 {
     void *request = frwGetSmallFontFRQ2(0, 0, 0xFFFFF, 0x8CA0FF80,
@@ -3307,7 +3313,31 @@ extern s32 cmpCursorBlinkColor(s32 timer);
 extern void cmpDrawBoxGDefault(s32 x, s32 y, s32 z, s32 width, s32 height,
                               s32 *colors, s32 ot);
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+/* Maniax: the blink byte is scaled as an unsigned value (srl, not sra). */
+void cmbDrawStockRow(s32 x, s32 y, s32 z, u16 firstWidth, u16 secondWidth, u16 height,
+                     s32 firstColor, s32 middleColor, s32 lastColor, s8 unused,
+                     s32 timer, s32 ot)
+{
+    s32 colors[4];
+    u32 blink;
+
+    fclDrawPanelSprite2(0x48, ot);
+    blink = cmpCursorBlinkColor(timer);
+    colors[0] = firstColor;
+    colors[1] = middleColor;
+    colors[2] = firstColor;
+    colors[3] = middleColor;
+    cmpDrawBoxGDefault(x, y, z, firstWidth, height, colors, ot);
+    colors[0] = middleColor;
+    colors[1] = lastColor;
+    colors[2] = middleColor;
+    colors[3] = lastColor;
+    cmpDrawBoxGDefault(x + firstWidth * 16, y, z, secondWidth, height, colors, ot);
+    fclDrawPanelSprite2(0x44, ot);
+    cmpDrawBoxF(0x1000, y, z + 1, 0xF0, height, ((blink & 0xFF) * 38) >> 7, ot);
+}
+#elif defined(NON_MATCHING)
 void cmbDrawStockRow(s32 x, s32 y, s32 z, u16 firstWidth, u16 secondWidth, u16 height,
                      s32 firstColor, s32 middleColor, s32 lastColor, s8 unused,
                      s32 timer, s32 ot)
@@ -3644,7 +3674,101 @@ extern void fclDrawBG(fclSprite_t *sprite, s32 ot);
 extern void cmbUpdateCameraZoom(void);
 extern void cmbUpdateCameraPos(void);
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+s32 cmbDrawSequence(void)
+{
+    s32 phase = CMB_GBWK->unk_00001;
+
+    switch (phase) {
+    case 0: case 1: case 3: case 4: case 5: case 6:
+    case 8: case 13: case 14: case 16:
+        break;
+    default:
+        fclDrawBG(&CMB_GBWK->backgroundSprite, 7);
+        break;
+    }
+    if (CMB_GBWK->unk_00000 & 0x20) {
+        cmpUpdateTerminate((cmpInfoWindow_t *)CMB_GBWK);
+        return -1;
+    }
+    switch (CMB_GBWK->unk_00001) {
+    case 0:
+        cmbDrawPhaseDefault(1);
+        break;
+    case 3:
+        cmbDrawPhase3(1);
+        break;
+    case 4:
+        cmbDrawPhaseDefault(0);
+        break;
+    case 2:
+        func_00201FB0(0);
+        break;
+    case 5:
+        cmbDrawTopText(0);
+        if ((s8)CMB_GBWK->displayFlags[0] == 0) {
+            cmbDrawResultPanel(0);
+        }
+        cmbDrawStockPanel1();
+        break;
+    case 6:
+        cmbDrawTopText(1);
+        if ((s8)CMB_GBWK->displayFlags[0] == 0) {
+            cmbDrawResultPanel(1);
+        }
+        cmbDrawStockPanel2();
+        break;
+    case 9:
+        cmbDrawStatus();
+        break;
+    case 10:
+        cmbDrawBirthDevil(0);
+        break;
+    case 7:
+        cmpDrawStatusCom(&CMB_GBWK->birthUnit[0], 1, 0, 2);
+        break;
+    case 8:
+        cmbDrawTopText(2);
+        if ((s8)CMB_GBWK->displayFlags[0] == 0) {
+            cmbDrawResultPanel(2);
+        }
+        cmbDrawStockPanel3();
+        break;
+    case 13:
+        cmbUpdateCameraZoom();
+        break;
+    case 14:
+        if (CMB_GBWK->introductionFlag == 0) {
+            /* Retail still loads actionFrame and computes `< 120` before the
+             * call (slti in the jal delay slot) although both arms call the
+             * same function: the trace of a two-armed test whose branches
+             * were merged after dead-code removal. Behaviour is unchanged. */
+            if (CMB_GBWK->actionFrame < SDF_FRAMES(120)) {
+                cmbUpdateCameraPos();
+            } else {
+                cmbUpdateCameraPos();
+            }
+        }
+        break;
+    case 11:
+        cmbDrawBirthDevil(1);
+        break;
+    case 16:
+        cmbDrawPhasePanel();
+        break;
+    case 15:
+        if (CMB_GBWK->unk_00003 == 10) {
+            cmpDrawStatusCom(&CMB_GBWK->birthUnit[0], 1, 0, 2);
+            cmbDrawBirthDevilMaskBG();
+        }
+        break;
+    }
+    if ((s8)CMB_GBWK->displayFlags[0] != 0) {
+        cmbDrawInfoSprite(0, 0, 0xFFFFF, 0x47);
+    }
+    return 0;
+}
+#elif defined(NON_MATCHING)
 s32 cmbDrawSequence(void)
 {
     s32 phase = CMB_GBWK->unk_00001;

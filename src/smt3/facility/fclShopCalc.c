@@ -136,7 +136,50 @@ extern void *dds3GetProcessData(dds3ProcessID_t *id);
 /* NON_MATCHING. Behaviour checked against retail: 2 PCSX2 call vectors give the same return and memory,
  * seq28, covering only the paths those calls took.
  * (sdfport 73e010f, tools/funcvec, tests/funcvec.sh). */
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+extern void cmpUpdateTerminate(void *work);
+
+s32 shop_Process(dds3ProcessID_t *id)
+{
+    shopProcWork = dds3GetProcessData(id);
+    if (fclChkDbgProcess() != 0) {
+        return 0;
+    }
+    if (shopProcWork->started == 0) {
+        shopStartEvent(1);
+        shopProcWork->started = 1;
+    }
+    if (fclGetFlag(1) == 0) {
+        return 0;
+    }
+    switch (shopProcWork->state) {
+    case 0:
+        shopProcWork->unk_23F4 = 0;
+        if (shopProcWork->step == 1) {
+            if (dds3GetProcessStat(EE_ADDR_AS(void *, shopProcWork->scriptProc)) != 2) {
+                shopProcWork->scriptProc =
+                    fclScriptStart(shopProcWork->script, 0, NULL);
+            }
+        }
+        break;
+    case 8:
+        if (shopProcWork->step == 1) {
+            fclClearFlag(2);
+        }
+        break;
+    case 0xA:
+        /* State 0xA is a real shop state (fclShopUpdate sets it); it needs
+         * nothing here, but its label shapes the case tree retail tests. */
+        break;
+    }
+    shopProcWork->step = 0;
+    if (shopProcWork->flags & 0x10) {
+        cmpUpdateTerminate(shopProcWork);
+        return -1;
+    }
+    return 0;
+}
+#elif defined(NON_MATCHING)
 /* NON_MATCHING: 37 of 64 words match at the exact 256-byte size. */
 extern void cmpUpdateTerminate(void *work);
 

@@ -266,7 +266,59 @@ extern s32 datGetDevilSlotState(u8 devilId);
 /* NON_MATCHING. Behaviour checked against retail: 3 PCSX2 call vectors give the same return and memory,
  * seq32, covering only the paths those calls took.
  * (sdfport 73e010f, tools/funcvec, tests/funcvec.sh). */
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+void rstCreateBeforeSkillList(s8 heartsId, datUnitWork_t *stock, s8 levelOffset,
+                              rstSkillInfo_t *info)
+{
+    s32 i;
+    u16 skill;
+    s8 level;
+
+    if (stock == NULL) {
+        return;
+    }
+    info->SkillCnt = 0;
+    if (stock->id == 0) {
+        if (heartsId == 0) {
+            return;
+        }
+        for (i = datGetDevilSlotState((u8)heartsId); i < 8; i++) {
+            datRaceEntry_t *race = &datRaceTable[heartsId];
+
+            skill = race->heartConditions[i].skill;
+            level = (s8)race->heartConditions[i].condition;
+            if (skill != 0 && cmbChkSkillOwner(skill, stock) < 0) {
+                info->TargetLevel[info->SkillCnt] = level;
+                info->skill[info->SkillCnt++] = skill;
+            }
+        }
+    } else {
+        datLevelUpRecord_t *row = &datLevelUpTable[stock->id];
+
+        for (i = 0; i < 24; i++) {
+            s32 match = 0;
+
+            if (stock->hensinmae == 0) {
+                if (row->entry[i].kind == 1) {
+                    match = 1;
+                }
+            } else {
+                match = row->entry[i].kind == 6;
+            }
+            if (match) {
+                level = (s8)row->entry[i].level;
+                if (stock->level + levelOffset < level) {
+                    skill = row->entry[i].value;
+                    if (cmbChkSkillOwner(skill, stock) < 0) {
+                        info->TargetLevel[info->SkillCnt] = level;
+                        info->skill[info->SkillCnt++] = skill;
+                    }
+                }
+            }
+        }
+    }
+}
+#elif defined(NON_MATCHING)
 void rstCreateBeforeSkillList(s8 heartsId, datUnitWork_t *stock, s8 levelOffset,
                               rstSkillInfo_t *info)
 {
@@ -617,7 +669,47 @@ s32 rstChkPartyDevilSkillPowerUp(void)
     return result;
 }
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+extern s32 rstRollPowerUpSkill(u16 skill, datUnitWork_t *unit);
+
+s32 rstCalcSkillPowerUpCore(void)
+{
+    s32 result;
+    s32 rolled;
+
+    if ((EventStart->powerSkill = rstRndGetPowerUpSkill(EventStart->unit, &EventStart->powerSlot)) == 0) {
+        return 0;
+    }
+    if (rstChkBeforeSkillOwner(EventStart->powerSkill, -EventStart->LevelUpCnt, EventStart->unit) != 0) {
+        return 0;
+    }
+    result = rstChkSkillPowerUp2();
+    if (result == 0) {
+        if (cmbChkSkillOwner(EventStart->powerSkill, EventStart->unit) >= 0) {
+            result = 1;
+        }
+        if (rstChkDevilSkillPowerUp(EventStart->unit) != 0) {
+            return 0;
+        }
+        if (rstChkPartyDevilSkillPowerUp() != 0) {
+            result = 1;
+        }
+    }
+    if (result != 0) {
+        if (result == 1) {
+            rolled = rstRollPowerUpSkill(EventStart->unit->skill[EventStart->powerSlot], EventStart->unit);
+            if (rolled != 0) {
+                EventStart->powerSkill = rolled;
+                return 2;
+            }
+        }
+    } else {
+        EventStart->unit->flag |= 0x40;
+        return 1;
+    }
+    return 3;
+}
+#elif defined(NON_MATCHING)
 extern s32 rstRollPowerUpSkill(u16 skill, datUnitWork_t *unit);
 
 s32 rstCalcSkillPowerUpCore(void)
@@ -817,7 +909,37 @@ u16 rstChkHeartsSkill(datUnitWork_t *unit)
 extern s32 datGetDevilSlotState(u8 devilId);
 extern u16 rstGetHeartsSkillAt(u8 race, s8 index);
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+void rstRecalcHeartsSkill(u16 skillId)
+{
+    s32 i;
+    s32 j;
+    s32 slot;
+    s8 devilId;
+    u16 skill;
+    s32 missing;
+    dds3GlobalWork_t *work;
+
+    for (i = 0; i < DDS3_GBWK->heartscnt; i++) {
+        devilId = (s8)DDS3_GBWK->hearts[i];
+        for (j = 0; j < 8; j++) {
+            skill = rstGetHeartsSkillAt((u8)devilId, (s8)j);
+            if (skillId == skill) {
+                missing = 1;
+                for (slot = 0; slot < datGetDevilSlotState((u8)devilId); slot++) {
+                    if (DDS3_GBWK->heartsSkills[devilId][slot] == skill) {
+                        missing = 0;
+                    }
+                }
+                if (missing != 0) {
+                    work = DDS3_GBWK;
+                    work->heartsSkills[devilId][work->devilSlot[devilId]++] = skill;
+                }
+            }
+        }
+    }
+}
+#elif defined(NON_MATCHING)
 void rstRecalcHeartsSkill(u16 skillId)
 {
     s32 i;
@@ -1377,7 +1499,24 @@ extern s8 cmbGetHeartsParamByIndex(s8 race, s8 index, s8 extra);
 /* NON_MATCHING. Behaviour checked against retail: 3 PCSX2 call vectors give the same return and memory,
  * seq32, covering only the paths those calls took.
  * (sdfport 73e010f, tools/funcvec, tests/funcvec.sh). */
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+s32 cmbGetHeartsParamEx(s8 devilId, s8 index, s32 registered)
+{
+    s32 value;
+    s32 up;
+
+    if ((s8)registered != 0)
+    {
+        value = cmbGetHeartsParamByIndex(devilId, index, 1);
+    }
+    else
+    {
+        value = cmbGetHeartsParamByIndex(devilId, index, 0);
+    }
+    up = DDS3_GBWK->hearts_up_param[devilId][index];
+    return (s8)(value + up);
+}
+#elif defined(NON_MATCHING)
 s32 cmbGetHeartsParamEx(s8 devilId, s8 index, s32 registered)
 {
     s32 value = cmbGetHeartsParamByIndex(devilId, index, (s8)registered != 0);
@@ -1628,7 +1767,29 @@ s32 func_002229E8(u16 value)
 
 /* NON_MATCHING: the native lookup retains a table offset and a separate
  * address for the first matching entry. */
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+fclSkillParam_t *datFindKugatatiEntry(datUnitWork_t *unit, s8 *outcount)
+{
+    u16 id = unit->id;
+    u8 level = unit->level;
+    fclSkillParam_t *found = NULL;
+    u8 count = 0;
+    s32 i;
+
+    for (i = 0; i < 24; i++) {
+        if (datLevelUpTable[id].entry[i].level == level) {
+            count++;
+            if (count == 1) {
+                found = &datLevelUpTable[id].entry[i];
+            }
+        }
+    }
+    if (outcount != NULL) {
+        *outcount = count;
+    }
+    return found;
+}
+#elif defined(NON_MATCHING)
 fclSkillParam_t *datFindKugatatiEntry(datUnitWork_t *unit, s8 *outcount)
 {
     datLevelUpRecord_t *table = datLevelUpTable;

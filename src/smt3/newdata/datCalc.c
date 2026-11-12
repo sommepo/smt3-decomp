@@ -940,7 +940,21 @@ s32 datCheckPlayerDead(void)
 /* NON_MATCHING. Behaviour checked against retail: 1 PCSX2 call vector give the same return and memory,
  * seq18, covering only the paths those calls took.
  * (sdfport 73e010f, tools/funcvec, tests/funcvec.sh). */
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+s32 datGetPlayerParam(s32 id)
+{
+    s32 bonus;
+    s32 param = DDS3_GBWK->unitwork[0].param[id];
+    u8 hearts = DDS3_GBWK->heartsequip;
+
+    if (hearts != 0) {
+        bonus = cmbGetHeartsParam(hearts, id);
+    } else {
+        bonus = 0;
+    }
+    return param - bonus;
+}
+#elif defined(NON_MATCHING)
 s32 datGetPlayerParam(s32 id)
 {
     u8 hearts = DDS3_GBWK->heartsequip;

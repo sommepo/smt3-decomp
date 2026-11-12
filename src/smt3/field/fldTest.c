@@ -1372,46 +1372,7 @@ void fldRunTamaInit(void)
 /* NON_MATCHING. Behaviour checked against retail: 2 PCSX2 call vectors give the same return and memory,
  * capture_008, event602, covering only the paths those calls took.
  * (sdfport 73e010f, tools/funcvec, tests/funcvec.sh). */
-#if defined(VERSION_MNAX)
-/* Maniax: each effect mode releases its own file handle; cross-jumping
- * merges the two identical tails after reload. The inner exit jumps straight
- * to the next table, so the loop keeps its test at the top. */
-void fldRunTamaFree(void)
-{
-    fldTest_FLDRUN_EFFTBL_t *entry;
-    fldTest_FLDRUN_EFF_t *res;
-    s32 i;
-
-    for (i = 0; i < 2; i++) {
-        for (entry = fldRunEffTables[i]; ; entry++) {
-            res = entry->pEff;
-            if (res == NULL) {
-                goto next;
-            }
-            if (entry->effmode == 0) {
-                if (res->d3p != NULL) {
-                    dds3EffectDelete(res->d3p);
-                    res->d3p = NULL;
-                }
-                if (res->mhFile != NULL) {
-                    sdfMemFreeDelayedDirect(res->mhFile);
-                    res->mhFile = NULL;
-                }
-            } else {
-                if (res->pcf != NULL) {
-                    dds3EffectPartDelete(res->pcf);
-                    res->pcf = NULL;
-                }
-                if (res->mhFile != NULL) {
-                    sdfMemFreeDelayedDirect(res->mhFile);
-                    res->mhFile = NULL;
-                }
-            }
-        }
-    next:;
-    }
-}
-#elif defined(NON_MATCHING)
+#ifdef NON_MATCHING
 void fldRunTamaFree(void)
 {
     fldTest_FLDRUN_EFFTBL_t *entry;
@@ -1486,72 +1447,7 @@ void fldRunEffSet(s32 id, f32 x, f32 y, f32 z, f32 r)
 }
 
 /* NON_MATCHING: 115 of 136 words differ (first at +0x10). */
-#if defined(VERSION_MNAX)
-/* Maniax: the draw paths come first and the delete paths last; the inner
- * exit jumps straight to the next table so the test stays at the top. The
- * clobber-free matrix store leaves the call argument its own frame address. */
-void fldRunEffTask(void)
-{
-    sdfVector4_t pos;
-    sdfMatrix4_t matrix;
-    fldTest_FLDRUN_EFFTBL_t *entry;
-    fldTest_FLDRUN_EFF_t *res;
-    s32 i;
-
-    memset(&pos, 0, sizeof(pos));
-    pos.w = 1.0f;
-
-    for (i = 0; i < 2; i++) {
-        for (entry = fldRunEffTables[i]; ; entry++) {
-            res = entry->pEff;
-            if (res == NULL) {
-                goto next;
-            }
-            if (entry->effmode == 0) {
-                if (res->d3p == NULL) {
-                    continue;
-                }
-                if (dds3EffectGetState(res->d3p) != 0) {
-                    pos.x = res->x;
-                    pos.y = res->y;
-                    pos.z = res->z;
-                    dds3EffectSetPosition(res->d3p, &pos);
-                    if (entry->rotmode == 1) {
-                        SetRotateMatrixY((90.0f - res->r) * 3.14f / 180.0f);
-                        SDF_VU0_STOREMATRIX_NOMEM(&matrix);
-                        dds3EffectSetRotateMatrix(res->d3p, &matrix);
-                    }
-                    dds3EffectDraw(res->d3p);
-                } else {
-                    dds3EffectDelete(res->d3p);
-                    res->d3p = NULL;
-                }
-            } else {
-                if (res->pcf == NULL) {
-                    continue;
-                }
-                if (res->cnt >= 0) {
-                    res->cnt = res->cnt - 1;
-                    pos.x = res->x;
-                    pos.y = res->y;
-                    pos.z = res->z;
-                    dds3EffectPartSetPosition(res->pcf, &pos);
-                    if (entry->rotmode == 1) {
-                        SetRotateMatrixY((90.0f - res->r) * 3.14f / 180.0f);
-                        SDF_VU0_STOREMATRIX_NOMEM(&matrix);
-                        dds3EffectPartSetRotateMatrix(res->pcf, &matrix);
-                    }
-                    dds3EffectPartDraw(res->pcf);
-                } else {
-                    dds3EffectPartDelete(res->pcf);
-                    res->pcf = NULL;
-                }
-            }
-        }
-    next:;
-    }
-}
-#elif defined(NON_MATCHING)
+#ifdef NON_MATCHING
 void fldRunEffTask(void)
 {
     sdfVector4_t pos;

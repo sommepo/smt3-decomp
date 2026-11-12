@@ -1028,7 +1028,69 @@ s32 fldEveHit_ChkDir(dds3Basic_t *unit, dds3Basic_t *put)
 }
 
 /* NON_MATCHING: 32 of 153 words differ (first at +0x8). */
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+/* Maniax: the put position is copied with the quadword helper (lq/sq through
+ * $2, as retail) and reloaded into VU0 from its own address. */
+s32 fldEveHit_ChkDir2(dds3Basic_t *unit, dds3Basic_t *put)
+{
+    sdfVector4_t dir;
+    sdfVector4_t pos;
+    s32 i;
+    fldResPut_t *info;
+    f32 length;
+    f32 dot;
+
+    memset(&pos, 0, 0x10);
+    pos.w = 1.0f;
+    for (i = 0; i < fldEveRngCount; i++) {
+        if (fldEveHitTable[i].worldObjectKey != put->serialID) {
+            continue;
+        }
+        info = (fldResPut_t *)gEvnRng[i]->data;
+        switch (info->data.shape->kind) {
+        case 0:
+            SDF_VU0_COPYVECTOR(&pos, put->workdata);
+            SDF_VU0_LOADVECTOR(&unit->poseset->rot);
+            ToMatrix();
+            SDF_VU0_STORE_ROW2(&dir);
+            dir.y = 0.0f;
+            SDF_VU0_LOADVECTOR(&dir);
+            SDF_VU0_NORMALIZE();
+            SDF_VU0_SCALEVECTOR(-1.0f);
+            SDF_VU0_COPYVECTOR_A_TO_C();
+            SDF_VU0_LOADVECTOR(&pos);
+            SDF_VU0_LOADVECTOR_B(&unit->poseset->pos);
+            SDF_VU0_SUBVECTOR();
+            SDF_VU0_STOREVECTOR(&dir);
+            dir.y = 0.0f;
+            SDF_VU0_LOADVECTOR(&dir);
+            SDF_VU0_GETLENGTH(length);
+            SDF_VU0_NORMALIZE();
+            SDF_VU0_COPYVECTOR_C_TO_B();
+            SDF_VU0_INNERPRODUCT(dot);
+            if (dot * 180.0f / 3.14f < 0.0f) {
+                return 0;
+            }
+            return 1;
+        case 1:
+            return fldEveHitTable[i].shapeKind == info->data.shape->kind;
+        case 2:
+            SDF_VU0_LOADVECTOR(&unit->poseset->rot);
+            ToMatrix();
+            SDF_VU0_STORE_ROW2(&dir);
+            dir.y = 0.0f;
+            SDF_VU0_LOADVECTOR(&dir);
+            SDF_VU0_NORMALIZE();
+            SDF_VU0_STOREVECTOR(&dir);
+            if (fldVecDot(&dir, (sdfVector4_t *)fldEveHitTable[i].center) < 0.0f) {
+                return 0;
+            }
+            return 1;
+        }
+    }
+    return 0;
+}
+#elif defined(NON_MATCHING)
 s32 fldEveHit_ChkDir2(dds3Basic_t *unit, dds3Basic_t *put)
 {
     sdfVector4_t dir;

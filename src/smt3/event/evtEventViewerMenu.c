@@ -1172,7 +1172,55 @@ s32 evtViewerExit(void)
     return 0;
 }
 /* NON_MATCHING: 20 of 56 words differ (first at +0x4). */
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+s32 evtPollEffectFrameControl(void)
+{
+    s32 busy = 1;
+    /* SMT3 reconstruction aid: the viewer info read by the switch stays in
+     * $4 until the case 0x10/0x11 test; it crosses no call. As an ordinary
+     * local the same body swaps $4/$5 with `busy` (10 of 57 words). */
+    FAKEMATCH_ASM_REG(evtViewerInfo_t *, info, "$4") = viewerinfo;
+
+    switch (info->framelist_target->type) {
+    case 0xD:
+        busy = effUpdateCh72Params();
+        break;
+    case 0xE:
+        busy = mblurProcess();
+        break;
+    case 0xF:
+        busy = dblurProcess();
+        break;
+    case 0x17:
+        busy = rblurProcess();
+        break;
+    case 0x10:
+    case 0x11:
+        if (info->menuProcess == 0) {
+            return 1;
+        }
+        break;
+    case 0x12:
+    case 0x13:
+    case 0x14:
+    case 0x15:
+    case 0x16:
+    default:
+        if (dds3PadButtonState[0x2C] < 0) {
+            busy = 0;
+        }
+        break;
+    }
+    if (busy == 0) {
+        if (viewerinfo->menuProcess != 0) {
+            dds3KillProcess(viewerinfo->menuProcess, 1);
+            viewerinfo->menuProcess = 0;
+        }
+        return 1;
+    }
+    return 0;
+}
+#elif defined(NON_MATCHING)
 s32 evtPollEffectFrameControl(void)
 {
     s32 busy = 1;

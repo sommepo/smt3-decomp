@@ -696,7 +696,81 @@ extern void DispCommandPanel(nbCommSelProcessData_t *s, s32 type, s32 ox, s32 oy
 /* NON_MATCHING. Behaviour checked against retail: 3 PCSX2 call vectors give the same return and memory,
  * battle unknown realm savestate, covering only the paths those calls took.
  * (sdfport bc29478, tools/funcvec, tests/funcvec.sh). */
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+void DispCommandPanel(nbCommSelProcessData_t *s, s32 type, s32 ox, s32 oy, s32 alpha)
+{
+    s32 color = ((u32)alpha << 24) | 0x808080;
+    s32 count;
+    s32 rowStep = 0;
+    s32 originalX = ox;
+    s32 helpX;
+    s32 helpY;
+    s32 originalY = oy;
+    s32 motion;
+    s32 i;
+
+    nbPnl_setOt(0x47);
+    nbPnl_rsetTest(1, 0, 0x80, 3, 0, 0, 1, 1);
+    nbPnl_rsetAlpha(0);
+    DispPanelSitaji(s, type, originalX, originalY, color);
+    DispPanelCursor(s, type, originalX, originalY, color);
+    count = GetCommListCnt(s, type);
+    motion = SDF_FRAME_INTERPOLATE_DUE(&s->smritu, s->smritu) * 43.0f;
+
+    if ((u32)type < 6) {
+        switch (type) {
+        case 0:
+        case 1:
+        case 2:
+        case 4:
+        case 5:
+            ox += 0x1B;
+            oy += 0x159;
+            rowStep = 0x15;
+            break;
+        case 3:
+            ox += 0x21;
+            rowStep = 0x2B;
+            oy += motion + 0x12E;
+            break;
+        }
+    }
+
+    helpX = originalX + 0x1B;
+    helpY = originalY + 0x159;
+    for (i = s->drawlisty; i < s->drawlisty + count; i++) {
+        if (i < s->commcnt[type]) {
+            u16 entry = s->commlist[type][i];
+
+            if (i == s->drawcursor) {
+                if (s->stat == 2) {
+                    DispComm1PanelCursor(s, type, ox, oy, s->oz, color);
+                }
+            }
+            if (i == s->drawcursor) {
+                DispHelpPanel(s, entry, helpX, helpY, s->oz - 1, color, s->helpa);
+            }
+
+            switch (type) {
+            case 0:
+                DispComm1PanelComm(s, entry, ox, oy, s->oz, color);
+                break;
+            case 1:
+                DispComm1PanelTalk(s, entry, ox, oy, s->oz, color);
+                break;
+            case 2:
+                DispComm1PanelItem(s, entry, ox, oy, s->oz, color);
+                break;
+            case 3:
+                DispComm1PanelSummon(s, entry, ox, oy, s->oz, color);
+                break;
+            }
+            oy += rowStep;
+        }
+    }
+    DispPanelLabel(s, type, originalX, originalY, color);
+}
+#elif defined(NON_MATCHING)
 void DispCommandPanel(nbCommSelProcessData_t *s, s32 type, s32 ox, s32 oy, s32 alpha)
 {
     s32 color = ((u32)alpha << 24) | 0x808080;

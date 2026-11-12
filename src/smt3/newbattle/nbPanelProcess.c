@@ -2766,7 +2766,46 @@ extern s32 StockIDListCursor;
 extern s32 StockIDListTop;
 extern u32 StockIDList[];
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+void nbPanelStockSelectInit(void)
+{
+    datUnitWork_t *unit;
+    u32 i;
+    u32 index;
+    u32 flags;
+    s32 ofs;
+
+    nbGetMainProcessData();
+    StockIDListCursor = 0;
+    StockIDListTop = 0;
+    nbPanelStockFrame = 0;
+    StockIDListCount = 0;
+    nbPanelStockShiftX = 300;
+    for (i = 0; i < DDS3_GBWK->stockCount;) {
+        index = DDS3_GBWK->stockOrder[i++];
+        ofs = index * sizeof(datUnitWork_t) + (u32)&((dds3GlobalWork_t *)0)->unitwork;
+        unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + ofs);
+        flags = unit->flag;
+        if (!(flags & 1)) {
+            continue;
+        }
+        if (flags & 4) {
+            continue;
+        }
+        if (flags & 2) {
+            continue;
+        }
+        if (unit->hp == 0 || unit->badstatus == 0x800) {
+            StockIDList[StockIDListCount] = index;
+            StockIDListCount++;
+        }
+    }
+    nbPanelStockABGR = 0x80808080;
+    nbPanelStockFadeFlag = 0;
+    nbPanelStockRun = 1;
+    nbPanelStockPad = 1;
+}
+#elif defined(NON_MATCHING)
 void nbPanelStockSelectInit(void)
 {
     volatile dds3GlobalWork_t *global;
