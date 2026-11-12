@@ -20,7 +20,7 @@ basic/dds3Basic	C
 basic/dds3WorldBasic	C
 basic/dds3SceneBasic	C
 basic/dds3AreaBasic	C
-basic/dds3MoverBasic	demoted: defines jtbl_0052F830, which the split also puts in a blob
+basic/dds3MoverBasic	C
 basic/dds3ObjectBase	C
 basic/dds3CameraObjectBasic	C
 basic/dds3UnitObjectBasic	C
@@ -49,7 +49,7 @@ field/fldSky	C with fallbacks
 field/fldHit	C with fallbacks
 field/fldEveHit	C with fallbacks, 1 functions kept as Maniax assembly
 field/fldInf	C
-field/fldWap	demoted: defines jtbl_0052F830, which the split also puts in a blob
+field/fldWap	demoted: .rodata is 0x218 bytes where Maniax has room for 0x208
 field/fldPanel	C
 field/fldSe	.sdata bytes differ
 field/fldAutoMap	C with fallbacks
@@ -92,7 +92,7 @@ newbattle/nbCameraPress	C with fallbacks
 newbattle/nbCameraBoss	C with fallbacks
 code_001C55F8	C
 interface/fmGslCont	.sdata bounds unknown in Maniax
-interface/frFont	demoted: .rodata is 0x190 bytes where Maniax has room for 0xA8
+interface/frFont	demoted: .sdata is 0x88 bytes where Maniax has room for 0x60
 interface/frName	C
 interface/frWrap	C
 interface/frTestFont	C
@@ -112,7 +112,7 @@ pb/pbHelp	C
 pb/pbKeyConv	C
 pb/pbMCard	C
 pb/pbErrorDraw	C
-pb/pbDebugMode	demoted: defines D_0053A0E0, which the split also puts in a blob
+pb/pbDebugMode	C
 model/mdlManager	C
 model/mdlEffect	C
 event/EventBit	C
@@ -129,7 +129,7 @@ event/evtSky	C
 event/evtEventViewerFrameVar	C
 event/evtEventViewerMenu	C with fallbacks
 event/evtSound	C
-event/evtEventPack	demoted: defines D_0053A0E0, which the split also puts in a blob
+event/evtEventPack	C
 facility/fclCombineInit	demoted: Maniax has a TU boundary inside the unit (rodata base 0x53A1A8 vs jump tables at 0x53A1B0)
 facility/fclShopInit	C
 facility/fclShopCalc	C with fallbacks

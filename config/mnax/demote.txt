@@ -1,13 +1,10 @@
 facility/fclCombineInit	Maniax has a TU boundary inside the unit (rodata base 0x53A1A8 vs jump tables at 0x53A1B0)
 movie/mviManager	no Maniax assembly for movieDebugRowFmt
 result/rstupdate	.rodata must start 16-aligned; Maniax place 0x0053B5C8 is not
-kernel/dds3GlobalWork	defines dds3FontReqBoxTable, which the split also puts in a blob
 interface/lstListWindow	.rodata bytes differ from Maniax
-pb/pbDebugMode	defines D_0053A0E0, which the split also puts in a blob
-event/evtEventPack	defines D_0053A0E0, which the split also puts in a blob
-basic/dds3MoverBasic	defines jtbl_0052F830, which the split also puts in a blob
-field/fldWap	defines jtbl_0052F830, which the split also puts in a blob
 nme/Nme_Calc	.text is 0x1A18 bytes where Maniax has room for 0x1B10
 nme/Nme_Init	.sdata is 0x78 bytes where Maniax has room for 0x70
 nme/Nme_Draw	.text bytes differ from Maniax
-interface/frFont	.rodata is 0x190 bytes where Maniax has room for 0xA8
+kernel/dds3GlobalWork	defines dds3FontReqBoxTable, which the split also puts in a blob
+field/fldWap	.rodata is 0x218 bytes where Maniax has room for 0x208
+interface/frFont	.sdata is 0x88 bytes where Maniax has room for 0x60
