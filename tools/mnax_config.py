@@ -512,6 +512,12 @@ def main() -> None:
     firsts.append(text_end_m)
     for i, (a, unit) in enumerate(text_entries[:-1]):
         text_start[unit], text_next[unit] = firsts[i], firsts[i + 1]
+    # A measured .text start (placement.txt, size "-"): what lies before it, up to the
+    # previous unit's end, becomes an asm blob (e.g. a 4-aligned stub ahead of a unit
+    # whose C object is 8-aligned).
+    for (unit, name), (m0, _) in override.items():
+        if name == ".text" and unit in text_start:
+            text_start[unit] = m0
     demote = ROOT / "config/mnax/demote.txt"
     demoted = dict(line.split("\t", 1) for line in demote.read_text().splitlines() if "\t" in line) \
         if demote.exists() else {}

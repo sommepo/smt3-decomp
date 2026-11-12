@@ -581,7 +581,10 @@ void malloc_extend_top(_reent *r, u32 needed)
     }
 }
 
-#if defined(VERSION_MNAX)
+/* Off in the Maniax build for now: with _malloc_r compiled in this merged unit,
+ * reorg turns _init_signal_r's first bnel into bnez (newlib built malloc and
+ * signal as separate objects). The C matches on its own (mnax_check). */
+#if defined(VERSION_MNAX) && defined(MNAX_LIBC_MALLOC_C)
 /* newlib mallocr.c mALLOc (INTERNAL_NEWLIB, SEPARATE_OBJECTS, no mmap,
  * MALLOC_ALIGNMENT 16), with the chunk and bin macros it expands. */
 #define INTERNAL_SIZE_T size_t
@@ -1221,12 +1224,6 @@ void *_sbrk_r(_reent *r, s32 incr) {
     return result;
 }
 
-#if defined(VERSION_MNAX)
-/* Maniax: with _malloc_r compiled earlier in this merged unit, reorg fills the
- * first branch as bnez instead of retail's bnel (newlib built malloc and signal
- * as separate objects), so this function stays retail assembly here. */
-INCLUDE_ASM(const s32, "sdk/libc", _init_signal_r);
-#else
 s32 _init_signal_r(_reent *r) {
     s32 i;
 
@@ -1241,7 +1238,6 @@ s32 _init_signal_r(_reent *r) {
     }
     return 0;
 }
-#endif
 
 void *_signal_r(_reent *r, s32 sig, void *handler) {
     void *old;
