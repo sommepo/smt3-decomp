@@ -36,6 +36,6 @@ facility/fclCombineInit  .sdata   0x0054DDAC  0x34
 facility/fclCombineInit  .lit4    0x0054C6E4  0x28
 event/evtEventPack       .sdata   0x0054DD90  0x1C
 mc/slMain                .lit4    0x0054A884  0x8
-file/fileManager         .rodata  0x00544B58  0x1E80
 movie/MovieViewer        .sdata   0x0054E030  0x18
 movie/mviManager         .sdata   0x0054E014  0x1C
+movie/MovieViewer        .rodata  0x0053CCB0  0x40
