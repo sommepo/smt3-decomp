@@ -779,6 +779,18 @@ def main() -> None:
         out.append(f"{name} = 0x{at:08X}; {attrs}".rstrip())
     # Hand-curated Maniax names (config/mnax/symbols_extra.txt, kept in git) win over
     # carried ones at the same name or address: names the address map cannot carry.
+    # Names of objects the C defines, at the addresses a byte-identical build linked
+    # them to (config/mnax/symbols_linked.txt): without them splat gives those
+    # addresses automatic labels and include_rodata/include_sdata include the
+    # bytes a second time.
+    linked = ROOT / "config/mnax/symbols_linked.txt"
+    if linked.exists():
+        have_n = {l.split(" = ")[0] for l in out}
+        have_a = {int(re.match(r"\w+ = (0x[0-9A-Fa-f]+);", l).group(1), 16) for l in out}
+        for l in linked.read_text().splitlines():
+            m = re.match(r"(\w+) = (0x[0-9A-Fa-f]+);", l)
+            if m and m.group(1) not in have_n and int(m.group(2), 16) not in have_a:
+                out.append(l)
     extra = ROOT / "config/mnax/symbols_extra.txt"
     if extra.exists():
         lines = [l for l in extra.read_text().splitlines() if re.match(r"\w+ = 0x[0-9A-Fa-f]+;", l)]
