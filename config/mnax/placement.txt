@@ -27,3 +27,4 @@ facility/fclEncyc        .rodata  0x0053B0D8  0x1E8
 newbattle/nbActionProcess .rodata 0x005418D0  0xAE0
 sdk/libkernl             .rodata  0x00549DA0  0x298
 newbattle/nbActionProcess .sdata  0x0054F058  0x18
+facility/fclShopInit     .sdata   0x0054DDE0  0x30

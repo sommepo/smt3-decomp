@@ -473,10 +473,8 @@ char shpProcName[8] = "shop";
 char shpCmdBuy[8] = "\211\252\207\215";
 
 char shpCmdSell[8] = "\215\305\204\274";
-
-char shpSellText[8] = "%7d";
-
-char shpBuyText[8] = "%2d";
+/* Maniax has no shpSellText/shpBuyText: the "%7d" and "%2d" after these are
+ * fclShopCalc's count formats. */
 #else
 char shpCmdLeave[8] = "Leave";
 

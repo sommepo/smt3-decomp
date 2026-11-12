@@ -150,3 +150,9 @@ cmbRaceTable = 0x0054E160; // size:0x4
 // nbActionProcess small data (0x54F058..0x54F070)
 StkSelId = 0x0054F058; // size:0x4
 nbDebugNewline = 0x0054F060; // size:0x8
+// fclShopInit small data (0x54DDE0..0x54DE10)
+shpCmdLeave = 0x0054DDE8; // size:0x8
+shpCmdTalk = 0x0054DDF0; // size:0x8
+shpProcName = 0x0054DDF8; // size:0x8
+shpCmdBuy = 0x0054DE00; // size:0x8
+shpCmdSell = 0x0054DE08; // size:0x8
