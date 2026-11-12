@@ -310,13 +310,9 @@ def main() -> None:
         full = True
         path = ROOT / "build/mnax/src/mnax" / (unit + ".o")
         if not path.exists() or path.read_bytes()[:4] != b"\x7fELF":
-            # No full build yet: the Maniax-mode probe object lacks the assembly pieces,
-            # so offsets after a missing piece are off; the majority still finds the
-            # start when the unit's first data is referenced from C. Size then unknown.
-            full = False
-            path = ROOT / "build/probe" / (unit + ".o")
-            if not path.exists() or path.read_bytes()[:4] != b"\x7fELF":
-                return None
+            # Only a full build object gives exact offsets; the probe object (no
+            # assembly pieces) was tried as a fallback and lost units, so not used.
+            return None
         e = ELFFile(path.open("rb"))
         target = e.get_section_by_name(secname)
         text = e.get_section_by_name(".text")
