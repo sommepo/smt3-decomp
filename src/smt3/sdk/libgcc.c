@@ -750,7 +750,22 @@ f32 sdfPackQuad(s32 kind, s32 sign, s32 exp, u32 mant);
  * f32 in f0. Truthful C retains the existing FIX_BUGS behavior; default builds
  * use retail assembly until its original erroneous ABI can be represented
  * without a conflicting declaration. */
-#ifdef FIX_BUGS
+#if defined(VERSION_MNAX)
+/* Maniax: this C matches all 84 bytes. Retail returns sdfPackQuad's f32 in
+ * $f0 unchanged (no $v0 read follows the call), so the provider's actual
+ * f32 signature reproduces it without an alias. */
+f32 dptofp(double x) {
+    fp_number_type_df u;
+    u32 m;
+
+    sdfUnpackDouble(&x, &u);
+    m = u.fraction >> 30;
+    if (u.fraction & 0x3FFFFFFF) {
+        m |= 1;
+    }
+    return sdfPackQuad(u.class, u.sign, u.normal_exp, m);
+}
+#elif defined(FIX_BUGS)
 f32 dptofp(double x) {
     fp_number_type_df u;
     u32 m;
@@ -855,7 +870,117 @@ void libc_2D1EA8(fde_vector *left, const fde_vector *right)
 }
 
 
+#if defined(VERSION_MNAX)
+typedef struct {
+    fde_vector linear;
+    fde_vector erratic;
+} fde_accumulator;
+
+/* gcc frame.c's static fde_split marker. */
+extern u32 *mnax_00598ADC __attribute__((section(".bss")));
+
+/* gcc 2.96 frame.c: end_fde_sort with fde_split and frame_heapsort inlined. */
+static inline void fde_split(fde_vector *linear, fde_vector *erratic)
+{
+    u32 count = linear->count;
+    u32 **chain_end = &mnax_00598ADC;
+    u32 i, j, k;
+
+    if (sizeof(u32 *) != sizeof(u32 **)) {
+        abort();
+    }
+
+    for (i = 0; i < count; i++) {
+        u32 **probe;
+
+        for (probe = chain_end;
+             probe != &mnax_00598ADC && fde_compare(linear->array[i], *probe) < 0;
+             probe = chain_end) {
+            chain_end = (u32 **)erratic->array[probe - linear->array];
+            erratic->array[probe - linear->array] = NULL;
+        }
+        erratic->array[i] = (u32 *)chain_end;
+        chain_end = &linear->array[i];
+    }
+
+    for (i = j = k = 0; i < count; i++) {
+        if (erratic->array[i]) {
+            linear->array[j++] = linear->array[i];
+        } else {
+            erratic->array[k++] = linear->array[i];
+        }
+    }
+    linear->count = j;
+    erratic->count = k;
+}
+
+#define FDE_SWAP(x, y) do { u32 *tmp = x; x = y; y = tmp; } while (0)
+
+static inline void frame_heapsort(fde_vector *erratic)
+{
+    u32 **a = erratic->array;
+    u32 n = erratic->count;
+    u32 m = n;
+    u32 i;
+
+    while (m > 0) {
+        m--;
+        for (i = m; 2 * i + 1 < n;) {
+            if (2 * i + 2 < n
+                && fde_compare(a[2 * i + 2], a[2 * i + 1]) > 0
+                && fde_compare(a[2 * i + 2], a[i]) > 0) {
+                FDE_SWAP(a[i], a[2 * i + 2]);
+                i = 2 * i + 2;
+            } else if (fde_compare(a[2 * i + 1], a[i]) > 0) {
+                FDE_SWAP(a[i], a[2 * i + 1]);
+                i = 2 * i + 1;
+            } else {
+                break;
+            }
+        }
+    }
+    while (n > 1) {
+        n--;
+        FDE_SWAP(a[0], a[n]);
+        for (i = 0; 2 * i + 1 < n;) {
+            if (2 * i + 2 < n
+                && fde_compare(a[2 * i + 2], a[2 * i + 1]) > 0
+                && fde_compare(a[2 * i + 2], a[i]) > 0) {
+                FDE_SWAP(a[i], a[2 * i + 2]);
+                i = 2 * i + 2;
+            } else if (fde_compare(a[2 * i + 1], a[i]) > 0) {
+                FDE_SWAP(a[i], a[2 * i + 1]);
+                i = 2 * i + 1;
+            } else {
+                break;
+            }
+        }
+    }
+}
+#undef FDE_SWAP
+
+u32 **libc_2D1FA0(fde_accumulator *accu, u32 count)
+{
+    if (accu->linear.array && accu->linear.count != count) {
+        abort();
+    }
+
+    if (accu->erratic.array) {
+        fde_split(&accu->linear, &accu->erratic);
+        if (accu->linear.count + accu->erratic.count != count) {
+            abort();
+        }
+        frame_heapsort(&accu->erratic);
+        libc_2D1EA8(&accu->linear, &accu->erratic);
+        free(accu->erratic.array);
+    } else {
+        frame_heapsort(&accu->linear);
+    }
+    return accu->linear.array;
+}
+#else
 INCLUDE_ASM(const s32, "sdk/libgcc", libc_2D1FA0);
+#endif
 
 void __register_frame_info(void *fn, void *entry) {
     object *e = entry;
@@ -971,10 +1096,12 @@ void *libc_2D27F8(u32 *p, u32 addr) {
     return NULL;
 }
 
+#if !defined(VERSION_MNAX)
 typedef struct {
     fde_vector linear;
     fde_vector erratic;
 } fde_accumulator;
+#endif
 
 extern u32 **libc_2D1FA0(fde_accumulator *vectors, u32 count);
 
@@ -1357,7 +1484,47 @@ frameState_t *libc_2D31E0(u32 pc, frameState_t *output)
 }
 
 
+#ifdef VERSION_MNAX
+/* gcc 2.95 libgcc2.c __muldi3 with longlong.h's MIPS umul_ppmm behind
+ * __umulsidi3. The DIunion result is built in a register, so its untouched
+ * half carries whatever the incoming register held, as in retail. */
+typedef int SItype __attribute__ ((mode (SI)));
+typedef unsigned int USItype __attribute__ ((mode (SI)));
+typedef int DItype __attribute__ ((mode (DI)));
+
+struct DIstruct {SItype low, high;};
+
+typedef union
+{
+  struct DIstruct s;
+  DItype ll;
+} DIunion;
+
+#define umul_ppmm(w1, w0, u, v) EE_MULTU_HI_LO(w1, w0, u, v)
+
+#define __umulsidi3(u, v) \
+  ({DIunion __w;							\
+    umul_ppmm (__w.s.high, __w.s.low, u, v);				\
+    __w.ll; })
+
+DItype
+__muldi3 (DItype u, DItype v)
+{
+  DIunion w;
+  DIunion uu, vv;
+
+  uu.ll = u,
+  vv.ll = v;
+
+  w.ll = __umulsidi3 (uu.s.low, vv.s.low);
+  w.s.high += ((USItype) uu.s.low * (USItype) vv.s.high
+	       + (USItype) uu.s.high * (USItype) vv.s.low);
+
+  return w.ll;
+}
+#else
 INCLUDE_ASM(const s32, "sdk/libgcc", __muldi3);
+#endif
 
 void sdfUnpackFloat(const void *input, fp_number_type *number) {
     f32_bits bits;

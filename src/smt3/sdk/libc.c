@@ -581,7 +581,425 @@ void malloc_extend_top(_reent *r, u32 needed)
     }
 }
 
+#if defined(VERSION_MNAX)
+/* newlib mallocr.c mALLOc (INTERNAL_NEWLIB, SEPARATE_OBJECTS, no mmap,
+ * MALLOC_ALIGNMENT 16), with the chunk and bin macros it expands. */
+#define INTERNAL_SIZE_T size_t
+#define SIZE_SZ (sizeof(INTERNAL_SIZE_T))
+#define Void_t void
+
+struct malloc_chunk
+{
+  INTERNAL_SIZE_T prev_size; /* Size of previous chunk (if free). */
+  INTERNAL_SIZE_T size;      /* Size in bytes, including overhead. */
+  struct malloc_chunk* fd;   /* double links -- used only if free. */
+  struct malloc_chunk* bk;
+};
+
+typedef struct malloc_chunk* mchunkptr;
+typedef struct malloc_chunk* mbinptr;
+
+#define MALLOC_LOCK __malloc_lock(reent_ptr)
+#define MALLOC_UNLOCK __malloc_unlock(reent_ptr)
+#define RARG struct _reent *reent_ptr,
+#define RCALL reent_ptr,
+#define malloc_trim _malloc_trim_r
+#define trim_threshold __malloc_trim_threshold
+#define top_pad __malloc_top_pad
+
+#define mem2chunk(mem) ((mchunkptr)((char*)(mem) - 2*SIZE_SZ))
+#define PREV_INUSE 0x1
+#define IS_MMAPPED 0x2
+#define SIZE_BITS (PREV_INUSE|IS_MMAPPED)
+#define chunk_at_offset(p, s)  ((mchunkptr)(((char*)(p)) + (s)))
+#define inuse_bit_at_offset(p, s)\
+ (((mchunkptr)(((char*)(p)) + (s)))->size & PREV_INUSE)
+#define chunksize(p)          ((p)->size & ~(SIZE_BITS))
+#define set_head(p, s)        ((p)->size = (s))
+#define set_foot(p, s)   (((mchunkptr)((char*)(p) + (s)))->prev_size = (s))
+
+#define av_ ((mbinptr *) &__malloc_av_)
+#define bin_at(i)      ((mbinptr)((char*)&(av_[2*(i) + 2]) - 2*SIZE_SZ))
+#define top            (bin_at(0)->fd)   /* The topmost chunk */
+#define last_remainder (bin_at(1))       /* remainder from last split */
+
+#define bin_index(sz)                                                          \
+(((((unsigned long)(sz)) >> 9) ==    0) ?       (((unsigned long)(sz)) >>  3): \
+ ((((unsigned long)(sz)) >> 9) <=    4) ?  56 + (((unsigned long)(sz)) >>  6): \
+ ((((unsigned long)(sz)) >> 9) <=   20) ?  91 + (((unsigned long)(sz)) >>  9): \
+ ((((unsigned long)(sz)) >> 9) <=   84) ? 110 + (((unsigned long)(sz)) >> 12): \
+ ((((unsigned long)(sz)) >> 9) <=  340) ? 119 + (((unsigned long)(sz)) >> 15): \
+ ((((unsigned long)(sz)) >> 9) <= 1364) ? 124 + (((unsigned long)(sz)) >> 18): \
+                                          126)
+#define MAX_SMALLBIN_SIZE   512
+#define SMALLBIN_WIDTH        8
+#define SMALLBIN_WIDTH_BITS   3
+#define smallbin_index(sz)  (((unsigned long)(sz)) >> SMALLBIN_WIDTH_BITS)
+#define BINBLOCKWIDTH     4   /* bins per block */
+#define binblocks      (bin_at(0)->size) /* bitvector of nonempty blocks */
+#define idx2binblock(ix)    ((unsigned long)1 << (ix / BINBLOCKWIDTH))
+#define mark_binblock(ii)   (binblocks |= idx2binblock(ii))
+
+#define frontlink(P, S, IDX, BK, FD)                                          \
+{                                                                             \
+  if (S < MAX_SMALLBIN_SIZE)                                                  \
+  {                                                                           \
+    IDX = smallbin_index(S);                                                  \
+    mark_binblock(IDX);                                                       \
+    BK = bin_at(IDX);                                                         \
+    FD = BK->fd;                                                              \
+    P->bk = BK;                                                               \
+    P->fd = FD;                                                               \
+    FD->bk = BK->fd = P;                                                      \
+  }                                                                           \
+  else                                                                        \
+  {                                                                           \
+    IDX = bin_index(S);                                                       \
+    BK = bin_at(IDX);                                                         \
+    FD = BK->fd;                                                              \
+    if (FD == BK) mark_binblock(IDX);                                         \
+    else                                                                      \
+    {                                                                         \
+      while (FD != BK && S < chunksize(FD)) FD = FD->fd;                      \
+      BK = FD->bk;                                                            \
+    }                                                                         \
+    P->bk = BK;                                                               \
+    P->fd = FD;                                                               \
+    FD->bk = BK->fd = P;                                                      \
+  }                                                                           \
+}
+
+#define unlink(P, BK, FD)                                                     \
+{                                                                             \
+  BK = P->bk;                                                                 \
+  FD = P->fd;                                                                 \
+  FD->bk = BK;                                                                \
+  BK->fd = FD;                                                                \
+}
+
+#define link_last_remainder(P)                                                \
+{                                                                             \
+  last_remainder->fd = last_remainder->bk =  P;                               \
+  P->fd = P->bk = last_remainder;                                             \
+}
+
+#define SIZE_T_SMALLER_THAN_LONG
+#ifdef SIZE_T_SMALLER_THAN_LONG
+#define long_sub_size_t(x, y) ( (x < y) ? -((long)(y - x)) : (x - y) );
+#else
+#define long_sub_size_t(x, y) ( (long)(x - y) )
+#endif
+#define MALLOC_ALIGNMENT 16
+#define MALLOC_ALIGN MALLOC_ALIGNMENT
+#define MALLOC_ALIGN_MASK      (MALLOC_ALIGNMENT - 1)
+#define MINSIZE                (sizeof(struct malloc_chunk))
+#define chunk2mem(p)   ((Void_t*)((char*)(p) + 2*SIZE_SZ))
+#define request2size(req) \
+ (((long)((req) + (SIZE_SZ + MALLOC_ALIGN_MASK)) < \
+  (long)(MINSIZE + MALLOC_ALIGN_MASK)) ? ((MINSIZE + MALLOC_ALIGN_MASK) & ~(MALLOC_ALIGN_MASK)) : \
+   (((req) + (SIZE_SZ + MALLOC_ALIGN_MASK)) & ~(MALLOC_ALIGN_MASK)))
+#define set_inuse_bit_at_offset(p, s)\
+ (((mchunkptr)(((char*)(p)) + (s)))->size |= PREV_INUSE)
+#define next_bin(b)    ((mbinptr)((char*)(b) + 2 * sizeof(mbinptr)))
+#define prev_bin(b)    ((mbinptr)((char*)(b) - 2 * sizeof(mbinptr)))
+#define first(b) ((b)->fd)
+#define last(b)  ((b)->bk)
+#define MAX_SMALLBIN        (MAX_SMALLBIN_SIZE / SMALLBIN_WIDTH) - 1
+#define is_small_request(nb) (nb < MAX_SMALLBIN_SIZE - SMALLBIN_WIDTH)
+#define clear_last_remainder \
+  (last_remainder->fd = last_remainder->bk = last_remainder)
+#define check_malloced_chunk(P,N)
+
+Void_t* _malloc_r(RARG size_t bytes)
+{
+
+  mchunkptr victim;                  /* inspected/selected chunk */
+  INTERNAL_SIZE_T victim_size;       /* its size */
+  int       idx;                     /* index for bin traversal */
+  mbinptr   bin;                     /* associated bin */
+  mchunkptr remainder;               /* remainder from a split */
+  long      remainder_size;          /* its size */
+  int       remainder_index;         /* its bin index */
+  unsigned long block;               /* block traverser bit */
+  int       startidx;                /* first bin of a traversed block */
+  mchunkptr fwd;                     /* misc temp for linking */
+  mchunkptr bck;                     /* misc temp for linking */
+  mbinptr q;                         /* misc temp */
+
+  INTERNAL_SIZE_T nb  = request2size(bytes);  /* padded request size; */
+
+  MALLOC_LOCK;
+
+  /* Check for exact match in a bin */
+
+  if (is_small_request(nb))  /* Faster version for small requests */
+  {
+    idx = smallbin_index(nb); 
+
+    /* No traversal or size check necessary for small bins.  */
+
+    q = bin_at(idx);
+    victim = last(q);
+
+    if (victim != q)
+    {
+      victim_size = chunksize(victim);
+      unlink(victim, bck, fwd);
+      set_inuse_bit_at_offset(victim, victim_size);
+      check_malloced_chunk(victim, nb);
+      MALLOC_UNLOCK;
+      return chunk2mem(victim);
+    }
+
+    idx += 2; /* Set for bin scan below. We've already scanned 2 bins. */
+
+  }
+  else
+  {
+    idx = bin_index(nb);
+    bin = bin_at(idx);
+
+    for (victim = last(bin); victim != bin; victim = victim->bk)
+    {
+      victim_size = chunksize(victim);
+      remainder_size = long_sub_size_t(victim_size, nb);
+      
+      if (remainder_size >= (long)MINSIZE) /* too big */
+      {
+        --idx; /* adjust to rescan below after checking last remainder */
+        break;   
+      }
+
+      else if (remainder_size >= 0) /* exact fit */
+      {
+        unlink(victim, bck, fwd);
+        set_inuse_bit_at_offset(victim, victim_size);
+        check_malloced_chunk(victim, nb);
+	MALLOC_UNLOCK;
+        return chunk2mem(victim);
+      }
+    }
+
+    ++idx; 
+
+  }
+
+  /* Try to use the last split-off remainder */
+
+  if ( (victim = last_remainder->fd) != last_remainder)
+  {
+    victim_size = chunksize(victim);
+    remainder_size = long_sub_size_t(victim_size, nb);
+
+    if (remainder_size >= (long)MINSIZE) /* re-split */
+    {
+      remainder = chunk_at_offset(victim, nb);
+      set_head(victim, nb | PREV_INUSE);
+      link_last_remainder(remainder);
+      set_head(remainder, remainder_size | PREV_INUSE);
+      set_foot(remainder, remainder_size);
+      check_malloced_chunk(victim, nb);
+      MALLOC_UNLOCK;
+      return chunk2mem(victim);
+    }
+
+    clear_last_remainder;
+
+    if (remainder_size >= 0)  /* exhaust */
+    {
+      set_inuse_bit_at_offset(victim, victim_size);
+      check_malloced_chunk(victim, nb);
+      MALLOC_UNLOCK;
+      return chunk2mem(victim);
+    }
+
+    /* Else place in bin */
+
+    frontlink(victim, victim_size, remainder_index, bck, fwd);
+  }
+
+  /* 
+     If there are any possibly nonempty big-enough blocks, 
+     search for best fitting chunk by scanning bins in blockwidth units.
+  */
+
+  if ( (block = idx2binblock(idx)) <= binblocks)  
+  {
+
+    /* Get to the first marked block */
+
+    if ( (block & binblocks) == 0) 
+    {
+      /* force to an even block boundary */
+      idx = (idx & ~(BINBLOCKWIDTH - 1)) + BINBLOCKWIDTH;
+      block <<= 1;
+      while ((block & binblocks) == 0)
+      {
+        idx += BINBLOCKWIDTH;
+        block <<= 1;
+      }
+    }
+      
+    /* For each possibly nonempty block ... */
+    for (;;)  
+    {
+      startidx = idx;          /* (track incomplete blocks) */
+      q = bin = bin_at(idx);
+
+      /* For each bin in this block ... */
+      do
+      {
+        /* Find and use first big enough chunk ... */
+
+        for (victim = last(bin); victim != bin; victim = victim->bk)
+        {
+          victim_size = chunksize(victim);
+          remainder_size = long_sub_size_t(victim_size, nb);
+
+          if (remainder_size >= (long)MINSIZE) /* split */
+          {
+            remainder = chunk_at_offset(victim, nb);
+            set_head(victim, nb | PREV_INUSE);
+            unlink(victim, bck, fwd);
+            link_last_remainder(remainder);
+            set_head(remainder, remainder_size | PREV_INUSE);
+            set_foot(remainder, remainder_size);
+            check_malloced_chunk(victim, nb);
+	    MALLOC_UNLOCK;
+            return chunk2mem(victim);
+          }
+
+          else if (remainder_size >= 0)  /* take */
+          {
+            set_inuse_bit_at_offset(victim, victim_size);
+            unlink(victim, bck, fwd);
+            check_malloced_chunk(victim, nb);
+	    MALLOC_UNLOCK;
+            return chunk2mem(victim);
+          }
+
+        }
+
+       bin = next_bin(bin);
+
+       if (idx < MAX_SMALLBIN)
+         {
+           bin = next_bin(bin);
+           ++idx;
+         }
+      } while ((++idx & (BINBLOCKWIDTH - 1)) != 0);
+
+      /* Clear out the block bit. */
+
+      do   /* Possibly backtrack to try to clear a partial block */
+      {
+        if ((startidx & (BINBLOCKWIDTH - 1)) == 0)
+        {
+          binblocks &= ~block;
+          break;
+        }
+        --startidx;
+       q = prev_bin(q);
+      } while (first(q) == q);
+
+      /* Get to the next possibly nonempty block */
+
+      if ( (block <<= 1) <= binblocks && (block != 0) ) 
+      {
+        while ((block & binblocks) == 0)
+        {
+          idx += BINBLOCKWIDTH;
+          block <<= 1;
+        }
+      }
+      else
+        break;
+    }
+  }
+
+
+  /* Try to use top chunk */
+
+  /* Require that there be a remainder, ensuring top always exists  */
+  remainder_size = long_sub_size_t(chunksize(top), nb);
+  if (chunksize(top) < nb || remainder_size < (long)MINSIZE)
+  {
+
+
+    /* Try to extend */
+    malloc_extend_top(RCALL nb);
+    remainder_size = long_sub_size_t(chunksize(top), nb);
+    if (chunksize(top) < nb || remainder_size < (long)MINSIZE)
+    {
+      MALLOC_UNLOCK;
+      return 0; /* propagate failure */
+    }
+  }
+
+  victim = top;
+  set_head(victim, nb | PREV_INUSE);
+  top = chunk_at_offset(victim, nb);
+  set_head(top, remainder_size | PREV_INUSE);
+  check_malloced_chunk(victim, nb);
+  MALLOC_UNLOCK;
+  return chunk2mem(victim);
+
+}
+#undef INTERNAL_SIZE_T
+#undef SIZE_SZ
+#undef Void_t
+#undef MALLOC_LOCK
+#undef MALLOC_UNLOCK
+#undef RARG
+#undef RCALL
+#undef malloc_trim
+#undef trim_threshold
+#undef top_pad
+#undef mem2chunk
+#undef PREV_INUSE
+#undef IS_MMAPPED
+#undef SIZE_BITS
+#undef chunk_at_offset
+#undef inuse_bit_at_offset
+#undef chunksize
+#undef set_head
+#undef set_foot
+#undef av_
+#undef bin_at
+#undef top
+#undef last_remainder
+#undef bin_index
+#undef MAX_SMALLBIN_SIZE
+#undef SMALLBIN_WIDTH
+#undef SMALLBIN_WIDTH_BITS
+#undef smallbin_index
+#undef BINBLOCKWIDTH
+#undef binblocks
+#undef idx2binblock
+#undef mark_binblock
+#undef frontlink
+#undef unlink
+#undef link_last_remainder
+#undef SIZE_T_SMALLER_THAN_LONG
+#undef long_sub_size_t
+#undef MALLOC_ALIGNMENT
+#undef MALLOC_ALIGN
+#undef MALLOC_ALIGN_MASK
+#undef MINSIZE
+#undef chunk2mem
+#undef request2size
+#undef set_inuse_bit_at_offset
+#undef next_bin
+#undef prev_bin
+#undef first
+#undef last
+#undef MAX_SMALLBIN
+#undef is_small_request
+#undef clear_last_remainder
+#undef check_malloced_chunk
+#else
 INCLUDE_ASM(const s32, "sdk/libc", _malloc_r);
+#endif
 
 INCLUDE_ASM(const s32, "sdk/libc", memcmp);
 
@@ -1165,7 +1583,628 @@ const char printfSpaces[16] = "                ";
 
 const char printfZeros[16] = "0000000000000000";
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+/* newlib vfprintf.c _vfprintf_r (FLOATING_POINT, _NO_LONGLONG) as of August
+ * 2000, the newlib the ee-gcc 2.96 package carries; the one local change is
+ * the "0.X" case printing its fraction when expt || ndig (newlib's own fix
+ * tests ndig alone). Its string literals are the named arrays below, defined
+ * here so vfprintf.o's rodata keeps its native order ahead of the switch's
+ * jump table; this unit's -G 8 would otherwise put the short ones in .sdata.
+ * blanks/zeroes are printfSpaces/printfZeros above. */
+extern s32 _mbtowc_r(_reent *r, s32 *out, const char *s, u32 limit, s32 *state);
+extern void *memchr(const void *s, s32 c, u32 n);
+extern void *localeconv(void);
+extern char *cvt(_reent *r, f64 value, s32 precision, s32 flags, char *sign,
+                 s32 *decimalPoint, s32 format, s32 *length);
+extern s32 isinf(f64 value);
+extern s32 isnan(f64 value);
+extern s32 exponent(char *out, s32 value, s32 marker);
+extern s32 mbCurMax __attribute__((section(".data")));
+
+const char mnax_00549950[8] __attribute__((section(".rodata"))) = "Inf";
+
+const char printfNanText[8] __attribute__((section(".rodata"))) = "NaN";
+
+const char printfHexLower[24] = "0123456789abcdef";
+
+const char printfNullText[8] __attribute__((section(".rodata"))) = "(null)";
+
+const char printfHexUpper[24] = "0123456789ABCDEF";
+
+const char printfBadBaseMsg[32] = "bug in vfprintf: bad base";
+
+const char printfZeroDigit[8] __attribute__((section(".rodata"))) = "0";
+
+const char printfDecimalPoint[16] = ".";
+
+#define va_arg(ap, type) __builtin_va_arg(ap, type)
+#define _REENT _impure_ptr
+#define MB_CUR_MAX mbCurMax
+#define EOF (-1)
+#define __SNBF 0x0002
+#define __SWR 0x0008
+#define __SRW 0x0010
+#define __SERR 0x0040
+#define __sferror(p) (((p)->_flags & __SERR) != 0)
+#define cantwrite(fp) \
+  ((((fp)->_flags & __SWR) == 0 || (fp)->_bf._base == NULL) && \
+   __swsetup(fp))
+#define MAXEXP 308
+#define MAXFRACT 39
+#define BUF (MAXEXP+MAXFRACT+1)
+#define DEFPREC 6
+#define to_digit(c)	((c) - '0')
+#define is_digit(c)	((unsigned)to_digit(c) <= 9)
+#define	to_char(n)	((n) + '0')
+#define	ALT		0x001
+#define	HEXPREFIX	0x002
+#define	LADJUST		0x004
+#define	LONGDBL		0x008
+#define	LONGINT		0x010
+#define	QUADINT		0x020
+#define	SHORTINT	0x040
+#define	ZEROPAD		0x080
+#define FPT		0x100
+#define blanks printfSpaces
+#define zeroes printfZeros
+#define u_long unsigned long
+#define u_int unsigned int
+#define u_short unsigned short
+#define _POINTER_INT long
+#define wchar_t int
+
+int
+_vfprintf_r (struct _reent *data, FILE * fp, const char *fmt0, va_list ap)
+{
+	register char *fmt;	/* format string */
+	register int ch;	/* character from fmt */
+	register int n, m;	/* handy integers (short term usage) */
+	register char *cp;	/* handy char pointer (short term usage) */
+	register struct __siov *iovp;/* for PRINT macro */
+	register int flags;	/* flags as above */
+	int ret;		/* return value accumulator */
+	int width;		/* width from format (%8d), or 0 */
+	int prec;		/* precision from format (%.3d), or -1 */
+	char sign;		/* sign prefix (' ', '+', '-', or \0) */
+	wchar_t wc;
+	char *decimal_point = ((lconv_t *) localeconv ())->decimal_point;
+	char softsign;		/* temporary negative sign for floats */
+	double _double;		/* double precision arguments %[eEfgG] */
+	int expt;		/* integer value of exponent */
+	int expsize;		/* character count for expstr */
+	int ndig;		/* actual number of digits returned by cvt */
+	char expstr[7];		/* buffer for exponent string */
+
+
+	u_long _uquad;
+	enum { OCT, DEC, HEX } base;/* base for [diouxX] conversion */
+	int dprec;		/* a copy of prec if [diouxX], 0 otherwise */
+	int realsz;		/* field size expanded by dprec */
+	int size;		/* size of converted field or string */
+	char *xdigs;		/* digits for [xX] conversion */
+#define NIOV 8
+	struct __suio uio;	/* output information: summary */
+	struct __siov iov[NIOV];/* ... and individual io vectors */
+	char buf[BUF];		/* space for %c, %[diouxX], %[eEfgG] */
+	char ox[2];		/* space for 0x hex-prefix */
+        int state = 0;          /* mbtowc calls from library must not change state */
+
+	/*
+	 * Choose PADSIZE to trade efficiency vs. size.  If larger printf
+	 * fields occur frequently, increase PADSIZE and make the initialisers
+	 * below longer.
+	 */
+#define	PADSIZE	16		/* pad chunk size */
+
+	/*
+	 * BEWARE, these `goto error' on error, and PAD uses `n'.
+	 */
+#define	PRINT(ptr, len) { \
+	iovp->iov_base = (ptr); \
+	iovp->iov_len = (len); \
+	uio.uio_resid += (len); \
+	iovp++; \
+	if (++uio.uio_iovcnt >= NIOV) { \
+		if (__sprint(fp, &uio)) \
+			goto error; \
+		iovp = iov; \
+	} \
+}
+#define	PAD(howmany, with) { \
+	if ((n = (howmany)) > 0) { \
+		while (n > PADSIZE) { \
+			PRINT(with, PADSIZE); \
+			n -= PADSIZE; \
+		} \
+		PRINT(with, n); \
+	} \
+}
+#define	FLUSH() { \
+	if (uio.uio_resid && __sprint(fp, &uio)) \
+		goto error; \
+	uio.uio_iovcnt = 0; \
+	iovp = iov; \
+}
+
+	/*
+	 * To extend shorts properly, we need both signed and unsigned
+	 * argument extraction methods.
+	 */
+#define	SARG() \
+	(flags&LONGINT ? va_arg(ap, long) : \
+	    flags&SHORTINT ? (long)(short)va_arg(ap, int) : \
+	    (long)va_arg(ap, int))
+#define	UARG() \
+	(flags&LONGINT ? va_arg(ap, u_long) : \
+	    flags&SHORTINT ? (u_long)(u_short)va_arg(ap, int) : \
+	    (u_long)va_arg(ap, u_int))
+
+	/* sorry, fprintf(read_only_file, "") returns EOF, not 0 */
+	if (cantwrite(fp))
+		return (EOF);
+
+	/* optimise fprintf(stderr) (and other unbuffered Unix files) */
+	if ((fp->_flags & (__SNBF|__SWR|__SRW)) == (__SNBF|__SWR) &&
+	    fp->_file >= 0)
+		return (__sbprintf(fp, fmt0, ap));
+
+	fmt = (char *)fmt0;
+	uio.uio_iov = iovp = iov;
+	uio.uio_resid = 0;
+	uio.uio_iovcnt = 0;
+	ret = 0;
+
+	/*
+	 * Scan the format for conversions (`%' character).
+	 */
+	for (;;) {
+	        cp = fmt;
+	        while ((n = _mbtowc_r(_REENT, &wc, fmt, MB_CUR_MAX, &state)) > 0) {
+			fmt += n;
+			if (wc == '%') {
+				fmt--;
+				break;
+			}
+		}
+		if ((m = fmt - cp) != 0) {
+			PRINT(cp, m);
+			ret += m;
+		}
+		if (n <= 0)
+			goto done;
+		fmt++;		/* skip over '%' */
+
+		flags = 0;
+		dprec = 0;
+		width = 0;
+		prec = -1;
+		sign = '\0';
+
+rflag:		ch = *fmt++;
+reswitch:	switch (ch) {
+		case ' ':
+			/*
+			 * ``If the space and + flags both appear, the space
+			 * flag will be ignored.''
+			 *	-- ANSI X3J11
+			 */
+			if (!sign)
+				sign = ' ';
+			goto rflag;
+		case '#':
+			flags |= ALT;
+			goto rflag;
+		case '*':
+			/*
+			 * ``A negative field width argument is taken as a
+			 * - flag followed by a positive field width.''
+			 *	-- ANSI X3J11
+			 * They don't exclude field widths read from args.
+			 */
+			if ((width = va_arg(ap, int)) >= 0)
+				goto rflag;
+			width = -width;
+			/* FALLTHROUGH */
+		case '-':
+			flags |= LADJUST;
+			goto rflag;
+		case '+':
+			sign = '+';
+			goto rflag;
+		case '.':
+			if ((ch = *fmt++) == '*') {
+				n = va_arg(ap, int);
+				prec = n < 0 ? -1 : n;
+				goto rflag;
+			}
+			n = 0;
+			while (is_digit(ch)) {
+				n = 10 * n + to_digit(ch);
+				ch = *fmt++;
+			}
+			prec = n < 0 ? -1 : n;
+			goto reswitch;
+		case '0':
+			/*
+			 * ``Note that 0 is taken as a flag, not as the
+			 * beginning of a field width.''
+			 *	-- ANSI X3J11
+			 */
+			flags |= ZEROPAD;
+			goto rflag;
+		case '1': case '2': case '3': case '4':
+		case '5': case '6': case '7': case '8': case '9':
+			n = 0;
+			do {
+				n = 10 * n + to_digit(ch);
+				ch = *fmt++;
+			} while (is_digit(ch));
+			width = n;
+			goto reswitch;
+		case 'L':
+			flags |= LONGDBL;
+			goto rflag;
+		case 'h':
+			flags |= SHORTINT;
+			goto rflag;
+		case 'l':
+			if (*fmt == 'l') {
+				fmt++;
+				flags |= QUADINT;
+			} else {
+				flags |= LONGINT;
+			}
+			goto rflag;
+		case 'q':
+			flags |= QUADINT;
+			goto rflag;
+		case 'c':
+			*(cp = buf) = va_arg(ap, int);
+			size = 1;
+			sign = '\0';
+			break;
+		case 'D':
+			flags |= LONGINT;
+			/*FALLTHROUGH*/
+		case 'd':
+		case 'i':
+			_uquad = SARG();
+			if ((long) _uquad < 0)
+			{
+
+				_uquad = -_uquad;
+				sign = '-';
+			}
+			base = DEC;
+			goto number;
+		case 'e':
+		case 'E':
+		case 'f':
+		case 'g':
+		case 'G':
+			if (prec == -1) {
+				prec = DEFPREC;
+			} else if ((ch == 'g' || ch == 'G') && prec == 0) {
+				prec = 1;
+			}
+
+			if (flags & LONGDBL) {
+				_double = (double) va_arg(ap, long double);
+			} else {
+				_double = va_arg(ap, double);
+			}
+
+			/* do this before tricky precision changes */
+			if (isinf(_double)) {
+				if (_double < 0)
+					sign = '-';
+				cp = (char *) mnax_00549950;
+				size = 3;
+				break;
+			}
+			if (isnan(_double)) {
+				cp = (char *) printfNanText;
+				size = 3;
+				break;
+			}
+
+			flags |= FPT;
+			cp = cvt(data, _double, prec, flags, &softsign,
+				&expt, ch, &ndig);
+			if (ch == 'g' || ch == 'G') {
+				if (expt <= -4 || expt > prec)
+					ch = (ch == 'g') ? 'e' : 'E';
+				else
+					ch = 'g';
+			} 
+			if (ch <= 'e') {	/* 'e' or 'E' fmt */
+				--expt;
+				expsize = exponent(expstr, expt, ch);
+				size = expsize + ndig;
+				if (ndig > 1 || flags & ALT)
+					++size;
+			} else if (ch == 'f') {		/* f fmt */
+				if (expt > 0) {
+					size = expt;
+					if (prec || flags & ALT)
+						size += prec + 1;
+				} else	/* "0.X" */
+					size = prec + 2;
+			} else if (expt >= ndig) {	/* fixed g fmt */
+				size = expt;
+				if (flags & ALT)
+					++size;
+			} else
+				size = ndig + (expt > 0 ?
+					1 : 2 - expt);
+
+			if (softsign)
+				sign = '-';
+			break;
+		case 'n':
+			if (flags & LONGINT)
+				*va_arg(ap, long *) = ret;
+			else if (flags & SHORTINT)
+				*va_arg(ap, short *) = ret;
+			else
+				*va_arg(ap, int *) = ret;
+			continue;	/* no output */
+		case 'O':
+			flags |= LONGINT;
+			/*FALLTHROUGH*/
+		case 'o':
+			_uquad = UARG();
+			base = OCT;
+			goto nosign;
+		case 'p':
+			/*
+			 * ``The argument shall be a pointer to void.  The
+			 * value of the pointer is converted to a sequence
+			 * of printable characters, in an implementation-
+			 * defined manner.''
+			 *	-- ANSI X3J11
+			 */
+			/* NOSTRICT */
+			_uquad = (u_long)(unsigned _POINTER_INT)va_arg(ap, void *);
+			base = HEX;
+			xdigs = (char *) printfHexLower;
+			flags |= HEXPREFIX;
+			ch = 'x';
+			goto nosign;
+		case 's':
+			if ((cp = va_arg(ap, char *)) == NULL)
+				cp = (char *) printfNullText;
+			if (prec >= 0) {
+				/*
+				 * can't use strlen; can only look for the
+				 * NUL in the first `prec' characters, and
+				 * strlen() will go further.
+				 */
+				char *p = memchr(cp, 0, prec);
+
+				if (p != NULL) {
+					size = p - cp;
+					if (size > prec)
+						size = prec;
+				} else
+					size = prec;
+			} else
+				size = strlen(cp);
+			sign = '\0';
+			break;
+		case 'U':
+			flags |= LONGINT;
+			/*FALLTHROUGH*/
+		case 'u':
+			_uquad = UARG();
+			base = DEC;
+			goto nosign;
+		case 'X':
+			xdigs = (char *) printfHexUpper;
+			goto hex;
+		case 'x':
+			xdigs = (char *) printfHexLower;
+hex:			_uquad = UARG();
+			base = HEX;
+			/* leading 0x/X only if non-zero */
+			if (flags & ALT && _uquad != 0)
+				flags |= HEXPREFIX;
+
+			/* unsigned conversions */
+nosign:			sign = '\0';
+			/*
+			 * ``... diouXx conversions ... if a precision is
+			 * specified, the 0 flag will be ignored.''
+			 *	-- ANSI X3J11
+			 */
+number:			if ((dprec = prec) >= 0)
+				flags &= ~ZEROPAD;
+
+			/*
+			 * ``The result of converting a zero value with an
+			 * explicit precision of zero is no characters.''
+			 *	-- ANSI X3J11
+			 */
+			cp = buf + BUF;
+			if (_uquad != 0 || prec != 0) {
+				/*
+				 * Unsigned mod is hard, and unsigned mod
+				 * by a constant is easier than that by
+				 * a variable; hence this switch.
+				 */
+				switch (base) {
+				case OCT:
+					do {
+						*--cp = to_char(_uquad & 7);
+						_uquad >>= 3;
+					} while (_uquad);
+					/* handle octal leading 0 */
+					if (flags & ALT && *cp != '0')
+						*--cp = '0';
+					break;
+
+				case DEC:
+					/* many numbers are 1 digit */
+					while (_uquad >= 10) {
+						*--cp = to_char(_uquad % 10);
+						_uquad /= 10;
+					}
+					*--cp = to_char(_uquad);
+					break;
+
+				case HEX:
+					do {
+						*--cp = xdigs[_uquad & 15];
+						_uquad >>= 4;
+					} while (_uquad);
+					break;
+
+				default:
+					cp = (char *) printfBadBaseMsg;
+					size = strlen(cp);
+					goto skipsize;
+				}
+			}
+			size = buf + BUF - cp;
+		skipsize:
+			break;
+		default:	/* "%?" prints ?, unless ? is NUL */
+			if (ch == '\0')
+				goto done;
+			/* pretend it was %c with argument ch */
+			cp = buf;
+			*cp = ch;
+			size = 1;
+			sign = '\0';
+			break;
+		}
+
+		/*
+		 * All reasonable formats wind up here.  At this point, `cp'
+		 * points to a string which (if not flags&LADJUST) should be
+		 * padded out to `width' places.  If flags&ZEROPAD, it should
+		 * first be prefixed by any sign or other prefix; otherwise,
+		 * it should be blank padded before the prefix is emitted.
+		 * After any left-hand padding and prefixing, emit zeroes
+		 * required by a decimal [diouxX] precision, then print the
+		 * string proper, then emit zeroes required by any leftover
+		 * floating precision; finally, if LADJUST, pad with blanks.
+		 *
+		 * Compute actual size, so we know how much to pad.
+		 * size excludes decimal prec; realsz includes it.
+		 */
+		realsz = dprec > size ? dprec : size;
+		if (sign)
+			realsz++;
+		else if (flags & HEXPREFIX)
+			realsz+= 2;
+
+		/* right-adjusting blank padding */
+		if ((flags & (LADJUST|ZEROPAD)) == 0)
+			PAD(width - realsz, blanks);
+
+		/* prefix */
+		if (sign) {
+			PRINT(&sign, 1);
+		} else if (flags & HEXPREFIX) {
+			ox[0] = '0';
+			ox[1] = ch;
+			PRINT(ox, 2);
+		}
+
+		/* right-adjusting zero padding */
+		if ((flags & (LADJUST|ZEROPAD)) == ZEROPAD)
+			PAD(width - realsz, zeroes);
+
+		/* leading zeroes from decimal precision */
+		PAD(dprec - size, zeroes);
+
+		/* the string or number proper */
+		if ((flags & FPT) == 0) {
+			PRINT(cp, size);
+		} else {	/* glue together f_p fragments */
+			if (ch >= 'f') {	/* 'f' or 'g' */
+				if (_double == 0) {
+					/* kludge for __dtoa irregularity */
+					PRINT(printfZeroDigit, 1);
+					if (expt < ndig || (flags & ALT) != 0) {
+						PRINT(decimal_point, 1);
+						PAD(ndig - 1, zeroes);
+					}
+				} else if (expt <= 0) {
+					PRINT(printfZeroDigit, 1);
+					if (expt || ndig) {
+						PRINT(decimal_point, 1);
+						PAD(-expt, zeroes);
+						PRINT(cp, ndig);
+					}
+				} else if (expt >= ndig) {
+					PRINT(cp, ndig);
+					PAD(expt - ndig, zeroes);
+					if (flags & ALT)
+						PRINT(printfDecimalPoint, 1);
+				} else {
+					PRINT(cp, expt);
+					cp += expt;
+					PRINT(printfDecimalPoint, 1);
+					PRINT(cp, ndig-expt);
+				}
+			} else {	/* 'e' or 'E' */
+				if (ndig > 1 || flags & ALT) {
+					ox[0] = *cp++;
+					ox[1] = '.';
+					PRINT(ox, 2);
+                                       if (_double) {
+						PRINT(cp, ndig-1);
+					} else	/* 0.[0..] */
+						/* __dtoa irregularity */
+						PAD(ndig - 1, zeroes);
+				} else	/* XeYYY */
+					PRINT(cp, 1);
+				PRINT(expstr, expsize);
+			}
+		}
+		/* left-adjusting padding (always blank) */
+		if (flags & LADJUST)
+			PAD(width - realsz, blanks);
+
+		/* finally, adjust ret */
+		ret += width > realsz ? width : realsz;
+
+		FLUSH();	/* copy out the I/O vectors */
+	}
+done:
+	FLUSH();
+error:
+	return (__sferror(fp) ? EOF : ret);
+	/* NOTREACHED */
+}
+#undef va_arg
+#undef _REENT
+#undef MB_CUR_MAX
+#undef EOF
+#undef __SNBF
+#undef __SWR
+#undef __SRW
+#undef __SERR
+#undef __sferror
+#undef cantwrite
+#undef BUF
+#undef PRINT
+#undef PAD
+#undef FLUSH
+#undef SARG
+#undef UARG
+#undef blanks
+#undef zeroes
+#undef u_long
+#undef u_int
+#undef u_short
+#undef _POINTER_INT
+#undef wchar_t
+#undef NIOV
+#undef PADSIZE
+#elif defined(NON_MATCHING)
 /* Formatted-output core. Arguments occupy the EE ABI's eight-byte slots. */
 
 extern s32 __swsetup(FILE *fp);
@@ -1782,8 +2821,79 @@ s32 __swsetup(FILE *fp)
 
 s32 __mcmp(_Bigint *a, _Bigint *b);
 
+#if defined(VERSION_MNAX)
+/* newlib dtoa.c quorem, Pack_32 with the little-endian Storeinc (high half
+ * stored first). */
+s32 quorem(_Bigint *b, _Bigint *S)
+{
+    s32 n;
+    s32 borrow, y;
+    u32 carry, q, ys;
+    u32 *bx, *bxe, *sx, *sxe;
+    s32 z;
+    u32 si, zs;
+
+    n = S->wds;
+    if (b->wds < n) {
+        return 0;
+    }
+    sx = S->x;
+    sxe = sx + --n;
+    bx = b->x;
+    bxe = bx + n;
+    q = *bxe / (*sxe + 1);
+    if (q) {
+        borrow = 0;
+        carry = 0;
+        do {
+            si = *sx++;
+            ys = (si & 0xFFFF) * q + carry;
+            zs = (si >> 16) * q + (ys >> 16);
+            carry = zs >> 16;
+            y = (*bx & 0xFFFF) - (ys & 0xFFFF) + borrow;
+            borrow = y >> 16;
+            z = (*bx >> 16) - (zs & 0xFFFF) + borrow;
+            borrow = z >> 16;
+            ((u16 *)bx)[1] = (u16)z, ((u16 *)bx)[0] = (u16)y, bx++;
+        } while (sx <= sxe);
+        if (!*bxe) {
+            bx = b->x;
+            while (--bxe > bx && !*bxe) {
+                --n;
+            }
+            b->wds = n;
+        }
+    }
+    if (__mcmp(b, S) >= 0) {
+        q++;
+        borrow = 0;
+        carry = 0;
+        bx = b->x;
+        sx = S->x;
+        do {
+            si = *sx++;
+            ys = (si & 0xFFFF) + carry;
+            zs = (si >> 16) + (ys >> 16);
+            carry = zs >> 16;
+            y = (*bx & 0xFFFF) - (ys & 0xFFFF) + borrow;
+            borrow = y >> 16;
+            z = (*bx >> 16) - (zs & 0xFFFF) + borrow;
+            borrow = z >> 16;
+            ((u16 *)bx)[1] = (u16)z, ((u16 *)bx)[0] = (u16)y, bx++;
+        } while (sx <= sxe);
+        bx = b->x;
+        bxe = bx + n;
+        if (!*bxe) {
+            while (--bxe > bx && !*bxe) {
+                --n;
+            }
+            b->wds = n;
+        }
+    }
+    return q;
+}
 /* NON_MATCHING: native 556-byte extent; 65 differing words in limb-loop allocation. */
-#ifdef NON_MATCHING
+#elif defined(NON_MATCHING)
 s32 quorem(_Bigint *dividend, _Bigint *divisor)
 {
     s32 n = divisor->wds;
@@ -1888,6 +2998,7 @@ extern const f64 dtoaLog10Of2 __attribute__((section(".rodata")));
 extern const f64 dtoaPow10Big[];
 extern const f64 dtoaPow10Limit __attribute__((section(".rodata")));
 
+#ifndef VERSION_MNAX
 const char printfNanText[8] __attribute__((section(".rodata"))) = "NaN";
 
 const char printfHexLower[24] = "0123456789abcdef";
@@ -1905,10 +3016,744 @@ const char printfDecimalPoint[16] = ".";
 INCLUDE_RODATA(const s32, "sdk/libc", jtbl_0054B710);
 
 const char dtoaInfinityText[16] = "Infinity";
+#else
+/* dtoa.o's rodata starts on the 16-byte boundary its section had. */
+const char dtoaInfinityText[16] __attribute__((aligned(16))) = "Infinity";
+#endif
 
 const char dtoaNanText[8] __attribute__((section(".rodata"))) = "NaN";
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+/* dtoa.o's rodata follows in its native order: the "0" result here (ordinary
+ * data, where the -G0 original had its .rdata literal), the three log10
+ * constants the assembler pools for li.d, then the mode switch's jump table. */
+const char mnax_00549B58[8] __attribute__((section(".rodata"))) = "0";
+
+/* newlib dtoa.c _dtoa_r with the mprec.h macros it uses (IEEE_8087, Pack_32,
+ * no Sudden_Underflow). __Long/__ULong are 32-bit int on the EE. */
+union double_union
+{
+  double d;
+  u32 i[2];
+};
+
+#define word0(x) (x.i[1])
+#define word1(x) (x.i[0])
+
+#define Exp_shift  20
+#define Exp_shift1 20
+#define Exp_msk1    ((u32)0x100000L)
+#define Exp_msk11   ((u32)0x100000L)
+#define Exp_mask  ((u32)0x7ff00000L)
+#define P 53
+#define Bias 1023
+#define IEEE_Arith
+#define Emin (-1022)
+#define Exp_1  ((u32)0x3ff00000L)
+#define Exp_11 ((u32)0x3ff00000L)
+#define Ebits 11
+#define Frac_mask  ((u32)0xfffffL)
+#define Frac_mask1 ((u32)0xfffffL)
+#define Ten_pmax 22
+#define Bletch 0x10
+#define Bndry_mask  ((u32)0xfffffL)
+#define Bndry_mask1 ((u32)0xfffffL)
+#define LSB 1
+#define Sign_bit ((u32)0x80000000L)
+#define Log2P 1
+#define Tiny0 0
+#define Tiny1 1
+#define Quick_max 14
+#define Int_max 14
+
+#define Bcopy(x,y) memcpy((char *)&x->sign, (char *)&y->sign, y->wds*sizeof(s32) + 2*sizeof(int))
+#define n_bigtens 5
+#define Pack_32
+
+#define __Long int
+typedef unsigned int __ULong;
+
+#define tens pow10Table
+#define bigtens dtoaPow10Big
+
+char *
+_dtoa_r (struct _reent *ptr, double _d, int mode, int ndigits, int *decpt,
+	 int *sign, char **rve)
+{
+  /*	Arguments ndigits, decpt, sign are similar to those
+	of ecvt and fcvt; trailing zeros are suppressed from
+	the returned string.  If not null, *rve is set to point
+	to the end of the return value.  If d is +-Infinity or NaN,
+	then *decpt is set to 9999.
+
+	mode:
+		0 ==> shortest string that yields d when read in
+			and rounded to nearest.
+		1 ==> like 0, but with Steele & White stopping rule;
+			e.g. with IEEE P754 arithmetic , mode 0 gives
+			1e23 whereas mode 1 gives 9.999999999999999e22.
+		2 ==> max(1,ndigits) significant digits.  This gives a
+			return value similar to that of ecvt, except
+			that trailing zeros are suppressed.
+		3 ==> through ndigits past the decimal point.  This
+			gives a return value similar to that from fcvt,
+			except that trailing zeros are suppressed, and
+			ndigits can be negative.
+		4-9 should give the same return values as 2-3, i.e.,
+			4 <= mode <= 9 ==> same return as mode
+			2 + (mode & 1).  These modes are mainly for
+			debugging; often they run slower but sometimes
+			faster than modes 2-3.
+		4,5,8,9 ==> left-to-right digit generation.
+		6-9 ==> don't try fast floating-point estimate
+			(if applicable).
+
+		Values of mode other than 0-9 are treated as mode 0.
+
+		Sufficient space is allocated to the return value
+		to hold the suppressed trailing zeros.
+	*/
+
+  int bbits, b2, b5, be, dig, i, ieps, ilim, ilim0, ilim1, j, j1, k, k0,
+    k_check, leftright, m2, m5, s2, s5, spec_case, try_quick;
+  union double_union d, d2, eps;
+  __Long L;
+#ifndef Sudden_Underflow
+  int denorm;
+  __ULong x;
+#endif
+  _Bigint *b, *b1, *delta, *mlo, *mhi, *S;
+  double ds;
+  char *s, *s0;
+
+  d.d = _d;
+
+  if (ptr->_result)
+    {
+      ptr->_result->k = ptr->_result_k;
+      ptr->_result->maxwds = 1 << ptr->_result_k;
+      _Bfree (ptr, ptr->_result);
+      ptr->_result = 0;
+    }
+
+  if (word0 (d) & Sign_bit)
+    {
+      /* set sign for everything, including 0's and NaNs */
+      *sign = 1;
+      word0 (d) &= ~Sign_bit;	/* clear sign bit */
+    }
+  else
+    *sign = 0;
+
+#if defined(IEEE_Arith) + defined(VAX)
+#ifdef IEEE_Arith
+  if ((word0 (d) & Exp_mask) == Exp_mask)
+#else
+  if (word0 (d) == 0x8000)
+#endif
+    {
+      /* Infinity or NaN */
+      *decpt = 9999;
+      s =
+#ifdef IEEE_Arith
+	!word1 (d) && !(word0 (d) & 0xfffff) ? (char *) dtoaInfinityText :
+#endif
+	(char *) dtoaNanText;
+      if (rve)
+	*rve =
+#ifdef IEEE_Arith
+	  s[3] ? s + 8 :
+#endif
+	  s + 3;
+      return s;
+    }
+#endif
+#ifdef IBM
+  d.d += 0;			/* normalize */
+#endif
+  if (!d.d)
+    {
+      *decpt = 1;
+      s = (char *) mnax_00549B58;
+      if (rve)
+	*rve = s + 1;
+      return s;
+    }
+
+  b = _d2b (ptr, d.d, &be, &bbits);
+#ifdef Sudden_Underflow
+  i = (int) (word0 (d) >> Exp_shift1 & (Exp_mask >> Exp_shift1));
+#else
+  if ((i = (int) (word0 (d) >> Exp_shift1 & (Exp_mask >> Exp_shift1))) != 0)
+    {
+#endif
+      d2.d = d.d;
+      word0 (d2) &= Frac_mask1;
+      word0 (d2) |= Exp_11;
+#ifdef IBM
+      if (j = 11 - _hi0bits (word0 (d2) & Frac_mask))
+	d2.d /= 1 << j;
+#endif
+
+      /* log(x)	~=~ log(1.5) + (x-1.5)/1.5
+		 * log10(x)	 =  log(x) / log(10)
+		 *		~=~ log(1.5)/log(10) + (x-1.5)/(1.5*log(10))
+		 * log10(d) = (i-Bias)*log(2)/log(10) + log10(d2)
+		 *
+		 * This suggests computing an approximation k to log10(d) by
+		 *
+		 * k = (i - Bias)*0.301029995663981
+		 *	+ ( (d2-1.5)*0.289529654602168 + 0.176091259055681 );
+		 *
+		 * We want k to be too large rather than too small.
+		 * The error in the first-order Taylor series approximation
+		 * is in our favor, so we just round up the constant enough
+		 * to compensate for any error in the multiplication of
+		 * (i - Bias) by 0.301029995663981; since |i - Bias| <= 1077,
+		 * and 1077 * 0.30103 * 2^-52 ~=~ 7.2e-14,
+		 * adding 1e-13 to the constant term more than suffices.
+		 * Hence we adjust the constant term to 0.1760912590558.
+		 * (We could get a more accurate k by invoking log10,
+		 *  but this is probably not worthwhile.)
+		 */
+
+      i -= Bias;
+#ifdef IBM
+      i <<= 2;
+      i += j;
+#endif
+#ifndef Sudden_Underflow
+      denorm = 0;
+    }
+  else
+    {
+      /* d is denormalized */
+
+      i = bbits + be + (Bias + (P - 1) - 1);
+      x = (i > 32) ? (word0 (d) << (64 - i)) | (word1 (d) >> (i - 32))
+       : (word1 (d) << (32 - i));
+      d2.d = x;
+      word0 (d2) -= 31 * Exp_msk1;	/* adjust exponent */
+      i -= (Bias + (P - 1) - 1) + 1;
+      denorm = 1;
+    }
+#endif
+  ds = (d2.d - 1.5) * 0.289529654602168 + 0.1760912590558 + i * 0.301029995663981;
+  k = (int) ds;
+  if (ds < 0. && ds != k)
+    k--;			/* want k = floor(ds) */
+  k_check = 1;
+  if (k >= 0 && k <= Ten_pmax)
+    {
+      if (d.d < tens[k])
+	k--;
+      k_check = 0;
+    }
+  j = bbits - i - 1;
+  if (j >= 0)
+    {
+      b2 = 0;
+      s2 = j;
+    }
+  else
+    {
+      b2 = -j;
+      s2 = 0;
+    }
+  if (k >= 0)
+    {
+      b5 = 0;
+      s5 = k;
+      s2 += k;
+    }
+  else
+    {
+      b2 -= k;
+      b5 = -k;
+      s5 = 0;
+    }
+  if (mode < 0 || mode > 9)
+    mode = 0;
+  try_quick = 1;
+  if (mode > 5)
+    {
+      mode -= 4;
+      try_quick = 0;
+    }
+  leftright = 1;
+  ilim = ilim1 = -1;
+  switch (mode)
+    {
+    case 0:
+    case 1:
+      i = 18;
+      ndigits = 0;
+      break;
+    case 2:
+      leftright = 0;
+      /* no break */
+    case 4:
+      if (ndigits <= 0)
+	ndigits = 1;
+      ilim = ilim1 = i = ndigits;
+      break;
+    case 3:
+      leftright = 0;
+      /* no break */
+    case 5:
+      i = ndigits + k + 1;
+      ilim = i;
+      ilim1 = i - 1;
+      if (i <= 0)
+	i = 1;
+    }
+  j = sizeof (__ULong);
+  for (ptr->_result_k = 0; sizeof (_Bigint) - sizeof (__ULong) + j <= i;
+       j <<= 1)
+    ptr->_result_k++;
+  ptr->_result = _Balloc (ptr, ptr->_result_k);
+  s = s0 = (char *) ptr->_result;
+
+  if (ilim >= 0 && ilim <= Quick_max && try_quick)
+    {
+      /* Try to get by with floating-point arithmetic. */
+
+      i = 0;
+      d2.d = d.d;
+      k0 = k;
+      ilim0 = ilim;
+      ieps = 2;			/* conservative */
+      if (k > 0)
+	{
+	  ds = tens[k & 0xf];
+	  j = k >> 4;
+	  if (j & Bletch)
+	    {
+	      /* prevent overflows */
+	      j &= Bletch - 1;
+	      d.d /= bigtens[n_bigtens - 1];
+	      ieps++;
+	    }
+	  for (; j; j >>= 1, i++)
+	    if (j & 1)
+	      {
+		ieps++;
+		ds *= bigtens[i];
+	      }
+	  d.d /= ds;
+	}
+      else if ((j1 = -k) != 0)
+	{
+	  d.d *= tens[j1 & 0xf];
+	  for (j = j1 >> 4; j; j >>= 1, i++)
+	    if (j & 1)
+	      {
+		ieps++;
+		d.d *= bigtens[i];
+	      }
+	}
+      if (k_check && d.d < 1. && ilim > 0)
+	{
+	  if (ilim1 <= 0)
+	    goto fast_failed;
+	  ilim = ilim1;
+	  k--;
+	  d.d *= 10.;
+	  ieps++;
+	}
+      eps.d = ieps * d.d + 7.;
+      word0 (eps) -= (P - 1) * Exp_msk1;
+      if (ilim == 0)
+	{
+	  S = mhi = 0;
+	  d.d -= 5.;
+	  if (d.d > eps.d)
+	    goto one_digit;
+	  if (d.d < -eps.d)
+	    goto no_digits;
+	  goto fast_failed;
+	}
+#ifndef No_leftright
+      if (leftright)
+	{
+	  /* Use Steele & White method of only
+	   * generating digits needed.
+	   */
+	  eps.d = 0.5 / tens[ilim - 1] - eps.d;
+	  for (i = 0;;)
+	    {
+	      L = d.d;
+	      d.d -= L;
+	      *s++ = '0' + (int) L;
+	      if (d.d < eps.d)
+		goto ret1;
+	      if (1. - d.d < eps.d)
+		goto bump_up;
+	      if (++i >= ilim)
+		break;
+	      eps.d *= 10.;
+	      d.d *= 10.;
+	    }
+	}
+      else
+	{
+#endif
+	  /* Generate ilim digits, then fix them up. */
+	  eps.d *= tens[ilim - 1];
+	  for (i = 1;; i++, d.d *= 10.)
+	    {
+	      L = d.d;
+	      d.d -= L;
+	      *s++ = '0' + (int) L;
+	      if (i == ilim)
+		{
+		  if (d.d > 0.5 + eps.d)
+		    goto bump_up;
+		  else if (d.d < 0.5 - eps.d)
+		    {
+		      while (*--s == '0');
+		      s++;
+		      goto ret1;
+		    }
+		  break;
+		}
+	    }
+#ifndef No_leftright
+	}
+#endif
+    fast_failed:
+      s = s0;
+      d.d = d2.d;
+      k = k0;
+      ilim = ilim0;
+    }
+
+  /* Do we have a "small" integer? */
+
+  if (be >= 0 && k <= Int_max)
+    {
+      /* Yes. */
+      ds = tens[k];
+      if (ndigits < 0 && ilim <= 0)
+	{
+	  S = mhi = 0;
+	  if (ilim < 0 || d.d <= 5 * ds)
+	    goto no_digits;
+	  goto one_digit;
+	}
+      for (i = 1;; i++)
+	{
+	  L = d.d / ds;
+	  d.d -= L * ds;
+#ifdef Check_FLT_ROUNDS
+	  /* If FLT_ROUNDS == 2, L will usually be high by 1 */
+	  if (d.d < 0)
+	    {
+	      L--;
+	      d.d += ds;
+	    }
+#endif
+	  *s++ = '0' + (int) L;
+	  if (i == ilim)
+	    {
+	      d.d += d.d;
+             if ((d.d > ds) || ((d.d == ds) && (L & 1)))
+		{
+		bump_up:
+		  while (*--s == '9')
+		    if (s == s0)
+		      {
+			k++;
+			*s = '0';
+			break;
+		      }
+		  ++*s++;
+		}
+	      break;
+	    }
+	  if (!(d.d *= 10.))
+	    break;
+	}
+      goto ret1;
+    }
+
+  m2 = b2;
+  m5 = b5;
+  mhi = mlo = 0;
+  if (leftright)
+    {
+      if (mode < 2)
+	{
+	  i =
+#ifndef Sudden_Underflow
+	    denorm ? be + (Bias + (P - 1) - 1 + 1) :
+#endif
+#ifdef IBM
+	    1 + 4 * P - 3 - bbits + ((bbits + be - 1) & 3);
+#else
+	    1 + P - bbits;
+#endif
+	}
+      else
+	{
+	  j = ilim - 1;
+	  if (m5 >= j)
+	    m5 -= j;
+	  else
+	    {
+	      s5 += j -= m5;
+	      b5 += j;
+	      m5 = 0;
+	    }
+	  if ((i = ilim) < 0)
+	    {
+	      m2 -= i;
+	      i = 0;
+	    }
+	}
+      b2 += i;
+      s2 += i;
+      mhi = _i2b (ptr, 1);
+    }
+  if (m2 > 0 && s2 > 0)
+    {
+      i = m2 < s2 ? m2 : s2;
+      b2 -= i;
+      m2 -= i;
+      s2 -= i;
+    }
+  if (b5 > 0)
+    {
+      if (leftright)
+	{
+	  if (m5 > 0)
+	    {
+	      mhi = _pow5mult (ptr, mhi, m5);
+	      b1 = _multiply (ptr, mhi, b);
+	      _Bfree (ptr, b);
+	      b = b1;
+	    }
+         if ((j = b5 - m5) != 0)
+	    b = _pow5mult (ptr, b, j);
+	}
+      else
+	b = _pow5mult (ptr, b, b5);
+    }
+  S = _i2b (ptr, 1);
+  if (s5 > 0)
+    S = _pow5mult (ptr, S, s5);
+
+  /* Check for special case that d is a normalized power of 2. */
+
+  spec_case = 0;
+  if (mode < 2)
+    {
+      if (!word1 (d) && !(word0 (d) & Bndry_mask)
+#ifndef Sudden_Underflow
+	  && word0 (d) & Exp_mask
+#endif
+	)
+	{
+	  /* The special case */
+	  b2 += Log2P;
+	  s2 += Log2P;
+	  spec_case = 1;
+	}
+    }
+
+  /* Arrange for convenient computation of quotients:
+   * shift left if necessary so divisor has 4 leading 0 bits.
+   *
+   * Perhaps we should just compute leading 28 bits of S once
+   * and for all and pass them and a shift to quorem, so it
+   * can do shifts and ors to compute the numerator for q.
+   */
+
+#ifdef Pack_32
+  if ((i = ((s5 ? 32 - _hi0bits (S->x[S->wds - 1]) : 1) + s2) & 0x1f) != 0)
+    i = 32 - i;
+#else
+  if ((i = ((s5 ? 32 - _hi0bits (S->x[S->wds - 1]) : 1) + s2) & 0xf) != 0)
+    i = 16 - i;
+#endif
+  if (i > 4)
+    {
+      i -= 4;
+      b2 += i;
+      m2 += i;
+      s2 += i;
+    }
+  else if (i < 4)
+    {
+      i += 28;
+      b2 += i;
+      m2 += i;
+      s2 += i;
+    }
+  if (b2 > 0)
+    b = _lshift (ptr, b, b2);
+  if (s2 > 0)
+    S = _lshift (ptr, S, s2);
+  if (k_check)
+    {
+      if (__mcmp (b, S) < 0)
+	{
+	  k--;
+	  b = _multadd (ptr, b, 10, 0);	/* we botched the k estimate */
+	  if (leftright)
+	    mhi = _multadd (ptr, mhi, 10, 0);
+	  ilim = ilim1;
+	}
+    }
+  if (ilim <= 0 && mode > 2)
+    {
+      if (ilim < 0 || __mcmp (b, S = _multadd (ptr, S, 5, 0)) <= 0)
+	{
+	  /* no digits, fcvt style */
+	no_digits:
+	  k = -1 - ndigits;
+	  goto ret;
+	}
+    one_digit:
+      *s++ = '1';
+      k++;
+      goto ret;
+    }
+  if (leftright)
+    {
+      if (m2 > 0)
+	mhi = _lshift (ptr, mhi, m2);
+
+      /* Compute mlo -- check for special case
+       * that d is a normalized power of 2.
+       */
+
+      mlo = mhi;
+      if (spec_case)
+	{
+	  mhi = _Balloc (ptr, mhi->k);
+	  Bcopy (mhi, mlo);
+	  mhi = _lshift (ptr, mhi, Log2P);
+	}
+
+      for (i = 1;; i++)
+	{
+	  dig = quorem (b, S) + '0';
+	  /* Do we yet have the shortest decimal string
+	   * that will round to d?
+	   */
+	  j = __mcmp (b, mlo);
+	  delta = __mdiff (ptr, S, mhi);
+	  j1 = delta->sign ? 1 : __mcmp (b, delta);
+	  _Bfree (ptr, delta);
+#ifndef ROUND_BIASED
+	  if (j1 == 0 && !mode && !(word1 (d) & 1))
+	    {
+	      if (dig == '9')
+		goto round_9_up;
+	      if (j > 0)
+		dig++;
+	      *s++ = dig;
+	      goto ret;
+	    }
+#endif
+         if ((j < 0) || ((j == 0) && !mode
+#ifndef ROUND_BIASED
+	      && !(word1 (d) & 1)
+#endif
+           ))
+	    {
+	      if (j1 > 0)
+		{
+		  b = _lshift (ptr, b, 1);
+		  j1 = __mcmp (b, S);
+                 if (((j1 > 0) || ((j1 == 0) && (dig & 1)))
+		      && dig++ == '9')
+		    goto round_9_up;
+		}
+	      *s++ = dig;
+	      goto ret;
+	    }
+	  if (j1 > 0)
+	    {
+	      if (dig == '9')
+		{		/* possible if i == 1 */
+		round_9_up:
+		  *s++ = '9';
+		  goto roundoff;
+		}
+	      *s++ = dig + 1;
+	      goto ret;
+	    }
+	  *s++ = dig;
+	  if (i == ilim)
+	    break;
+	  b = _multadd (ptr, b, 10, 0);
+	  if (mlo == mhi)
+	    mlo = mhi = _multadd (ptr, mhi, 10, 0);
+	  else
+	    {
+	      mlo = _multadd (ptr, mlo, 10, 0);
+	      mhi = _multadd (ptr, mhi, 10, 0);
+	    }
+	}
+    }
+  else
+    for (i = 1;; i++)
+      {
+	*s++ = dig = quorem (b, S) + '0';
+	if (i >= ilim)
+	  break;
+	b = _multadd (ptr, b, 10, 0);
+      }
+
+  /* Round off last digit */
+
+  b = _lshift (ptr, b, 1);
+  j = __mcmp (b, S);
+  if ((j > 0) || ((j == 0) && (dig & 1)))
+    {
+    roundoff:
+      while (*--s == '9')
+	if (s == s0)
+	  {
+	    k++;
+	    *s++ = '1';
+	    goto ret;
+	  }
+      ++*s++;
+    }
+  else
+    {
+      while (*--s == '0');
+      s++;
+    }
+ret:
+  _Bfree (ptr, S);
+  if (mhi)
+    {
+      if (mlo && mlo != mhi)
+	_Bfree (ptr, mlo);
+      _Bfree (ptr, mhi);
+    }
+ret1:
+  _Bfree (ptr, b);
+  *s = 0;
+  *decpt = k + 1;
+  if (rve)
+    *rve = s;
+  return s0;
+}
+
+#undef word0
+#undef word1
+#undef tens
+#undef bigtens
+#undef Bcopy
+#undef P
+#undef __Long
+#undef Pack_32
+#elif defined(NON_MATCHING)
 char *_dtoa_r(_reent *r, f64 input, s32 mode, s32 digits,
               s32 *decimalPoint, s32 *sign, char **end)
 {
@@ -3147,7 +4992,74 @@ _Bigint *_i2b(_reent *r, s32 i) {
     return b;
 }
 
+#if defined(VERSION_MNAX)
+/* newlib mprec.c mult, Pack_32 with the little-endian Storeinc. */
+_Bigint *_multiply(_reent *r, _Bigint *a, _Bigint *b)
+{
+    _Bigint *c;
+    s32 k, wa, wb, wc;
+    u32 carry, y, z;
+    u32 *x, *xa, *xae, *xb, *xbe, *xc, *xc0;
+    u32 z2;
+
+    if (a->wds < b->wds) {
+        c = a;
+        a = b;
+        b = c;
+    }
+    k = a->k;
+    wa = a->wds;
+    wb = b->wds;
+    wc = wa + wb;
+    if (wc > a->maxwds) {
+        k++;
+    }
+    c = _Balloc(r, k);
+    for (x = c->x, xa = x + wc; x < xa; x++) {
+        *x = 0;
+    }
+    xa = a->x;
+    xae = xa + wa;
+    xb = b->x;
+    xbe = xb + wb;
+    xc0 = c->x;
+    for (; xb < xbe; xb++, xc0++) {
+        if ((y = *xb & 0xFFFF) != 0) {
+            x = xa;
+            xc = xc0;
+            carry = 0;
+            do {
+                z = (*x & 0xFFFF) * y + (*xc & 0xFFFF) + carry;
+                carry = z >> 16;
+                z2 = (*x++ >> 16) * y + (*xc >> 16) + carry;
+                carry = z2 >> 16;
+                ((u16 *)xc)[1] = (u16)z2, ((u16 *)xc)[0] = (u16)z, xc++;
+            } while (x < xae);
+            *xc = carry;
+        }
+        if ((y = *xb >> 16) != 0) {
+            x = xa;
+            xc = xc0;
+            carry = 0;
+            z2 = *xc;
+            do {
+                z = (*x & 0xFFFF) * y + (*xc >> 16) + carry;
+                carry = z >> 16;
+                ((u16 *)xc)[1] = (u16)z, ((u16 *)xc)[0] = (u16)z2, xc++;
+                z2 = (*x++ >> 16) * y + (*xc & 0xFFFF) + carry;
+                carry = z2 >> 16;
+            } while (x < xae);
+            *xc = z2;
+        }
+    }
+    for (xc0 = c->x, xc = xc0 + wc; wc > 0 && !*--xc; --wc) {
+    }
+    c->wds = wc;
+    return c;
+}
+#else
 INCLUDE_ASM(const s32, "sdk/libc", _multiply);
+#endif
 
 /* Native indexed constants span the separately labeled word at 0x0054B928. */
 extern const s32 pow5MultTable[];
@@ -3501,9 +5413,49 @@ double _mprec_log10(s32 dig) {
     return v;
 }
 
-INCLUDE_ASM(const s32, "sdk/libc", isinf);
+#if defined(VERSION_MNAX)
+s32 isinf(f64 x)
+{
+    s32 hx, lx;
 
+    /* fdlibm EXTRACT_WORDS: the do/while scope decides the allocation. */
+    do {
+        libcDoubleBits_t u;
+
+        u.value = x;
+        hx = u.word[1];
+        lx = u.word[0];
+    } while (0);
+    hx &= 0x7FFFFFFF;
+    hx |= (u32)(lx | -lx) >> 31;
+    hx = 0x7FF00000 - hx;
+    return 1 - (s32)((u32)(hx | -hx) >> 31);
+}
+#else
+INCLUDE_ASM(const s32, "sdk/libc", isinf);
+#endif
+
+#if defined(VERSION_MNAX)
+s32 isnan(f64 x)
+{
+    s32 hx, lx;
+
+    /* fdlibm EXTRACT_WORDS: the do/while scope decides the allocation. */
+    do {
+        libcDoubleBits_t u;
+
+        u.value = x;
+        hx = u.word[1];
+        lx = u.word[0];
+    } while (0);
+    hx &= 0x7FFFFFFF;
+    hx |= (u32)(lx | -lx) >> 31;
+    hx = 0x7FF00000 - hx;
+    return (s32)((u32)hx >> 31);
+}
+#else
 INCLUDE_ASM(const s32, "sdk/libc", isnan);
+#endif
 
 s32 __sread(void *cookie, char *buf, s32 n) {
     FILE *fp = cookie;
@@ -3644,6 +5596,7 @@ long _read_r(_reent *r, s32 fd, char *buf, s32 n) {
     return result;
 }
 
+#ifndef VERSION_MNAX
 f64 dtoaLog10Slope __attribute__((section(".rodata"))) = 0.289529654602168;
 
 f64 dtoaLog10Offset __attribute__((section(".rodata"))) = 0.17609125905579998;
@@ -3651,6 +5604,7 @@ f64 dtoaLog10Offset __attribute__((section(".rodata"))) = 0.17609125905579998;
 const f64 dtoaLog10Of2 __attribute__((section(".rodata"))) = 0.301029995663981;
 
 INCLUDE_RODATA(const s32, "sdk/libc", jtbl_0054B8C0);
+#endif
 
 INCLUDE_RODATA(const s32, "sdk/libc", localeconvData);
 

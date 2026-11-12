@@ -342,6 +342,15 @@ typedef struct {
     ".set noreorder\n\tdiv1 $0, %1, %2\n\tmfhi1 %0\n\t.set reorder" \
     : "=r" (remainder) : "r" (a), "r" (b))
 
+/* Full 32x32->64 unsigned product into two words: multu, then the low and
+ * high halves read from LO and HI by cc1's own mflo/mfhi. This is gcc
+ * longlong.h's MIPS umul_ppmm (libgcc2's __muldi3 and __udivmoddi4); a C
+ * u64 product instead widens both operands and calls __muldi3. Value form,
+ * not volatile, as in longlong.h. */
+#define EE_MULTU_HI_LO(high, low, a, b) __asm__ ( \
+    "multu %2,%3" \
+    : "=l" ((u32)(low)), "=h" ((u32)(high)) : "d" ((u32)(a)), "d" ((u32)(b)))
+
 /* ---- COP1 square root ---- */
 
 /* The engine's own names. The HD sources keep both as real functions in
