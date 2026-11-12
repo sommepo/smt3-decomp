@@ -292,7 +292,8 @@ def main() -> None:
             if not votes:
                 return None
             (base, n), = votes.most_common(1)
-            if n * 2 <= sum(votes.values()):
+            # One named object is not enough: a single carried name can be wrong.
+            if n < 2 or n * 2 <= sum(votes.values()):
                 return None
             size = (sec["sh_size"] + 7) & ~7 if secname == ".rodata" else (sec["sh_size"] + 3) & ~3
             return base, size
@@ -311,6 +312,7 @@ def main() -> None:
             usa_extent[unit][sec] = b - a
     units = [name for rom, kind, name in usa_yaml if kind == "c"]
     good, verdict, sources = {}, {}, {}
+    guessed = set()      # (unit, section) whose Maniax start came from nearby anchors only
     # Maniax start of each USA .text entry: its first function that exists in Maniax.
     text_end_m = 0x100000 + msec[".text"][1]
     mregion_end = {".data": msec[".eh_frame"][0], ".rodata": msec[".lit4"][0], ".lit4": msec[".sdata"][0],
@@ -396,6 +398,7 @@ def main() -> None:
                                 real = (sec["sh_size"] + 7) & ~7
                         size = min(size, real)
                     starts[name] = (m0, size, u0)
+                    guessed.add((unit, name))
             if why is None:
                 keep = [n for n in missed[unit] if isinstance(func_at.get(n), int)]
                 gone = [name for _, name, at in mine if at == "absent"]

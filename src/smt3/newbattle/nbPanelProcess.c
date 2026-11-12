@@ -840,8 +840,13 @@ void nbPanelSmallNameStringDraw(s32 x, s32 y, nbPanelProcess_nbPanelXYZ_t *pXYZ,
 {
     frFontHandle_t *frq;
     u32 col;
+#ifdef VERSION_MNAX
+    s32 ofs = statindex * sizeof(datUnitWork_t) + (u32)&((dds3GlobalWork_t *)0)->unitwork;
 
+    if (((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs))->flag & 4) {
+#else
     if (DDS3_GBWK->akuma[statindex].flag & 4) {
+#endif
 #ifdef VERSION_MNAX
         frq = frGetCNameFRQ(0, 1, NULL);
 #else
@@ -857,7 +862,11 @@ void nbPanelSmallNameStringDraw(s32 x, s32 y, nbPanelProcess_nbPanelXYZ_t *pXYZ,
 
     col = effMagaCylinderCalcColor(abgr, nbPanelBaseRGBA);
     frq = (frFontHandle_t *)frwGetSmallFontFRQ2((pXYZ->x + x) << 4, (pXYZ->y + y) << 3, 0,
+#ifdef VERSION_MNAX
+                              col, text2[((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs))->id], NULL);
+#else
                               col, text2[DDS3_GBWK->akuma[statindex].devilId], NULL);
+#endif
     frDrawFontOt(frq, 1, 0x47);
     frDestroyFontRequestAfter(frq);
 }

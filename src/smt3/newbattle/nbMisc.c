@@ -774,6 +774,32 @@ void nbSetNormalSkill0(datUnitWork_t *work)
 INCLUDE_ASM(const s32, "newbattle/nbMisc", nbSetNormalSkill0);
 #endif
 
+#ifdef VERSION_MNAX
+s32 nbGetNakama(datUnitWork_t *s)
+{
+    datUnitWork_t *stock;
+    s32 i;
+
+    if (datCheckStockFull() != 0) {
+        return 0;
+    }
+    stock = NULL;
+    datSearchDevilStock(s->id);
+    for (i = 4; i < 0x10; i++) {
+        s32 ofs = i * sizeof(datUnitWork_t) + (u32)&((dds3GlobalWork_t *)0)->unitwork;
+
+        if ((((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs))->flag & 1) == 0) {
+            stock = &DDS3_GBWK->unitwork[i];
+            break;
+        }
+    }
+    datSetDevilWork(s->id, stock);
+    fclEncycRegist(stock, 0);
+    DDS3_GBWK->stockOrder[DDS3_GBWK->stockCount] = i;
+    DDS3_GBWK->stockCount++;
+    return 1;
+}
+#else
 s32 nbGetNakama(datUnitWork_t *s)
 {
     datUnitWork_t *stock;
@@ -796,6 +822,7 @@ s32 nbGetNakama(datUnitWork_t *s)
     *(s32 *)((u8 *)DDS3_GBWK + 0x1924) = *(s32 *)((u8 *)DDS3_GBWK + 0x1924) + 1;
     return 1;
 }
+#endif
 
 void nbSetDevilNameMes(s32 hmsg, s32 no, datUnitWork_t *work)
 {

@@ -1431,6 +1431,43 @@ void fldAnahoriSelectNext(void)
     gFldAnahoriAkumaIdx = idx;
 }
 
+#ifdef VERSION_MNAX
+void fldAnahoriSelectDel(void)
+{
+    s32 n = 0;
+    s32 i;
+    u32 flag;
+
+    for (i = 0; i < 16; i++) {
+        s32 ofs = i * sizeof(fldMaAkuma_t) + (u32)&((dds3GlobalWork_t *)0)->unitwork;
+
+        flag = ((fldMaAkuma_t *)((u8 *)DDS3_GBWK + ofs))->flag;
+        if (!(flag & 1)) {
+            continue;
+        }
+        if (flag & 4) {
+            continue;
+        }
+        if (flag & 0x10) {
+            continue;
+        }
+        if (flag & 0x800) {
+            continue;
+        }
+        if (((fldMaAkuma_t *)((u8 *)DDS3_GBWK + ofs))->hp == 0) {
+            continue;
+        }
+        if (gFldAnahoriAkumaIdx == n) {
+            if (FLD_AKUMA(i).level >= 0x15) {
+                evtBitOn(0x504);
+            }
+            datDelDevil(((fldMaAkuma_t *)((u8 *)DDS3_GBWK + ofs))->devilId);
+            return;
+        }
+        n++;
+    }
+}
+#else
 void fldAnahoriSelectDel(void)
 {
     s32 n = 0;
@@ -1464,6 +1501,7 @@ void fldAnahoriSelectDel(void)
         n++;
     }
 }
+#endif
 
 s32 fldOtInit(void)
 {
