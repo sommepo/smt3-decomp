@@ -303,5 +303,11 @@ char dds3DrawFirstProcessName[8] = "draw1st";
 
 u8 dds3DrawProcessFlag = 0;
 
+/* Maniax: the unit's .sdata ends on the 4-byte boundary; the link's 8-byte
+ * alignment of dds3KernelCore supplies the rest. */
+#ifdef VERSION_MNAX
+SDATA_PAD(3);
+#else
 SDATA_PAD(7);
+#endif
 
