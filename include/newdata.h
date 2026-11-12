@@ -134,7 +134,11 @@ typedef struct
     s32 word08;
     s16 half0C;
     s16 transition; /* 0xE: fldMainLoadStart */
+#ifdef VERSION_MNAX
+    u8 unk10[0x20]; /* Maniax has no headerWord30: memHandle is at 0x30 (dds3GlobalWorkInit) */
+#else
     union { u8 unk10[0x24]; struct { u8 reserved10[0x20]; u32 headerWord30; }; };
+#endif
     sdfMemHandle_t *memHandle;
     s32 unk38;
     s32 playtime;
@@ -206,7 +210,11 @@ typedef struct
     };
     u8 reserved19D10[0x800];
 } dds3GlobalWork_t;
+#ifdef VERSION_MNAX
+SIZE_CHECK(dds3GlobalWorkSizeCheck, dds3GlobalWork_t, 0x1A50C);
+#else
 SIZE_CHECK(dds3GlobalWorkSizeCheck, dds3GlobalWork_t, 0x1A510);
+#endif
 
 extern dds3GlobalWork_t *DDS3_GBWK;
 
