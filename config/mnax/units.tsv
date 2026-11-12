@@ -49,7 +49,7 @@ field/fldSky	C with fallbacks
 field/fldHit	C with fallbacks
 field/fldEveHit	C with fallbacks, 1 functions kept as Maniax assembly
 field/fldInf	C
-field/fldWap	demoted: fldWap_SetBgm: undefined reference to fldElevatorPosName
+field/fldWap	demoted: defines jtbl_0052F830, which the split also puts in a blob
 field/fldPanel	C
 field/fldSe	.sdata bytes differ
 field/fldAutoMap	C with fallbacks
@@ -98,8 +98,8 @@ interface/frWrap	C
 interface/frTestFont	C
 interface/itfMisc	C
 interface/itfPanel	C
-interface/itfMesManager	demoted: .rodata is 0x130 bytes where Maniax has room for 0xF0
-interface/itfTestMesManager	C
+interface/itfMesManager	C with fallbacks
+interface/itfTestMesManager	.rodata bounds overlap interface/itfMesManager (itfMesManager 0x533410+0xF0, itfTestMesManager 0x5334E0)
 pb/pbCamera	C
 pb/pbModel	C with fallbacks
 pb/pbDraw	C
@@ -131,17 +131,17 @@ event/evtEventViewerMenu	C with fallbacks
 event/evtSound	C
 event/evtEventPack	demoted: defines D_0053A0E0, which the split also puts in a blob
 facility/fclCombineInit	demoted: Maniax has a TU boundary inside the unit (rodata base 0x53A1A8 vs jump tables at 0x53A1B0)
-facility/fclShopInit	C
-facility/fclShopCalc	demoted: .sdata is 0x30 bytes where Maniax has room for 0x20
+facility/fclShopInit	.sdata bounds overlap facility/fclShopCalc (fclShopInit 0x54DDE0+0x40, fclShopCalc 0x54DE10)
+facility/fclShopCalc	C with fallbacks
 facility/fclShopUpdate	C
-facility/fclRagInit	demoted: .sdata is 0x38 bytes where Maniax has room for 0x30
-facility/fclRagCalc	demoted: .rodata is 0x90 bytes where Maniax has room for 0x60
+facility/fclRagInit	demoted: .sdata is 0x24 bytes where Maniax has room for 0x1C
+facility/fclRagCalc	C with fallbacks, 1 functions kept as Maniax assembly
 facility/fclRagDraw	C
 facility/fclRagUpdate	C
 facility/fclRecoverInit	C
 facility/fclRecoverCalc	C with fallbacks
 facility/fclRecoverDraw	C
-facility/fclRecoverUpdate	demoted: .rodata is 0x160 bytes where Maniax has room for 0xE0
+facility/fclRecoverUpdate	C
 facility/fclTerminalInit	C
 facility/fclTerminalCalc	C
 facility/fclTerminalDraw	C

@@ -19,3 +19,7 @@ facility/fclRagCalc      .rodata  0x0053ABA0  -
 nme/Nme_Init             .sdata   0x0054F598  -
 nme/Nme_Init             .rodata  0x005469D8  -
 nme/Nme_Calc             .rodata  0x00546A70  -
+facility/fclShopCalc     .sdata   0x0054DE10  0x10
+facility/fclRagInit      .sdata   0x0054DE20  0x1C
+facility/fclRagCalc      .sdata   0x0054DE40  0x10
+facility/fclRecoverInit  .sdata   0x0054DE50  0x40

@@ -85,14 +85,17 @@ def drop_duplicate_pieces() -> int:
         objects = []
         for sec_name in (".rodata", ".sdata", ".data"):
             sec = elf.get_section_by_name(sec_name)
-            if sec is None or elf.get_section_by_name(".rel" + sec_name) is not None:
+            if sec is None:
                 continue
+            rel = elf.get_section_by_name(".rel" + sec_name)
+            relocated = {r["r_offset"] for r in rel.iter_relocations()} if rel is not None else set()
             idx = elf.get_section_index(sec_name)
             data = sec.data()
             for sym in elf.get_section_by_name(".symtab").iter_symbols():
                 if sym["st_shndx"] == idx and sym["st_info"]["type"] == "STT_OBJECT" and sym["st_size"] >= 8:
-                    b = data[sym["st_value"]:sym["st_value"] + sym["st_size"]]
-                    if any(b):
+                    lo, hi = sym["st_value"], sym["st_value"] + sym["st_size"]
+                    b = data[lo:hi]
+                    if any(b) and not any(lo <= r < hi for r in relocated):
                         objects.append(b)
         if not objects:
             continue
