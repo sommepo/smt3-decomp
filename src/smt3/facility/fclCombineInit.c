@@ -2799,11 +2799,19 @@ extern fclSpriteTbl_t cmbSpriteTable[];
 extern void fclDrawSpriteRes(s32 X, s32 Y, s32 Z, s32 *pClip, s32 page, s32 spriteId, s32 *texList,
                              fclSpriteTbl_t *table, s32 OtNo);
 
+#ifdef VERSION_MNAX
+const char cmbTopTextSacrifice[32] = "\201\265\201\302\201\334\201\271\201\260\203\354\201\261\201\205\200\355\200\376\200\363\200\342";
+
+const char cmbTopText2ndDemon[24] = "\200\222\203\351\203\352\201\260\203\354\201\261\201\205\200\355\200\376\200\363\200\342";
+
+const char cmbTopText1stDemon[24] = "\200\221\203\351\203\352\201\260\203\354\201\261\201\205\200\355\200\376\200\363\200\342";
+#else
 const char cmbTopTextSacrifice[24] = "Select the sacrifice.";
 
 const char cmbTopText2ndDemon[24] = "Select the 2nd demon.";
 
 const char cmbTopText1stDemon[32] = "Select the 1st demon.";
+#endif
 
 void cmbDrawStockIcon(s32 x, s32 y, s32 z, s8 icon, u32 ot)
 {

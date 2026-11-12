@@ -119,6 +119,47 @@ void frwFreeStaffFont(void) {
     frDelFontStyle(5);
 }
 
+#ifdef VERSION_MNAX
+extern u16 D_00325340[];
+
+/* Map a two-byte Shift-JIS code to its font code, 0xFFFF when out of range. */
+u32 mnax_001C93C8(u32 code)
+{
+    u32 c = (code & 0xFFFF) - 0x8080;
+    u32 index = ((s32)(c & 0xFF00) >> 1) + (c & 0x7F);
+
+    if (index < 0x944) {
+        return D_00325340[index];
+    }
+    return 0xFFFF;
+}
+
+/* Copy a string, converting its two-byte characters to font codes. */
+void mnax_001C9418(char *dst, const char *src)
+{
+    s32 len = strlen(src);
+    s32 i;
+
+    for (i = 0; i < len; i++, dst++) {
+        if (src[i] >= 0) {
+            *dst = src[i];
+        } else {
+            u32 c = mnax_001C93C8(((const u8 *)src)[i + 1] | (((const u8 *)src)[i] << 8));
+
+            if (c != 0xFFFF) {
+                dst[0] = c >> 8;
+                dst[1] = c;
+            } else {
+                dst[0] = 0x80;
+                dst[1] = 0x80;
+            }
+            dst++;
+            i++;
+        }
+    }
+}
+#endif
+
 frFontHandle_t *frwGetSmallFont1FRQ(s32 x, s32 y, s32 priority, u32 color,
                                       const char *text, frFontHandle_t *previous)
 {
@@ -259,7 +300,7 @@ frFontHandle_t *frwGetSmallFontFRQ(s32 X, s32 Y, s32 Pri, s32 Color, const char 
 }
 
 #ifdef VERSION_MNAX
-extern u32 func_001C93C8(u32 code);
+extern u32 mnax_001C93C8(u32 code);
 #endif
 
 frFontHandle_t *frwGetSmallFontFRQ2(s32 x, s32 y, s32 priority, u32 color,
@@ -282,7 +323,7 @@ frFontHandle_t *frwGetSmallFontFRQ2(s32 x, s32 y, s32 priority, u32 color,
                 u32 v = src[i + 1] | (c << 8);
 
 #ifdef VERSION_MNAX
-                c = func_001C93C8(v & 0xFFFF);
+                c = mnax_001C93C8(v & 0xFFFF);
 #else
                 c = (u16)v;
 #endif
@@ -409,6 +450,8 @@ frFontHandle_t *frwGetHelpFRQ(s32 x, s32 y, s32 priority, s8 bank, u16 index, s8
     return request;
 }
 
+/* Maniax has no frGetHelpPos. */
+#ifndef VERSION_MNAX
 extern s32 frHelpLastIndex, D_0054F458, frHelpPosX, frHelpPosY;
 extern s8 frHelpText[];
 extern s32 frCalcStringHash(s8 *text);
@@ -446,6 +489,7 @@ frFontHandle_t *frGetHelpPos(s32 x, s32 y, s32 priority, s32 bank, s32 index)
     frCopyTagArgs((s8 *)text, frHelpText, frHelpPosY);
     return MessageRequestNS(x, y, priority, 1, 0, 0, 0x80, (u8 *)frHelpText, NULL);
 }
+#endif
 
 s32 fr_1CA990(void) {
     return 0;
