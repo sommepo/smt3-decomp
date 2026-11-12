@@ -1,2 +1,1 @@
 file/fileManager	.rodata is 0x1E90 bytes where Maniax has room for 0x1E80
-movie/MovieViewer	.sdata is 0x20 bytes where Maniax has room for 0x18
