@@ -59,6 +59,8 @@ extern const char nmeUpdateProcessName[];
 
 extern s8 gProcessStat;
 
+#ifndef VERSION_MNAX
+/* Maniax has neither helper: its names are stored as Shift-JIS only. */
 u8 nmeCharToIndex(u8 lead, u8 trail) {
     s32 value = (((s32)lead << 8) | trail) - 0x8080;
     s32 index = ((u32)(value & 0xFF00) >> 1) + (value & 0x7F);
@@ -72,6 +74,7 @@ u32 nmeDecodeChar(s8 code)
     s32 index = code - 0x20;
     return ((u32)nmeAsciiCodeTable[index][0] << 8) | nmeAsciiCodeTable[index][1];
 }
+#endif
 
 extern void frDelFontStyle(s32 styleNo);
 extern void nmeBuildNameFont(s8 mode, nmeWork_t *work);
@@ -129,7 +132,17 @@ s32 nmeGetInputMode(nmeWork_t *work) {
 }
 
 s32 nmeGetMaxNameLen(s32 mode) {
+#ifdef VERSION_MNAX
+    switch (mode) {
+    case 0:
+        return 4;
+    case 1:
+        return 4;
+    }
     return 8;
+#else
+    return 8;
+#endif
 }
 
 s8 nmeGetModeFlag(nmeWork_t *work) {
@@ -593,7 +606,11 @@ const char nmeDrawProcessName[16] = "name_draw";
 
 const char nmeUpdateProcessName[16] = "name_update";
 
+#ifdef VERSION_MNAX
+const char nmeConfirmQuestion[24] = "\200\361\201\252\201\205\201\246\201\253\200\365\200\342\201\205\200\367\200\351\200\237";
+#else
 const char nmeConfirmQuestion[16] = "Is this okay\?";
+#endif
 
 nmeWork_t *nmeProcessId = NULL;
 
@@ -601,6 +618,20 @@ s8 gProcessStat = 0;
 
 SDATA_PAD(3);
 
+#ifdef VERSION_MNAX
+/* Name-font codes; Maniax also gives Chiaki her surname. */
+char nmeDefaultNameChiaki[8] = "\217\375\216\225";
+
+char nmeDefaultNameTachibana[8] = "\207\326";
+
+char nmeDefaultNameIsamu[8] = "\231\200";
+
+char nmeDefaultNameNitta[8] = "\216\355\223\256";
+
+char nmeDefaultNameYuko[8] = "\231\216\214\220";
+
+char nmeDefaultNameTakao[8] = "\212\344\225\374";
+#else
 char nmeDefaultNameChiaki[8] = "Chiaki";
 
 char nmeDefaultNameIsamu[8] = "Isamu";
@@ -610,6 +641,7 @@ char nmeDefaultNameNitta[8] = "Nitta";
 char nmeDefaultNameYuko[8] = "Yuko";
 
 char nmeDefaultNameTakao[8] = "Takao";
+#endif
 
 char nmeEmptyName[8] = "";
 
@@ -617,9 +649,15 @@ char nmeCalcProcessName[8] = "name";
 
 s8 nmeNameTextTemplate[8] = { '0', '0' };
 
+#ifdef VERSION_MNAX
+char nmeConfirmYes[8] = "\201\215\200\342";
+
+char nmeConfirmNo[8] = "\200\342\200\342\200\346";
+#else
 char nmeConfirmYes[8] = "Yes";
 
 char nmeConfirmNo[8] = "No";
+#endif
 
 s8 nmeCursorSkip[8] = { 1, 1 };
 

@@ -430,11 +430,19 @@ void ragDrawList3(s8 mode)
     fclDrawPhaseHeader((u8 *)ragDrawWork + 0x34AC, 0x80808080, 0, 0x47);
 }
 
+#ifdef VERSION_MNAX
+const char ragExchangeTitleMitama[16] __attribute__((aligned(16))) = "\204\337\210\263\206\245\211\212";
+
+const char ragExchangeTitleSoul[16] = "\203\320\203\327\206\245\211\212";
+
+const char ragExchangeTitleItem[16] = "\201\263\201\265\201\327\201\361\206\245\211\212";
+#else
 const char ragExchangeTitleMitama[16] __attribute__((aligned(16))) = "MITAMA EXCHANGE";
 
 const char ragExchangeTitleSoul[16] = "SOUL EXCHANGE";
 
 const char ragExchangeTitleItem[16] = "ITEM EXCHANGE";
+#endif
 
 char ragNameFormat[8] = "%s";
 

@@ -5,3 +5,4 @@ gProcessStat_0 = 0x0054DDAC; // type:u8 size:0x1
 cmbTopTextSacrifice = 0x0053A490; // size:0x20
 cmbTopText2ndDemon = 0x0053A4B0; // size:0x18
 cmbTopText1stDemon = 0x0053A4C8; // size:0x18
+ragCountFormat = 0x0054DE48;

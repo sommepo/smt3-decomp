@@ -176,7 +176,7 @@ extern void nmeDrawNamePanel(void);
 extern void nmeDrawInputPanel(void);
 extern void nmeDrawCursor(void);
 #ifdef VERSION_MNAX
-extern void func_00298268(s8 mode, u8 inputMode);
+extern void mnax_00298268(s8 mode, u8 inputMode);
 extern void func_00298DA8(void);
 #endif
 extern void nmeDrawModeTabs(s8 mode);
@@ -200,7 +200,7 @@ s32 nmeDraw(dds3ProcessID_t *id)
                      (s32 *)namelist_buttonAnim_end->textures, table, 0x47);
     nmeDrawNamePanel();
 #ifdef VERSION_MNAX
-    func_00298268((s8)((u8)namelist_buttonAnim_end->modeCursor.unk_22 +
+    mnax_00298268((s8)((u8)namelist_buttonAnim_end->modeCursor.unk_22 +
                        (u8)namelist_buttonAnim_end->modeCursor.unk_24),
                   namelist_buttonAnim_end->inputMode);
     nmeDrawInputPanel();
@@ -430,6 +430,40 @@ void nmeSyncCursor(s32 mode) {
 
     cmpSetCursorRow((s32)row + 2, &nmeUpdateWork->inputCursor);
 }
+
+#ifdef VERSION_MNAX
+extern s32 cmpGetPressedButton(s32 mask);
+extern s32 cmpMoveCursor(cmpCursorInfo_t *cursor, s8 direction);
+extern void nmeInitNameCursor(s8 mode, nmeWork_t *work);
+extern s32 func_002415D8(void);
+extern s32 cmpDisablePadBitStop(cmpPadStopWork_t *work, s32 bits, s32 stop);
+extern void cmpPlayCursorSE(u32 button);
+
+/* Maniax-only: L1/R1 step the input-mode tab and rebuild the character grid. */
+void mnax_00299C78(void)
+{
+    u16 button = cmpGetPressedButton(0x300);
+
+    switch (button) {
+    case 0x100:
+        cmpMoveCursor(&nmeUpdateWork->modeCursor, -1);
+        nmeInitNameCursor((s8)((u8)nmeUpdateWork->modeCursor.unk_22 +
+                               (u8)nmeUpdateWork->modeCursor.unk_24), nmeUpdateWork);
+        break;
+    case 0x200:
+        cmpMoveCursor(&nmeUpdateWork->modeCursor, 1);
+        nmeInitNameCursor((s8)((u8)nmeUpdateWork->modeCursor.unk_22 +
+                               (u8)nmeUpdateWork->modeCursor.unk_24), nmeUpdateWork);
+        break;
+    }
+    if (func_002415D8() == 0) {
+        cmpMoveCursor(&nmeUpdateWork->modeCursor, 0);
+    }
+    button = (u16)cmpDisablePadBitStop((cmpPadStopWork_t *)&nmeUpdateWork->modeCursor,
+                                       button, 0x300);
+    cmpPlayCursorSE(button);
+}
+#endif
 
 extern s32 cmpGetPressedButton(s32 mask);
 extern void nmeMoveCursorBy(s8 delta);
@@ -685,7 +719,7 @@ extern void cmpInitCursorRange(void *cursor, u8 count, u8 visible, saddr_t layou
 extern void cmpInitCursorLayout(void *cursor, s32 a, s32 b, s32 c, s32 d, s32 mode);
 
 #ifdef VERSION_MNAX
-extern void func_00299C78(void);
+extern void mnax_00299C78(void);
 #endif
 
 void nmeUpdateInput(void)
@@ -712,7 +746,7 @@ void nmeUpdateInput(void)
         }
     }
 #ifdef VERSION_MNAX
-    if (cursorSource < 2) func_00299C78();
+    if (cursorSource < 2) mnax_00299C78();
 #endif
     if (cursorSource == 0) nmeFindNextChar();
     if (button == 0x1000) moved = 1;

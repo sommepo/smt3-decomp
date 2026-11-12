@@ -239,6 +239,11 @@ extern u8 frDisableMode(u8 flag);
 #ifdef VERSION_MNAX
 extern frFontHandle_t *frLinkFontString(u8 *text, s8 style, s8 color, s8 type, frFontHandle_t *chain);
 
+/* Maniax: this table is the first of the unit's .rodata, ahead of the
+ * Maniax-only tab table, so it is defined here. */
+extern const char nmeConfirmQuestion[], nmeConfirmYes[], nmeConfirmNo[];
+const nmeColoredTextStrings_t nmeColoredText = {nmeConfirmQuestion, nmeConfirmYes, nmeConfirmNo};
+
 void nmeDrawColoredText(s8 selected)
 {
     nmeColoredTextStrings_t text = nmeColoredText;
@@ -415,6 +420,49 @@ void nmeDrawNamePanel(void)
 }
 #endif
 
+#ifdef VERSION_MNAX
+/* Maniax-only: the four input-mode tabs. The selected tab draws its highlight
+ * sprite; the others draw their frame and, for the kana/symbol modes, a label
+ * (dimmed on the last tab in mode 2). */
+void mnax_00298268(s8 mode, u8 inputMode)
+{
+    s32 color = 0x40404080;
+    u8 sprites[4][3] = {
+        { 0x13, 0x00, 0x0C },
+        { 0x14, 0x01, 0x0D },
+        { 0x15, 0x02, 0x0E },
+        { 0x16, 0x03, 0x0F },
+    };
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        if (i == mode) {
+            fclDrawSpriteRes(0, 0, 0, 0, 0, sprites[i][0],
+                             (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
+            continue;
+        }
+        fclDrawSpriteRes(0, 0, 0, 0, 0, sprites[i][1],
+                         (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
+        switch (inputMode) {
+        case 0:
+        case 1:
+            fclDrawSpriteRes(0, 0, 0, 0, 0, sprites[i][2],
+                             (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
+            break;
+        case 2:
+            if (i != 3) {
+                fclDrawSpriteRes(0, 0, 0, 0, 0, sprites[i][2],
+                                 (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
+            } else {
+                fclDrawSpriteRes(0, 0, 0, &color, 0, sprites[i][2],
+                                 (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
+            }
+            break;
+        }
+    }
+}
+#endif
+
 void nmeDrawCharCell(s32 x, s32 y, u16 index, s8 row, frFontHandle_t *font)
 {
     nmeWork_t *work = namelist_buttonAnim_end;
@@ -532,6 +580,13 @@ void nmeDrawModeTabs(s8 mode)
     }
 }
 
+#ifdef VERSION_MNAX
+const char nmeAutoMemoryLabel[16] = "\201\273\202\231\201\331\201\373\201\345\202\231\201\331";
+
+const char nmeMenuMemoryLabel[24] = "\201\274\202\231\201\316\201\374\212\256\207\232\201\214\207\275\213\373";
+
+const char nmeVibrationLabel[24] = "\201\341\201\265\201\347\201\375\202\231\201\310\201\370\202\204";
+#else
 extern const char nmeConfirmQuestion[], nmeConfirmYes[], nmeConfirmNo[];
 const nmeColoredTextStrings_t nmeColoredText = {nmeConfirmQuestion, nmeConfirmYes, nmeConfirmNo};
 
@@ -540,4 +595,5 @@ const char nmeAutoMemoryLabel[16] = "AUTO MEMORY";
 const char nmeMenuMemoryLabel[16] = "MENU MEMORY";
 
 const char nmeVibrationLabel[16] = "VIBRATION";
+#endif
 
