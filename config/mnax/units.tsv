@@ -134,7 +134,7 @@ facility/fclCombineInit	demoted: Maniax has a TU boundary inside the unit (rodat
 facility/fclShopInit	.sdata bounds overlap facility/fclShopCalc (fclShopInit 0x54DDE0+0x40, fclShopCalc 0x54DE10)
 facility/fclShopCalc	C with fallbacks
 facility/fclShopUpdate	C
-facility/fclRagInit	demoted: .sdata is 0x24 bytes where Maniax has room for 0x1C
+facility/fclRagInit	C with fallbacks
 facility/fclRagCalc	C with fallbacks, 1 functions kept as Maniax assembly
 facility/fclRagDraw	C
 facility/fclRagUpdate	C
@@ -152,7 +152,7 @@ facility/fclMisc	C
 facility/fclShare	C with fallbacks
 facility/fclPanel	C with fallbacks
 facility/fclDebug	C
-facility/fclEncyc	demoted: .sdata is 0x68 bytes where Maniax has room for 0x40
+facility/fclEncyc	C with fallbacks
 facility/fclRibbon	C
 result/rstinit	C
 result/rstcalc	C with fallbacks
