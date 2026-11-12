@@ -159,6 +159,10 @@ def main() -> None:
             if mm:
                 symbols[mm.group(1)] = int(mm.group(2), 16)
         rows = entries()
+        # A name defined by a C unit and again by a blob: the C unit's data is not
+        # where the split expects it.
+        for m in re.finditer(r"multiple definition of `(\w+)'; build/mnax/src/mnax/([\w/]+)\.o", log):
+            found.setdefault(m.group(2), f"defines {m.group(1)}, which the split also puts in a blob")
         # A jump table that points at labels it cannot see: the unit's rodata range is wrong.
         for m in re.finditer(r"build/mnax/src/mnax/([\w/]+)\.o: in function `\w+':\n[^\n]*\(\.rodata[^\n]*undefined reference to `\.L", log):
             found.setdefault(m.group(1), ".rodata range holds a jump table into code it does not own")

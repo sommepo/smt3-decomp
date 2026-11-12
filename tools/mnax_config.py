@@ -93,10 +93,35 @@ def skip_noncode(text: str, i: int) -> int:
     return i
 
 
+def skip_else_branch(text: str, i: int) -> int:
+    """At a line-initial #else/#elif: index of the matching #endif (only the first
+    branch of a conditional counts, so both branches opening a brace stay balanced)."""
+    if not (text.startswith("#", i) and (i == 0 or text[i - 1] == "\n")):
+        return i
+    word = re.match(r"#\s*(\w+)", text[i:])
+    if not word or word.group(1) not in ("else", "elif"):
+        return i
+    depth, k = 1, text.find("\n", i)
+    while k != -1 and depth:
+        m = re.match(r"\n\s*#\s*(\w+)", text[k:])
+        if m and m.group(1) in ("if", "ifdef", "ifndef"):
+            depth += 1
+        elif m and m.group(1) == "endif":
+            depth -= 1
+            if not depth:
+                return k + 1
+        k = text.find("\n", k + 1)
+    return len(text)
+
+
 def match_close(text: str, i: int, open_: str, close: str) -> int:
     """Index after the bracket that closes the one at i, or -1."""
     depth = 0
     while i < len(text):
+        j = skip_else_branch(text, i)
+        if j != i:
+            i = j
+            continue
         j = skip_noncode(text, i)
         if j != i:
             i = j
@@ -310,6 +335,13 @@ def main() -> None:
                         why = f"{name} bounds unknown in Maniax"
                         break
                     size = m1 - m0
+                    # The object of the last build (even from a round where the unit was
+                    # demoted) knows the unit's real Maniax size better than the anchors.
+                    built = ROOT / "build/mnax/src/mnax" / (unit + ".o")
+                    if name != ".rodata" and built.exists() and built.read_bytes()[:4] == b"\x7fELF":
+                        bsec = ELFFile(built.open("rb")).get_section_by_name(name)
+                        if bsec is not None and bsec["sh_size"]:
+                            size = (bsec["sh_size"] + 3) & ~3
                     if name == ".rodata":
                         # Real end of the object's .rodata (see the note below on blob
                         # alignment): from the last build's object when there is one,
@@ -390,11 +422,12 @@ def main() -> None:
                 break
             # A splat blob is aligned to 8, a C unit's .rodata to 16: a blob that follows
             # must start at the object's real end, or the padding before it is lost.
-            size = usa_extent[unit][sec.name]
-            if sec.name == ".rodata":
-                real = (sec["sh_size"] + 7) & ~7
-                if real < size and not any(raw[m0 - DELTA + sec["sh_size"]:m0 - DELTA + size]):
-                    size = real
+            # The unit occupies what its Maniax object occupies; the USA extent is wrong
+            # wherever the Japanese data is longer or shorter. Whatever follows up to the
+            # next unit (padding, other data) becomes a blob.
+            size = (sec["sh_size"] + 7) & ~7 if sec.name == ".rodata" else (sec["sh_size"] + 3) & ~3
+            if sec.name == ".text":
+                size = sec["sh_size"]
             starts[sec.name] = (m0, size, u0)
         if why is None and set(usa_start[unit]) - set(starts):
             why = "USA config has " + ",".join(sorted(set(usa_start[unit]) - set(starts))) + " the object lacks"

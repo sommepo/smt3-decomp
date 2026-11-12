@@ -501,8 +501,8 @@ prm_DV_CHECK	0x0010D1A0	0x0010D190	placed
 prm_UDV_LEAVE	0x0010D1F0	0x0010D1E0	placed	
 prm_UDV_CHECK	0x0010D248	0x0010D238	placed	
 prm_UDV_GETID	0x0010D298	0x0010D288	placed	
-prm_UDV_DELETE_OK	0x0010D2C8	0x0010D2B8	rigid	
-prm_UDV_DELETE_NG	0x0010D330	0x0010D320	rigid	
+prm_UDV_DELETE_OK	0x0010D2C8	0x0010D2B8	placed	
+prm_UDV_DELETE_NG	0x0010D330	0x0010D320	placed	
 prm_STOCK_PLUS	0x0010D390	0x0010D380	placed	
 prm_STOCK_FULL_CHECK	0x0010D3D0	0x0010D3C0	placed	
 prm_PLAYER_GET_PARAM	0x0010D410	0x0010D400	placed	
@@ -511,7 +511,7 @@ prm_NAKAMA_GET_PARAM	0x0010D480	0x0010D470	placed
 prm_PLAYER_GET_LND	0x0010D4C8	0x0010D4B8	placed	
 prm_PLAYER_GET_LEVEL	0x0010D4F0	0x0010D4E0	placed	
 prm_NAKAMA_DEAD	0x0010D518	0x0010D508	placed	
-prm_NAKAMA_CHK_PIKUKO	0x0010D540	0x0010D530	rigid	
+prm_NAKAMA_CHK_PIKUKO	0x0010D540	0x0010D530	placed	
 prm_PIKUKO_GETID	0x0010D5E8	0x0010D5D8	placed	
 prm_BOSS_PRESS_REC	0x0010D658	0x0010D648	placed	
 prm_DV_COPY_PARAM	0x0010D6A0	0x0010D690	placed	
@@ -4969,7 +4969,7 @@ cmbGetBirthPhase	0x001FB9E8	0x001FAD28	placed
 cmbBirthDevilIsAvailable	0x001FBA70	0x001FADB0	placed	
 cmbBuildResultRow	0x001FBA88	0x001FADC8	placed	
 cmbCreateCombineResultTable	0x001FBAF8	0x001FAE38	called	
-cmbCreateLocalStock	0x001FC0B8	0x001FB3F8	called	
+cmbCreateLocalStock	0x001FC0B8	0x001FB3F8	placed	
 cmbCalcRoot	0x001FC188	0x001FB4C0	placed	
 cmbCalcDevSel1st	0x001FC2F8	0x001FB630	placed	
 cmbInitStockCursor	0x001FC3D8	0x001FB710	placed	
@@ -5268,7 +5268,7 @@ ragUpdateSeq2	0x0020CB80	0x0020BE98	placed
 ragUpdateSeq3	0x0020CD20	0x0020C038	placed	
 ragUpdateReturn	0x0020CEC0	0x0020C1D8	placed	
 ragUpdateSeqStatus	0x0020CF60	0x0020C278	placed	
-ragUpdateSeqConfirm	0x0020D060	0x0020C378	called	
+ragUpdateSeqConfirm	0x0020D060	0x0020C378	placed	
 ragUpdateSeqMitama	0x0020D268	0x0020C580	placed	
 ragUpdateSeqRoot	0x0020D288	0x0020C5A0	placed	
 ragUpdateSeqTalk	0x0020D3A8	0x0020C6C0	placed	
@@ -5300,7 +5300,7 @@ rcvReviveUnit	0x0020DE20	0x0020D138	placed
 rcvClearDeadFlag	0x0020DE70	0x0020D188	placed	
 sfply_AdjustPrepEnd	0x0020DE80	0x0020D198	placed	
 rcvFullHeal	0x0020DEB0	0x0020D1C8	placed	
-rcvCreateLocalStock	0x0020DF50	0x0020D268	called	
+rcvCreateLocalStock	0x0020DF50	0x0020D268	placed	
 rcvCalc	0x0020E1B0	0x0020D4C0	placed	
 rcvDrawPanelRow	0x0020E2A8	0x0020D5B8	placed	
 rcvDrawRowBox	0x0020E490	0x0020D7A0	placed	
@@ -5804,7 +5804,7 @@ rstStandbyHeartsSkillPowerUp	0x002258D0	0x00224B80	placed
 rstSetHeartsRecover	0x00225AA0	0x00224D50	placed	
 rstSetHeartsRecoverPlayer	0x00225B38	0x00224DE8	placed	
 rstStandbyHeartsEvent	0x00225B60	0x00224E10	placed	
-rstSetHeartsEvent	0x00225D18	0x00224FC8	called	
+rstSetHeartsEvent	0x00225D18	0x00224FC8	placed	
 rstUpdateSeqHeartsEvent	0x00225E08	0x002250B8	placed	
 rstUpdateSeqHeartsMaster	0x00225F50	0x00225200	placed	
 rstUpdateBgTimer	0x002260A0	0x00225350	placed	
@@ -5900,7 +5900,7 @@ rstClearResultWork	0x0022C588	0x0022B770	placed
 cmpTexLoad	0x0022C598	0x0022B780	placed	
 camp_22C610	0x0022C610	0x0022B7F8	placed	
 func_0022C658	0x0022C658	0x0022B840	called	
-campDebugRegistAll	0x0022C660	0x0022B848	called	
+campDebugRegistAll	0x0022C660	0x0022B848	placed	
 dds3ClearStockTable	0x0022CAA0	0x0022BC88	placed	
 cmpInitLocalStock	0x0022CAE8	0x0022BCD0	placed	
 cmpInitDrawList	0x0022CB10	0x0022BCF8	placed	
@@ -6159,7 +6159,7 @@ cmpGetStatusModelLoadState	0x0023ACF8	0x00239D70	placed
 cmpSetModelReloadFlag	0x0023AD00	0x00239D78	placed	
 cmpClearStatusModelLoadState	0x0023AD28	0x00239DA0	placed	
 func_0023AD30	0x0023AD30	0x00239DA8	rigid	
-cmpInitStatus	0x0023AD78	0x00239DF0	called	
+cmpInitStatus	0x0023AD78	0x00239DF0	placed	
 camp_update_status_Shutdown	0x0023AE88	0x00239F00	placed	
 cmpStartProcessStatus	0x0023AED0	0x00239F48	placed	
 cmpSetStatusWindowHidden	0x0023AFA8	0x0023A020	placed	
@@ -6539,7 +6539,7 @@ nbCalcUnitVisual2	0x0024D358	0x0024C378	placed
 nbGetMotionActframe	0x0024D3A0	0x0024C3C0	placed	
 nbGetMotionSpeed	0x0024D428	0x0024C448	placed	
 nbGetMotionNo	0x0024D490	0x0024C4B0	placed	
-nbAddUnitStock	0x0024D550	0x0024C570	called	
+nbAddUnitStock	0x0024D550	0x0024C570	placed	
 nbSummonUnit	0x0024D8C0	0x0024C8E0	placed	
 func_0024D938	0x0024D938	0x0024C958	placed	
 nbReturnUnit	0x0024D980	0x0024C9A0	placed	
