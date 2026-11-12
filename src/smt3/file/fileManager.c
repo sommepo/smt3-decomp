@@ -1314,9 +1314,9 @@ const u8 D_00548690[200] = {
 };
 #endif
 
-#ifdef VERSION_MNAX
-const char D_00548758[16] = "/font/name_ent.f";
-#else
+#ifndef VERSION_MNAX
+/* Maniax has no default-name string here: its .rodata ends at 0x5469D8, where
+ * Nme_Init's nmeFontPath begins (the carried address of this name). */
 const char D_00548758[16] = "Hayasaka";
 #endif
 
