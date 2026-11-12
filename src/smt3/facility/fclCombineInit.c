@@ -884,6 +884,28 @@ INCLUDE_ASM(const s32, "facility/fclCombineInit", cmbCreateCombineResultTable);
 #endif
 
 
+#ifdef VERSION_MNAX
+void cmbCreateLocalStock(void)
+{
+    s32 i;
+    s32 ofs;
+    datUnitWork_t *unit;
+
+    CMB_GBWK->stockCursorCount = 0;
+    CMB_GBWK->evoCandidateCount =
+        cmbCountEvoCandidates(&DDS3_GBWK->party[4].unit, 12);
+
+    for (i = 4; i < 16; i++) {
+        /* Maniax forms the record's byte offset before adding the base. */
+        ofs = i * sizeof(cmbUnit_t) + (u32)&((dds3GlobalWork_t *)0)->party;
+        unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + ofs);
+        if ((unit->flag & 1) != 0 && (unit->badstatus & 0x800) == 0 &&
+            (unit->flag & 0x10) == 0) {
+            CMB_GBWK->unk_165EE[(s8)CMB_GBWK->stockCursorCount++] = i;
+        }
+    }
+}
+#else
 void cmbCreateLocalStock(void)
 {
     s32 i;
@@ -900,6 +922,7 @@ void cmbCreateLocalStock(void)
         }
     }
 }
+#endif
 
 extern s32 fclScriptStart(s32 script, s32 entry, void *process);
 

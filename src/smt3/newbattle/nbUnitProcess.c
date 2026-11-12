@@ -495,13 +495,22 @@ void nbAddUnitStock(nbMainProcessData_t *data, s32 side, s32 stockno, s32 formin
             }
         }
         {
+#ifdef VERSION_MNAX
+            /* Maniax forms the record's byte offset before adding the base. */
+            s32 ofs = stockno * sizeof(datUnitWork_t) +
+                      (u32)&((dds3GlobalWork_t *)0)->unitwork;
+#endif
 
             work = &DDS3_GBWK->unitwork[stockno];
             nbGetUnitID(work);
             visual = nbGetUnitVisual(work);
             partyflag = 1;
             state->playerpcnt++;
+#ifdef VERSION_MNAX
+            ((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs))->flag |= 2;
+#else
             (&DDS3_GBWK->unitwork[stockno])->flag |= 2;
+#endif
 
         }
         break;

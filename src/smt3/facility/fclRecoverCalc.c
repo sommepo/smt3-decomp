@@ -210,6 +210,54 @@ extern void *memset(void *dst, s32 value, size_t size);
 extern void cmpInitCursorRange(void *cursor, u8 count, u8 visible, saddr_t layout);
 extern void cmpResetCursorInfo(cmpCursorInfo_t *cursor);
 
+#ifdef VERSION_MNAX
+/* Maniax forms the record's byte offset before adding the base. */
+#define RCV_UNIT_AT(ofs) ((datUnitWork_t *)((u8 *)DDS3_GBWK + (ofs)))
+
+void rcvCreateLocalStock(rcvStockList_t *list, s8 mask)
+{
+    s32 excludeDead = (mask & 7) != 0 && (mask & 4) == 0;
+    s32 i;
+    s32 index;
+    s32 price;
+
+    memset(list->stock, -1, 16);
+    list->reserveCount = 0;
+    list->partyCount = 0;
+    for (i = 0; i < (s32)DDS3_GBWK->stockCount; i++) {
+        s32 slot = (s8)DDS3_GBWK->stockOrder[i];
+        s32 ofs = slot * sizeof(datUnitWork_t) + (u32)&((dds3GlobalWork_t *)0)->unitwork;
+
+        if ((RCV_UNIT_AT(ofs)->flag & 2) != 0 &&
+            (!excludeDead || (RCV_UNIT_AT(ofs)->badstatus & 0x800) == 0) &&
+            (rcvFullHeal(&DDS3_GBWK->unitwork[slot]) & mask) != 0) {
+            index = list->partyCount;
+            price = rcvGetRecoverPrice(&DDS3_GBWK->unitwork[slot], (u8)mask);
+            rcvCalcState->recoverPrices[index] = price;
+            list->stock[index] = slot;
+            list->partyCount++;
+        }
+    }
+    for (i = 0; i < (s32)DDS3_GBWK->stockCount; i++) {
+        s32 slot = (s8)DDS3_GBWK->stockOrder[i];
+        s32 ofs = slot * sizeof(datUnitWork_t) + (u32)&((dds3GlobalWork_t *)0)->unitwork;
+
+        if ((RCV_UNIT_AT(ofs)->flag & 2) == 0 &&
+            (!excludeDead || (RCV_UNIT_AT(ofs)->badstatus & 0x800) == 0) &&
+            (rcvFullHeal(&DDS3_GBWK->unitwork[slot]) & mask) != 0) {
+            index = list->partyCount + list->reserveCount;
+            price = rcvGetRecoverPrice(&DDS3_GBWK->unitwork[slot], (u8)mask);
+            rcvCalcState->recoverPrices[index] = price;
+            list->stock[index] = slot;
+            list->reserveCount++;
+        }
+    }
+    rcvCalcState->healType = mask;
+    cmpInitCursorRange(&rcvCalcState->listCursor,
+                       (u8)((u8)list->partyCount + (u8)list->reserveCount), 5, 0);
+    cmpResetCursorInfo(&rcvCalcState->listCursor);
+}
+#else
 void rcvCreateLocalStock(rcvStockList_t *list, s8 mask)
 {
     s32 excludeDead = (mask & 7) != 0 && (mask & 4) == 0;
@@ -250,6 +298,7 @@ void rcvCreateLocalStock(rcvStockList_t *list, s8 mask)
                        (u8)((u8)list->partyCount + (u8)list->reserveCount), 5, 0);
     cmpResetCursorInfo(&rcvCalcState->listCursor);
 }
+#endif
 extern void *dds3GetProcessData(saddr_t id);
 extern s32 dds3GetProcessStat(s32 id);
 extern void cmpClearCursorSlots(cmpCursorInfo_t *cursor);

@@ -543,6 +543,9 @@ s32 ragUpdateSeqConfirm(void)
     s32 state;
     s32 sequence;
     s32 i;
+#ifdef VERSION_MNAX
+    s32 ofs;
+#endif
 
     sequence = cmpChkSeqInfo((cmbGbWork_t *)ragUpdateWork);
     if (sequence == 1) {
@@ -578,8 +581,18 @@ s32 ragUpdateSeqConfirm(void)
         p2sdPlaySE(0x19, 0x7F, 0x3F);
         if (slot >= 0) {
             unit = (datUnitWork_t *)&DDS3_GBWK->akuma[4 + slot].flag;
+#ifdef VERSION_MNAX
+            /* Maniax forms the record's byte offset before adding the base. */
+            ofs = (4 + slot) * sizeof(datUnitWork_t) +
+                  (u32)&((dds3GlobalWork_t *)0)->unitwork;
+            ((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs))->hp =
+                ((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs))->maxhp;
+            ((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs))->mp =
+                ((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs))->maxmp;
+#else
             DDS3_GBWK->unitwork[4 + slot].hp = DDS3_GBWK->unitwork[4 + slot].maxhp;
             DDS3_GBWK->unitwork[4 + slot].mp = DDS3_GBWK->unitwork[4 + slot].maxmp;
+#endif
             fclEncycRegist(unit, 0);
             for (i = 0; i < 3; i++) {
 #ifdef FIX_BUGS

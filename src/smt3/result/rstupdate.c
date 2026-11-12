@@ -1090,7 +1090,18 @@ s32 rstSetHeartsEvent(s8 event)
     switch (startPos->heartsEvent) {
     case 0:
         rstChkResult2Process((u8 *)startPos);
+#ifdef VERSION_MNAX
+        {
+            /* Maniax forms the byte offset before adding the base. */
+            s8 *gb = (s8 *)DDS3_GBWK;
+            s32 ofs = startPos->bonusParamIndex +
+                      (u32)&((dds3GlobalWork_t *)0)->party[0].unit.levelupparam;
+
+            gb[ofs]++;
+        }
+#else
         DDS3_GBWK->party[0].unit.levelupparam[startPos->bonusParamIndex]++;
+#endif
         DDS3_GBWK->party[0].unit.param[startPos->bonusParamIndex]++;
         break;
     case 2:

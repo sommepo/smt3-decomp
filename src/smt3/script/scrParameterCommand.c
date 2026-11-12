@@ -8,6 +8,10 @@
 #define PRM_UNIT(i) (((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA50))[i])
 #define PRM_FLAG(i) PRM_UNIT(i).flag
 #define PRM_DEVIL(i) PRM_UNIT(i).id
+/* Some Maniax accessors form the record's byte offset in its own local
+ * before adding the base (see docs/levers/addressing-and-types.md). */
+#define PRM_UNIT_OFS(i) ((i) * sizeof(datUnitWork_t) + (u32)&((dds3GlobalWork_t *)0)->unitwork)
+#define PRM_UNIT_AT(ofs) (*(datUnitWork_t *)((u8 *)DDS3_GBWK + (ofs)))
 #else
 #define PRM_FLAG(i) DDS3_GBWK->akuma[i].flag
 #define PRM_DEVIL(i) DDS3_GBWK->akuma[i].devilId
@@ -198,7 +202,13 @@ s32 prm_UDV_DELETE_OK(void)
     s32 index = datSearchUniqueDevilStock(scrGetIntPara(0));
 
     if (index != -1) {
+#ifdef VERSION_MNAX
+        s32 ofs = PRM_UNIT_OFS(index);
+
+        PRM_UNIT_AT(ofs).flag &= ~0x800;
+#else
         PRM_FLAG(index) &= ~0x800;
+#endif
     }
     return 1;
 }
@@ -208,7 +218,13 @@ s32 prm_UDV_DELETE_NG(void)
     s32 index = datSearchUniqueDevilStock(scrGetIntPara(0));
 
     if (index != -1) {
+#ifdef VERSION_MNAX
+        s32 ofs = PRM_UNIT_OFS(index);
+
+        PRM_UNIT_AT(ofs).flag |= 0x800;
+#else
         PRM_FLAG(index) |= 0x800;
+#endif
     }
     return 1;
 }
@@ -277,6 +293,29 @@ s32 prm_NAKAMA_DEAD(void)
     return 1;
 }
 
+#ifdef VERSION_MNAX
+s32 prm_NAKAMA_CHK_PIKUKO(void)
+{
+    s32 i;
+    s32 ofs;
+    s32 devilId;
+
+    for (i = 1; i < 16; i++) {
+        ofs = PRM_UNIT_OFS(i);
+        if ((PRM_UNIT_AT(ofs).flag & 1) != 0) {
+            devilId = PRM_UNIT_AT(ofs).id;
+            if (devilId == scrGetIntPara(0)) {
+                if ((PRM_UNIT_AT(ofs).flag & 0x1000) != 0) {
+                    scrSetIntReturnValue(1);
+                    return 1;
+                }
+            }
+        }
+    }
+    scrSetIntReturnValue(0);
+    return 1;
+}
+#else
 s32 prm_NAKAMA_CHK_PIKUKO(void)
 {
     s32 i;
@@ -296,6 +335,7 @@ s32 prm_NAKAMA_CHK_PIKUKO(void)
     scrSetIntReturnValue(0);
     return 1;
 }
+#endif
 
 s32 prm_PIKUKO_GETID(void)
 {

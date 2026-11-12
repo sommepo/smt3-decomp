@@ -12,6 +12,19 @@
 #include "kernel_draw.h"
 #include "sdfFrame.h"
 
+#ifdef VERSION_MNAX
+/* Maniax party records, viewed as a top-level field of the persistent work
+ * (0xA50), as slMain's slConvertWork_t does. gcc folds the 16-byte-aligned
+ * part of each field position into the index, so retail's 0xA80/0xA and
+ * 0xA50/0 address splits need party[] at an aligned field, not inside the
+ * shared header's union at 0xA4C (which gives 0xA70/0x1A and 0xA40/0x10). */
+typedef struct {
+    u8 unknown00[0xA4C];
+    s32 maxstock;
+    cmbUnit_t party[16];
+} cmpPartyWork_t;
+#endif
+
 extern u32 dds3GetKernelCount(void);
 
 typedef struct frFontHandle_t frFontHandle_t;
@@ -752,6 +765,20 @@ void campDebugRegistAll(void)
     registered = 1;
     DDS3_GBWK->stockCount = 1;
 
+#ifdef VERSION_MNAX
+    if (((cmpPartyWork_t *)DDS3_GBWK)->party[0].unit.skillcnt == 0) {
+        cmpPartyWork_t *w = (cmpPartyWork_t *)DDS3_GBWK;
+
+        w->party[0].unit.skill[w->party[0].unit.skillcnt++] = 1;
+        w->party[0].unit.skill[w->party[0].unit.skillcnt++] = 2;
+        w->party[0].unit.skill[w->party[0].unit.skillcnt++] = 3;
+        w->party[0].unit.skill[w->party[0].unit.skillcnt++] = 4;
+        w->party[0].unit.skill[w->party[0].unit.skillcnt++] = 5;
+        w->party[0].unit.skill[w->party[0].unit.skillcnt++] = 6;
+        w->party[0].unit.skill[w->party[0].unit.skillcnt++] = 7;
+        w->party[0].unit.skill[w->party[0].unit.skillcnt++] = 8;
+    }
+#else
     if (DDS3_GBWK->party[0].unit.skillcnt == 0) {
         DDS3_GBWK->party[0].unit.skill[DDS3_GBWK->party[0].unit.skillcnt++] = 1;
         DDS3_GBWK->party[0].unit.skill[DDS3_GBWK->party[0].unit.skillcnt++] = 2;
@@ -762,6 +789,7 @@ void campDebugRegistAll(void)
         DDS3_GBWK->party[0].unit.skill[DDS3_GBWK->party[0].unit.skillcnt++] = 7;
         DDS3_GBWK->party[0].unit.skill[DDS3_GBWK->party[0].unit.skillcnt++] = 8;
     }
+#endif
 
     if (dds3PadButtonState[0x2A] != 0) {
         slot = cmbAddDevilToStock(0x4B, &DDS3_GBWK->party[4], 12);
@@ -7825,7 +7853,7 @@ campStatusPanel_t *cmpInitStatus(s8 arg, cmpSeqInfo_t *pParent)
     work->slotCursor = 0;
     for (i = 0; i < 16; i++) {
 #ifdef VERSION_MNAX
-        if (DDS3_GBWK->party[i].unit.flag & 1) {
+        if (((cmpPartyWork_t *)DDS3_GBWK)->party[i].unit.flag & 1) {
 #else
         if (DDS3_GBWK->akuma[i].flag & 1) {
 #endif
@@ -11859,8 +11887,8 @@ s32 func_002429C0(void)
     s32 i;
 
 #ifdef VERSION_MNAX
-    for (i = 0; i < DDS3_GBWK->party[0].unit.skillcnt; i++) {
-        total += attr[DDS3_GBWK->party[0].unit.skill[i]].capacity;
+    for (i = 0; i < ((cmpPartyWork_t *)DDS3_GBWK)->party[0].unit.skillcnt; i++) {
+        total += attr[((cmpPartyWork_t *)DDS3_GBWK)->party[0].unit.skill[i]].capacity;
     }
 #else
     for (i = 0; i < DDS3_GBWK->akuma[0].skillcnt; i++) {
