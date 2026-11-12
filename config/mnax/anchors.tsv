@@ -3736,15 +3736,15 @@ usa	mnax	delta	source
 0x001C7050	0x001C6B10	-1344	interface/frFont function
 0x001C7060	0x001C6B20	-1344	interface/frFont function
 0x001C7070	0x001C6B30	-1344	interface/frFont function
-0x001C7080	0x001C6B40	-1344	interface/frFont+0x1384 type 4
+0x001C7080	0x001C6B40	-1344	interface/frFont function
 0x001C7088	0x001C6BB8	-1232	interface/frFont function
 0x001C7288	0x001C6D10	-1400	interface/frFont function
 0x001C73B8	0x001C6E40	-1400	interface/frFont function
 0x001C7408	0x001C6E90	-1400	interface/frFont function
 0x001C74E8	0x001C6F70	-1400	interface/frFont function
 0x001C7568	0x001C6FE8	-1408	interface/frFont function
-0x001C7660	0x001C70D8	-1416	interface/frFont+0xECC type 4
-0x001C76A8	0x001C7120	-1416	interface/frFont+0xE80 type 4
+0x001C7660	0x001C70D8	-1416	interface/frFont+0xF3C type 4
+0x001C76A8	0x001C7120	-1416	interface/frFont+0xEF0 type 4
 0x001C76E0	0x001C7158	-1416	interface/frFont function
 0x001C7828	0x001C72A0	-1416	interface/frFont function
 0x001C7890	0x001C7308	-1416	kernel/dds3GlobalWork+0xE14 type 4
@@ -3764,28 +3764,26 @@ usa	mnax	delta	source
 0x001C7E18	0x001C7828	-1520	interface/frFont function
 0x001C7E38	0x001C7848	-1520	mc/slMain+0x4D4 type 4
 0x001C80B8	0x001C7A28	-1680	kernel/dds3KernelMain+0xF8 type 6
-0x001C8108	0x001C7A78	-1680	interface/frFont+0xF9C type 4
+0x001C8108	0x001C7A78	-1680	interface/frFont+0x100C type 4
 0x001C8120	0x001C7A90	-1680	interface/frFont+0xC84 type 4
 0x001C81B8	0x001C7AF0	-1736	interface/frFont function
 0x001C81D8	0x001C7B10	-1736	interface/frFont function
 0x001C81F0	0x001C7B28	-1736	interface/frFont function
-0x001C8230	0x001C7B68	-1736	interface/frFont+0x15F8 type 4
+0x001C8230	0x001C7B68	-1736	interface/frFont+0x1668 type 4
 0x001C8268	0x001C7BA0	-1736	interface/frFont function
 0x001C82B8	0x001C7BF0	-1736	interface/frFont function
-0x001C83B0	0x001C7CE0	-1744	interface/frFont+0xEF8 type 4
-0x001C83F0	0x001C7CE0	-1808	interface/frFont+0xD10 type 4
-0x001C8418	0x001C7D00	-1816	interface/frFont+0xF04 type 4
-0x001C8458	0x001C7D00	-1880	interface/frFont+0xD1C type 4
+0x001C83F0	0x001C7CE0	-1808	interface/frFont+0xD80 type 4
+0x001C8458	0x001C7D00	-1880	interface/frFont+0xD8C type 4
 0x001C8480	0x001C7D20	-1888	interface/frFont function
 0x001C8490	0x001C7D30	-1888	facility/fclDraw+0xCA0 type 4
 0x001C8498	0x001C7D38	-1888	interface/frFont function
 0x001C8508	0x001C7DA8	-1888	interface/frFont function
 0x001C86A0	0x001C7F18	-1928	interface/frFont function
 0x001C8730	0x001C7FA8	-1928	interface/frFont function
-0x001C8F08	0x001C8398	-2928	interface/frFont+0x2494 type 4
+0x001C8F08	0x001C8398	-2928	interface/frFont+0x24C4 type 4
 0x001C9108	0x001C8580	-2952	interface/frFont function
 0x001C9140	0x001C85B8	-2952	interface/frFont function
-0x001C9188	0x001C8600	-2952	interface/frFont+0x23F0 type 4
+0x001C9188	0x001C8600	-2952	interface/frFont+0x2420 type 4
 0x001C91E0	0x001C8658	-2952	interface/frFont function
 0x001C9220	0x001C8698	-2952	interface/frFont function
 0x001C9230	0x001C86A8	-2952	interface/frFont function
@@ -3814,11 +3812,11 @@ usa	mnax	delta	source
 0x001CA9B0	0x001C9DA8	-3080	interface/frWrap function
 0x001CA9B8	0x001C9DB0	-3080	interface/frWrap function
 0x001CA9C0	0x001C9DB8	-3080	interface/frWrap+0xB90 type 4
-0x001CA9C8	0x001C9DC0	-3080	interface/frFont+0x10D4 type 4
+0x001CA9C8	0x001C9DC0	-3080	interface/frFont+0x1144 type 4
 0x001CA9F8	0x001C9DF0	-3080	interface/frWrap function
-0x001CAA18	0x001C9E10	-3080	interface/frFont+0x10E8 type 4
+0x001CAA18	0x001C9E10	-3080	interface/frFont+0x1158 type 4
 0x001CAB38	0x001C9F30	-3080	interface/frFont+0x718 type 4
-0x001CABD8	0x001C9FD0	-3080	interface/frFont+0xE68 type 4
+0x001CABD8	0x001C9FD0	-3080	interface/frFont+0xED8 type 4
 0x001CAC00	0x001C9FF8	-3080	interface/frFont+0xBE8 type 4
 0x001CAC30	0x001CA028	-3080	interface/frFont+0x7D0 type 4
 0x001CAC50	0x001CA048	-3080	interface/frWrap function
@@ -7631,7 +7629,6 @@ usa	mnax	delta	source
 0x00298798	0x00297568	-4656	nme/Nme_Calc function
 0x00298928	0x00297630	-4856	nme/Nme_Calc+0x4A8 type 4
 0x00298D10	0x002979D8	-4920	nme/Nme_Calc+0x4F4 type 4
-0x00298DA8	0x00298DA8	0	nme/Nme_Draw+0x5E4 type 4
 0x00298EF8	0x00297BB0	-4936	nme/Nme_Calc function
 0x00298F98	0x00297C50	-4936	nme/Nme_Calc function
 0x00298FD8	0x00297C90	-4936	nme/Nme_Calc function
@@ -7990,7 +7987,7 @@ usa	mnax	delta	source
 0x002AA970	0x002A9FF8	-2424	sdf/sdfSound+0x2520 type 4
 0x002AA978	0x002AA000	-2424	sdf/sdfSound+0x2610 type 4
 0x002AA980	0x002AA008	-2424	sdf/sdfImageSet function
-0x002AA9E0	0x002AA068	-2424	interface/frFont+0x106C type 4
+0x002AA9E0	0x002AA068	-2424	interface/frFont+0x10DC type 4
 0x002AAC50	0x002AA2D8	-2424	sdf/sdfImageSet function
 0x002AACD0	0x002AA358	-2424	sdf/sdfImageSet function
 0x002AAD88	0x002AA410	-2424	sdf/sdfImageSet function
@@ -9789,7 +9786,7 @@ usa	mnax	delta	source
 0x00325998	0x00324FB8	-2528	newbattle/nbCameraPress+0x48 type 6
 0x00325A20	0x00325040	-2528	newbattle/nbCameraBoss+0x4E54 type 6
 0x00325A30	0x00325050	-2528	code_001C55F8+0x478 type 6
-0x00326060	0x00325130	-3888	interface/frFont+0xD38 type 6
+0x00326060	0x00325130	-3888	interface/frFont+0xDA8 type 6
 0x00326068	0x00325138	-3888	interface/frFont+0xA20 type 6
 0x003263B0	0x00325330	-4224	interface/frName+0x98 type 6
 0x003263C0	0x003265C8	520	interface/itfMisc+0xF38 type 6
@@ -10727,8 +10724,6 @@ usa	mnax	delta	source
 0x00531E80	0x0052F780	-9984	field/fldInf+0x9B0 type 6
 0x00531E98	0x0052F798	-9984	field/fldInf+0xAE4 type 6
 0x00531EB0	0x0052F7B0	-9984	field/fldInf+0xD34 type 6
-0x00531F18	0x0052F808	-10000	field/fldWap+0xBE8 type 6
-0x00531F28	0x0052F818	-10000	field/fldWap+0xBF0 type 6
 0x005320F8	0x0052F9E8	-10000	field/fldPanel+0x1A8 type 6
 0x00532110	0x0052FA00	-10000	field/fldSe+0x1BC type 6
 0x00532120	0x0052FA10	-10000	field/fldSe+0x49C type 6
@@ -10978,6 +10973,11 @@ usa	mnax	delta	source
 0x0053C648	0x00539F78	-9936	event/evtEventPack+0x6A8 type 6
 0x0053C668	0x00539F98	-9936	event/evtEventPack+0x778 type 6
 0x0053C678	0x00539FA8	-9936	event/evtEventPack+0x824 type 6
+0x0053C878	0x0053A1A8	-9936	facility/fclCombineInit+0x130 type 6
+0x0053C888	0x0053A1B8	-9936	facility/fclCombineInit+0x2A0 type 6
+0x0053C890	0x0053A1E8	-9896	facility/fclCombineInit+0x5C4 type 6
+0x0053C8A0	0x0053A1D0	-9936	facility/fclCombineInit+0x310 type 6
+0x0053C8B8	0x0053A210	-9896	facility/fclCombineInit+0x604 type 6
 0x0053CF70	0x0053A8F0	-9856	facility/fclShopInit+0x14 type 6
 0x0053CF80	0x0053A900	-9856	facility/fclShopInit+0x13C type 6
 0x0053CF98	0x0053A918	-9856	facility/fclShopInit+0x1A8 type 6
@@ -11875,6 +11875,7 @@ usa	mnax	delta	source
 0x0054F080	0x0054D380	-7424	mc/slMain+0x4CE8 type 6
 0x0054F088	0x0054D388	-7424	mc/slMain+0x4D64 type 6
 0x0054F090	0x0054D390	-7424	mc/slMain+0x4DAC type 6
+0x0054F098	0x0054D3A0	-7416	mc/slMain+0x4E34 type 6
 0x0054F0A8	0x0054D3A8	-7424	field/fldCommand+0xA78 type 6
 0x0054F0B0	0x0054D3B0	-7424	effect/effManager+0x60 type 6
 0x0054F0B8	0x0054D3B8	-7424	effect/polyManager+0x4 type 7
@@ -11963,7 +11964,7 @@ usa	mnax	delta	source
 0x0054F3E8	0x0054D6E8	-7424	code_001C55F8+0x62C type 7
 0x0054F3E9	0x0054D6E9	-7424	code_001C55F8+0x6A8 type 7
 0x0054F3FE	0x0054D6FE	-7424	interface/fmGslCont+0x70 type 7
-0x0054F430	0x0054D720	-7440	interface/frFont+0x1FDC type 6
+0x0054F430	0x0054D720	-7440	interface/frFont+0x200C type 6
 0x0054F440	0x0054D728	-7448	interface/frName+0x38 type 6
 0x0054F448	0x0054D730	-7448	interface/frWrap+0x74C type 6
 0x0054F45C	0x0054D734	-7464	interface/frWrap+0xDF0 type 7
@@ -12132,10 +12133,9 @@ usa	mnax	delta	source
 0x0054FD98	0x0054E018	-7552	movie/mviManager+0x318 type 6
 0x0054FDA0	0x0054E020	-7552	movie/mviManager+0x344 type 6
 0x0054FDA8	0x0054E028	-7552	movie/mviManager+0x528 type 6
-0x0054FDB8	0x0054E030	-7560	movie/MovieViewer+0x674 type 6
-0x0054FDC0	0x0054E038	-7560	movie/MovieViewer+0x790 type 6
-0x0054FDC8	0x0054E040	-7560	movie/MovieViewer+0x7C4 type 6
-0x0054FE36	0x0054E075	-7617	code_0022C578+0x810 type 7
+0x0054FDB0	0x0054E030	-7552	movie/MovieViewer+0x674 type 6
+0x0054FDB8	0x0054E038	-7552	movie/MovieViewer+0x790 type 6
+0x0054FDC0	0x0054E040	-7552	movie/MovieViewer+0x7C4 type 6
 0x0054FF1C	0x0054E164	-7608	newbattle/nbEncount+0x250 type 7
 0x00550EB0	0x0054EDE8	-8392	newdata/datDebugUnit+0x128 type 6
 0x00550F20	0x0054EE58	-8392	newdata/datDebugUnit+0x1FC type 6
@@ -12896,7 +12896,7 @@ usa	mnax	delta	source
 0x0056B668	0x005695C8	-8352	interface/fmGslCont+0x5C type 6
 0x0056B680	0x005695E0	-8352	interface/fmGslCont+0x18 type 6
 0x0056BA30	0x00569990	-8352	interface/frFont+0x14 type 6
-0x0056BA34	0x00569994	-8352	interface/frFont+0x1E18 type 6
+0x0056BA34	0x00569994	-8352	interface/frFont+0x1E88 type 6
 0x0056BB50	0x00569AB0	-8352	interface/frFont+0xCB0 type 6
 0x0056BB54	0x00569AB4	-8352	interface/frFont+0xCC0 type 6
 0x0056BB58	0x00569AB8	-8352	interface/frFont+0xCD0 type 6

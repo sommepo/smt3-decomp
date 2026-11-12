@@ -3733,7 +3733,7 @@ interface/frFont	frDestroyFontRequestAfter	88	0x001C6FF8	0x001C6AB8
 interface/frFont	frGetGsFontNum	12	0x001C7050	0x001C6B10
 interface/frFont	frGetTextHandleNum	12	0x001C7060	0x001C6B20
 interface/frFont	frGetFontHandleNum	12	0x001C7070	0x001C6B30
-interface/frFont	frGetYShiftLev	8	0x001C7080	ambiguous
+interface/frFont	frGetYShiftLev	116	0x001C7080	0x001C6B40
 interface/frFont	frGetXShiftLev	340	0x001C7088	0x001C6BB8
 interface/frFont	frSetUserImage	304	0x001C7288	0x001C6D10
 interface/frFont	frLinkUserImage	80	0x001C73B8	0x001C6E40
@@ -3769,9 +3769,7 @@ interface/frFont	frStrLen	64	0x001C81F0	0x001C7B28
 interface/frFont	frGetStrWidth	52	0x001C8230	0x001C7B68
 interface/frFont	frGetStrWidth2	80	0x001C8268	0x001C7BA0
 interface/frFont	frPreCalcStrWidth	240	0x001C82B8	0x001C7BF0
-interface/frFont	frGetDefaultFontWidth	28	0x001C83B0	0x001C7CE0
 interface/frFont	frGetFontWidth	28	0x001C83F0	0x001C7CE0
-interface/frFont	frGetDefaultFontHeight	28	0x001C8418	0x001C7D00
 interface/frFont	frGetFontHeight	28	0x001C8458	0x001C7D00
 interface/frFont	frSetMessageDefStepY	12	0x001C8480	0x001C7D20
 interface/frFont	frSetMessageStepY	8	0x001C8490	0x001C7D30

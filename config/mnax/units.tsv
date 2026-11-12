@@ -49,14 +49,14 @@ field/fldSky	C with fallbacks
 field/fldHit	C with fallbacks
 field/fldEveHit	C with fallbacks, 1 functions kept as Maniax assembly
 field/fldInf	C
-field/fldWap	demoted: .rodata is 0x218 bytes where Maniax has room for 0x208
+field/fldWap	C with fallbacks
 field/fldPanel	C
 field/fldSe	C with fallbacks
 field/fldAutoMap	C with fallbacks
 field/fld_Npc	C with fallbacks
 field/fldTitle	C
 field/fldSnow	C with fallbacks
-mc/slMain	demoted: slFileSelDraw: undefined reference to mnax_0054D398
+mc/slMain	C with fallbacks, 2 functions kept as Maniax assembly
 field/fldCommand	C with fallbacks
 effect/effManager	C
 effect/billManager	C with fallbacks
@@ -92,7 +92,7 @@ newbattle/nbCameraPress	C with fallbacks
 newbattle/nbCameraBoss	C with fallbacks
 code_001C55F8	C
 interface/fmGslCont	.sdata bounds unknown in Maniax
-interface/frFont	demoted: .sdata is 0x58 bytes where Maniax has room for 0x30
+interface/frFont	C with fallbacks, 4 functions kept as Maniax assembly
 interface/frName	C with fallbacks
 interface/frWrap	C
 interface/frTestFont	C
@@ -129,7 +129,7 @@ event/evtSky	C with fallbacks
 event/evtEventViewerFrameVar	C
 event/evtEventViewerMenu	C with fallbacks
 event/evtSound	C
-event/evtEventPack	demoted: defines evtLoadStartMessage, which the split also puts in a blob
+event/evtEventPack	C with fallbacks
 facility/fclCombineInit	C with fallbacks
 facility/fclShopInit	C with fallbacks
 facility/fclShopCalc	C with fallbacks
@@ -147,7 +147,7 @@ facility/fclTerminalCalc	C
 facility/fclTerminalDraw	C
 facility/fclTerminalUpdate	C
 facility/fclDraw	C
-interface/lstListWindow	demoted: .rodata bytes differ from Maniax
+interface/lstListWindow	C
 facility/fclMisc	C with fallbacks
 facility/fclShare	C with fallbacks
 facility/fclPanel	C with fallbacks
@@ -163,9 +163,9 @@ kernel/dds3TitleMain	C with fallbacks
 kernel/ModeSelect	C
 kernel/dds3CreateData	C
 staff/stfMain	C
-movie/mviManager	demoted: no Maniax assembly for movieDebugRowFmt
+movie/mviManager	C with fallbacks
 movie/MovieViewer	.sdata bounds unknown in Maniax
-code_0022C578	C with fallbacks
+code_0022C578	demoted: .sdata is 0xDA8 bytes where Maniax has room for 0xDA0
 newdata/datCalc	C with fallbacks
 newdata/datDebugUnit	C
 newbattle/nbInit	C
@@ -228,10 +228,10 @@ newbattle/nbE912	C
 newbattle/nbE913	C
 newbattle/nbE914	C with fallbacks
 newbattle/nbE915	C
-file/fileManager	C with fallbacks
-nme/Nme_Init	demoted: .sdata is 0x78 bytes where Maniax has room for 0x70
-nme/Nme_Calc	demoted: .text is 0x1A18 bytes where Maniax has room for 0x1B10
-nme/Nme_Draw	demoted: .text bytes differ from Maniax
+file/fileManager	.rodata bounds overlap nme/Nme_Init (fileManager 0x544B68+0x1E80, Nme_Init 0x5469D8)
+nme/Nme_Init	C with fallbacks
+nme/Nme_Calc	C with fallbacks, 2 functions kept as Maniax assembly
+nme/Nme_Draw	C with fallbacks
 nme/Nme_Update	C
 mc/mcManager	C
 code_0029B780	C with fallbacks

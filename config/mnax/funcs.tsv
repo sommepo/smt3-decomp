@@ -3826,7 +3826,7 @@ frDestroyFontRequestAfter	0x001C6FF8	0x001C6AB8	placed
 frGetGsFontNum	0x001C7050	0x001C6B10	placed	
 frGetTextHandleNum	0x001C7060	0x001C6B20	placed	
 frGetFontHandleNum	0x001C7070	0x001C6B30	placed	
-frGetYShiftLev	0x001C7080	0x001C6B40	called	
+frGetYShiftLev	0x001C7080	0x001C6B40	placed	
 frGetXShiftLev	0x001C7088	0x001C6BB8	placed	
 frSetUserImage	0x001C7288	0x001C6D10	placed	
 frLinkUserImage	0x001C73B8	0x001C6E40	placed	
@@ -3862,9 +3862,9 @@ frStrLen	0x001C81F0	0x001C7B28	placed
 frGetStrWidth	0x001C8230	0x001C7B68	placed	
 frGetStrWidth2	0x001C8268	0x001C7BA0	placed	
 frPreCalcStrWidth	0x001C82B8	0x001C7BF0	placed	
-frGetDefaultFontWidth	0x001C83B0	0x001C7CE0	placed	
+frGetDefaultFontWidth	0x001C83B0	absent	absent	
 frGetFontWidth	0x001C83F0	0x001C7CE0	placed	
-frGetDefaultFontHeight	0x001C8418	0x001C7D00	placed	
+frGetDefaultFontHeight	0x001C8418	absent	absent	
 frGetFontHeight	0x001C8458	0x001C7D00	placed	
 frSetMessageDefStepY	0x001C8480	0x001C7D20	placed	
 frSetMessageStepY	0x001C8490	0x001C7D30	placed	
@@ -9717,7 +9717,7 @@ __fixunsdfdi	0x002E6B30	0x002E61B0	placed
 dpdiv	0x002E6C48	0x002E62C8	placed	
 __floatdidf	0x002E6D88	0x002E6408	placed	
 __errno_8	0x002E6E30	0x002E64B0	placed	
-func_00298820	-	0x00298820	maniax only	nmeDrawCursorAt
-func_002989D8	-	0x002989D8	maniax only	nmeDrawCursorAt
-func_00298BA0	-	0x00298BA0	maniax only	nmeDrawCursorAt
-func_00298DA8	-	0x00298DA8	maniax only	nmeDrawCursorAt
+mnax_00298820	-	0x00298820	maniax only	nmeDrawCursorAt
+mnax_002989D8	-	0x002989D8	maniax only	nmeDrawCursorAt
+mnax_00298BA0	-	0x00298BA0	maniax only	nmeDrawCursorAt
+mnax_00298DA8	-	0x00298DA8	maniax only	nmeDrawCursorAt
