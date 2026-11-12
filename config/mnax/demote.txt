@@ -16,3 +16,30 @@ basic/dds3SceneBasic	.text bytes differ from Maniax
 kernel/dds3GlobalWork	.sdata bytes differ from Maniax
 newbattle/nbResultProcess	.text bytes differ from Maniax
 result/rstinit	.text bytes differ from Maniax
+interface/frName	no Maniax assembly for func_001C8EF0
+facility/fclCombineInit	no Maniax assembly for cmbMenuLeave
+movie/mviManager	no Maniax assembly for movieDebugRowFmt
+newbattle/nbActionProcess	no Maniax assembly for func_002501B0
+sdk/libkernl	no Maniax assembly for func_002DE504
+facility/fclEncyc	does not compile for Maniax
+newdata/datDebugUnit	does not compile for Maniax
+newbattle/nbUnitProcess	.rodata bounds take in Maniax data the unit does not define
+code_0029B780	.rodata links at a different size than its place in Maniax
+effect/effBattleSystem	.data links at a different size than its place in Maniax
+facility/fclRecoverInit	.rodata links at a different size than its place in Maniax
+facility/fclShopCalc	.text links at a different size than its place in Maniax
+facility/fclShopUpdate	.rodata links at a different size than its place in Maniax
+kernel/ModeSelect	.rodata links at a different size than its place in Maniax
+kernel/dds3TitleMain	.sdata links at a different size than its place in Maniax
+newdata/datCalc	.text links at a different size than its place in Maniax
+nme/Nme_Init	.text links at a different size than its place in Maniax
+pipe/pipeMain	.rodata links at a different size than its place in Maniax
+result/rstdraw	.rodata links at a different size than its place in Maniax
+result/rstupdate	.rodata links at a different size than its place in Maniax
+sdk/libc	.text links at a different size than its place in Maniax
+sdk/libgcc_longlong	.text links at a different size than its place in Maniax
+sound/sndManager	.rodata links at a different size than its place in Maniax
+staff/stfMain	.rodata links at a different size than its place in Maniax
+nme/Nme_Calc	nmeCalc: undefined reference to `nmeConfirmQuestion'
+facility/fclRagCalc	.text bytes differ from Maniax
+facility/fclRagInit	.text bytes differ from Maniax

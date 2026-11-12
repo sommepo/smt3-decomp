@@ -155,6 +155,22 @@ def adapt_source(text: str, unit: str, keep_asm, absent, extra):
     return text, None
 
 
+def near(amap, usa, same_region):
+    """Maniax address of a section boundary. Where the anchors either side disagree,
+    take the delta of the first anchor at or after it: a unit's first referenced
+    object is usually close to its start, so the change lies before the boundary.
+    A wrong guess fails the checksum and tools/mnax_settle.py demotes the unit."""
+    hit = amap.get(usa, same_region)
+    if hit is not None:
+        return hit
+    lo, hi = amap.around(usa - 1)
+    if hi and same_region(usa, hi[0]) and hi[0] - usa < 0x1000:
+        return usa + hi[1] - hi[0]
+    if lo and same_region(lo[0], usa) and usa - lo[0] < 0x1000:
+        return usa + lo[1] - lo[0]
+    return None
+
+
 def main() -> None:
     raw = (ROOT / "orig/mnax" / SERIAL).read_bytes()
     target = ELFFile((ROOT / "orig/mnax" / SERIAL).open("rb"))
@@ -275,8 +291,8 @@ def main() -> None:
                     if name == ".text":
                         continue
                     size = usa_extent[unit][name]
-                    m0 = amap.get(u0, same)
-                    m1 = mregion_end[name] if u0 + size == bounds[name][1] else amap.get(u0 + size, same)
+                    m0 = near(amap, u0, same)
+                    m1 = mregion_end[name] if u0 + size == bounds[name][1] else near(amap, u0 + size, same)
                     if m0 is None or m1 is None or m1 <= m0:
                         why = f"{name} bounds unknown in Maniax"
                         break
@@ -374,6 +390,23 @@ def main() -> None:
         else:
             good[unit] = starts
             verdict[unit] = "C"
+
+    # Guessed bounds can collide. Drop the less certain unit of an overlapping pair.
+    while True:
+        clash = None
+        for sec in SECS:
+            entries = sorted((good[u][sec][0], good[u][sec][1], u) for u in good if sec in good[u])
+            for (s0, z0, a), (s1, z1, b) in zip(entries, entries[1:]):
+                if s1 < s0 + z0:
+                    clash = (b if verdict[b] != "C" else a, a if verdict[b] != "C" else b, sec)
+                    break
+            if clash:
+                break
+        if not clash:
+            break
+        verdict[clash[0]] = f"{clash[2]} bounds overlap {clash[1]}"
+        del good[clash[0]]
+        sources.pop(clash[0], None)
 
     # ---- split config ------------------------------------------------------------
     mregion = {
@@ -486,14 +519,16 @@ def main() -> None:
     clash = set(int(x, 16) for x in renames.read_text().split()) if renames.exists() else set()
     named = {line.split(" = ")[0]: int(line.split(" = ")[1][:10], 16) for line in out}
     for path in (ROOT / "asm/mnax").rglob("*.s"):
-        for label, at in re.findall(r"^(?:dlabel|glabel|jlabel) ((?:D|func|jtbl)_[0-9A-F]{8})\n\s*/\* [0-9A-F]+ ([0-9A-F]{8})",
+        for label, at in re.findall(r"^(?:dlabel|glabel|jlabel) ((?:D|func|jtbl)_[0-9A-F]{8})\n\s*/\* (?:[0-9A-F]+ )?([0-9A-F]{8})",
                                     path.read_text(), re.M):
-            # Automatic (the name is the address it sits at) yet carried to elsewhere.
-            if int(at, 16) == int(label.split("_")[1], 16) and named.get(label, int(at, 16)) != int(at, 16):
+            # Automatic (the name is the address it sits at), yet the C-built units use
+            # that name for something else: carried elsewhere, or defined by one of them.
+            here = int(at, 16)
+            if here == int(label.split("_")[1], 16) and (label in named or label in auto) and named.get(label) != here:
                 if label.startswith("jtbl_"):
                     print(f"jump table name clash left alone: {label}", file=sys.stderr)
                 else:
-                    clash.add(int(at, 16))
+                    clash.add(here)
     renames.write_text("".join(f"0x{x:08X}\n" for x in sorted(clash)))
     # Inside a C-built unit the automatic name only appears in its reference
     # disassembly, and a real name there would make include_rodata.py claim it.

@@ -49,7 +49,7 @@ field/fldSky	C with fallbacks
 field/fldHit	demoted: .text links at a different size than its place in Maniax
 field/fldEveHit	C with fallbacks, 2 functions kept as Maniax assembly
 field/fldInf	C
-field/fldWap	.rodata bounds unknown in Maniax
+field/fldWap	.rodata bounds overlap field/fldInf
 field/fldPanel	C with fallbacks, 1 functions kept as Maniax assembly
 field/fldSe	.sdata bytes differ
 field/fldAutoMap	C with fallbacks, 7 functions kept as Maniax assembly
@@ -66,7 +66,7 @@ effect/effPacket	C
 effect/effBattle	C
 effect/effBattleMisc	C with fallbacks
 effect/effBattleLight	C with fallbacks
-effect/effBattleSystem	C with fallbacks
+effect/effBattleSystem	demoted: .data links at a different size than its place in Maniax
 effect/effPart	C
 effect/effPCPThunder	C
 effect/effPCPBezier	C
@@ -92,13 +92,13 @@ newbattle/nbCameraPress	C with fallbacks
 newbattle/nbCameraBoss	C with fallbacks
 code_001C55F8	C
 interface/fmGslCont	.sdata bounds unknown in Maniax
-interface/frFont	.rodata bounds unknown in Maniax
-interface/frName	.rodata bounds unknown in Maniax
+interface/frFont	.sdata bounds overlap effect/effSpline
+interface/frName	demoted: no Maniax assembly for func_001C8EF0
 interface/frWrap	demoted: no Maniax assembly for func_001C9410
 interface/frTestFont	C
 interface/itfMisc	.rodata bounds unknown in Maniax
 interface/itfPanel	C
-interface/itfMesManager	.rodata bounds unknown in Maniax
+interface/itfMesManager	.rodata bounds overlap interface/frTestFont
 interface/itfTestMesManager	C
 pb/pbCamera	C
 pb/pbModel	C with fallbacks
@@ -130,16 +130,16 @@ event/evtEventViewerFrameVar	C
 event/evtEventViewerMenu	C with fallbacks
 event/evtSound	C
 event/evtEventPack	.rodata bytes differ
-facility/fclCombineInit	.rodata bounds unknown in Maniax
+facility/fclCombineInit	demoted: no Maniax assembly for cmbMenuLeave
 facility/fclShopInit	.sdata start ambiguous
-facility/fclShopCalc	.sdata bounds unknown in Maniax
-facility/fclShopUpdate	.rodata bounds unknown in Maniax
-facility/fclRagInit	.rodata bounds unknown in Maniax
-facility/fclRagCalc	.rodata bounds unknown in Maniax
+facility/fclShopCalc	demoted: .text links at a different size than its place in Maniax
+facility/fclShopUpdate	demoted: .rodata links at a different size than its place in Maniax
+facility/fclRagInit	demoted: .text bytes differ from Maniax
+facility/fclRagCalc	demoted: .text bytes differ from Maniax
 facility/fclRagDraw	C
 facility/fclRagUpdate	demoted: .rodata links at a different size than its place in Maniax
-facility/fclRecoverInit	.rodata bounds unknown in Maniax
-facility/fclRecoverCalc	.rodata bounds unknown in Maniax
+facility/fclRecoverInit	demoted: .rodata links at a different size than its place in Maniax
+facility/fclRecoverCalc	C with fallbacks, 2 functions kept as Maniax assembly
 facility/fclRecoverDraw	C
 facility/fclRecoverUpdate	demoted: .rodata links at a different size than its place in Maniax
 facility/fclTerminalInit	.rodata bytes differ
@@ -152,33 +152,33 @@ facility/fclMisc	demoted: .sdata links at a different size than its place in Man
 facility/fclShare	C with fallbacks
 facility/fclPanel	C with fallbacks
 facility/fclDebug	demoted: .sdata links at a different size than its place in Maniax
-facility/fclEncyc	.rodata bounds unknown in Maniax
+facility/fclEncyc	demoted: does not compile for Maniax
 facility/fclRibbon	C
 result/rstinit	demoted: .text bytes differ from Maniax
 result/rstcalc	cannot locate func_00222120 in Maniax
-result/rstdraw	C
-result/rstupdate	.rodata bounds unknown in Maniax
-sound/sndManager	.rodata bounds unknown in Maniax
-kernel/dds3TitleMain	.rodata bounds unknown in Maniax
-kernel/ModeSelect	.rodata bounds unknown in Maniax
+result/rstdraw	demoted: .rodata links at a different size than its place in Maniax
+result/rstupdate	demoted: .rodata links at a different size than its place in Maniax
+sound/sndManager	demoted: .rodata links at a different size than its place in Maniax
+kernel/dds3TitleMain	demoted: .sdata links at a different size than its place in Maniax
+kernel/ModeSelect	demoted: .rodata links at a different size than its place in Maniax
 kernel/dds3CreateData	C
-staff/stfMain	C with fallbacks, 1 functions kept as Maniax assembly
-movie/mviManager	.sdata bounds unknown in Maniax
-movie/MovieViewer	.rodata bounds unknown in Maniax
-code_0022C578	.rodata bounds unknown in Maniax
-newdata/datCalc	.rodata bounds unknown in Maniax
-newdata/datDebugUnit	.rodata bounds unknown in Maniax
+staff/stfMain	demoted: .rodata links at a different size than its place in Maniax
+movie/mviManager	demoted: no Maniax assembly for movieDebugRowFmt
+movie/MovieViewer	.sdata bounds unknown in Maniax
+code_0022C578	cannot locate func_0023AD30 in Maniax
+newdata/datCalc	demoted: .text links at a different size than its place in Maniax
+newdata/datDebugUnit	demoted: does not compile for Maniax
 newbattle/nbInit	C
 newbattle/nbMainProcess	demoted: does not compile for Maniax
 newbattle/nbMaeProcess	C
 newbattle/nbAtoProcess	demoted: does not compile for Maniax
 newbattle/nbResultProcess	demoted: .text bytes differ from Maniax
 newbattle/nbStageProcess	C
-newbattle/nbUnitProcess	.rodata bounds unknown in Maniax
-newbattle/nbActionProcess	.rodata bounds unknown in Maniax
-newbattle/nbMisc	.rodata bounds unknown in Maniax
-newbattle/nbCommSelProcess	.rodata bounds unknown in Maniax
-newbattle/nbTarSelProcess	.rodata bounds unknown in Maniax
+newbattle/nbUnitProcess	demoted: .rodata bounds take in Maniax data the unit does not define
+newbattle/nbActionProcess	demoted: no Maniax assembly for func_002501B0
+newbattle/nbMisc	C with fallbacks, 3 functions kept as Maniax assembly
+newbattle/nbCommSelProcess	C with fallbacks, 7 functions kept as Maniax assembly
+newbattle/nbTarSelProcess	C with fallbacks
 newbattle/nbKoukaProcess	C
 newbattle/nbMakePacket	C with fallbacks
 newbattle/nbCalc	demoted: does not compile for Maniax
@@ -229,17 +229,17 @@ newbattle/nbE913	C
 newbattle/nbE914	C
 newbattle/nbE915	C
 file/fileManager	.rodata bytes differ
-nme/Nme_Init	.rodata bounds unknown in Maniax
-nme/Nme_Calc	.rodata bounds unknown in Maniax
+nme/Nme_Init	demoted: .text links at a different size than its place in Maniax
+nme/Nme_Calc	demoted: nmeCalc: undefined reference to `nmeConfirmQuestion'
 nme/Nme_Draw	cannot locate func_0029A108 in Maniax
 nme/Nme_Update	C
 mc/mcManager	C
-code_0029B780	.rodata bounds unknown in Maniax
+code_0029B780	demoted: .rodata links at a different size than its place in Maniax
 kernel/dds3ConfigMain	C with fallbacks, 2 functions kept as Maniax assembly
-pipe/pipeMain	C
-pipe/pipeSection	.rodata bounds unknown in Maniax
+pipe/pipeMain	demoted: .rodata links at a different size than its place in Maniax
+pipe/pipeSection	C with fallbacks
 pipe/pipeSelect	C
-pipe/pipeObject	.rodata bounds unknown in Maniax
+pipe/pipeObject	C with fallbacks
 pipe/pipePosTable	C
 pipe/pipeCamera	C
 pipe/pipeResult	C
@@ -283,7 +283,7 @@ sdf/sdfMath	C
 sdf/sdfQuat	C
 code_002C0BA8	C
 sdf/sdfRand	C
-sdf/sdfSound	.lit4 bounds unknown in Maniax
+sdf/sdfSound	C with fallbacks
 sdf/sdfDevFile	C
 sdf/sdfAddrResolve	C
 sdf/sdfIpu	C with fallbacks
@@ -301,9 +301,9 @@ sdk/libipu	C
 sdk/libmc	C with fallbacks
 sdk/libm	C with fallbacks
 sdk/libgcc	C with fallbacks
-sdk/libc	.rodata bounds unknown in Maniax
-sdk/libkernl	.rodata bounds unknown in Maniax
-sdk/libgcc_longlong	.rodata bounds unknown in Maniax
+sdk/libc	demoted: .text links at a different size than its place in Maniax
+sdk/libkernl	demoted: no Maniax assembly for func_002DE504
+sdk/libgcc_longlong	demoted: .text links at a different size than its place in Maniax
 sdk/libgcc_fixunsdfdi	C
 sdk/libgcc_dpdiv	C
 sdk/libgcc_floatdidf	C

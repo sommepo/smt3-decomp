@@ -115,6 +115,14 @@ def main() -> None:
             found.setdefault(m.group(1), f"no Maniax assembly for {m.group(2)}")
         for m in re.finditer(r"build/mnax/src/mnax/([\w/]+)\.o: in function `(\w+)':\n[^\n]*(undefined reference to `\w+')", log):
             found.setdefault(m.group(1), f"{m.group(2)}: {m.group(3)}")
+        # A blob that cannot find its own jump table or data: a C unit's guessed
+        # bounds swallowed it.
+        rows = entries()
+        for m in re.finditer(r"build/mnax/asm/mnax/[^\n]*\n(?:[^\n]*\n)?[^\n]*undefined reference to `(?:jtbl|D)_([0-9A-F]{8})'", log):
+            rom = int(m.group(1), 16) - DELTA
+            owner = [(r, k, n) for r, k, n in rows if r <= rom][-1]
+            if owner[1].startswith("."):
+                found.setdefault(owner[2], f"{owner[1]} bounds take in Maniax data the unit does not define")
         linked = "SLPM_654.62.elf" not in "".join(re.findall(r"^FAILED: .*", log, re.M))
         matched = r.returncode == 0
         # A gp-relative overflow is what a shifted layout looks like to the linker:
