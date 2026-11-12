@@ -1049,6 +1049,7 @@ void frGetXShiftLev(frTextHandle_t *glyph, s32 shiftIndex)
     left = entry->prop[shiftIndex];
     advance = right - left;
     leftOffset = left << 4;
+    flags = glyph->renderValueOrSetupOrShade.setupBytes.sharedFlags;
     if ((flags & 2) != 0) {
         if (glyph->glyphCodeOrContext.glyphCode < 0x80) {
             leftOffset >>= 1;
@@ -1337,6 +1338,7 @@ frTextHandle_t *frSetFont(u16 glyphCode, u8 fontIndex, u8 firstOption, u8 second
     frTextHandle_t *glyph = frAllocFontNode(gFT.itemPool);
     s32 shiftIndex;
     frFontHeader_t *header;
+    frFontData_t *entry;
 
     gFT.itemCount++;
     frInitTextHandle(glyph, glyphCode, fontIndex, firstOption, 0xA09DC300, secondOption);
@@ -1347,7 +1349,8 @@ frTextHandle_t *frSetFont(u16 glyphCode, u8 fontIndex, u8 firstOption, u8 second
 
         shiftIndex = ((relative & FR_FONT_MIDDLE_BYTE_MASK) >> 1) + (relative & 0x7F);
     }
-    header = gFT.entries[fontIndex].resourceHeader;
+    entry = &gFT.entries[fontIndex];
+    header = entry->resourceHeader;
     if (shiftIndex >= header->widthCount) {
         shiftIndex = 0x147;
     }
@@ -1936,9 +1939,8 @@ u32 frPreCalcStrWidth(s8 *pStr, s32 Style, s32 Mode) {
             s32 singleByte = code < 0x80;
 
             if (!singleByte) {
-                shiftIndex = code << FR_FONT_BYTE_SHIFT;
                 i++;
-                code = shiftIndex | (u8)pStr[i];
+                code = (code << FR_FONT_BYTE_SHIFT) | (u8)pStr[i];
                 singleByte = code < 0x80;
             }
             glyph.glyphCodeOrContext.glyphCode = code;
@@ -2010,6 +2012,11 @@ u32 frPreCalcStrWidth(s8 *pStr, s32 Style, s32 Mode) {
 
 /* Slots 0/1 use the shared default size; later slots read their resource width.
  * Retain the nested signed check and the absence of upper-bound validation. */
+#ifdef VERSION_MNAX
+u32 frGetDefaultFontWidth(u8 Style) {
+    return gFT.entries[Style].resourceHeader->cellWidth;
+}
+#else
 u32 frGetDefaultFontWidth(u8 Style) {
     s32 entryIndex = Style;
 
@@ -2020,6 +2027,7 @@ u32 frGetDefaultFontWidth(u8 Style) {
     }
     return gFT.entries[entryIndex].resourceHeader->cellWidth;
 }
+#endif
 
 u16 frGetFontWidth(s32 slotIndex) {
     return gFT.entries[slotIndex & FR_FONT_BYTE_MASK].resourceHeader->cellWidth;
@@ -2027,6 +2035,11 @@ u16 frGetFontWidth(s32 slotIndex) {
 
 /* Slots 0/1 use the shared default size; later slots read their resource height.
  * Retain the nested signed check and the absence of upper-bound validation. */
+#ifdef VERSION_MNAX
+u32 frGetDefaultFontHeight(u8 Style) {
+    return gFT.entries[Style].resourceHeader->cellHeight;
+}
+#else
 u32 frGetDefaultFontHeight(u8 Style) {
     s32 entryIndex = Style;
 
@@ -2037,6 +2050,7 @@ u32 frGetDefaultFontHeight(u8 Style) {
     }
     return gFT.entries[entryIndex].resourceHeader->cellHeight;
 }
+#endif
 
 u16 frGetFontHeight(s32 slotIndex) {
     return gFT.entries[slotIndex & FR_FONT_BYTE_MASK].resourceHeader->cellHeight;

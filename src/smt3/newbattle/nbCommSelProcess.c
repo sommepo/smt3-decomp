@@ -942,6 +942,15 @@ void DispComm1Comm(nbCommSelProcessData_t *s, u16 d, s32 ox, s32 oy, s32 oz, u32
     default:
         frq = frwGetSmallFontFRQ(ox << 4, oy << 3, 0xFF0051, col, text1[d], NULL);
         costtype = datSkillTable.normal[d].costtype;
+#ifdef VERSION_MNAX
+        switch (costtype) {
+        case 1:
+        case 2:
+            sprintf(buf, nbCommSelNumFormat, datGetSkillCost(work, d));
+            frq = frwGetSmallNumFontFRQ((ox + 0x78) << 4, (oy + 4) << 3, 0xFF0051, col, buf, frq);
+            break;
+        }
+#else
         if (costtype < 3) {
             if (costtype != 0) {
                 sprintf(buf, nbCommSelNumFormat, datGetSkillCost(work, d));
@@ -949,6 +958,7 @@ void DispComm1Comm(nbCommSelProcessData_t *s, u16 d, s32 ox, s32 oy, s32 oz, u32
                                             frq);
             }
         }
+#endif
         break;
     }
     frDrawFontEx(frq, 1);

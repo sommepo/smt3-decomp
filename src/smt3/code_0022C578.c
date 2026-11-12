@@ -4859,6 +4859,33 @@ extern void frSetMessageDefStepY(void);
 extern void fclInitPanelPos(s32 X, s32 Y, s32 Z, s16 W, s16 H, s32 Work,
     fclPanel_t *pPanelPos);
 
+#ifdef VERSION_MNAX
+void campDhDrawHelpText(s32 x, s32 y, s32 z, s32 alpha, s8 index)
+{
+    fclPanelPos_t panel;
+    frFontHandle_t *font;
+    u32 fontY;
+    u32 fontX;
+
+    fontX = x + 0x2A0;
+    fontY = y + 0x7F0;
+
+    if (index != 0) {
+        frEnableMode(1);
+        font = frLinkFontString((u8 *)pstr[index], 0, 0, 0, NULL);
+        frDisableMode(1);
+        frSetDrawPosition(font, fontX, fontY);
+        frSetPriority(font, 0);
+        frSetFontColor(font, fclBlendColor(0x7475FF80, 0x7475FF00, alpha));
+        frDrawFontOt(font, 1, 0x47);
+        frDestroyFontRequestAfter(font);
+        fclInitPanelPos(x + 0xA00, y + 0x990, 0, 0, 0, 0, (fclPanel_t *)&panel);
+        frSetMessageStepY(30);
+        cmpDrawHelp(&panel, (u16)index, 2, 1, alpha, 0x47);
+        frSetMessageDefStepY();
+    }
+}
+#else
 void campDhDrawHelpText(s32 x, s32 y, s32 z, s32 alpha, s8 index)
 {
     fclPanelPos_t panel;
@@ -4886,6 +4913,7 @@ void campDhDrawHelpText(s32 x, s32 y, s32 z, s32 alpha, s8 index)
         frSetMessageDefStepY();
     }
 }
+#endif
 
 
 extern const u32 campDhGaugePalette[];

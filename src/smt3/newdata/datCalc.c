@@ -1223,8 +1223,40 @@ void datPartyDamageFld(s32 mode)
     }
 }
 
+#ifdef VERSION_MNAX
+void datPartyDamagePipe(s32 big, s32 sml)
+{
+    s32 i;
+
+    if (big == 0 && sml == 0) {
+        return;
+    }
+    for (i = 0; i < 16; i++) {
+        s32 aofs = i * sizeof(datUnitWork_t) + DAT_AKUMA_OFS;
+
+        if ((((datAkumaView_t *)((u8 *)DDS3_GBWK + aofs))->flag & 2) != 0 &&
+            ((datAkumaView_t *)((u8 *)DDS3_GBWK + aofs))->hp != 0) {
+            s32 hp = ((datAkumaView_t *)((u8 *)DDS3_GBWK + aofs))->hp;
+            s32 smlDamage = hp * 3 / 100 * sml;
+            s32 bigDamage = hp / 10 * big;
+            s32 damage = bigDamage + smlDamage;
+
+            if (evtBitCheck(0xAF2) == 0) {
+                damage *= 3;
+            }
+            if (damage == 0) {
+                damage = 1;
+            }
+            hp -= damage;
+            if (hp <= 0) {
+                hp = 1;
+            }
+            ((datAkumaView_t *)((u8 *)DDS3_GBWK + aofs))->hp = hp;
+        }
+    }
+}
+#elif defined(NON_MATCHING)
 /* NON_MATCHING: 54 of 68 words differ (first at +0x4). */
-#ifdef NON_MATCHING
 void datPartyDamagePipe(s32 big, s32 sml)
 {
     s32 aofs;

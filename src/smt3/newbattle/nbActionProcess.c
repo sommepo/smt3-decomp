@@ -3068,7 +3068,9 @@ void SetAction_READY(nbActionProcessData_t *a)
     if (a->work->nowcommand == 3 && (a->data->stat & 8) != 0) {
         nbCameraSetState(0x19);
     }
+#ifndef VERSION_MNAX
     cmpSetSkillListRows(20);
+#endif
     switch (a->work->nowcommand) {
     case 0:
         if (nbHatudoCheckSkill(a->work, 0x130) != 0) {
@@ -3123,7 +3125,9 @@ void SetAction_READY(nbActionProcessData_t *a)
     case 9: break;
     case 10: break;
     }
+#ifndef VERSION_MNAX
     cmpSetSkillListRows(-1);
+#endif
 }
 
 extern char nbDebugNewline[];

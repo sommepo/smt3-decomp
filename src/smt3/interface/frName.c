@@ -164,9 +164,34 @@ void frRestoreNameImage(s8 target)
 
 extern void frGetMessageCode(u16 code);
 extern frFontHandle_t *frSetUserImage(GsFont_t *font, frFontHandle_t *chain);
+#ifdef VERSION_MNAX
+extern void frGetXShiftLev(frTextHandle_t *glyph, s32 shiftIndex);
+#else
 extern void frGetXShiftLev(frTextHandle_t *glyph, s32 shiftIndex, s32 isFirst);
+#endif
 extern s32 frGetYShiftLev(s8 style, s32 fontNo);
 
+#ifdef VERSION_MNAX
+frFontHandle_t *frCreateNameHandle(s8 target, s8 glyph, frFontHandle_t *chain)
+{
+    s32 slot = target * NAME_GLYPHS + glyph;
+    s32 shiftIndex = frNameGlobalWork->nameGlyphCodes[slot][0];
+    s32 relative;
+    frTextHandle_t *child;
+
+    shiftIndex = (shiftIndex << 8) | frNameGlobalWork->nameGlyphCodes[slot][1];
+    chain = frSetUserImage(pFont[target][glyph], chain);
+    child = chain->lastChild;
+    child->glyphCodeOrContext.glyphCode = 0xFFFF;
+    if (shiftIndex <= 0x83C5) {
+        relative = shiftIndex - 0x8080;
+        shiftIndex = ((relative & 0xFF00) >> 1) + (relative & 0x7F);
+        frGetXShiftLev(child, shiftIndex);
+        chain->lastChild->y = frGetYShiftLev(0, shiftIndex);
+    }
+    return chain;
+}
+#else
 frFontHandle_t *frCreateNameHandle(s8 target, s8 glyph, frFontHandle_t *chain)
 {
     s32 slot = target * 16 + glyph;
@@ -183,6 +208,7 @@ frFontHandle_t *frCreateNameHandle(s8 target, s8 glyph, frFontHandle_t *chain)
     chain->lastChild->y = frGetYShiftLev(0, shiftIndex);
     return chain;
 }
+#endif
 
 #ifdef VERSION_MNAX
 frFontHandle_t *frGetName1NFRQ(s8 target, frFontHandle_t *chain)
