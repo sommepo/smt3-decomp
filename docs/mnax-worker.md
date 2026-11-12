@@ -57,7 +57,12 @@ the bytes from the assembly, not as UTF-8.
   register pinning, no `asm` in C files, no dummy uses. A function you cannot
   match honestly stays as it is.
 - Do not run `ninja`, `configure.py` or the other `tools/mnax_*.py` scripts, and
-  do not commit. Only `mnax_asm.py` and `mnax_check.py`.
+  do not commit. Only `mnax_asm.py`, `mnax_check.py`, `mnax_land.py --us` and
+  `tools/cc.sh`.
+- **Never copy, patch or wrap the project's scripts** (`tools/cc.sh` included)
+  and never run `mv`, `rm -r` or `rsync` on anything under the repository. A
+  patched copy of cc.sh once moved the whole repository away. If you need
+  compiler dumps or other output, ask the coordinator in your report.
 - Names: a Maniax symbol with no USA counterpart appears as `D_<address>` or
   `func_<address>` (Maniax addresses) in the assembly. Declare it under
   `VERSION_MNAX` with that name.
@@ -82,6 +87,14 @@ the bytes from the assembly, not as UTF-8.
 - A function that is a different algorithm in Maniax (new code paths, much
   longer or shorter) can be written as its own Maniax version from the
   assembly and the m2c draft; give it a real try before giving up.
+
+- Party/demon records (`unitwork[]`, `party[]`, `akuma[]` in `DDS3_GBWK`): when
+  Maniax computes `index*0xEC + 0xA50` before adding the base, assign the byte
+  offset to its own integer local first:
+  `s32 ofs = i * sizeof(datUnitWork_t) + (u32)&((dds3GlobalWork_t *)0)->unitwork;`
+  then use `((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs))->flag`. When the
+  displacement split is wrong (0xA40 + 0x10 instead of 0xA50 + 0), reach the
+  array through a view struct whose member sits at a 16-aligned top-level offset.
 
 ## Report
 
