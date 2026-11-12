@@ -555,6 +555,14 @@ s32 fldWap_SetBgm(doormovetbl_s *pWap) {
     return result;
 }
 
+#ifdef VERSION_MNAX
+/* Maniax's fldDoor_Warp has no "WARP" debug string: the two names it shares
+ * with fldDoor_WarpEx open its rodata, ahead of its own jump table. */
+const char fldElevatorPosName[16] = "01pos_01";
+
+const char fldElevatorStartLabel[24] = "elvstart_label";
+#endif
+
 #ifdef NON_MATCHING
 extern s16 D_002FC1A2[][2];
 extern void fldSetNextField(s32 field, s32 parameter);
@@ -720,9 +728,11 @@ extern void fldSetSceneParam5(fldSceneParam_t *pParam, s32 loadField, s32 loadAr
 extern const char fldElevatorPosName[]; /* "01pos_01" */
 extern const char fldElevatorStartLabel[]; /* "elvstart_label" */
 
+#ifndef VERSION_MNAX
 const char fldElevatorPosName[16] = "01pos_01";
 
 const char fldElevatorStartLabel[24] = "elvstart_label";
+#endif
 
 INCLUDE_RODATA(const s32, "field/fldWap", jtbl_00531F40);
 

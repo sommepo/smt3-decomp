@@ -2751,6 +2751,11 @@ s8 gMessageSpaceX = 3;
 
 SDATA_PAD(3);
 
+#ifdef VERSION_MNAX
+/* Maniax has no default-size handle, space-advance offset or per-parent draw
+ * counter (its font code never reads them); its default line step is 0x19. */
+u32 gMessageStepY = FR_FONT_DEFAULT_CURSOR_SPACING;
+#else
 u32 gMessageStepY = 0x14;
 
 s32 frDefaultFontHandle = 0x14;
@@ -2758,6 +2763,7 @@ s32 frDefaultFontHandle = 0x14;
 u32 frSpaceAdvanceOffset = 0;
 
 u32 D_0054F418 = 0;
+#endif
 
 u8 gModeFlag = 0x16;
 
@@ -2769,9 +2775,11 @@ u8 frSetFontString_style = 0;
 
 SDATA_PAD(3);
 
+#ifndef VERSION_MNAX
 u32 frDrawFontWork = 0;
 
 SDATA_PAD(4);
+#endif
 
 INCLUDE_SDATA(const s32, "interface/frFont", frEmptyString);
 
