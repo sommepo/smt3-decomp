@@ -35,7 +35,7 @@ def compile_unit(src: Path) -> tuple[Path, Path | None, str]:
     out.parent.mkdir(parents=True, exist_ok=True)
     if out.exists() and out.stat().st_mtime > src.stat().st_mtime:
         return src, out, ""
-    r = subprocess.run([str(ROOT / "tools" / "cc.sh"), "-DSKIP_ASM", str(src), "-o", str(out)],
+    r = subprocess.run([str(ROOT / "tools" / "cc.sh"), "-UVERSION_SMT3", "-DVERSION_MNAX", "-DSKIP_ASM", str(src), "-o", str(out)],
                        capture_output=True, text=True)
     if r.returncode:
         out.unlink(missing_ok=True)

@@ -1,0 +1,70 @@
+# Matching Japanese-only functions (Maniax, `SLPM_654.62`)
+
+The Maniax build (version key `mnax`) is built from the USA source in `src/smt3`.
+About 500 functions compile from the USA C but differ in Maniax: the Japanese
+font, text, name entry, save and menu code. Each one is a small job: change the
+C so that, when compiled as Maniax, it gives the Maniax bytes, while the USA
+build stays exactly as it is.
+
+## The loop for one function
+
+1. Read the USA C of the function in `src/smt3/<unit>.c`.
+2. Read the Maniax assembly: `python tools/mnax_asm.py <function>`.
+   `python tools/mnax_asm.py <function> --m2c` gives an m2c draft with the unit's
+   context. Usually the USA C is the better starting point: find what Maniax
+   does differently and change only that.
+3. Put the Maniax version next to the USA one:
+
+   ```c
+   #ifdef VERSION_MNAX
+   s32 frExample(s32 a)
+   {
+       /* Maniax version */
+   }
+   #else
+   s32 frExample(s32 a)
+   {
+       /* USA version, byte for byte as it was */
+   }
+   #endif
+   ```
+
+   Keep the guard as tight as possible. When only a line or two differ, guard
+   just those lines inside the function. Declarations a Maniax version needs
+   (a different struct field, an extern, a string table) get their own
+   `#ifdef VERSION_MNAX` block.
+4. Check it: `python tools/mnax_check.py <unit> <function>`. It compiles the
+   unit as Maniax and prints `MATCH`, or both instruction streams with the
+   differing lines marked `!!`. Relocated fields (addresses, call targets) are
+   masked, so a call to a function under another name still matches.
+5. Repeat 3 and 4 until it prints `MATCH`.
+
+`mnax_check.py` compares `.text` only. If the function has string literals or
+other constant data, the Maniax bytes are in the `.rodata` part at the top of
+the `mnax_asm.py` output; your literals must produce exactly those bytes.
+Japanese text is Shift-JIS: write it as octal escapes (`"\202\240"`), copying
+the bytes from the assembly, not as UTF-8.
+
+## Rules
+
+- **Only edit the units you were given.** Other workers edit other files at the
+  same time.
+- **Never change what the USA build compiles.** Everything you add for Maniax is
+  under `VERSION_MNAX`; the `#else` branch keeps the original text exactly.
+  After your edits, `tools/cc.sh -DSKIP_ASM src/smt3/<unit>.c -o build/check_<your worker number>.o`
+  must still compile.
+- Follow `docs/CONTRIBUTING.md`: ordinary, readable C. No fakematches, no
+  register pinning, no `asm` in C files, no dummy uses. A function you cannot
+  match honestly stays as it is.
+- Do not run `ninja`, `configure.py` or the other `tools/mnax_*.py` scripts, and
+  do not commit. Only `mnax_asm.py` and `mnax_check.py`.
+- Names: a Maniax symbol with no USA counterpart appears as `D_<address>` or
+  `func_<address>` (Maniax addresses) in the assembly. Declare it under
+  `VERSION_MNAX` with that name.
+- Time-box each function. If it still does not match after a few honest
+  attempts, put it back exactly as you found it and move on.
+
+## Report
+
+End with one line per function you worked on: `MATCH`, or `NO` with a short
+reason (what still differs).

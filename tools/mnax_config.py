@@ -528,14 +528,31 @@ def main() -> None:
             return usa_fn[i][2] + usa - usa_fn[i][0]
         return None
 
+    # Every paired function by its own name, including automatic ones the C defines.
+    for _, name, at in funcs:
+        if isinstance(at, int) and name not in have and at not in seen_addr:
+            seen_addr[at] = name
+            have.add(name)
+            out.append(f"{name} = 0x{at:08X}; // type:func")
+
+    def after_function(usa):
+        """Code address past every known function end: the delta of the function before it."""
+        i = bisect.bisect_right(func_keys, usa) - 1
+        while i >= 0 and not isinstance(funcs[i][2], int):
+            i -= 1
+        return funcs[i][2] + usa - funcs[i][0] if i >= 0 else None
+
     carried = {}
     for name in sorted(auto - have):
         usa = int(name.split("_")[1], 16)
-        at = in_function(usa) if bounds[".text"][0] <= usa < bounds[".text"][1] else None
+        code = bounds[".text"][0] <= usa < bounds[".text"][1]
+        at = in_function(usa) if code else None
         if at is None:
             at = next((m0 + usa - lo for lo, hi, m0 in spans if lo <= usa < hi), None)
         if at is None:
             at = amap.get(usa, same)
+        if at is None and code:
+            at = after_function(usa)
         if at is not None and at not in seen_addr:
             seen_addr[at] = name
             carried[name] = at

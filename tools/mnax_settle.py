@@ -157,6 +157,9 @@ def main() -> None:
             if mm:
                 symbols[mm.group(1)] = int(mm.group(2), 16)
         rows = entries()
+        # A jump table that points at labels it cannot see: the unit's rodata range is wrong.
+        for m in re.finditer(r"build/mnax/src/mnax/([\w/]+)\.o: in function `\w+':\n[^\n]*\(\.rodata[^\n]*undefined reference to `\.L", log):
+            found.setdefault(m.group(1), ".rodata range holds a jump table into code it does not own")
         for m in re.finditer(r"build/mnax/src/mnax/([\w/]+)\.o: in function `(\w+)':\n[^\n]*undefined reference to `(\w+)'", log):
             user, func, name = m.groups()
             at = symbols.get(name)
