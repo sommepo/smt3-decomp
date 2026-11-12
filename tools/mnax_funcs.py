@@ -127,6 +127,10 @@ def main() -> None:
                     break
             if cand is not None:
                 for t, s in zip(run, cand):
+                    # A start found after `jr ra` + delay slot can be alignment fill:
+                    # the function begins at the first non-zero word.
+                    while word(s) == 0 and s + 4 < known[right]:
+                        s += 4
                     known[t], how[t] = s, "gap"
             else:
                 c = starts(known[left], known[right], False, first)

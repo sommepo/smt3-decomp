@@ -39,3 +39,27 @@ fclEncycMarkerOn = 0x0054DF70; // size:0x2
 // fclRagInit small data starts at 0x54DE20 (worker F)
 GBWK_0 = 0x0054DE20; // size:0x4
 gProcessStat_1 = 0x0054DE24; // size:0x1
+// nbActionProcess .rodata (0x5418D0..0x5423B0 in Maniax; investigator W6)
+nbKoukaListSelectFmt = 0x005419F8;
+D_00543880 = 0x00541A80;
+nbSkillKoukaTypeFmt = 0x00542020;
+nbSkillCut3TimeFmt = 0x00542038;
+nbSkillHpMpFmt = 0x005420D8;
+nbSkillKoukaEndTimeFmt = 0x005420F8;
+nbSkillKoukaUnlockTimeFmt = 0x00542118;
+nbSkillNoKoukaFmt = 0x00542138;
+nbPressDebugFmt = 0x00542168;
+jtbl_00543F00 = 0x00542180; // size:0x40
+jtbl_00543F40 = 0x005421C0; // size:0x40
+jtbl_00543F80 = 0x00542200; // size:0x28
+nbNegoDebugFmt = 0x00542228;
+nbNegoResultFmt = 0x00542238;
+nbReturnDebugMsg = 0x005422A0;
+nbEndMsgBit10000 = 0x005422F0;
+nbEndMsgBit20000 = 0x00542308;
+nbEndMsgBit40000 = 0x00542320;
+nbEndMsgBit80000 = 0x00542330;
+nbEndMsgBit100000 = 0x00542340;
+nbEndMsgBit200000 = 0x00542358;
+nbPcmSyncDebugMsg = 0x00542368;
+nbActionProcessName = 0x005423A0;
