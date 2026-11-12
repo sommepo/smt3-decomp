@@ -210,3 +210,4 @@ nmeConfirmYes = 0x0054F5E8; // size:0x8
 nmeConfirmNo = 0x0054F5F0; // size:0x8
 nmeCursorSkip = 0x0054F5F8; // size:0x8
 nmeMoveTextTemplate = 0x0054F600; // size:0x4
+cmpLoadState = 0x0054E075; // type:u8 size:0x1
