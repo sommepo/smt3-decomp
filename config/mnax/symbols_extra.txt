@@ -1,0 +1,7 @@
+// Maniax names the USA-to-Maniax address map does not carry (mnax_config.py
+// appends these to the generated symbol_addrs.txt; they win over carried names).
+dds3SoftResetDisableFlag = 0x0054CB0A; // type:u8 size:0x1
+gProcessStat_0 = 0x0054DDAC; // type:u8 size:0x1
+cmbTopTextSacrifice = 0x0053A490; // size:0x20
+cmbTopText2ndDemon = 0x0053A4B0; // size:0x18
+cmbTopText1stDemon = 0x0053A4C8; // size:0x18

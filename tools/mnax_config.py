@@ -702,6 +702,16 @@ def main() -> None:
                 attrs = re.sub(r"\s*size:0x[0-9A-Fa-f]+", "", attrs)
         seen_addr[at] = name
         out.append(f"{name} = 0x{at:08X}; {attrs}".rstrip())
+    # Hand-curated Maniax names (config/mnax/symbols_extra.txt, kept in git) win over
+    # carried ones at the same name or address: names the address map cannot carry.
+    extra = ROOT / "config/mnax/symbols_extra.txt"
+    if extra.exists():
+        lines = [l for l in extra.read_text().splitlines() if re.match(r"\w+ = 0x[0-9A-Fa-f]+;", l)]
+        names = {l.split(" = ")[0] for l in lines}
+        addrs = {int(re.match(r"\w+ = (0x[0-9A-Fa-f]+);", l).group(1), 16) for l in lines}
+        out = [l for l in out if l.split(" = ")[0] not in names
+               and int(re.match(r"\w+ = (0x[0-9A-Fa-f]+);", l).group(1), 16) not in addrs]
+        out.extend(lines)
     # Data objects the C-built units define get their size, so that splat writes a
     # word pointing inside one (event bytecode that looks like a pointer) as
     # name + offset instead of inventing a D_ label there, which a unit would then
