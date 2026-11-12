@@ -209,18 +209,48 @@ def near(amap, usa, same_region):
     return None
 
 
+_changed = None
+
+
+def _source_changed() -> dict:
+    """Commit time of the last change to each src/smt3 file (a snapshot extracted
+    with git archive gives every file the same new mtime, so mtimes cannot tell)."""
+    global _changed
+    if _changed is None:
+        import subprocess
+        _changed = {}
+        log = subprocess.run(["git", "log", "--format=@%ct", "--name-only", "--", "src/smt3"],
+                             cwd=ROOT, capture_output=True, text=True).stdout
+        when = 0
+        for line in log.splitlines():
+            if line.startswith("@"):
+                when = int(line[1:])
+            elif line and line not in _changed:
+                _changed[line] = when
+    return _changed
+
+
 def built_obj(unit: str, probe_ok: bool = False) -> Path:
     """The unit's object from the last full build, or a path that does not exist when
-    that object is older than the unit's source: a unit demoted in an earlier round
-    is not rebuilt, so its old object would describe code and data since changed."""
+    that object predates the last change to the unit's source: a unit demoted in an
+    earlier round is not rebuilt, so its old object would describe code and data
+    since changed. (probe_ok is kept for callers; the probe object lacks the
+    assembly pieces, so it is not a substitute.)"""
     path = ROOT / "build/mnax/src/mnax" / (unit + ".o")
-    src = (ROOT / SRC if not SRC.is_absolute() else SRC) / (unit + ".c")
     try:
-        if path.stat().st_mtime < src.stat().st_mtime:
-            # For data sizes the probe object (compiled from the current source) is
-            # the next best thing; it lacks only the assembly pieces.
-            probe = ROOT / "build/probe" / (unit + ".o")
-            return probe if probe_ok and probe.exists() else path.with_suffix(".o.stale")
+        if path.stat().st_mtime < _source_changed().get(f"src/smt3/{unit}.c", 0):
+            return path.with_suffix(".o.stale")
+        # A round whose guessed range was too small drops the unit's INCLUDE_SDATA/
+        # RODATA pieces, and an object built then is too small in turn: distrust an
+        # object that lacks a piece the source includes.
+        if path.read_bytes()[:4] == b"\x7fELF":
+            want = set(re.findall(r"INCLUDE_(?:RODATA|SDATA)\([^,]+,[^,]+,\s*(\w+)\)",
+                                  (SRC / (unit + ".c")).read_text(errors="replace")))
+            if want:
+                have = {sym.name for sym in ELFFile(path.open("rb")).get_section_by_name(".symtab").iter_symbols()
+                        if sym["st_shndx"] != "SHN_UNDEF"}
+                if want - have:
+                    return path.with_suffix(".o.stale")
     except FileNotFoundError:
         pass
     return path
@@ -290,6 +320,15 @@ def main() -> None:
             mm = re.match(r"(\w+) = (0x[0-9A-Fa-f]+);", line)
             if mm:
                 prev_syms[mm.group(1)] = int(mm.group(2), 16)
+
+    sym_addrs = sorted(set(prev_syms.values()))
+    included = {}
+    for unit in [name for rom, kind, name in usa_yaml if kind == "c"]:
+        try:
+            included[unit] = re.findall(r"INCLUDE_(?:RODATA|SDATA)\([^,]+,[^,]+,\s*(\w+)\)",
+                                        (SRC / (unit + ".c")).read_text(errors="replace"))
+        except FileNotFoundError:
+            pass
 
     def named_place(unit, secname, clean):
         from collections import Counter
@@ -465,6 +504,16 @@ def main() -> None:
                     m1 = mregion_end[name] if u0 + size == bounds[name][1] else near(amap, u0 + size, same)
                     if placed_by_name is not None and m0 is not None and m1 is not None:
                         m0, m1 = placed_by_name[0], placed_by_name[0] + (m1 - m0)
+                    # The range must hold every piece the source includes from this
+                    # section (the anchors can end it before the last one): extend it
+                    # to the next known symbol after each piece.
+                    if m0 is not None and m1 is not None and name in (".sdata", ".rodata"):
+                        for piece in included.get(unit, ()):
+                            at = prev_syms.get(piece)
+                            if at is not None and m0 <= at and at >= m1 and at < m1 + 0x40:
+                                k = bisect.bisect_right(sym_addrs, at)
+                                if k < len(sym_addrs) and sym_addrs[k] - at <= 0x40:
+                                    m1 = sym_addrs[k]
                     if m0 is None or m1 is None or m1 <= m0:
                         why = f"{name} bounds unknown in Maniax"
                         break
