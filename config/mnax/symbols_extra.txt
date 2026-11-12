@@ -211,5 +211,3 @@ nmeConfirmNo = 0x0054F5F0; // size:0x8
 nmeCursorSkip = 0x0054F5F8; // size:0x8
 nmeMoveTextTemplate = 0x0054F600; // size:0x4
 cmpLoadState = 0x0054E075; // type:u8 size:0x1
-mnax_0053B690 = 0x0053B690; // size:0x20 rstupdate Maniax help line (USA D_0053DCD0 carried here)
-mnax_0053B6C8 = 0x0053B6C8; // size:0x18 rstupdate Maniax help line (USA D_0053DD08 carried here)

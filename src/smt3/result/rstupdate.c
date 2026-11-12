@@ -1381,12 +1381,13 @@ void func_002262E0(void) {
 }
 
 #if defined(VERSION_MNAX)
-/* Maniax title-menu help lines (font codes, not Shift-JIS), byte for byte. */
-const char mnax_0053B690[32] __attribute__((aligned(16))) = "\205\276\206\251\200\351\201\247\201\303\202\231\201\361\201\260\205\371\201\237\201\234\200\367";
+/* Maniax title-menu help lines (font codes, not Shift-JIS), byte for byte. The
+ * address map pairs two of them with USA objects and keeps those names. */
+const char D_0053DCD0[32] __attribute__((aligned(16))) = "\205\276\206\251\200\351\201\247\201\303\202\231\201\361\201\260\205\371\201\237\201\234\200\367";
 
 const char mnax_0053B6B0[24] = "\201\303\202\231\201\361\201\260\205\244\212\262\200\365\201\234\200\367";
 
-const char mnax_0053B6C8[24] = "\201\314\202\231\201\347\200\365\200\375\221\274\204\313\200\351\201\247";
+const char D_0053DD08[24] = "\201\314\202\231\201\347\200\365\200\375\221\274\204\313\200\351\201\247";
 
 const char mnax_0053B6E0[24] = "\204\217\200\344\205\275\200\352\201\205\200\353\201\234\200\367";
 
