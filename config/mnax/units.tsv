@@ -132,7 +132,7 @@ event/evtSound	C
 event/evtEventPack	demoted: defines D_0053A0E0, which the split also puts in a blob
 facility/fclCombineInit	demoted: Maniax has a TU boundary inside the unit (rodata base 0x53A1A8 vs jump tables at 0x53A1B0)
 facility/fclShopInit	C
-facility/fclShopCalc	demoted: .sdata is 0x1C bytes where Maniax has room for 0xC
+facility/fclShopCalc	C with fallbacks
 facility/fclShopUpdate	C
 facility/fclRagInit	C with fallbacks
 facility/fclRagCalc	C with fallbacks, 1 functions kept as Maniax assembly
