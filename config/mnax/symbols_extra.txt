@@ -159,3 +159,5 @@ shpCmdSell = 0x0054DE08; // size:0x8
 // fclShopCalc small data (0x54DE10..0x54DE1C)
 shpFmtCount7 = 0x0054DE10; // size:0x4
 shpFmtCount2 = 0x0054DE18; // size:0x4
+// fldDoor_Warp jump table (Maniax drops the WARP debug string before it)
+jtbl_00531F40 = 0x0052F830;

@@ -2728,11 +2728,22 @@ void frDumpFontTexture(s32 x, s32 y, s32 depth)
 INCLUDE_ASM(const s32, "interface/frFont", frDumpFontTexture);
 #endif
 
+#ifdef VERSION_MNAX
+/* Maniax's character names (frCNameTable points at them in reverse order). */
+const char mnax_005332C8[16] = "\201\273\201\275\201\320\201\322\201\263\201\276";
+
+const char mnax_005332D8[16] = "\201\314\201\276\201\265\201\306\201\361";
+
+const char mnax_005332E8[16] = "\201\320\201\274\201\273\201\367\201\267\201\304";
+
+const char mnax_005332F8[16] = "\201\310\201\366\201\311\202\204\201\304\201\267";
+#else
 const char D_00535968[16] = "HayasakaChiaki";
 
 const char D_00535978[16] = "IsamuNitta";
 
 const char D_00535988[16] = "YukoTakao";
+#endif
 
 u32 gMessageRequestResult = 0xFFFFFFFF;
 

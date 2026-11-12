@@ -823,6 +823,11 @@ s32 D_0054EA18 = 0;
 
 sdfMemHandle_t *D_0054EA1C = NULL;
 
+#ifdef VERSION_MNAX
+/* Maniax has 8 unreferenced zero bytes here. */
+SDATA_PAD(8);
+#endif
+
 dds3GlobalWork_t *DDS3_GBWK = NULL;
 
 SDATA_PAD(4);
