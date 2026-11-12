@@ -73,6 +73,11 @@ def drop_duplicate_pieces() -> int:
     delta = 0xFF000
     piece = re.compile(r'^INCLUDE_(?:RODATA|SDATA)\([^,]+,\s*"([^"]+)",\s*(\w+)\);\n(?:SDATA_RESUME\(\);\n)?\n?', re.M)
     dropped = 0
+    named = {}
+    for line in (ROOT / "config/mnax/symbol_addrs.txt").read_text().splitlines():
+        m = re.match(r"(\w+) = (0x[0-9A-Fa-f]+);.*size:(0x[0-9A-Fa-f]+)", line)
+        if m and "type:func" not in line:
+            named[m.group(1)] = (int(m.group(2), 16), int(m.group(2), 16) + int(m.group(3), 16))
     for src in sorted((ROOT / "src/mnax").rglob("*.c")):
         text = src.read_text(errors="replace")
         if "INCLUDE_RODATA" not in text and "INCLUDE_SDATA" not in text:
@@ -97,8 +102,9 @@ def drop_duplicate_pieces() -> int:
                     b = data[lo:hi]
                     if any(b) and not any(lo <= r < hi for r in relocated):
                         objects.append(b)
-        if not objects:
-            continue
+        # Objects the C defines whose Maniax address and size the symbol file knows:
+        # a piece starting inside one is part of it.
+        spans = [named[n] for n in set(DATA_DEF.findall(text)) if n in named]
 
         def keep(m):
             nonlocal dropped
@@ -106,8 +112,9 @@ def drop_duplicate_pieces() -> int:
             a = re.search(r"^\s*/\* [0-9A-F]+ ([0-9A-F]{8})", f.read_text(), re.M) if f.exists() else None
             if a is None:
                 return m.group(0)
-            at = int(a.group(1), 16) - delta
-            if any(raw[at:at + len(b)] == b for b in objects):
+            vaddr = int(a.group(1), 16)
+            at = vaddr - delta
+            if any(raw[at:at + len(b)] == b for b in objects) or any(lo <= vaddr < hi for lo, hi in spans):
                 dropped += 1
                 return ""
             return m.group(0)

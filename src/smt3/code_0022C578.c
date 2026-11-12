@@ -13270,12 +13270,15 @@ SDATA_PAD(3);
 
 #ifdef VERSION_MNAX
 /* Maniax: the camp menu cells that fit in 8 bytes (the rest are .rodata,
- * before cmpCampTmxPath). cmpLoadState is the byte at mnax_0054E070 + 5. */
+ * before cmpCampTmxPath), and cmpLoadState right after the last one. */
 char mnax_0054E050[8] = "\201\376\202\231\201\332";
 char mnax_0054E058[8] = "\201\312\201\276\201\374";
 char mnax_0054E060[8] = "\211\202\201\204\201\251";
 char mnax_0054E068[8] = "\203\324\200\344";
-char mnax_0054E070[8] = "\204\265\200\367";
+char mnax_0054E070[5] = "\204\265\200\367";
+u8 cmpLoadState = 0;
+SDATA_PAD(2);
+
 char cmpCalcProcName[8] = "camp";
 char cmpFmtNameCount[8] = "%s%d";
 char cmpTextSPITEMS[8] = "\203\372\211\263\210\217";
