@@ -16,7 +16,7 @@
 extern u32 dds3GetKernelCount(void);
 
 /* A slide or fade value its Calc function steps once per tick, drawn after it. */
-#define FCL_ENCYC_DRAWN(v) SDF_FRAME_INTERPOLATE(dds3GetKernelCount(), &(v), (v))
+#define FCL_ENCYC_DRAWN(v) SDF_FRAME_INTERPOLATE(&(v), (v))
 
 extern s32 fclEncycGetRatio(void);
 extern void ReleaseWork(fclEncyc_instance_tag *pinst);
@@ -1779,7 +1779,7 @@ void AcceptKeyRegistConfirm(fclEncyc_instance_tag *pinst)
 
 void CalcConfirmStatus(fclEncyc_registconfirmwork_tag *work)
 {
-    if (!SDF_FRAME_DUE(dds3GetKernelCount())) return;
+    if (!SDF_FRAME_DUE()) return;
     if (work->flag == 0) {
         work->statusAlpha += 0x10;
         if (work->statusAlpha >= 0xA1) {
@@ -2487,7 +2487,7 @@ void ReleaseFontExplain(fclEncyc_instance_tag *pinst, s32 release_mesmng)
 
 void FadeOutRibbon(fclEncyc_readmainwork_tag *pwork)
 {
-    if (!SDF_FRAME_DUE(dds3GetKernelCount())) return;
+    if (!SDF_FRAME_DUE()) return;
     pwork->ribbonAlpha -= 0x10;
     if (pwork->ribbonAlpha < 0) {
         pwork->ribbonAlpha = 0;
@@ -2500,7 +2500,7 @@ void FadeOutRibbon(fclEncyc_readmainwork_tag *pwork)
 
 void FadeInRibbon(fclEncyc_readmainwork_tag *pwork)
 {
-    if (!SDF_FRAME_DUE(dds3GetKernelCount())) return;
+    if (!SDF_FRAME_DUE()) return;
     pwork->ribbonAlpha += 0x10;
     if (pwork->ribbonAlpha >= 0x81) {
         pwork->ribbonAlpha = 0x80;
@@ -2787,7 +2787,7 @@ void func_0021B480(fclEncyc_instance_tag *pinst)
     SDF_VU0_SCALEVECTOR(600.0f);
     SDF_VU0_ADDVECTOR();
     /* The quake moves once per retail tick. */
-    SDF_VU0_LOADVECTOR_B(SDF_FRAME_INTERPOLATE_PTR(dds3GetKernelCount(), dds3QuakeOffset, 3));
+    SDF_VU0_LOADVECTOR_B(SDF_FRAME_INTERPOLATE_PTR(dds3QuakeOffset, 3));
     SDF_VU0_ADDVECTOR();
     SDF_VU0_STOREVECTOR_NOMEM(&target);
     SDF_VU0_LOADVECTOR(&aViewEye);
@@ -2890,20 +2890,20 @@ void ControlModel(fclEncyc_instance_tag *pinst, mdlObj_t *model, s32 key)
     pinst->camera[0].z = -sdfCos(work->phase.cameraAngle) * work->phase.cameraRadius + pinst->camera[1].z;
 
     mdlGetPosition(model);
-    if ((SDF_FRAME_MASK(dds3GetKernelCount(), key) & 0x20) != 0 && work->viewOffsetX > work->positionMinX) {
+    if ((SDF_FRAME_MASK(key) & 0x20) != 0 && work->viewOffsetX > work->positionMinX) {
         SDF_VU0_LOADVECTOR_B(fclEncycPanStepX);
         SDF_VU0_SUBVECTOR();
         work->viewOffsetX--;
-    } else if ((SDF_FRAME_MASK(dds3GetKernelCount(), key) & 0x40) != 0 && work->viewOffsetX < work->positionMaxX) {
+    } else if ((SDF_FRAME_MASK(key) & 0x40) != 0 && work->viewOffsetX < work->positionMaxX) {
         SDF_VU0_LOADVECTOR_B(fclEncycPanStepX);
         SDF_VU0_ADDVECTOR();
         work->viewOffsetX++;
     }
-    if ((SDF_FRAME_MASK(dds3GetKernelCount(), key) & 0x80) != 0 && work->viewOffsetY > work->positionMinY) {
+    if ((SDF_FRAME_MASK(key) & 0x80) != 0 && work->viewOffsetY > work->positionMinY) {
         SDF_VU0_LOADVECTOR_B(fclEncycPanStepY);
         SDF_VU0_SUBVECTOR();
         work->viewOffsetY--;
-    } else if ((SDF_FRAME_MASK(dds3GetKernelCount(), key) & 0x100) != 0 && work->viewOffsetY < work->positionMaxY) {
+    } else if ((SDF_FRAME_MASK(key) & 0x100) != 0 && work->viewOffsetY < work->positionMaxY) {
         SDF_VU0_LOADVECTOR_B(fclEncycPanStepY);
         SDF_VU0_ADDVECTOR();
         work->viewOffsetY++;
@@ -3239,7 +3239,7 @@ void CalcMoveRegistKeyHelp(fclEncyc_registconfirmwork_tag *pwork)
 {
     s32 alpha = pwork->registAlpha;
 
-    if (!SDF_FRAME_DUE(dds3GetKernelCount())) return;
+    if (!SDF_FRAME_DUE()) return;
     if (pwork->dispregist != 0) {
         alpha += 0x10;
         if (alpha > 0x80) {
@@ -3276,7 +3276,7 @@ void CalcMoveReadMainHelp(fclEncycReadHelpWork_t *work)
     s32 secondaryAlpha = work->panels[1].alpha;
     s32 primaryAlpha;
 
-    if (!SDF_FRAME_DUE(dds3GetKernelCount())) return;
+    if (!SDF_FRAME_DUE()) return;
     if (flags & 0x10) {
         secondaryAlpha += 0x10;
         if (secondaryAlpha > 0x80) {
@@ -3326,7 +3326,7 @@ void CalcMoveViewModeRibbon(fclEncyc_readmainwork_tag *pwork)
 {
     s32 alpha = pwork->ribbonAlpha;
 
-    if (!SDF_FRAME_DUE(dds3GetKernelCount())) return;
+    if (!SDF_FRAME_DUE()) return;
     if ((pwork->flags & 0x20) == 0) {
         alpha += 0x10;
         if (alpha >= 0x81) {
@@ -3903,14 +3903,16 @@ void DrawReadMainHelp(fclEncyc_instance_tag *pinst)
     s32 y;
 
     if (work->help[1].alpha > 0) {
+        s32 alpha;
         tag = sdfGrAllocPacketBuff(sizeof(*tag));
         sdfDrawTagInit(tag);
         x = FCL_ENCYC_DRAWN(work->help[1].x);
         y = FCL_ENCYC_DRAWN(work->help[1].y);
+        alpha = FCL_ENCYC_DRAWN(work->help[1].alpha);
         color.components[0] = 0x80;
         color.components[1] = 0x80;
         color.components[2] = 0x80;
-        color.components[3] = FCL_ENCYC_DRAWN(work->help[1].alpha);
+        color.components[3] = alpha;
         pos[0].x = x; pos[0].y = y;
         pos[1].x = x + 0xC90; pos[1].y = y + 0xF0;
         itfMiscDrawSpritePrim(pos, fclEncycHelpPanelUv, &color, 0xFFFFF0,
@@ -3921,14 +3923,16 @@ void DrawReadMainHelp(fclEncyc_instance_tag *pinst)
         D_002F67F8.regFunc(&D_002F67F8, tag);
     }
     if (work->help[0].alpha > 0) {
+        s32 alpha;
         tag = sdfGrAllocPacketBuff(sizeof(*tag));
         sdfDrawTagInit(tag);
         x = FCL_ENCYC_DRAWN(work->help[0].x);
         y = FCL_ENCYC_DRAWN(work->help[0].y);
+        alpha = FCL_ENCYC_DRAWN(work->help[0].alpha);
         color.components[0] = 0x80;
         color.components[1] = 0x80;
         color.components[2] = 0x80;
-        color.components[3] = FCL_ENCYC_DRAWN(work->help[0].alpha);
+        color.components[3] = alpha;
         uv.components[0] = 0x930; uv.components[1] = 0x1E0;
         uv.components[2] = 0xFD0; uv.components[3] = 0x430;
         pos[0].x = x; pos[0].y = y;
@@ -3938,6 +3942,7 @@ void DrawReadMainHelp(fclEncyc_instance_tag *pinst)
         itfMiscDrawSpritePrim2(pos, &uv, &color, 0xFFFFF0, 0, tag);
         uv.components[0] = 0xFC0;
         pos[0].x = x + 0x6A0;
+        pos[1].x = x + 0x1960;
         itfMiscDrawSpritePrim2(pos, &uv, &color, 0xFFFFF0, 0, tag);
         uv.components[0] = 0x6C0; uv.components[1] = 0x660;
         uv.components[2] = 0x880; uv.components[3] = 0x7F0;

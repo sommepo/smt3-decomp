@@ -40,42 +40,48 @@ chunk pseudo 86 (27/153, priority 7058) to GPR9. Native keeps the chunk in GPR9
 but uses size GPR8 and successor GPR5. A new ordinary lifetime/control premise
 is needed; types and output semantics do not justify pinning that pair.
 
-## gcc2_compiled_
+## malloc_extend_top
 
-Heap extension emits 584 of 600 native bytes, with 76 of 146 emitted words
-matching and 70 differing. Sixteen bytes remain uncovered; first difference
-is an exit displacement at +0xA8. The prologue and initial request sequence
-match. The second request simplifies to a 32-bit subtract instead of native
-64-bit subtraction followed by sign narrowing; later temporaries and the
-small-old-top exit also differ. Assembly remains active, with no exact credit.
+Heap extension matches all 600 native instruction bytes: 150 of 150 words
+match. This contributes 600 SDK EE bytes and zero game-code bytes. The
+production build selects C; the four remaining libc drafts keep their guards.
 
 The request adds the 64-bit top pad to the zero-extended 32-bit need and 16,
 then narrows to a signed break increment. A known break base enables page
 rounding. A failed first request, or a backward break with a real old top,
-returns immediately. Contiguous growth extends the fresh top header.
-Noncontiguous growth first charges the request, then charges the gap from
-the old top end when the base was already known; it does not replace that
-accounting with an assumed break-minus-base identity.
+returns immediately. Contiguous growth keeps the unflagged size sum distinct
+from the header value with its previous-in-use bit set.
 
-The new header aligns its user pointer to 16 bytes. The second request adds
-the front adjustment and a page complement, including a full page for zero
-remainder. Failure leaves earlier arena/base updates intact but skips new
-top, fencepost and maximum-memory updates. Success uses the entire second
-increment in both the arena charge and the new-top size.
+Noncontiguous growth charges the first request, then the gap from the old
+top end when the base was already known. The second request includes the
+front alignment adjustment and a page complement, including a full page
+for zero remainder. Its complement stays 64-bit until the signed narrowing.
+Failure preserves earlier arena/base updates but skips new-top, fencepost
+and maximum-memory updates. Success charges the entire second increment.
 
-A real old top smaller than 16 poisons the NEW top size to one and returns.
-Otherwise its usable size is `(oldSize - 12) & ~15`, its previous-in-use bit
-is preserved, and two fencepost size words at offsets +4/+8 receive five.
-Only a usable old remainder of at least 16 is freed. The typed twelve-byte
-fencepost view leaves its first word untouched and avoids treating the
-second size word as a free-list pointer. Maximum counters compare the
-sign-extended 32-bit arena word as unsigned 64-bit and store that same value.
+The localized constraints name real initialized values with actual consumers:
+the contiguous unflagged sum uses `$4` and its flagged store header uses `$2`.
+The second break result and the later new-top size have disjoint `$4` live
+ranges; neither crosses a provider call. The new header computation and its
+existing operand constraint stay after arena accounting and top publication,
+at the header store's consumer phase. The small-old-top path uses `$3` for
+the actual new-top pointer whose size is poisoned to one, then returns.
+No dummy use, artificial live range or extra instruction template is needed.
 
-The initial overlapping-header spelling emits 588 bytes; the truthful
-fencepost record emits 584. Explicit signed/unsigned long page constants
-and physical field order do not retain the missing conversions. The actual
-`_sbrk_r` prototype is supplied before this earlier helper; it is compiler-inert.
-No extra pointer copy or dummy width operation was added.
+For an old top of at least 16 bytes, `(oldSize - 12) & ~15` forms its usable
+remainder, preserving the previous-in-use bit. The typed twelve-byte fencepost
+view leaves its first word untouched and writes five at offsets +4/+8.
+Only a usable remainder of at least 16 is freed. Maximum counters compare
+the sign-extended 32-bit arena word as unsigned 64-bit and store that value.
+The provider ABI, real heap accesses and existing valid-EE-heap/accounting
+assumptions are unchanged; matching does not establish original source spelling.
+
+The earlier overlapping-header draft emitted 588 bytes; the truthful fencepost
+view emitted 584. Restoring the actual arithmetic widths, value lifetimes and
+header-store phase reaches 600 without changing peers. Complete qualification
+checks the owner and owned data, all 100 peer functions, the full retail image,
+and literal plain/stock-dump assembly and raw ELF equality separately in
+production, SKIP_ASM, retained-C and retained-C plus FIX_BUGS contexts.
 
 ## gcc2_compiled__1
 
@@ -412,3 +418,55 @@ adjacent ctype bytes remain identical to retail. Full retail checksum,
 generated-source, 569 regression-test, guarded-source and report gates pass,
 with a unique compiler-owned production span. SDK coverage gains one function
 and 216 bytes; game coverage is unchanged.
+
+
+## _calloc_r
+
+The ordinary C reconstruction matches all 180 instruction bytes (45 words)
+under the configured ee-gcc 2.96, with four following alignment bytes.
+Unsigned 32-bit multiplication retains the native modular request size.
+A failed allocation returns null before reading its header. A successful
+allocation clears the chunk size with its low two flag bits removed, less
+one four-byte word. Small chunks use the native unrolled word stores; larger
+chunks call the existing memset provider. No overflow check or allocator bug
+repair is introduced.
+
+This is allocator-internal storage: while PREV_INUSE is set, the allocated
+chunk may borrow the successor's previousSize word. Clearing stops before
+the successor's size word. It is not a claim that a caller's requested-size
+C object generally extends into another object. Native word widths, null
+handling, arithmetic and store ordering were independently reviewed. The
+final three stores execute at cursor offsets 0, 8 and 4, even though their
+ordinary C expressions are sequential.
+
+The small-arm cursor scope and genuine do/while(0) follow the historical
+MALLOC_ZERO structure in [newlib 1.9.0 mallocr.c](https://github.com/mirror/newlib-cygwin/blob/newlib-1_9_0/newlib/libc/stdlib/mallocr.c)
+(blob c2b2fb91f2b33f2ee32eac6c341d966cac234f47). This corroborates the source
+shape, not the SDK's exact newlib release or original source spelling.
+The archive map's 296/callocr.o attribution is name-only evidence, not a
+proven native translation-unit boundary. No boundary, compiler flag, ABI,
+constraint, declaration or malloc draft changes accompany this promotion.
+
+Discovery consumed four compiler/assembler pairs: baseline, two ordinary
+nonmatching controls, and the exact historical-macro control. Fresh complete
+owner and independent --source checks each pass 81 functions with no
+code or owned-data difference. Production, SKIP_ASM, retained and retained
+plus FIX_BUGS plain/dump routes have literally identical complete assembly
+and raw objects within each context. All 100/80/84/84 peer contracts,
+allocated data and ordered relocations are preserved. Production retains
+all 33,376 text bytes and 196 padding bytes unchanged, including the existing
+600-byte malloc_extend_top. C-only modes add only the target and its alignment.
+The production peer comparison reuses the verified discovery baseline object;
+the other baseline contexts were freshly compiled.
+
+All 101 linked owner function spans, complete owner text and 1,424 rodata
+bytes match retail. The complete 4,551,696-byte image is byte-identical to
+its reference. Fresh generated-source and stale-line controls, all 31 normal
+regression files (532 methods), 125 optimized checker methods, strict retained
+contexts and seven IRX checks pass. Two setup failures remain recorded: a
+premature owner check before Ninja's compatibility prerequisites (two compiler/
+assembler attempts), and a baseline production attempt whose now-promoted
+assembly fallback was omitted (one pair). Neither is a passing gate.
+Nine inherited unrelated owner failures were not rerun; this is not a global
+owner-suite pass. Prospective credit is one SDK/runtime function and 180 bytes,
+with no game-code gain, after publication and exact-commit CI.

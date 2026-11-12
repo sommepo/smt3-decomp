@@ -1050,13 +1050,13 @@ void fldAutoMapDrawOneArea(void)
     }
     state = fldAutoMapDrawState;
     if (state < 0) {
-        state += SDF_FRAME_STEP_INT(dds3GetKernelCount(), 4);
+        state += SDF_FRAME_STEP_INT(4);
         fldAutoMapDrawState = state;
-        fldAutoMapSlideCount += SDF_FRAME_STEP_INT(dds3GetKernelCount(), 4);
+        fldAutoMapSlideCount += SDF_FRAME_STEP_INT(4);
     }
     if (state > 0) {
-        fldAutoMapDrawState = state - SDF_FRAME_STEP_INT(dds3GetKernelCount(), 4);
-        fldAutoMapSlideCount -= SDF_FRAME_STEP_INT(dds3GetKernelCount(), 4);
+        fldAutoMapDrawState = state - SDF_FRAME_STEP_INT(4);
+        fldAutoMapSlideCount -= SDF_FRAME_STEP_INT(4);
     }
     if (!(fldAutoMapFloorOfsY < 1000.0f) || !(fldAutoMapFloorOfsY > -1000.0f)) {
         if (fldAutoMapFloorOfsY > 0.0f) {
@@ -1380,7 +1380,7 @@ void fldAutoMapDrawWindow(void) {
     rsetAlpha(0);
 }
 
-/* NON_MATCHING: 148 of 195 words, exact size; the closing vector block is
+/* NON_MATCHING: 165 of 195 words, exact size; the closing vector block is
  * scheduled differently and holds the two coordinates in other fp registers. */
 #ifdef NON_MATCHING
 void fldAutoMapSeqStart(void) {
@@ -1434,7 +1434,9 @@ void fldAutoMapSeqStart(void) {
     fldReleaseUnitPad();
     evtDisableMoonDraw();
     zero = 0.0f;
-    wz = fldGlobalBase.z + pz + 200.0f;
+    wz = fldGlobalBase.z + pz;
+    up = fldAutoMapSeqUp;
+    wz += 200.0f;
     wx = fldGlobalBase.x + px;
     fldAutoMapFieldId.x = wx;
     fldAutoMapFieldId.y = zero;
@@ -1442,7 +1444,6 @@ void fldAutoMapSeqStart(void) {
     fldAutoMapPosX.x = wx;
     fldAutoMapPosX.y = zero;
     fldAutoMapPosX.z = wz;
-    up = fldAutoMapSeqUp;
     target.x = (f32)fldAutoMapCamX;
     target.y = zero;
     target.z = (f32)fldAutoMapCamZ;

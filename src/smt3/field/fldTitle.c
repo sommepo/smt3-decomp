@@ -171,7 +171,7 @@ s32 fldTitle_Process(dds3ProcessID_t *id)
             rsetAlpha(0);
         }
 
-        if ((fldTitleState += SDF_FRAME_DUE(dds3GetKernelCount())) >= 61) {
+        if ((fldTitleState += SDF_FRAME_DUE()) >= 61) {
             fldTitleState = 0;
             fldTitlePhase++;
         }
@@ -207,7 +207,7 @@ s32 fldTitle_Process(dds3ProcessID_t *id)
         DrwSprite2D(0x81, FLD_TITLE_LOGO_Y, 0xFE, 0x45, 1, 1, 0xFE, 0x45,
                     color, fldTitleFldTex);
 
-        if ((fldTitleState += SDF_FRAME_DUE(dds3GetKernelCount())) >= 61) {
+        if ((fldTitleState += SDF_FRAME_DUE()) >= 61) {
             fldTitleState = 0;
             fldTitlePhase++;
         }
@@ -273,7 +273,7 @@ s32 fldTitle_Process(dds3ProcessID_t *id)
         DrwSprite2D(0x81, FLD_TITLE_LOGO_Y, 0xFE, 0x45, 1, 1, 0xFE, 0x45,
                     0x00808080 | ((u32)alpha << 24), fldTitleFldTex);
 
-        if ((fldTitleState += SDF_FRAME_DUE(dds3GetKernelCount())) >= 61) {
+        if ((fldTitleState += SDF_FRAME_DUE()) >= 61) {
             fldTitleState = 0;
             fldTitlePhase++;
         }
@@ -403,7 +403,7 @@ s32 fldTitleMini_Process(dds3ProcessID_t *id)
                             fldTitleMiniTex);
             }
 
-            if ((fldTitleMiniState += SDF_FRAME_DUE(dds3GetKernelCount())) >= 21) {
+            if ((fldTitleMiniState += SDF_FRAME_DUE()) >= 21) {
                 fldTitleMiniState = 0;
                 fldSnowActive++;
             }
@@ -426,7 +426,7 @@ s32 fldTitleMini_Process(dds3ProcessID_t *id)
             DrwSprite2D(128, 313, 256, 128, 0, 0, 256, 128, flatColor,
                         fldTitleMiniTex);
 
-            if ((fldTitleMiniState += SDF_FRAME_DUE(dds3GetKernelCount())) >= 31) {
+            if ((fldTitleMiniState += SDF_FRAME_DUE()) >= 31) {
                 fldTitleMiniState = 0;
                 fldSnowActive++;
             }
@@ -489,7 +489,7 @@ s32 fldTitleMini_Process(dds3ProcessID_t *id)
             DrwSprite2D(128, 313, 256, 128, 0, 0, 256, 128, 0x00808080 | ((u32)alpha << 24),
                         fldTitleMiniTex);
 
-            if ((fldTitleMiniState += SDF_FRAME_DUE(dds3GetKernelCount())) >= 31) {
+            if ((fldTitleMiniState += SDF_FRAME_DUE()) >= 31) {
                 fldTitleMiniState = 0;
                 fldSnowActive++;
             }
