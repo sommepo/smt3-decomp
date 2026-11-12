@@ -765,15 +765,15 @@ void fileSysInit(void) {
 }
 
 #ifdef VERSION_MNAX
-const char D_00544B80[24] = "/name/tmx/kyara_01.tmx";
+const char mnax_00544B80[24] = "/name/tmx/kyara_01.tmx";
 
-const char D_00544B98[24] = "/name/tmx/kyara_04.tmx";
+const char mnax_00544B98[24] = "/name/tmx/kyara_04.tmx";
 
-const char D_00544BB0[24] = "/name/tmx/kyara_03.tmx";
+const char mnax_00544BB0[24] = "/name/tmx/kyara_03.tmx";
 
-const char D_00544BC8[24] = "/name/tmx/kyara_02.tmx";
+const char mnax_00544BC8[24] = "/name/tmx/kyara_02.tmx";
 
-const char D_00544BE0[24] = "/name/tmx/kyara_05.tmx";
+const char mnax_00544BE0[24] = "/name/tmx/kyara_05.tmx";
 #else
 const char nmeKyaraTmxPath01[24] = "/name/tmx/kyara_01.tmx";
 

@@ -809,6 +809,15 @@ def main() -> None:
                 else:
                     clash.add(here)
     renames.write_text("".join(f"0x{x:08X}\n" for x in sorted(clash)))
+    # Maniax-only objects and functions the C names mnax_<Maniax address> (a D_ name
+    # would be read as a USA address): give each its address.
+    for unit in good:
+        for x in sorted(set(re.findall(r"\bmnax_([0-9A-F]{8})\b", (SRC / (unit + ".c")).read_text(errors="replace")))):
+            at = int(x, 16)
+            if at not in seen_addr and f"mnax_{x}" not in named:
+                seen_addr[at] = True
+                clash.discard(at)
+                out.append(f"mnax_{x} = 0x{x};" + (" // type:func" if at < mregion[".text"][1] else ""))
     # Inside a C-built unit the automatic name only appears in its reference
     # disassembly, and a real name there would make include_rodata.py claim it.
     owned = sorted((m0, m0 + size) for u in good for m0, size, _ in good[u].values())

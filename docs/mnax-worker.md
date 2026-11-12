@@ -64,8 +64,11 @@ the bytes from the assembly, not as UTF-8.
   patched copy of cc.sh once moved the whole repository away. If you need
   compiler dumps or other output, ask the coordinator in your report.
 - Names: a Maniax symbol with no USA counterpart appears as `D_<address>` or
-  `func_<address>` (Maniax addresses) in the assembly. Declare it under
-  `VERSION_MNAX` with that name.
+  `func_<address>` (Maniax addresses) in the assembly. In C, name it
+  `mnax_<address>` (same eight hex digits) under `VERSION_MNAX`, never `D_`/`func_`:
+  those spellings are USA addresses in the shared source, and the same digits
+  often name a different USA object, which then links to the wrong place or
+  collides (mnax_check masks relocations, so it will not notice).
 - Time-box each function. If it still does not match after a few honest
   attempts, put it back exactly as you found it and move on.
 

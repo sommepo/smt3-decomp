@@ -2546,8 +2546,8 @@ const char slIconSysName[9] = "icon.sys";
 const char slBaseIconName[9] = "base.ico";
 
 #ifdef VERSION_MNAX
-extern char D_00526120[], D_00526130[], D_00526140[], D_00526150[];
-extern char D_0054D398[], D_0054D3A0[];
+extern char mnax_00526120[], mnax_00526130[], mnax_00526140[], mnax_00526150[];
+extern char mnax_0054D398[], mnax_0054D3A0[];
 
 s32 slFileSelDraw(s32 id)
 {
@@ -2640,14 +2640,14 @@ s32 slFileSelDraw(s32 id)
         }
         if (slTopMenuSel[row] == 0) {
             if (gslMode == 1) {
-                slKanjiDraw(offset + 0xCD, (y + 0xD) / 2, 0x6C81BB80, D_00526140);
+                slKanjiDraw(offset + 0xCD, (y + 0xD) / 2, 0x6C81BB80, mnax_00526140);
             } else {
-                slKanjiDraw(offset + 0xCD, (y + 0xD) / 2, 0x6C81BB80, D_00526120);
+                slKanjiDraw(offset + 0xCD, (y + 0xD) / 2, 0x6C81BB80, mnax_00526120);
             }
         } else if (slTopMenuSel[row] == 2) {
-            slKanjiDraw(offset + 0xCD, (y + 0xD) / 2, 0xCB819A80, D_00526130);
+            slKanjiDraw(offset + 0xCD, (y + 0xD) / 2, 0xCB819A80, mnax_00526130);
         } else if (slFileRecs[row].newfile != 0) {
-            slKanjiDraw(offset + 0x52, (y + 6) / 2, 0xA09DC380, D_00526150);
+            slKanjiDraw(offset + 0x52, (y + 6) / 2, 0xA09DC380, mnax_00526150);
         }
 
         color = 0xA09DC380;
@@ -2728,9 +2728,9 @@ s32 slFileSelDraw(s32 id)
             s32 cycle;
             if (slFileRecs[row].newfile == 0) {
                 if (slFileRecs[row].mode != 0) {
-                    fldKanjiDraw(0x14D, (y + 0x1D) / 2, color, (const u8 *)D_0054D398);
+                    fldKanjiDraw(0x14D, (y + 0x1D) / 2, color, (const u8 *)mnax_0054D398);
                 } else {
-                    fldKanjiDraw(0x14D, (y + 0x1D) / 2, color, (const u8 *)D_0054D3A0);
+                    fldKanjiDraw(0x14D, (y + 0x1D) / 2, color, (const u8 *)mnax_0054D3A0);
                 }
             }
             cycle = slFileRecs[row].endcnt + 1;
