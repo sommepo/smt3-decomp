@@ -190,7 +190,56 @@ def adapt_source(text: str, unit: str, keep_asm, absent, extra):
         if span is None:
             return None, f"cannot place Maniax-only {name} after {after}"
         text = text[:span[1]] + "\n\n" + line(name) + text[span[1]:]
-    return text, None
+    return drop_inactive_include_asm(text), None
+
+
+def drop_inactive_include_asm(text: str) -> str:
+    """Remove INCLUDE_ASM lines in branches the Maniax compile never takes (the
+    `#else` of `#if defined(VERSION_MNAX)`): include_rodata.py reads the text
+    without a preprocessor and would otherwise include a C function's retail
+    rodata (its jump tables) a second time. Branches whose condition names any
+    other macro are left alone."""
+    known = {"VERSION_MNAX": True, "NON_MATCHING": False, "VERSION_SMT3": False}
+
+    def evaluate(expr):
+        expr = re.sub(r"/\*.*?\*/|//.*", "", expr).strip()
+        expr = re.sub(r"defined\s*\(\s*(\w+)\s*\)|defined\s+(\w+)",
+                      lambda m: str(known.get(m.group(1) or m.group(2), "?")), expr)
+        if "?" in expr or re.search(r"[A-Za-z_]\w*", expr.replace("True", "").replace("False", "")):
+            return None
+        try:
+            return bool(eval(expr.replace("||", " or ").replace("&&", " and ")
+                             .replace("!", " not "), {}))
+        except Exception:
+            return None
+
+    out, stack = [], []        # stack: [branch state (True/False/None), some branch taken]
+    for ln in text.split("\n"):
+        m = re.match(r"\s*#\s*(if|ifdef|ifndef|elif|else|endif)\b(.*)", ln)
+        if m:
+            kw, rest = m.group(1), m.group(2)
+            if kw in ("if", "ifdef", "ifndef"):
+                name = rest.strip().split()[0] if rest.strip() else ""
+                st = (evaluate(rest) if kw == "if" else
+                      (None if name not in known else known[name] == (kw == "ifdef")))
+                stack.append([st, st])
+            elif kw == "elif" and stack:
+                top = stack[-1]
+                st = evaluate(rest)
+                top[0] = False if top[1] is True else (None if top[1] is None or st is None else st)
+                top[1] = True if top[1] is True or st is True else (None if top[1] is None else st)
+            elif kw == "else" and stack:
+                top = stack[-1]
+                top[0] = None if top[1] is None else not top[1]
+                top[1] = True if top[1] is not None else None
+            elif kw == "endif" and stack:
+                stack.pop()
+            out.append(ln)
+            continue
+        if ln.startswith("INCLUDE_ASM(") and any(s[0] is False for s in stack):
+            continue
+        out.append(ln)
+    return "\n".join(out)
 
 
 def near(amap, usa, same_region):
