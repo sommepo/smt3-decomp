@@ -129,8 +129,12 @@ def main() -> None:
                 bad += not ok
                 print(f"{name} +0x{off:X} 0x{base + off:08X} {n} ({size} bytes): {'MATCH' if ok else 'DIFF'}")
                 if not ok:
-                    print(f'    C:      "{lit(a[:96])}"')
-                    print(f'    Maniax: "{lit(b[:96])}"')
+                    # Show the window around the first differing byte, not just the start.
+                    first = next(i for i, (x, y, k) in enumerate(zip(a, b, mask[off:off + size])) if (x ^ y) & k)
+                    lo = max(0, first - 16)
+                    print(f'    first difference at +0x{first:X}; bytes from +0x{lo:X}:')
+                    print(f'    C:      "{lit(a[lo:lo + 128])}"')
+                    print(f'    Maniax: "{lit(b[lo:lo + 128])}"')
             tail = raw[base - DELTA + len(data):base - DELTA + len(data) + 16]
             print(f"{name}: {len(data)} bytes at 0x{base:08X}, {bad} objects differ"
                   + (f"; Maniax continues with {tail.hex(' ')}" if bad else ""))
