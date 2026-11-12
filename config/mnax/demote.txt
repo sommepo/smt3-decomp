@@ -1,4 +1,3 @@
-facility/fclCombineInit	Maniax has a TU boundary inside the unit (rodata base 0x53A1A8 vs jump tables at 0x53A1B0)
 movie/mviManager	no Maniax assembly for movieDebugRowFmt
 result/rstupdate	.rodata must start 16-aligned; Maniax place 0x0053B5C8 is not
 interface/lstListWindow	.rodata bytes differ from Maniax
@@ -7,3 +6,5 @@ nme/Nme_Init	.sdata is 0x78 bytes where Maniax has room for 0x70
 nme/Nme_Draw	.text bytes differ from Maniax
 field/fldWap	.rodata is 0x218 bytes where Maniax has room for 0x208
 interface/frFont	.sdata is 0x58 bytes where Maniax has room for 0x30
+event/evtEventPack	defines evtLoadStartMessage, which the split also puts in a blob
+mc/slMain	slFileSelDraw: undefined reference to mnax_0054D398

@@ -1,15 +1,15 @@
 unit	state
-kernel/dds3KernelMain	C
+kernel/dds3KernelMain	C with fallbacks
 kernel/dds3KernelCore	C with fallbacks
 sdf/sdfDefaultMain	C
 kernel/dds3KernelProcess	C with fallbacks
 kernel/dds3AdminiProcess	C with fallbacks
-kernel/dds3DebugMenu	C
+kernel/dds3DebugMenu	C with fallbacks
 kernel/dds3KernelMisc	C
 kernel/dds3PadManager	C
 kernel/dds3StartMenu	C
 kernel/dds3Randomize	C
-kernel/dds3KernelDraw	C
+kernel/dds3KernelDraw	C with fallbacks
 kernel/dds3SequenceList	C
 script/scrScriptProcess	C
 script/scrTraceCode	C
@@ -20,8 +20,8 @@ basic/dds3Basic	C
 basic/dds3WorldBasic	C
 basic/dds3SceneBasic	C
 basic/dds3AreaBasic	C
-basic/dds3MoverBasic	C
-basic/dds3ObjectBase	C
+basic/dds3MoverBasic	C with fallbacks
+basic/dds3ObjectBase	C with fallbacks
 basic/dds3CameraObjectBasic	C
 basic/dds3UnitObjectBasic	C
 basic/dds3MatterObjectBasic	C
@@ -34,15 +34,15 @@ basic/dds3ModelRangeBasic	C
 basic/dds3EventBasic	C
 basic/dds3PathBasic	C
 basic/dds3PointBasic	C
-kernel/dds3GlobalWork	C
+kernel/dds3GlobalWork	C with fallbacks
 kernel/dds3DebugStuff	C
 field/fldTest	C with fallbacks, 1 functions kept as Maniax assembly
 field/fldGlobal	C with fallbacks
 field/fldMain	C with fallbacks
 field/fldProcess	C with fallbacks
-field/fldFileResolver	C
+field/fldFileResolver	C with fallbacks
 field/fldDraw	C with fallbacks
-field/fldEnc	C
+field/fldEnc	C with fallbacks
 field/fldCamera	C with fallbacks
 field/fldPlayer	C with fallbacks
 field/fldSky	C with fallbacks
@@ -51,19 +51,19 @@ field/fldEveHit	C with fallbacks, 1 functions kept as Maniax assembly
 field/fldInf	C
 field/fldWap	demoted: .rodata is 0x218 bytes where Maniax has room for 0x208
 field/fldPanel	C
-field/fldSe	.sdata bytes differ
+field/fldSe	C with fallbacks
 field/fldAutoMap	C with fallbacks
 field/fld_Npc	C with fallbacks
 field/fldTitle	C
 field/fldSnow	C with fallbacks
-mc/slMain	C with fallbacks, 2 functions kept as Maniax assembly
+mc/slMain	demoted: slFileSelDraw: undefined reference to mnax_0054D398
 field/fldCommand	C with fallbacks
 effect/effManager	C
 effect/billManager	C with fallbacks
 effect/parManager	C with fallbacks
 effect/polyManager	C
-effect/effPacket	C
-effect/effBattle	C
+effect/effPacket	C with fallbacks
+effect/effBattle	C with fallbacks
 effect/effBattleMisc	C with fallbacks
 effect/effBattleLight	C with fallbacks
 effect/effBattleSystem	C with fallbacks
@@ -73,7 +73,7 @@ effect/effPCPBezier	C
 effect/effPCPFlash	C
 effect/effPCPScatter	C
 effect/effPCPNeedle	C
-effect/effPCPMisc	C
+effect/effPCPMisc	C with fallbacks
 effect/effPCPBoss	C with fallbacks
 effect/effBlur_Filter	C
 effect/effModelTrackPoly	C with fallbacks
@@ -81,8 +81,8 @@ effect/effMagatuhi	C with fallbacks
 newbattle/nbCameraHelper	C
 effect/effMath	C
 effect/effDebug	C
-effect/effEvent	C
-effect/effSpline	C
+effect/effEvent	C with fallbacks
+effect/effSpline	C with fallbacks
 newbattle/nbCameraProcess	C
 newbattle/nbCameraStartEnd	C with fallbacks
 newbattle/nbCameraSkill	C with fallbacks
@@ -93,13 +93,13 @@ newbattle/nbCameraBoss	C with fallbacks
 code_001C55F8	C
 interface/fmGslCont	.sdata bounds unknown in Maniax
 interface/frFont	demoted: .sdata is 0x58 bytes where Maniax has room for 0x30
-interface/frName	C
+interface/frName	C with fallbacks
 interface/frWrap	C
 interface/frTestFont	C
 interface/itfMisc	C
 interface/itfPanel	C
 interface/itfMesManager	C with fallbacks
-interface/itfTestMesManager	C
+interface/itfTestMesManager	C with fallbacks
 pb/pbCamera	C
 pb/pbModel	C with fallbacks
 pb/pbDraw	C
@@ -114,7 +114,7 @@ pb/pbMCard	C
 pb/pbErrorDraw	C
 pb/pbDebugMode	C
 model/mdlManager	C
-model/mdlEffect	C
+model/mdlEffect	C with fallbacks
 event/EventBit	C
 event/evtBitEditor	C
 event/evtStage	C
@@ -124,21 +124,21 @@ event/evtMoon	C with fallbacks
 event/evtDebug	C with fallbacks
 event/evtEventViewer	C with fallbacks
 event/evtPolygonMovie	C
-event/evtPicture	C
-event/evtSky	C
+event/evtPicture	C with fallbacks
+event/evtSky	C with fallbacks
 event/evtEventViewerFrameVar	C
 event/evtEventViewerMenu	C with fallbacks
 event/evtSound	C
-event/evtEventPack	C
-facility/fclCombineInit	demoted: Maniax has a TU boundary inside the unit (rodata base 0x53A1A8 vs jump tables at 0x53A1B0)
-facility/fclShopInit	C
+event/evtEventPack	demoted: defines evtLoadStartMessage, which the split also puts in a blob
+facility/fclCombineInit	C with fallbacks
+facility/fclShopInit	C with fallbacks
 facility/fclShopCalc	C with fallbacks
 facility/fclShopUpdate	C
 facility/fclRagInit	C with fallbacks
 facility/fclRagCalc	C with fallbacks, 1 functions kept as Maniax assembly
 facility/fclRagDraw	C
 facility/fclRagUpdate	C
-facility/fclRecoverInit	C
+facility/fclRecoverInit	C with fallbacks
 facility/fclRecoverCalc	C with fallbacks
 facility/fclRecoverDraw	C
 facility/fclRecoverUpdate	C
@@ -148,13 +148,13 @@ facility/fclTerminalDraw	C
 facility/fclTerminalUpdate	C
 facility/fclDraw	C
 interface/lstListWindow	demoted: .rodata bytes differ from Maniax
-facility/fclMisc	C
+facility/fclMisc	C with fallbacks
 facility/fclShare	C with fallbacks
 facility/fclPanel	C with fallbacks
 facility/fclDebug	C
 facility/fclEncyc	C with fallbacks
 facility/fclRibbon	C
-result/rstinit	C
+result/rstinit	C with fallbacks
 result/rstcalc	C with fallbacks
 result/rstdraw	C
 result/rstupdate	demoted: .rodata must start 16-aligned; Maniax place 0x0053B5C8 is not
@@ -164,7 +164,7 @@ kernel/ModeSelect	C
 kernel/dds3CreateData	C
 staff/stfMain	C
 movie/mviManager	demoted: no Maniax assembly for movieDebugRowFmt
-movie/MovieViewer	.sdata bytes differ
+movie/MovieViewer	.sdata bounds unknown in Maniax
 code_0022C578	C with fallbacks
 newdata/datCalc	C with fallbacks
 newdata/datDebugUnit	C
@@ -202,7 +202,7 @@ newbattle/NbNegoFlowKoketa	C
 newbattle/nbPanelProcess	C with fallbacks
 newbattle/nbDebugProcess	C with fallbacks
 newbattle/nbAi	C with fallbacks
-newbattle/nbAiScript	C
+newbattle/nbAiScript	C with fallbacks
 newbattle/nbHelpProcess	C
 newbattle/nbAutoCommProcess	C
 newbattle/nbFormation	C with fallbacks
@@ -226,9 +226,9 @@ newbattle/nbE910	C
 newbattle/nbE911	C
 newbattle/nbE912	C
 newbattle/nbE913	C
-newbattle/nbE914	C
+newbattle/nbE914	C with fallbacks
 newbattle/nbE915	C
-file/fileManager	C
+file/fileManager	C with fallbacks
 nme/Nme_Init	demoted: .sdata is 0x78 bytes where Maniax has room for 0x70
 nme/Nme_Calc	demoted: .text is 0x1A18 bytes where Maniax has room for 0x1B10
 nme/Nme_Draw	demoted: .text bytes differ from Maniax
@@ -236,13 +236,13 @@ nme/Nme_Update	C
 mc/mcManager	C
 code_0029B780	C with fallbacks
 kernel/dds3ConfigMain	C
-pipe/pipeMain	C
+pipe/pipeMain	C with fallbacks
 pipe/pipeSection	C with fallbacks
 pipe/pipeSelect	C
 pipe/pipeObject	C with fallbacks
 pipe/pipePosTable	C
-pipe/pipeCamera	C
-pipe/pipeResult	C
+pipe/pipeCamera	C with fallbacks
+pipe/pipeResult	C with fallbacks
 pipe/pipeModel	C
 pipe/pipeEffect	C
 pipe/pipeMakaAnim	C with fallbacks
@@ -270,24 +270,24 @@ sdf/sdf2D	C
 sdf/sdf3D	C
 sdf/sdf3DPrim	C
 sdf/sdfBillBoard	C
-sdf/sdf_PadManager	C
+sdf/sdf_PadManager	C with fallbacks
 sdf/sdfDevCons	C
-sdf/sdfPrint	C
-sdf/sdfCd	C
-sdf/sdfFile	C
-sdf/sdfFileIO	C
+sdf/sdfPrint	C with fallbacks
+sdf/sdfCd	C with fallbacks
+sdf/sdfFile	C with fallbacks
+sdf/sdfFileIO	C with fallbacks
 sdf/sdfHdd	C
 sdf/sdfDev9	C with fallbacks
 sdf/sdfMisc	C
 sdf/sdfMath	C
 sdf/sdfQuat	C
 code_002C0BA8	C
-sdf/sdfRand	C
+sdf/sdfRand	C with fallbacks
 sdf/sdfSound	C with fallbacks
 sdf/sdfDevFile	C
 sdf/sdfAddrResolve	C
 sdf/sdfIpu	C with fallbacks
-sdf/sdfMovie	C
+sdf/sdfMovie	C with fallbacks
 sdf/sdfPacDecode	C
 sdf/sdf_Decomp	C
 sdf/sdfTmx	C
