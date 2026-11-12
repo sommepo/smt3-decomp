@@ -157,14 +157,14 @@ facility/fclRibbon	C
 result/rstinit	C with fallbacks
 result/rstcalc	C with fallbacks
 result/rstdraw	C
-result/rstupdate	demoted: .rodata must start 16-aligned; Maniax place 0x0053B5C8 is not
+result/rstupdate	C with fallbacks
 sound/sndManager	C
 kernel/dds3TitleMain	C with fallbacks
 kernel/ModeSelect	C
 kernel/dds3CreateData	C
 staff/stfMain	C
 movie/mviManager	C with fallbacks
-movie/MovieViewer	demoted: .sdata is 0x20 bytes where Maniax has room for 0x18
+movie/MovieViewer	C with fallbacks
 code_0022C578	C with fallbacks
 newdata/datCalc	C with fallbacks
 newdata/datDebugUnit	C
@@ -228,7 +228,7 @@ newbattle/nbE912	C
 newbattle/nbE913	C
 newbattle/nbE914	C with fallbacks
 newbattle/nbE915	C
-file/fileManager	demoted: .rodata is 0x1E90 bytes where Maniax has room for 0x1E80
+file/fileManager	.sdata bounds overlap nme/Nme_Init (fileManager 0x54F588+0x18, Nme_Init 0x54F598)
 nme/Nme_Init	C with fallbacks
 nme/Nme_Calc	C with fallbacks, 2 functions kept as Maniax assembly
 nme/Nme_Draw	C with fallbacks
