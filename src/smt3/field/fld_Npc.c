@@ -1397,7 +1397,201 @@ extern f32 fldCamNpcTarget2;
 extern s32 fldNpcCamSlot;
 
 /* NON_MATCHING: 5 of 492 words differ (first at +0xB8), at the exact 1968-byte size. */
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+/* Maniax (same code as USA): chest kinds 0 and 3 share one arm and kind 2 has
+ * its own copy of the same store, which is how retail ends up with two
+ * identical blocks; the splash position is cleared with memset and then
+ * given w = 1. */
+void fldNpcCalc(void)
+{
+    fldUnitControl_t *control;
+    s32 i;
+    f32 x;
+    f32 y;
+    f32 z;
+
+    fldNpcCamTarget = 0;
+    if (fldGlobalBase.area < 200 && fldAutoMapSeqTestFlag(1) == 0 && fldProcCampChk() == 0 &&
+        fldProcAmChk() == 0) {
+        if (fldNpcBlurHandle != 0) {
+            sdfVector4_t vec = { 0, 0, 0, 1.0f };
+
+            if (dds3EffectGetState(fldBlurEffectId[0]) != 0 && fldGlobalBase.word4C != -1) {
+                f32 length;
+
+                control = fldGetUnitControl();
+                y = fldGlobalBase.floatC4;
+                vec.x = control->handle->poseset->pos2.x;
+                vec.y = y;
+                vec.z = control->handle->poseset->pos2.z;
+                dds3EffectSetPosition(fldBlurEffectId[0], &vec);
+                vec.x = control->handle->poseset->pos.x;
+                vec.y = y;
+                vec.z = control->handle->poseset->pos.z;
+                dds3GetPosPoseSet(fldUnitControlHandle);
+                SDF_VU0_LOADVECTOR_B(&fldNpcWorkVec);
+                SDF_VU0_STOREVECTOR(&fldNpcWorkVec);
+                SDF_VU0_SUBVECTOR();
+                SDF_VU0_GETLENGTH(length);
+                fldWaveDistance = fldWaveDistance + length;
+                if (fldWaveDistance > 100.0f) {
+                    fldWaveDistance = 0.0f;
+                    fldWaveStart(vec.x, vec.y, vec.z);
+                }
+                fldWaveFrames++;
+            } else {
+                fldNpcBlurHandle = 0;
+            }
+        } else if (fldGlobalBase.word4C != -1 && fldGlobalBase.playerMoveDistance > 3.0f) {
+            control = fldGetUnitControl();
+            fldSibukiStart(control->handle->poseset->pos2.x, fldGlobalBase.floatC4 - 5.0f,
+                           control->handle->poseset->pos2.z);
+        }
+
+        for (i = 0; i < fldNpcModelTable; i++) {
+            if (fldModelSlotTable[i].room != 0 &&
+                fldGbChkNpc(fldGlobalBase.area, fldGlobalBase.floor + 1,
+                            fldModelSlotTable[i].room) != 0) {
+                continue;
+            }
+            x = fldModelSlotTable[i].x;
+            y = fldModelSlotTable[i].y;
+            z = fldModelSlotTable[i].z;
+            if (fldModelSlotTable[i].type == 999 && fldEncountTestFlag(0x40) == 0) {
+                if (fldCheckEveRngT(fldModelSlotTable[i].itemBoxIdx) != 0) {
+                    fldModelSlotTable[i].cntAnmf += 1.05f;
+                    if (fldModelSlotTable[i].cntAnmf > 1.0f) {
+                        fldModelSlotTable[i].cntAnmf = 1.0f;
+                    }
+                    fldModelSlotTable[i].cntAnmi += 2;
+                    if (fldModelSlotTable[i].cntAnmi >= 49) {
+                        fldModelSlotTable[i].cntAnmi = 48;
+                    }
+                    fldNpcCamPosX = x;
+                    fldNpcCamPosY = y;
+                    fldNpcCamPosZ = z;
+                    fldNpcCamTarget = 2;
+                    SDF_VU0_LOADVECTOR(&fldModelSlotTable[i].rot);
+                    fldNpcCamAngle = EulerAngleAxisY() * 180.0f / 3.14f;
+                    switch (fldTakaraTable[fldModelSlotTable[i].itemBoxIdx].type) {
+                    case 0:
+                    case 3:
+                        fldCamNpcTarget = -110.0f;
+                        break;
+                    case 1:
+                        fldCamNpcTarget = -90.0f;
+                        break;
+                    case 2:
+                        fldCamNpcTarget = -110.0f;
+                        break;
+                    }
+                }
+                continue;
+            }
+            switch (fldModelSlotTable[i].kind) {
+            case 0: {
+                s32 talk = 0;
+
+                if (fldAutoMapSeqTestFlag(1) == 0 && fldEncountTestFlag(0x40) == 0 &&
+                    (fldCheckEveRngN(i) != 0 || fldCamNpcCamChk(fldModelSlotTable[i].name) != 0)) {
+                    if (fldModelSlotTable[i].cntAnmi == 0) {
+                        fldSePlay(0x2D);
+                        fldNpcCamSlot = i;
+                        if (fldGlobalBase.area >= 11) {
+                            fldNpcModelStart(i, x, y - 10.0f, z, &fldModelSlotTable[i].rot);
+                        }
+                        fldModelSlotTable[i].cntAnmi = 128;
+                    }
+                    talk = 1;
+                    fldNpcCamTarget = talk;
+                }
+                if (talk == 0) {
+                    fldModelSlotTable[i].cntf += SDF_FRAME_STEP(0.1f);
+                    fldModelSlotTable[i].cntAnmi = 0;
+                    fldModelSlotTable[i].cnti = (fldModelSlotTable[i].cnti + 1) & 1;
+                    fldDeleteNpcModel(i);
+                } else {
+                    fldNpcCamPosX = x;
+                    fldNpcCamPosY = y;
+                    fldNpcCamPosZ = z;
+                    SDF_VU0_LOADVECTOR(&fldModelSlotTable[i].rot);
+                    fldNpcCamAngle = EulerAngleAxisY() * 180.0f / 3.14f;
+                    fldCamNpcTarget = -140.0f;
+                    fldNpcCamTargetY = -140.0f;
+                    fldCamNpcTarget2 = fldModelSlotTable[i].csize;
+                    fldModelSlotTable[i].cntf += SDF_FRAME_STEP(0.05f);
+                    fldModelSlotTable[i].cnti = (fldModelSlotTable[i].cnti + 1) & 1;
+                }
+                break;
+            }
+            case 1:
+                if (fldAutoMapSeqTestFlag(1) == 0 && fldEncountTestFlag(0x40) == 0 &&
+                    fldCheckEveRngN(i) != 0) {
+                    if (fldModelSlotTable[i].camera == 0) {
+                        fldNpcCamTarget = 0;
+                    } else if (fldModelSlotTable[i].camera == 1) {
+                        fldNpcCamTarget = 1;
+                        fldNpcCamSlot = -1;
+                        fldNpcCamPosX = x;
+                        fldNpcCamPosY = y;
+                        fldNpcCamPosZ = z;
+                        SDF_VU0_LOADVECTOR(&fldModelSlotTable[i].rot);
+                        fldNpcCamAngle = EulerAngleAxisY() * 180.0f / 3.14f;
+                        fldCamNpcTarget = -110.0f;
+                        fldNpcCamTargetY = -110.0f;
+                        fldCamNpcTarget2 = fldModelSlotTable[i].csize;
+                    } else if (fldModelSlotTable[i].camera == 2) {
+                        fldNpcCamTarget = 1;
+                        fldNpcCamSlot = -1;
+                        fldNpcCamPosX = x;
+                        fldNpcCamPosY = y;
+                        fldNpcCamPosZ = z;
+                        SDF_VU0_LOADVECTOR(&fldModelSlotTable[i].rot);
+                        fldNpcCamAngle = EulerAngleAxisY() * 180.0f / 3.14f;
+                        fldCamNpcTarget = -50.0f;
+                        fldNpcCamTargetY = -50.0f;
+                        fldCamNpcTarget2 = fldModelSlotTable[i].csize;
+                    } else if (fldModelSlotTable[i].camera == 3) {
+                        fldNpcCamTarget = 1;
+                        fldNpcCamSlot = -1;
+                        fldNpcCamPosX = x;
+                        fldNpcCamPosY = y;
+                        fldNpcCamPosZ = z;
+                        SDF_VU0_LOADVECTOR(&fldModelSlotTable[i].rot);
+                        fldNpcCamAngle = EulerAngleAxisY() * 180.0f / 3.14f;
+                        fldCamNpcTarget = -180.0f;
+                        fldNpcCamTargetY = -180.0f;
+                        fldCamNpcTarget2 = fldModelSlotTable[i].csize;
+                    } else if (fldModelSlotTable[i].camera == 4) {
+                        fldNpcCamTarget = 1;
+                        fldNpcCamSlot = -1;
+                        fldNpcCamPosX = x;
+                        fldNpcCamPosY = y;
+                        fldNpcCamPosZ = z;
+                        SDF_VU0_LOADVECTOR(&fldModelSlotTable[i].rot);
+                        fldNpcCamAngle = EulerAngleAxisY() * 180.0f / 3.14f;
+                        fldCamNpcTarget = -10.0f;
+                        fldNpcCamTargetY = -170.0f;
+                        fldCamNpcTarget2 = fldModelSlotTable[i].csize;
+                    } else if (fldModelSlotTable[i].camera == 5) {
+                        fldNpcCamTarget = 1;
+                        fldNpcCamSlot = -1;
+                        fldNpcCamPosX = x;
+                        fldNpcCamPosY = y;
+                        fldNpcCamPosZ = z;
+                        SDF_VU0_LOADVECTOR(&fldModelSlotTable[i].rot);
+                        fldNpcCamAngle = EulerAngleAxisY() * 180.0f / 3.14f;
+                        fldCamNpcTarget = -210.0f;
+                        fldNpcCamTargetY = -180.0f;
+                        fldCamNpcTarget2 = fldModelSlotTable[i].csize;
+                    }
+                }
+                break;
+            }
+        }
+    }
+}
+#elif defined(NON_MATCHING)
 void fldNpcCalc(void)
 {
     sdfVector4_t vec;

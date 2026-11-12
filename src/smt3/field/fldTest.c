@@ -1372,7 +1372,46 @@ void fldRunTamaInit(void)
 /* NON_MATCHING. Behaviour checked against retail: 2 PCSX2 call vectors give the same return and memory,
  * capture_008, event602, covering only the paths those calls took.
  * (sdfport 73e010f, tools/funcvec, tests/funcvec.sh). */
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+/* Maniax: each effect mode releases its own file handle; cross-jumping
+ * merges the two identical tails after reload. The inner exit jumps straight
+ * to the next table, so the loop keeps its test at the top. */
+void fldRunTamaFree(void)
+{
+    fldTest_FLDRUN_EFFTBL_t *entry;
+    fldTest_FLDRUN_EFF_t *res;
+    s32 i;
+
+    for (i = 0; i < 2; i++) {
+        for (entry = fldRunEffTables[i]; ; entry++) {
+            res = entry->pEff;
+            if (res == NULL) {
+                goto next;
+            }
+            if (entry->effmode == 0) {
+                if (res->d3p != NULL) {
+                    dds3EffectDelete(res->d3p);
+                    res->d3p = NULL;
+                }
+                if (res->mhFile != NULL) {
+                    sdfMemFreeDelayedDirect(res->mhFile);
+                    res->mhFile = NULL;
+                }
+            } else {
+                if (res->pcf != NULL) {
+                    dds3EffectPartDelete(res->pcf);
+                    res->pcf = NULL;
+                }
+                if (res->mhFile != NULL) {
+                    sdfMemFreeDelayedDirect(res->mhFile);
+                    res->mhFile = NULL;
+                }
+            }
+        }
+    next:;
+    }
+}
+#elif defined(NON_MATCHING)
 void fldRunTamaFree(void)
 {
     fldTest_FLDRUN_EFFTBL_t *entry;
@@ -1447,7 +1486,72 @@ void fldRunEffSet(s32 id, f32 x, f32 y, f32 z, f32 r)
 }
 
 /* NON_MATCHING: 115 of 136 words differ (first at +0x10). */
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+/* Maniax: the draw paths come first and the delete paths last; the inner
+ * exit jumps straight to the next table so the test stays at the top. The
+ * clobber-free matrix store leaves the call argument its own frame address. */
+void fldRunEffTask(void)
+{
+    sdfVector4_t pos;
+    sdfMatrix4_t matrix;
+    fldTest_FLDRUN_EFFTBL_t *entry;
+    fldTest_FLDRUN_EFF_t *res;
+    s32 i;
+
+    memset(&pos, 0, sizeof(pos));
+    pos.w = 1.0f;
+
+    for (i = 0; i < 2; i++) {
+        for (entry = fldRunEffTables[i]; ; entry++) {
+            res = entry->pEff;
+            if (res == NULL) {
+                goto next;
+            }
+            if (entry->effmode == 0) {
+                if (res->d3p == NULL) {
+                    continue;
+                }
+                if (dds3EffectGetState(res->d3p) != 0) {
+                    pos.x = res->x;
+                    pos.y = res->y;
+                    pos.z = res->z;
+                    dds3EffectSetPosition(res->d3p, &pos);
+                    if (entry->rotmode == 1) {
+                        SetRotateMatrixY((90.0f - res->r) * 3.14f / 180.0f);
+                        SDF_VU0_STOREMATRIX_NOMEM(&matrix);
+                        dds3EffectSetRotateMatrix(res->d3p, &matrix);
+                    }
+                    dds3EffectDraw(res->d3p);
+                } else {
+                    dds3EffectDelete(res->d3p);
+                    res->d3p = NULL;
+                }
+            } else {
+                if (res->pcf == NULL) {
+                    continue;
+                }
+                if (res->cnt >= 0) {
+                    res->cnt = res->cnt - 1;
+                    pos.x = res->x;
+                    pos.y = res->y;
+                    pos.z = res->z;
+                    dds3EffectPartSetPosition(res->pcf, &pos);
+                    if (entry->rotmode == 1) {
+                        SetRotateMatrixY((90.0f - res->r) * 3.14f / 180.0f);
+                        SDF_VU0_STOREMATRIX_NOMEM(&matrix);
+                        dds3EffectPartSetRotateMatrix(res->pcf, &matrix);
+                    }
+                    dds3EffectPartDraw(res->pcf);
+                } else {
+                    dds3EffectPartDelete(res->pcf);
+                    res->pcf = NULL;
+                }
+            }
+        }
+    next:;
+    }
+}
+#elif defined(NON_MATCHING)
 void fldRunEffTask(void)
 {
     sdfVector4_t pos;
@@ -2359,7 +2463,21 @@ void fldRunDantePatr(void)
         fldMapIndexToPos(routeEntry[0], routeEntry[1], &targetX, &targetZ);
         fldGetDistAngleTo(&distance, &angle, targetX, targetZ);
         {
+#ifdef VERSION_MNAX
+            /* Maniax: with fldRunTamaFree and fldRunEffTask compiled from C in
+             * this unit, the tie between the speed and distance loads breaks the
+             * other way (see docs/matching/field/fldTest.md). Binding the speed
+             * to $f1, the register it gets anyway, keeps the retail speed-first
+             * order. The empty asm emits no instruction; this is a
+             * target-specific reconstruction aid (upstream 18809150 used the
+             * same form), not evidence of the original source spelling. */
+            register f32 speed __asm__("$f1") = fldRun_Dante.speed;
+            f32 frames;
+            __asm__ volatile ("" : "+f" (speed));
+            frames = distance / speed;
+#else
             f32 frames = distance / fldRun_Dante.speed;
+#endif
             fldRun_Dante.angleToPlayer = angle;
             fldRun_Dante.nextframe = (s32)frames;
         }
@@ -2399,7 +2517,96 @@ extern void fldRunEffSet(s32 id, f32 x, f32 y, f32 z, f32 r);
 extern evtUnit_t *dds3GetUnitHandleObjectBasic(dds3Basic_t *basic);
 extern s32 sdfModelGetMarkPos(sdfModelRootNode_t *root, s32 mark);
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+/* Maniax: as fldRunDanteGun2, one working variable holds every random draw. */
+void fldRunDanteGun1(void)
+{
+    sdfVector4_t pos;
+    f32 frames[4] = { 2.0f, 10.0f, 19.0f, 28.0f };
+    s32 marks[4] = { 20, 21, 20, 21 };
+    f32 distance;
+    f32 oldframe;
+    f32 nowframe;
+    s32 i;
+
+    if (fldRun_Dante.cnt_ex < 300) {
+        fldRun_Dante.cnt_ex += SDF_FRAME_DUE();
+    }
+    if (fldRun_Dante.nextframe > 0) {
+        fldRun_Dante.nextframe -= SDF_FRAME_DUE();
+    }
+    fldRun_Dante.angleToPlayer = fldRun_Dante.d_p_dir;
+    distance = fldRun_Dante.d_p_len;
+    fldRun_Dante.turn = fldTurnToward(fldRun_Dante.turn, 180.0f - fldRun_Dante.d_p_dir, 10.0f, 1.0f);
+    if (distance > 100.0f) {
+        fldRun_Dante.x += sdfSin(fldRun_Dante.angleToPlayer * 3.14f / 180.0f) * SDF_FRAME_STEP(fldRun_Dante.speed);
+        fldRun_Dante.z += sdfCos(fldRun_Dante.angleToPlayer * 3.14f / 180.0f) * SDF_FRAME_STEP(fldRun_Dante.speed);
+    }
+    if (fldRun_Dante.flag & 2) {
+        oldframe = 0.0f;
+        nowframe = 0.0f;
+    } else {
+        nowframe = fldRun_Dante.nowframe;
+        oldframe = fldRun_Dante.oldframe;
+    }
+    for (i = 0; i < 4; i++) {
+        if (oldframe < frames[i] && frames[i] <= nowframe) {
+            s32 hit;
+            s32 roll;
+            s32 mark;
+            s32 rnd;
+
+            fldRun_Dante.gunlight_anime = 8;
+            fldRun_Dante.flag |= 8;
+            if (fldRunDanteGunFlag.counter != 0) {
+                continue;
+            }
+            rnd = (dds3GetRandA(NULL) >> 3) % 100;
+            hit = 0;
+            roll = rnd;
+            if (!(fldRun_Dante.flag & 1)) {
+                if (distance > 2400.0f && roll < 2) {
+                    hit = 1;
+                } else if (distance > 1800.0f && roll < 5) {
+                    hit = 1;
+                } else if (distance > 1200.0f && roll < 20) {
+                    hit = 1;
+                } else if (distance > 600.0f && roll < 30) {
+                    hit = 1;
+                } else if (roll < 50) {
+                    hit = 1;
+                }
+            }
+            if (hit) {
+
+                fldGlobalBase.word78 = 1;
+                fldPlayerStepDist = SDF_FRAMES(8);
+                datPartyDamageFld(3);
+                rnd = (s32)((dds3GetRandA(NULL) >> 3) % 40) - 20;
+                pos.x = fldGlobalBase.x + (f32)rnd;
+                rnd = (s32)((dds3GetRandA(NULL) >> 3) % 40) - 20;
+                pos.y = fldGlobalBase.y - 140.0f + (f32)rnd;
+                rnd = (s32)((dds3GetRandA(NULL) >> 3) % 40) - 20;
+                pos.z = fldGlobalBase.z + (f32)rnd;
+                fldRunEffSet(0, pos.x, pos.y, pos.z, 0.0f);
+            }
+            mark = marks[i];
+            if (mark == 20) {
+                fldRun_Dante.flag |= 0x10;
+            }
+            if (sdfModelGetMarkPos(dds3GetUnitHandleObjectBasic(fldDanteUnit)->owner->inner, mark) != 0) {
+                SDF_VU0_STOREVECTOR(&pos);
+                fldRunEffSet(1, pos.x, pos.y, pos.z, fldRun_Dante.turn);
+            }
+        }
+    }
+    FroFtoI(fldRun_Dante.x, fldRun_Dante.z, (u16 *)&fldRun_Dante.ix, (u16 *)&fldRun_Dante.iz);
+    if (fldRun_Dante.bgm_mode != 1) {
+        fldRun_Dante.bgm_mode = 1;
+        fldRun_Dante.flag |= 4;
+    }
+}
+#elif defined(NON_MATCHING)
 void fldRunDanteGun1(void)
 {
     f32 frames[4] = { 2.0f, 10.0f, 19.0f, 28.0f };
@@ -2490,7 +2697,95 @@ void fldRunDanteGun1(void)
 INCLUDE_ASM(const s32, "field/fldTest", fldRunDanteGun1);
 #endif
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+/* Maniax: one working variable holds every random draw (the hit roll, then
+ * the three effect offsets). The roll's own copy is what the later range
+ * tests read; within the first test the compiler still reads the working
+ * variable, which is retail's one-off register copy. */
+void fldRunDanteGun2(void)
+{
+    sdfVector4_t pos;
+    f32 frames[6] = { 31.0f, 37.0f, 44.0f, 51.0f, 59.0f, 65.0f };
+    s32 marks[6] = { 20, 21, 20, 21, 20, 21 };
+    f32 distance;
+    f32 oldframe;
+    f32 nowframe;
+    s32 i;
+
+    if (fldRun_Dante.cnt_ex < 300) {
+        fldRun_Dante.cnt_ex += SDF_FRAME_DUE();
+    }
+    if (fldRun_Dante.nextframe > 0) {
+        fldRun_Dante.nextframe -= SDF_FRAME_DUE();
+    }
+    fldRun_Dante.angleToPlayer = fldRun_Dante.d_p_dir;
+    distance = fldRun_Dante.d_p_len;
+    fldRun_Dante.turn = fldTurnToward(fldRun_Dante.turn, 180.0f - fldRun_Dante.d_p_dir, 10.0f, 1.0f);
+    if (fldRun_Dante.flag & 2) {
+        oldframe = 0.0f;
+        nowframe = 0.0f;
+    } else {
+        nowframe = fldRun_Dante.nowframe;
+        oldframe = fldRun_Dante.oldframe;
+    }
+    for (i = 0; i < 6; i++) {
+        if (oldframe < frames[i] && frames[i] <= nowframe) {
+            s32 hit;
+            s32 roll;
+            s32 mark;
+            s32 rnd;
+
+            fldRun_Dante.gunlight_anime = 8;
+            fldRun_Dante.flag |= 8;
+            if (fldRunDanteGunFlag.counter != 0) {
+                continue;
+            }
+            rnd = (dds3GetRandA(NULL) >> 3) % 100;
+            hit = 0;
+            roll = rnd;
+            if (!(fldRun_Dante.flag & 1)) {
+                if (distance > 2400.0f && roll < 2) {
+                    hit = 1;
+                } else if (distance > 1800.0f && roll < 5) {
+                    hit = 1;
+                } else if (distance > 1200.0f && roll < 20) {
+                    hit = 1;
+                } else if (distance > 600.0f && roll < 30) {
+                    hit = 1;
+                } else if (roll < 50) {
+                    hit = 1;
+                }
+            }
+            if (hit) {
+
+                fldGlobalBase.word78 = 1;
+                fldPlayerStepDist = SDF_FRAMES(8);
+                datPartyDamageFld(3);
+                rnd = (s32)((dds3GetRandA(NULL) >> 3) % 40) - 20;
+                pos.x = fldGlobalBase.x + (f32)rnd;
+                rnd = (s32)((dds3GetRandA(NULL) >> 3) % 40) - 20;
+                pos.y = fldGlobalBase.y - 140.0f + (f32)rnd;
+                rnd = (s32)((dds3GetRandA(NULL) >> 3) % 40) - 20;
+                pos.z = fldGlobalBase.z + (f32)rnd;
+                fldRunEffSet(0, pos.x, pos.y, pos.z, 0.0f);
+            }
+            mark = marks[i];
+            if (mark == 20) {
+                fldRun_Dante.flag |= 0x10;
+            }
+            if (sdfModelGetMarkPos(dds3GetUnitHandleObjectBasic(fldDanteUnit)->owner->inner, mark) != 0) {
+                SDF_VU0_STOREVECTOR(&pos);
+                fldRunEffSet(1, pos.x, pos.y, pos.z, fldRun_Dante.turn);
+            }
+        }
+    }
+    FroFtoI(fldRun_Dante.x, fldRun_Dante.z, (u16 *)&fldRun_Dante.ix, (u16 *)&fldRun_Dante.iz);
+    if (fldRun_Dante.bgm_mode != 1) {
+        fldRun_Dante.bgm_mode = 1;
+        fldRun_Dante.flag |= 4;
+    }
+}
+#elif defined(NON_MATCHING)
 void fldRunDanteGun2(void)
 {
     f32 frames[6] = { 31.0f, 37.0f, 44.0f, 51.0f, 59.0f, 65.0f };
@@ -2934,7 +3229,73 @@ void fldRunDanteShutdown(void)
     }
 }
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+extern void fldDrawPoly3(s32 c0, s32 c1, s32 c2,
+                         f32 x0, f32 y0, f32 z0, f32 x1, f32 y1, f32 z1,
+                         f32 x2, f32 y2, f32 z2);
+/* Maniax: the caller moves all twelve coordinates into place before the four
+ * colours, which is the order this compiler gives when the coordinates come
+ * first in the prototype. Integer and float arguments use separate register
+ * files, so this spelling passes every value exactly where fldDraw.c's
+ * definition (colour, x, y, z per corner) receives it. */
+extern void fldDrawPoly4(f32 x0, f32 y0, f32 z0,
+                         f32 x1, f32 y1, f32 z1,
+                         f32 x2, f32 y2, f32 z2,
+                         f32 x3, f32 y3, f32 z3, s32 c0, s32 c1, s32 c2, s32 c3);
+
+void fldRunDanteDrawShadow(s32 alpha, f32 x, f32 y, f32 z, f32 radius)
+{
+    s32 i;
+    u32 edgeColor;
+    u32 centerColor;
+    f32 innerRadius;
+
+    if (alpha == 0) {
+        return;
+    }
+    rsetOtOfs(0x2E);
+    rsetAlpha(1);
+    centerColor = ((u32)alpha << 24) | 0x202020;
+    edgeColor = ((u32)alpha << 24) | 0x181818;
+    innerRadius = radius / 3.0f;
+
+    for (i = 0; i < 360; i += 10) {
+        s32 cur = (i + 360) % 360;
+        s32 prev = (i + 350) % 360;
+        f32 angle;
+        f32 prevAngle;
+        f32 outerX, outerZ, prevOuterX, prevOuterZ, innerX, innerZ, prevInnerX, prevInnerZ;
+        f32 height;
+        f32 sinA, cosA, sinP, cosP;
+
+        angle = (f32)cur * 3.1399999f / 180.0f;
+        outerX = sdfSin(angle) * radius;
+        outerZ = sdfCos(angle) * radius;
+        prevAngle = (f32)prev * 3.1399999f / 180.0f;
+        prevOuterX = sdfSin(prevAngle) * radius;
+        prevOuterZ = sdfCos(prevAngle) * radius;
+        sinA = sdfSin(angle) * innerRadius;
+        cosA = sdfCos(angle) * innerRadius;
+        sinP = sdfSin(prevAngle) * innerRadius;
+        cosP = sdfCos(prevAngle) * innerRadius;
+        height = y - 2.0f;
+
+        innerX = x + sinA;
+        innerZ = z + cosA;
+        prevInnerX = x + sinP;
+        prevInnerZ = z + cosP;
+
+        fldDrawPoly3(centerColor, edgeColor, edgeColor,
+                     x + 0.0f, height, z + 0.0f,
+                     innerX, height, innerZ, prevInnerX, height, prevInnerZ);
+        fldDrawPoly4(innerX, height, innerZ,
+                     x + outerX, height, z + outerZ,
+                     x + prevOuterX, height, z + prevOuterZ,
+                     prevInnerX, height, prevInnerZ, edgeColor, 0, 0, edgeColor);
+    }
+    rsetAlpha(0);
+}
+#elif defined(NON_MATCHING)
 extern void fldDrawPoly3(s32 c0, s32 c1, s32 c2,
                          f32 x0, f32 y0, f32 z0, f32 x1, f32 y1, f32 z1,
                          f32 x2, f32 y2, f32 z2);
