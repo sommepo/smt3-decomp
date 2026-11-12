@@ -34,7 +34,7 @@ basic/dds3ModelRangeBasic	C
 basic/dds3EventBasic	C
 basic/dds3PathBasic	C
 basic/dds3PointBasic	C
-kernel/dds3GlobalWork	demoted: defines dds3FontReqBoxTable, which the split also puts in a blob
+kernel/dds3GlobalWork	C
 kernel/dds3DebugStuff	C
 field/fldTest	C with fallbacks, 1 functions kept as Maniax assembly
 field/fldGlobal	C with fallbacks
@@ -92,7 +92,7 @@ newbattle/nbCameraPress	C with fallbacks
 newbattle/nbCameraBoss	C with fallbacks
 code_001C55F8	C
 interface/fmGslCont	.sdata bounds unknown in Maniax
-interface/frFont	demoted: .sdata is 0x88 bytes where Maniax has room for 0x60
+interface/frFont	demoted: .sdata is 0x58 bytes where Maniax has room for 0x30
 interface/frName	C
 interface/frWrap	C
 interface/frTestFont	C
