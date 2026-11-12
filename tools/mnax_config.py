@@ -920,7 +920,10 @@ def main() -> None:
     # disassembly, and a real name there would make include_rodata.py claim it.
     owned = sorted((m0, m0 + size) for u in good for m0, size, _ in good[u].values())
     for x in sorted(clash):
-        if x not in seen_addr and not any(lo <= x < hi for lo, hi in owned):
+        # (Inside a C-built unit's range too: include_rodata treats an mnax_ label in
+        # the unit's rodata like an automatic one, and a piece that duplicates a C
+        # object is dropped by mnax_postsplit.)
+        if x not in seen_addr:
             seen_addr[x] = True
             out.append(f"mnax_{x:08X} = 0x{x:08X};" + (" // type:func" if x < mregion[".text"][1] else ""))
     carried = len(carried)

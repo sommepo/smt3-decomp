@@ -10,3 +10,4 @@ rcvCalcProcName = 0x0054DE70; // size:0x8
 rcvLeaveText = 0x0054DE78; // size:0x8
 rcvTalkText = 0x0054DE80; // size:0x8
 rcvReviveText = 0x0054DE88; // size:0x8
+func_002306A0 = 0x0022F808; // type:func

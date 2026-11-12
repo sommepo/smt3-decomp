@@ -5,9 +5,20 @@ movie/mviManager	no Maniax assembly for movieDebugRowFmt
 newbattle/nbActionProcess	.rodata range holds a jump table into code it does not own
 result/rstupdate	.rodata must start 16-aligned; Maniax place 0x0053B5C8 is not
 kernel/dds3GlobalWork	defines dds3FontReqBoxTable, which the split also puts in a blob
-kernel/dds3KernelMain	.sdata is 0x50 bytes where Maniax has room for 0x4C
-facility/fclRagInit	.text bytes differ from Maniax
-facility/fclShopCalc	.text bytes differ from Maniax
 interface/lstListWindow	.rodata bytes differ from Maniax
 pb/pbDebugMode	defines D_0053A0E0, which the split also puts in a blob
 event/evtEventPack	defines D_0053A0E0, which the split also puts in a blob
+basic/dds3MoverBasic	defines jtbl_0052F830, which the split also puts in a blob
+field/fldWap	fldWap_SetBgm: undefined reference to fldElevatorPosName
+nme/Nme_Init	defines mccb, which the split also puts in a blob
+nme/Nme_Calc	nmeCalc: undefined reference to nmeConfirmQuestion
+code_0022C578	.text is 0x161BC bytes where Maniax has room for 0x16380
+code_0029B780	.sdata is 0x40 bytes where Maniax has room for 0x38
+facility/fclEncyc	.rodata is 0x217 bytes where Maniax has room for 0x1E8
+facility/fclRagCalc	.rodata is 0x90 bytes where Maniax has room for 0x60
+facility/fclRecoverUpdate	.rodata is 0x160 bytes where Maniax has room for 0xE0
+facility/fclShopCalc	.sdata is 0x30 bytes where Maniax has room for 0x20
+interface/itfMesManager	.rodata is 0x130 bytes where Maniax has room for 0xF0
+kernel/dds3TitleMain	.sdata is 0x4C bytes where Maniax has room for 0x44
+facility/fclRagInit	.sdata is 0x38 bytes where Maniax has room for 0x30
+nme/Nme_Draw	.text bytes differ from Maniax
