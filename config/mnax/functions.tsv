@@ -1398,6 +1398,7 @@ mc/slMain	slLoadProc_openFile	164	0x001554B0	0x001552E8
 mc/slMain	slLoadProc_readFile	100	0x00155558	0x00155390
 mc/slMain	slLoadProc_closeFile	184	0x001555C0	0x001553F8
 mc/slMain	slFileSelCalc	832	0x00155678	0x001554B0
+mc/slMain	slFileSelDraw	4296	0x001559B8	0x001557F0
 mc/slMain	slCalc	160	0x00156AE0	0x001568B8
 mc/slMain	slDraw	624	0x00156B80	0x00156958
 mc/slMain	fmProcTrigSequence	584	0x00156DF0	0x00156BC8
@@ -3799,6 +3800,8 @@ interface/frName	frGetCNameFRQ	184	0x001C9D60	0x001C91B0
 interface/frWrap	frwGetStaffFontFRQ	268	0x001C9EB8	0x001C9268
 interface/frWrap	frwLoadStaffFont	48	0x001C9FC8	0x001C9378
 interface/frWrap	frwFreeStaffFont	32	0x001C9FF8	0x001C93A8
+interface/frWrap	mnax_001C93C8	80	-	0x001C93C8
+interface/frWrap	mnax_001C9418	204	-	0x001C9418
 interface/frWrap	frwGetSmallFont1FRQ	196	0x001CA018	0x001C94E8
 interface/frWrap	frwGetFontEx	488	0x001CA0D0	0x001C95B0
 interface/frWrap	frwGetSmallFontFRQ	32	0x001CA258	0x001C9798
@@ -3808,8 +3811,7 @@ interface/frWrap	frwGetSmallNumFontFRQ	208	0x001CA430	0x001C9968
 interface/frWrap	frwGetNumFontFRQ	208	0x001CA508	0x001C9A38
 interface/frWrap	frwGetSmallCaptionFontFRQ	196	0x001CA5E0	0x001C9B08
 interface/frWrap	frwGetHelpFRQ	436	0x001CA6A8	0x001C9BD0
-interface/frWrap	frGetHelpPos	304	0x001CA860	miss
-interface/frWrap	fr_1CA990	8	0x001CA990	ambiguous
+interface/frWrap	fr_1CA990	8	0x001CA990	0x001C9D88
 interface/frWrap	func_001CA998	8	-	ambiguous
 interface/frWrap	func_001CA9A0	8	-	ambiguous
 interface/frWrap	func_001CA9A8	8	-	ambiguous
@@ -7618,12 +7620,10 @@ file/fileManager	fileExecCallback	104	0x00297658	0x00296518
 file/fileManager	fileManager	432	0x002976C0	0x00296580
 file/fileManager	fileManagerProc	32	0x00297870	0x00296730
 file/fileManager	fileSysInit	152	0x00297890	0x00296750
-nme/Nme_Init	nmeCharToIndex	56	0x00297928	miss
-nme/Nme_Init	nmeDecodeChar	48	0x00297960	miss
 nme/Nme_Init	frAllocNameData	168	0x00297990	0x002967E8
 nme/Nme_Init	nmeStartFadeOut	40	0x00297A38	0x00296890
 nme/Nme_Init	nmeGetInputMode	64	0x00297A60	0x002968B8
-nme/Nme_Init	nmeGetMaxNameLen	8	0x00297AA0	ambiguous
+nme/Nme_Init	nmeGetMaxNameLen	36	0x00297AA0	0x002968F8
 nme/Nme_Init	nmeGetModeFlag	44	0x00297AA8	0x00296920
 nme/Nme_Init	nmeInitNameRows	92	0x00297C20	0x00296A60
 nme/Nme_Init	nmeGetRowCount	80	0x00297C80	0x00296AC0
@@ -7648,6 +7648,7 @@ nme/Nme_Calc	nmeDrawColoredText	392	0x00298FD8	0x00297C90
 nme/Nme_Calc	nmeDrawButtonGuide	232	0x00299190	0x00297E18
 nme/Nme_Calc	nmeDrawPanelSprites	512	0x002992A8	0x00297F00
 nme/Nme_Calc	nmeDrawNamePanel	356	0x002994A8	0x00298100
+nme/Nme_Calc	mnax_00298268	448	-	0x00298268
 nme/Nme_Calc	nmeDrawCharCell	208	0x00299560	0x00298428
 nme/Nme_Calc	nmeDrawCursor	40	0x002998E8	miss
 nme/Nme_Calc	nmeDrawTabSprite	196	0x00299910	0x00298EA0
@@ -7663,6 +7664,7 @@ nme/Nme_Draw	nmeDeleteChar	360	0x0029A2C8	0x00299878
 nme/Nme_Draw	nmeConfirmChar	276	0x0029A430	0x002999E0
 nme/Nme_Draw	nmeBackspace	52	0x0029A548	0x00299AF8
 nme/Nme_Draw	nmeSyncCursor	52	0x0029A690	0x00299C40
+nme/Nme_Draw	mnax_00299C78	224	-	0x00299C78
 nme/Nme_Draw	nmeMoveCursor	516	0x0029A6C8	0x00299D58
 nme/Nme_Draw	nmeMoveCursor2	372	0x0029A8D0	0x00299F60
 nme/Nme_Draw	nmeResetCursor	244	0x0029AA48	0x0029A0D8

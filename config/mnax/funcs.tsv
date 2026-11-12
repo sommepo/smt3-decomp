@@ -1448,7 +1448,7 @@ slLoadProc_openFile	0x001554B0	0x001552E8	placed
 slLoadProc_readFile	0x00155558	0x00155390	placed	
 slLoadProc_closeFile	0x001555C0	0x001553F8	placed	
 slFileSelCalc	0x00155678	0x001554B0	placed	
-slFileSelDraw	0x001559B8	0x001557F0	called	
+slFileSelDraw	0x001559B8	0x001557F0	placed	
 slCalc	0x00156AE0	0x001568B8	placed	
 slDraw	0x00156B80	0x00156958	placed	
 fmProcTrigSequence	0x00156DF0	0x00156BC8	placed	
@@ -3907,10 +3907,10 @@ frwGetNumFontFRQ	0x001CA508	0x001C9A38	placed
 frwGetSmallCaptionFontFRQ	0x001CA5E0	0x001C9B08	placed	
 frwGetHelpFRQ	0x001CA6A8	0x001C9BD0	placed	
 frGetHelpPos	0x001CA860	absent	absent	
-fr_1CA990	0x001CA990	0x001C9D88	similar	
-func_001CA998	0x001CA998	0x001C9D90	similar	
-func_001CA9A0	0x001CA9A0	0x001C9D98	similar	
-func_001CA9A8	0x001CA9A8	0x001C9DA0	similar	
+fr_1CA990	0x001CA990	0x001C9D88	placed	
+func_001CA998	0x001CA998	0x001C9D90	rigid	
+func_001CA9A0	0x001CA9A0	0x001C9D98	rigid	
+func_001CA9A8	0x001CA9A8	0x001C9DA0	rigid	
 fr_1CA9B0	0x001CA9B0	0x001C9DA8	placed	
 fr_1CA9B8	0x001CA9B8	0x001C9DB0	placed	
 frGetFontHeader	0x001CA9C0	0x001C9DB8	placed	
@@ -6298,7 +6298,7 @@ cmpPlayCursorSE	0x002413A0	0x00240400	placed
 func_002413B8	0x002413B8	0x00240418	called	
 cmpChkPadPressUpDown	0x00241588	0x002405E8	placed	
 cmpGetPadUpDown	0x002415B0	0x00240610	placed	
-func_002415D8	0x002415D8	0x00240638	rigid	
+func_002415D8	0x002415D8	0x00240638	placed	
 cmpAllocEffectSlot	0x00241600	0x00240660	placed	
 cmpClearCursorSlots	0x002416D0	0x00240730	placed	
 cmpSetCursorSlot	0x00241728	0x00240788	called	
@@ -7868,7 +7868,7 @@ nmeDecodeChar	0x00297960	absent	absent
 frAllocNameData	0x00297990	0x002967E8	placed	
 nmeStartFadeOut	0x00297A38	0x00296890	placed	
 nmeGetInputMode	0x00297A60	0x002968B8	placed	
-nmeGetMaxNameLen	0x00297AA0	0x002968F8	called	
+nmeGetMaxNameLen	0x00297AA0	0x002968F8	placed	
 nmeGetModeFlag	0x00297AA8	0x00296920	placed	
 nmeInitNameRow	0x00297AD8	0x00296950	called	
 nmeInitNameRows	0x00297C20	0x00296A60	placed	

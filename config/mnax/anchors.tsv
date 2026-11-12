@@ -1337,7 +1337,7 @@ usa	mnax	delta	source
 0x00151C88	0x00151BC8	-192	mc/slMain+0x3D24 type 4
 0x00151CE8	0x00151BE8	-256	mc/slMain function
 0x00151D30	0x00151C30	-256	mc/slMain function
-0x00151DE8	0x00151CE8	-256	mc/slMain function
+0x00151DE8	0x00151CE8	-256	mc/slMain+0x4D10 type 4
 0x00151E38	0x00151D38	-256	mc/slMain function
 0x00151EB8	0x00151DB8	-256	mc/slMain function
 0x00152350	0x00152250	-256	mc/slMain function
@@ -1366,9 +1366,9 @@ usa	mnax	delta	source
 0x00153720	0x00153598	-392	mc/slMain function
 0x00153790	0x00153608	-392	mc/slMain+0x1A4C type 6
 0x00153878	0x001536F0	-392	mc/slMain function
-0x001538C8	0x00153740	-392	mc/slMain+0x43C8 type 6
-0x001538F0	0x00153768	-392	mc/slMain+0x43E8 type 6
-0x00153908	0x00153780	-392	mc/slMain+0x4418 type 6
+0x001538C8	0x00153740	-392	mc/slMain+0x5490 type 6
+0x001538F0	0x00153768	-392	mc/slMain+0x54B0 type 6
+0x00153908	0x00153780	-392	mc/slMain+0x54E0 type 6
 0x00153930	0x001537A8	-392	mc/slMain function
 0x00153968	0x001537E0	-392	mc/slMain+0x1CB4 type 6
 0x00153B28	0x001539A0	-392	mc/slMain function
@@ -1417,11 +1417,11 @@ usa	mnax	delta	source
 0x00155558	0x00155390	-456	mc/slMain+0x3B98 type 6
 0x001555C0	0x001553F8	-456	mc/slMain+0x3C04 type 6
 0x00155678	0x001554B0	-456	mc/slMain+0x1EF4 type 6
-0x001559B8	0x001557F0	-456	mc/slMain+0x42D0 type 4
+0x001559B8	0x001557F0	-456	mc/slMain function
 0x00156AE0	0x001568B8	-552	mc/slMain function
-0x00156B80	0x00156958	-552	mc/slMain+0x4048 type 4
+0x00156B80	0x00156958	-552	mc/slMain+0x5110 type 4
 0x00156DF0	0x00156BC8	-552	kernel/dds3SequenceList+0x78 type 4
-0x00157038	0x00156E10	-552	mc/slMain+0x4480 type 6
+0x00157038	0x00156E10	-552	mc/slMain+0x5548 type 6
 0x00157050	0x00156E28	-552	kernel/dds3SequenceList+0x150 type 4
 0x00157058	0x00156E30	-552	kernel/dds3SequenceList+0x158 type 4
 0x00157128	0x00156F00	-552	kernel/dds3SequenceList+0x160 type 4
@@ -1429,7 +1429,7 @@ usa	mnax	delta	source
 0x00157158	0x00156F30	-552	field/fldMain+0xCC type 4
 0x00157160	0x00156F38	-552	mc/slMain function
 0x001576B8	0x00157490	-552	mc/slMain+0x1A1C type 4
-0x00157708	0x001574E0	-552	mc/slMain+0x42E0 type 4
+0x00157708	0x001574E0	-552	mc/slMain+0x53A8 type 4
 0x00157EE8	0x00157CB8	-560	facility/fclTerminalUpdate+0xC8 type 4
 0x00157EF0	0x00157CC0	-560	mc/slMain function
 0x00157F18	0x00157CE8	-560	field/fldCommand function
@@ -3789,7 +3789,6 @@ usa	mnax	delta	source
 0x001C91E0	0x001C8658	-2952	interface/frFont function
 0x001C9220	0x001C8698	-2952	interface/frFont function
 0x001C9230	0x001C86A8	-2952	interface/frFont function
-0x001C93C8	0x001C93C8	0	interface/frWrap+0x4C8 type 4
 0x001C9530	0x001C89A8	-2952	kernel/dds3GlobalWork+0x14C type 4
 0x001C96D8	0x001C8B48	-2960	interface/frName function
 0x001C98C0	0x001C8D30	-2960	interface/frName function
@@ -3811,9 +3810,10 @@ usa	mnax	delta	source
 0x001CA508	0x001C9A38	-2768	interface/frWrap function
 0x001CA5E0	0x001C9B08	-2776	interface/frWrap function
 0x001CA6A8	0x001C9BD0	-2776	interface/frWrap function
+0x001CA990	0x001C9D88	-3080	interface/frWrap function
 0x001CA9B0	0x001C9DA8	-3080	interface/frWrap function
 0x001CA9B8	0x001C9DB0	-3080	interface/frWrap function
-0x001CA9C0	0x001C9DB8	-3080	interface/frWrap+0xBA0 type 4
+0x001CA9C0	0x001C9DB8	-3080	interface/frWrap+0xB90 type 4
 0x001CA9C8	0x001C9DC0	-3080	interface/frFont+0x10D4 type 4
 0x001CA9F8	0x001C9DF0	-3080	interface/frWrap function
 0x001CAA18	0x001C9E10	-3080	interface/frFont+0x10E8 type 4
@@ -6072,6 +6072,7 @@ usa	mnax	delta	source
 0x002413B8	0x00240418	-4000	facility/fclShopUpdate+0x6D8 type 4
 0x00241588	0x002405E8	-4000	facility/fclCombineInit+0x599C type 4
 0x002415B0	0x00240610	-4000	code_0022C578 function
+0x002415D8	0x00240638	-4000	nme/Nme_Draw+0xBDC type 4
 0x00241600	0x00240660	-4000	code_0022C578+0xACEC type 4
 0x002416D0	0x00240730	-4000	facility/fclCombineInit+0xF38 type 4
 0x00241728	0x00240788	-4000	code_0022C578+0xAC7C type 4
@@ -7572,7 +7573,7 @@ usa	mnax	delta	source
 0x00296530	0x002953F0	-4416	newbattle/nbE915 function
 0x00296648	0x00295508	-4416	file/fileManager function
 0x002966A8	0x00295568	-4416	field/fldFileResolver+0x1808 type 4
-0x002966C0	0x00295580	-4416	mc/slMain+0x40B4 type 4
+0x002966C0	0x00295580	-4416	mc/slMain+0x517C type 4
 0x00296738	0x002955F8	-4416	file/fileManager function
 0x002967E8	0x002956A8	-4416	file/fileManager function
 0x002968A8	0x00295768	-4416	file/fileManager function
@@ -7583,13 +7584,13 @@ usa	mnax	delta	source
 0x002969F0	0x002958B0	-4416	model/mdlManager+0xB4C type 4
 0x00296A68	0x00295928	-4416	event/evtPolygonMovie+0x387C type 4
 0x00296A88	0x00295948	-4416	file/fileManager function
-0x00296AA8	0x00295968	-4416	mc/slMain+0x4090 type 4
-0x00296AB0	0x00295970	-4416	mc/slMain+0x409C type 4
-0x00296AB8	0x00295978	-4416	mc/slMain+0x40A8 type 4
+0x00296AA8	0x00295968	-4416	mc/slMain+0x5158 type 4
+0x00296AB0	0x00295970	-4416	mc/slMain+0x5164 type 4
+0x00296AB8	0x00295978	-4416	mc/slMain+0x5170 type 4
 0x00296AC0	0x00295980	-4416	file/fileManager function
-0x00296AC8	0x00295988	-4416	mc/slMain+0x4080 type 4
+0x00296AC8	0x00295988	-4416	mc/slMain+0x5148 type 4
 0x00296B08	0x002959C8	-4416	field/fldFileResolver+0x1868 type 4
-0x00296B28	0x002959E8	-4416	mc/slMain+0x4620 type 4
+0x00296B28	0x002959E8	-4416	mc/slMain+0x56E8 type 4
 0x00296B70	0x00295A30	-4416	field/fldFileResolver+0x1CFC type 4
 0x00296B88	0x00295A48	-4416	event/evtPolygonMovie+0x351C type 4
 0x00296BD8	0x00295A98	-4416	file/fileManager function
@@ -7608,25 +7609,24 @@ usa	mnax	delta	source
 0x00297990	0x002967E8	-4520	interface/frName+0x8C type 4
 0x00297A38	0x00296890	-4520	nme/Nme_Init function
 0x00297A60	0x002968B8	-4520	nme/Nme_Init function
-0x00297AA0	0x002968F8	-4520	nme/Nme_Init+0x190 type 4
+0x00297AA0	0x002968F8	-4520	nme/Nme_Init function
 0x00297AA8	0x00296920	-4488	nme/Nme_Init function
-0x00297AD8	0x00296950	-4488	nme/Nme_Init+0x1D4 type 4
-0x00297C20	0x00296A60	-4544	nme/Nme_Init+0xC0 type 4
+0x00297AD8	0x00296950	-4488	nme/Nme_Init+0x18C type 4
+0x00297C20	0x00296A60	-4544	nme/Nme_Init+0x58 type 4
 0x00297C80	0x00296AC0	-4544	nme/Nme_Init function
 0x00297CD0	0x00296B10	-4544	nme/Nme_Init function
-0x00297DB8	0x00296BF8	-4544	nme/Nme_Init+0x290 type 4
+0x00297DB8	0x00296BF8	-4544	nme/Nme_Init+0x248 type 4
 0x00297EC8	0x00296D08	-4544	nme/Nme_Init function
 0x00297F68	0x00296DA8	-4544	nme/Nme_Init function
 0x00298008	0x00296E48	-4544	nme/Nme_Init function
 0x00298050	0x00296E90	-4544	nme/Nme_Init function
-0x00298140	0x00296F80	-4544	nme/Nme_Init+0xCC type 4
-0x00298268	0x00298268	0	nme/Nme_Draw+0x5D4 type 4
+0x00298140	0x00296F80	-4544	nme/Nme_Init+0x64 type 4
 0x00298478	0x00297248	-4656	nme/Nme_Init function
 0x002984E0	0x002972B0	-4656	kernel/dds3SequenceList+0xA90 type 4
 0x00298600	0x002973D0	-4656	kernel/dds3SequenceList+0xAA0 type 4
 0x00298640	0x00297410	-4656	kernel/dds3SequenceList+0xAC0 type 4
 0x00298698	0x00297468	-4656	nme/Nme_Init function
-0x00298748	0x00297518	-4656	nme/Nme_Init+0x76C type 6
+0x00298748	0x00297518	-4656	nme/Nme_Init+0x724 type 6
 0x00298798	0x00297568	-4656	nme/Nme_Calc function
 0x00298928	0x00297630	-4856	nme/Nme_Calc+0x4A8 type 4
 0x00298D10	0x002979D8	-4920	nme/Nme_Calc+0x4F4 type 4
@@ -7642,26 +7642,25 @@ usa	mnax	delta	source
 0x002999D8	0x00298F68	-2672	nme/Nme_Calc function
 0x00299A98	0x00299028	-2672	nme/Nme_Draw function
 0x00299B38	0x002990C8	-2672	nme/Nme_Draw function
-0x00299C78	0x00299C78	0	nme/Nme_Draw+0x1388 type 4
 0x00299DD0	0x00299360	-2672	nme/Nme_Draw function
-0x00299F90	0x00299520	-2672	nme/Nme_Init+0x79C type 6
+0x00299F90	0x00299520	-2672	nme/Nme_Init+0x754 type 6
 0x0029A0B8	0x00299668	-2640	nme/Nme_Draw function
 0x0029A1B0	0x00299760	-2640	nme/Nme_Draw function
 0x0029A2C8	0x00299878	-2640	nme/Nme_Draw function
 0x0029A430	0x002999E0	-2640	nme/Nme_Draw function
 0x0029A548	0x00299AF8	-2640	nme/Nme_Draw function
-0x0029A580	0x00299B30	-2640	nme/Nme_Draw+0xDF8 type 4
+0x0029A580	0x00299B30	-2640	nme/Nme_Draw+0xED8 type 4
 0x0029A690	0x00299C40	-2640	nme/Nme_Draw function
 0x0029A6C8	0x00299D58	-2416	nme/Nme_Draw function
 0x0029A8D0	0x00299F60	-2416	nme/Nme_Draw function
 0x0029AA48	0x0029A0D8	-2416	nme/Nme_Draw function
 0x0029AB40	0x0029A1D0	-2416	nme/Nme_Draw function
 0x0029ACD0	0x0029A360	-2416	nme/Nme_Draw function
-0x0029ADE8	0x0029A478	-2416	nme/Nme_Draw+0x1298 type 4
+0x0029ADE8	0x0029A478	-2416	nme/Nme_Draw+0x1378 type 4
 0x0029ADF0	0x0029A480	-2416	nme/Nme_Draw function
 0x0029AE70	0x0029A500	-2416	nme/Nme_Draw function
 0x0029B028	0x0029A6C0	-2408	nme/Nme_Draw function
-0x0029B050	0x0029A6E8	-2408	nme/Nme_Init+0x7D0 type 6
+0x0029B050	0x0029A6E8	-2408	nme/Nme_Init+0x788 type 6
 0x0029B0A8	0x0029A740	-2408	mc/mcManager function
 0x0029B0E8	0x0029A780	-2408	mc/slMain+0x1AE0 type 4
 0x0029B128	0x0029A7C0	-2408	mc/slMain+0x200C type 4
@@ -7951,7 +7950,7 @@ usa	mnax	delta	source
 0x002A9540	0x002A8BC8	-2424	sdf/sdfMemory function
 0x002A9558	0x002A8BE0	-2424	script/scrScriptProcess+0x288 type 4
 0x002A95F8	0x002A8C80	-2424	code_0022C578+0x51EC type 4
-0x002A9618	0x002A8CA0	-2424	mc/slMain+0x4644 type 4
+0x002A9618	0x002A8CA0	-2424	mc/slMain+0x570C type 4
 0x002A9650	0x002A8CD8	-2424	basic/dds3ModelRangeBasic+0x64 type 4
 0x002A9688	0x002A8D10	-2424	basic/dds3WorldBasic+0x1B8 type 4
 0x002A96A0	0x002A8D28	-2424	kernel/dds3GlobalWork+0xBC type 4
@@ -9781,6 +9780,7 @@ usa	mnax	delta	source
 0x00324720	0x00323D40	-2528	newbattle/nbCameraSkill+0x2AB4 type 6
 0x00324740	0x00323D60	-2528	newbattle/nbCameraNego+0x5F8 type 6
 0x00324750	0x00323D70	-2528	newbattle/nbCameraCommand+0x58 type 6
+0x00325340	0x00325340	0	interface/frWrap+0x198 type 6
 0x00325950	0x00324F70	-2528	newbattle/nbCameraCommand+0x40 type 6
 0x00325960	0x00324F80	-2528	newbattle/nbCameraCommand+0x60C type 6
 0x00325970	0x00324F90	-2528	newbattle/nbCameraPress+0x54 type 6
@@ -10235,9 +10235,9 @@ usa	mnax	delta	source
 0x003E8C04	0x003E8BB4	-80	newbattle/nbCommSelProcess+0x1520 type 6
 0x003E8C28	0x003E8BD8	-80	newbattle/nbHelpProcess+0x2F0 type 6
 0x003E8C30	0x003E8BE0	-80	interface/itfMesManager+0x13C0 type 6
-0x003E8CA8	0x003E8C58	-80	interface/frWrap+0x8C8 type 6
-0x003F39E0	0x003F45E8	3080	interface/frWrap+0x8DC type 6
-0x003F7350	0x003F8118	3528	interface/frWrap+0x8E4 type 6
+0x003E8CA8	0x003E8C58	-80	interface/frWrap+0x9E8 type 6
+0x003F39E0	0x003F45E8	3080	interface/frWrap+0x9FC type 6
+0x003F7350	0x003F8118	3528	interface/frWrap+0xA04 type 6
 0x003F7FC8	0x003F8E28	3680	newbattle/nbCommSelProcess+0x1920 type 6
 0x003F8228	0x003F9080	3672	newbattle/nbMainProcess+0x25E4 type 6
 0x003FA430	0x003FB190	3424	newdata/datCalc+0x3024 type 6
@@ -10348,10 +10348,10 @@ usa	mnax	delta	source
 0x00527688	0x00524E78	-10256	newbattle/nbE913+0x2C type 6
 0x00527690	0x00524E80	-10256	newbattle/nbE914+0x34 type 6
 0x00527698	0x00524E88	-10256	newbattle/nbE915+0x2C type 6
-0x005276A0	0x00524E90	-10256	nme/Nme_Init+0x570 type 6
-0x005276B0	0x00524EA0	-10256	nme/Nme_Init+0x560 type 6
+0x005276A0	0x00524E90	-10256	nme/Nme_Init+0x528 type 6
+0x005276B0	0x00524EA0	-10256	nme/Nme_Init+0x518 type 6
 0x005276B8	0x00524EA8	-10256	nme/Nme_Draw+0xA38 type 6
-0x005276C4	0x00524EB4	-10256	nme/Nme_Init+0x3C8 type 6
+0x005276C4	0x00524EB4	-10256	nme/Nme_Init+0x380 type 6
 0x005280A0	0x00525798	-10504	nme/Nme_Calc+0x60 type 6
 0x005281D8	0x00525A70	-10088	mc/slMain+0x1040 type 6
 0x00528210	0x00525AA0	-10096	mc/slMain+0x105C type 6
@@ -10361,8 +10361,8 @@ usa	mnax	delta	source
 0x005282D0	0x00525B50	-10112	mc/slMain+0xFE0 type 6
 0x00528308	0x00525B78	-10128	mc/slMain+0xFFC type 6
 0x00528330	0x00525B90	-10144	mc/slMain+0x1018 type 6
-0x00528360	0x00525BC0	-10144	mc/slMain+0x4D58 type 6
-0x00528390	0x00525BE0	-10160	mc/slMain+0x4D74 type 6
+0x00528360	0x00525BC0	-10144	mc/slMain+0x5E20 type 6
+0x00528390	0x00525BE0	-10160	mc/slMain+0x5E3C type 6
 0x005283B8	0x00525C00	-10168	mc/slMain+0x1158 type 6
 0x005283F0	0x00525C28	-10184	mc/slMain+0x1174 type 6
 0x00528428	0x00525C50	-10200	mc/slMain+0x1190 type 6
@@ -10373,8 +10373,8 @@ usa	mnax	delta	source
 0x005284F0	0x00525D10	-10208	mc/slMain+0x1134 type 6
 0x00528510	0x00525D40	-10192	mc/slMain+0x13F8 type 6
 0x00528548	0x00525D68	-10208	mc/slMain+0x1414 type 6
-0x00528560	0x00525D98	-10184	mc/slMain+0x4D90 type 6
-0x00528578	0x00525DB0	-10184	mc/slMain+0x50CC type 6
+0x00528560	0x00525D98	-10184	mc/slMain+0x5E58 type 6
+0x00528578	0x00525DB0	-10184	mc/slMain+0x6194 type 6
 0x00528598	0x00525DD8	-10176	mc/slMain+0x14C4 type 6
 0x005285A8	0x00525DE8	-10176	mc/slMain+0x144C type 6
 0x005285B8	0x00525DF8	-10176	mc/slMain+0x157C type 6
@@ -10387,43 +10387,43 @@ usa	mnax	delta	source
 0x00528658	0x00525EB8	-10144	mc/slMain+0x1278 type 6
 0x00528678	0x00525EE0	-10136	mc/slMain+0x1294 type 6
 0x00528690	0x00525F00	-10128	mc/slMain+0x12B0 type 6
-0x005286A0	0x00525F28	-10104	mc/slMain+0x4CE8 type 6
-0x005286C0	0x00525F50	-10096	mc/slMain+0x4D04 type 6
-0x005286E8	0x00525F80	-10088	mc/slMain+0x4D20 type 6
+0x005286A0	0x00525F28	-10104	mc/slMain+0x5DB0 type 6
+0x005286C0	0x00525F50	-10096	mc/slMain+0x5DCC type 6
+0x005286E8	0x00525F80	-10088	mc/slMain+0x5DE8 type 6
 0x00528728	0x00525FB8	-10096	mc/slMain+0x168C type 6
 0x00528738	0x00525FD8	-10080	mc/slMain+0x1534 type 6
 0x00528748	0x00525FF8	-10064	mc/slMain+0x15F4 type 6
-0x00528760	0x00526018	-10056	mc/slMain+0x4DF4 type 6
-0x00528770	0x00526038	-10040	mc/slMain+0x4E04 type 6
-0x00528780	0x00526058	-10024	mc/slMain+0x4E14 type 6
-0x00528790	0x00526078	-10008	mc/slMain+0x4E20 type 6
-0x005287A0	0x00526098	-9992	mc/slMain+0x4E48 type 6
-0x005287B0	0x005260B8	-9976	mc/slMain+0x4E64 type 6
+0x00528760	0x00526018	-10056	mc/slMain+0x5EBC type 6
+0x00528770	0x00526038	-10040	mc/slMain+0x5ECC type 6
+0x00528780	0x00526058	-10024	mc/slMain+0x5EDC type 6
+0x00528790	0x00526078	-10008	mc/slMain+0x5EE8 type 6
+0x005287A0	0x00526098	-9992	mc/slMain+0x5F10 type 6
+0x005287B0	0x005260B8	-9976	mc/slMain+0x5F2C type 6
 0x005287C0	0x005260D0	-9968	mc/slMain+0x1654 type 6
 0x005287D8	0x005260F8	-9952	mc/slMain+0x1628 type 6
 0x00528820	0x00526168	-9912	mc/slMain+0x1380 type 6
 0x005288A0	0x00526190	-10000	mc/slMain+0x1340 type 6
 0x005288C0	0x005261B8	-9992	mc/slMain+0x135C type 6
-0x005288E0	0x005261D0	-10000	mc/slMain+0x4E9C type 6
-0x005288F0	0x005261F0	-9984	mc/slMain+0x4EB8 type 6
-0x00528918	0x00526218	-9984	mc/slMain+0x4ED4 type 6
-0x00528940	0x00526240	-9984	mc/slMain+0x5104 type 6
-0x00528960	0x00526268	-9976	mc/slMain+0x513C type 6
-0x00528978	0x00526288	-9968	mc/slMain+0x5158 type 6
-0x005289A0	0x005262B0	-9968	mc/slMain+0x5174 type 6
-0x005289B0	0x005262C8	-9960	mc/slMain+0x4F28 type 6
-0x005289E8	0x005262F0	-9976	mc/slMain+0x4F44 type 6
-0x00528A10	0x00526320	-9968	mc/slMain+0x4F60 type 6
-0x00528A28	0x00526348	-9952	mc/slMain+0x4F7C type 6
-0x00528A60	0x00526368	-9976	mc/slMain+0x4F98 type 6
-0x00528A88	0x00526390	-9976	mc/slMain+0x4FB4 type 6
-0x00528AA0	0x005263B0	-9968	mc/slMain+0x4FEC type 6
-0x00528AC0	0x005263D8	-9960	mc/slMain+0x5008 type 6
-0x00528AF0	0x00526400	-9968	mc/slMain+0x5024 type 6
-0x00528B08	0x00526420	-9960	mc/slMain+0x5040 type 6
-0x00528B20	0x00526448	-9944	mc/slMain+0x505C type 6
-0x00528B58	0x00526468	-9968	mc/slMain+0x5078 type 6
-0x00528B80	0x00526490	-9968	mc/slMain+0x5094 type 6
+0x005288E0	0x005261D0	-10000	mc/slMain+0x5F64 type 6
+0x005288F0	0x005261F0	-9984	mc/slMain+0x5F80 type 6
+0x00528918	0x00526218	-9984	mc/slMain+0x5F9C type 6
+0x00528940	0x00526240	-9984	mc/slMain+0x61CC type 6
+0x00528960	0x00526268	-9976	mc/slMain+0x6204 type 6
+0x00528978	0x00526288	-9968	mc/slMain+0x6220 type 6
+0x005289A0	0x005262B0	-9968	mc/slMain+0x623C type 6
+0x005289B0	0x005262C8	-9960	mc/slMain+0x5FF0 type 6
+0x005289E8	0x005262F0	-9976	mc/slMain+0x600C type 6
+0x00528A10	0x00526320	-9968	mc/slMain+0x6028 type 6
+0x00528A28	0x00526348	-9952	mc/slMain+0x6044 type 6
+0x00528A60	0x00526368	-9976	mc/slMain+0x6060 type 6
+0x00528A88	0x00526390	-9976	mc/slMain+0x607C type 6
+0x00528AA0	0x005263B0	-9968	mc/slMain+0x60B4 type 6
+0x00528AC0	0x005263D8	-9960	mc/slMain+0x60D0 type 6
+0x00528AF0	0x00526400	-9968	mc/slMain+0x60EC type 6
+0x00528B08	0x00526420	-9960	mc/slMain+0x6108 type 6
+0x00528B20	0x00526448	-9944	mc/slMain+0x6124 type 6
+0x00528B58	0x00526468	-9968	mc/slMain+0x6140 type 6
+0x00528B80	0x00526490	-9968	mc/slMain+0x615C type 6
 0x00528D60	0x00526678	-9960	code_0029B780+0x59C type 6
 0x00528D68	0x00526680	-9960	code_0029B780+0x3DC type 6
 0x00528F28	0x00526818	-10000	code_0029B780+0xA7C type 6
@@ -10786,7 +10786,7 @@ usa	mnax	delta	source
 0x005359B0	0x00533320	-9872	interface/frName+0x538 type 6
 0x005359C8	0x00533338	-9872	interface/frWrap+0x124 type 6
 0x005359E0	0x00533350	-9872	interface/frWrap+0x130 type 6
-0x005359F8	0x00533368	-9872	interface/frWrap+0xE20 type 6
+0x005359F8	0x00533368	-9872	interface/frWrap+0xE10 type 6
 0x00535A10	0x00533380	-9872	interface/frTestFont+0x10 type 6
 0x00535A28	0x00533398	-9872	interface/frTestFont+0x28 type 6
 0x00535A38	0x005333A8	-9872	interface/frTestFont+0x50 type 6
@@ -11057,7 +11057,6 @@ usa	mnax	delta	source
 0x0053F408	0x0053CCC0	-10056	movie/MovieViewer+0x16C type 6
 0x0053F418	0x0053CCD0	-10056	movie/MovieViewer+0x2D8 type 6
 0x0053F428	0x0053CCE0	-10056	movie/MovieViewer+0x6EC type 6
-0x0053F478	0x0053CDA0	-9944	code_0022C578+0x30 type 6
 0x005431A8	0x005412F8	-7856	newdata/datDebugUnit+0x6C type 6
 0x005431B8	0x00541308	-7856	newdata/datDebugUnit+0xB0 type 6
 0x005431C8	0x00541318	-7856	newdata/datDebugUnit+0x4F4 type 6
@@ -11255,6 +11254,7 @@ usa	mnax	delta	source
 0x0054C2A8	0x0054A5A8	-7424	field/fldEnc+0x234 type 8
 0x0054C2AC	0x0054A5AC	-7424	field/fldEnc+0x240 type 8
 0x0054C2B0	0x0054A5B0	-7424	field/fldEnc+0x364 type 8
+0x0054C58C	0x0054A88C	-7424	mc/slMain+0x409C type 7
 0x0054C5A0	0x0054A8A0	-7424	effect/effManager+0x210 type 8
 0x0054C5A4	0x0054A8A4	-7424	effect/effManager+0x4B4 type 8
 0x0054C5A8	0x0054A8A8	-7424	effect/effManager+0x50C type 8
@@ -11831,15 +11831,15 @@ usa	mnax	delta	source
 0x0054EFDC	0x0054D2DC	-7424	field/fldSnow+0x98 type 7
 0x0054EFE0	0x0054D2E0	-7424	field/fldSnow+0x9C type 7
 0x0054EFE8	0x0054D2E8	-7424	mc/slMain+0x0 type 7
-0x0054EFEC	0x0054D2EC	-7424	mc/slMain+0x44B4 type 7
+0x0054EFEC	0x0054D2EC	-7424	mc/slMain+0x557C type 7
 0x0054EFF0	0x0054D2F0	-7424	mc/slMain+0x5B4 type 7
-0x0054EFF4	0x0054D2F4	-7424	mc/slMain+0x412C type 7
+0x0054EFF4	0x0054D2F4	-7424	mc/slMain+0x51F4 type 7
 0x0054EFF8	0x0054D2F8	-7424	mc/slMain+0x19D4 type 7
 0x0054EFFC	0x0054D2FC	-7424	mc/slMain+0x34A4 type 7
 0x0054F000	0x0054D300	-7424	mc/slMain+0x1AF0 type 7
 0x0054F004	0x0054D304	-7424	mc/slMain+0x1094 type 7
 0x0054F008	0x0054D308	-7424	mc/slMain+0x1B2C type 7
-0x0054F00C	0x0054D30C	-7424	mc/slMain+0x4030 type 7
+0x0054F00C	0x0054D30C	-7424	mc/slMain+0x50F8 type 7
 0x0054F010	0x0054D310	-7424	mc/slMain+0x1C30 type 7
 0x0054F014	0x0054D314	-7424	mc/slMain+0x1AF8 type 7
 0x0054F018	0x0054D318	-7424	mc/slMain+0x1558 type 7
@@ -11847,13 +11847,13 @@ usa	mnax	delta	source
 0x0054F020	0x0054D320	-7424	mc/slMain+0x3E94 type 7
 0x0054F024	0x0054D324	-7424	mc/slMain+0x2464 type 7
 0x0054F028	0x0054D328	-7424	mc/slMain+0x16C0 type 7
-0x0054F02C	0x0054D32C	-7424	mc/slMain+0x44CC type 7
+0x0054F02C	0x0054D32C	-7424	mc/slMain+0x5594 type 7
 0x0054F030	0x0054D330	-7424	mc/slMain+0x1A14 type 7
-0x0054F034	0x0054D334	-7424	mc/slMain+0x450C type 7
+0x0054F034	0x0054D334	-7424	mc/slMain+0x55D4 type 7
 0x0054F038	0x0054D338	-7424	mc/slMain+0xF90 type 7
-0x0054F03C	0x0054D33C	-7424	mc/slMain+0x44DC type 7
+0x0054F03C	0x0054D33C	-7424	mc/slMain+0x55A4 type 7
 0x0054F040	0x0054D340	-7424	mc/slMain+0x19F0 type 7
-0x0054F044	0x0054D344	-7424	mc/slMain+0x44D4 type 7
+0x0054F044	0x0054D344	-7424	mc/slMain+0x559C type 7
 0x0054F048	0x0054D348	-7424	mc/slMain+0x1D78 type 7
 0x0054F04C	0x0054D34C	-7424	mc/slMain+0x13B0 type 7
 0x0054F050	0x0054D350	-7424	mc/slMain+0xF70 type 7
@@ -11865,6 +11865,11 @@ usa	mnax	delta	source
 0x0054F068	0x0054D368	-7424	mc/slMain+0xA70 type 7
 0x0054F06C	0x0054D36C	-7424	mc/slMain+0x3460 type 7
 0x0054F070	0x0054D370	-7424	mc/slMain+0x3464 type 7
+0x0054F074	0x0054D374	-7424	mc/slMain+0x4098 type 7
+0x0054F078	0x0054D378	-7424	mc/slMain+0x40CC type 7
+0x0054F080	0x0054D380	-7424	mc/slMain+0x4CE8 type 6
+0x0054F088	0x0054D388	-7424	mc/slMain+0x4D64 type 6
+0x0054F090	0x0054D390	-7424	mc/slMain+0x4DAC type 6
 0x0054F0A8	0x0054D3A8	-7424	field/fldCommand+0xA78 type 6
 0x0054F0B0	0x0054D3B0	-7424	effect/effManager+0x60 type 6
 0x0054F0B8	0x0054D3B8	-7424	effect/polyManager+0x4 type 7
@@ -11955,11 +11960,11 @@ usa	mnax	delta	source
 0x0054F3FE	0x0054D6FE	-7424	interface/fmGslCont+0x70 type 7
 0x0054F430	0x0054D720	-7440	interface/frFont+0x1FDC type 6
 0x0054F440	0x0054D728	-7448	interface/frName+0x38 type 6
-0x0054F448	0x0054D730	-7448	interface/frWrap+0x62C type 6
-0x0054F45C	0x0054D734	-7464	interface/frWrap+0xE00 type 7
-0x0054F460	0x0054D738	-7464	interface/frWrap+0xDF0 type 7
-0x0054F464	0x0054D73C	-7464	interface/frWrap+0xDF8 type 7
-0x0054F468	0x0054D740	-7464	interface/frWrap+0xE5C type 7
+0x0054F448	0x0054D730	-7448	interface/frWrap+0x74C type 6
+0x0054F45C	0x0054D734	-7464	interface/frWrap+0xDF0 type 7
+0x0054F460	0x0054D738	-7464	interface/frWrap+0xDE0 type 7
+0x0054F464	0x0054D73C	-7464	interface/frWrap+0xDE8 type 7
+0x0054F468	0x0054D740	-7464	interface/frWrap+0xE4C type 7
 0x0054F46C	0x0054D744	-7464	interface/frTestFont+0x18 type 7
 0x0054F470	0x0054D748	-7464	interface/itfMisc+0x10D8 type 7
 0x0054F478	0x0054D750	-7464	interface/itfMisc+0x10E0 type 7
@@ -12089,7 +12094,7 @@ usa	mnax	delta	source
 0x0054FB38	0x0054DDF8	-7488	facility/fclShopInit+0x4F4 type 6
 0x0054FBB0	0x0054DE50	-7520	facility/fclRecoverInit+0x3F0 type 7
 0x0054FBB4	0x0054DE54	-7520	facility/fclRecoverInit+0x444 type 7
-0x0054FBD8	0x0054DE70	-7528	facility/fclRecoverInit+0x4A0 type 6
+0x0054FBD0	0x0054DE70	-7520	facility/fclRecoverInit+0x4A0 type 6
 0x0054FBF8	0x0054DE98	-7520	facility/fclRecoverUpdate+0xB58 type 6
 0x0054FC00	0x0054DEA0	-7520	facility/fclTerminalInit+0x244 type 7
 0x0054FC04	0x0054DEA4	-7520	facility/fclTerminalInit+0x4F8 type 7
@@ -12212,9 +12217,10 @@ usa	mnax	delta	source
 0x00551650	0x0054F590	-8384	file/fileManager+0x12A4 type 6
 0x005516BC	0x0054F604	-8376	mc/slMain+0x48 type 7
 0x005516C1	0x0054F609	-8376	mc/slMain+0x3C74 type 7
-0x005516C8	0x0054F610	-8376	mc/slMain+0x5388 type 6
-0x005516D0	0x0054F618	-8376	mc/slMain+0x53A4 type 6
-0x005516E0	0x0054F620	-8384	mc/slMain+0x4EF0 type 6
+0x005516C8	0x0054F610	-8376	mc/slMain+0x6450 type 6
+0x005516D0	0x0054F618	-8376	mc/slMain+0x646C type 6
+0x005516E0	0x0054F620	-8384	mc/slMain+0x5FB8 type 6
+0x005516E8	0x0054F628	-8384	mc/slMain+0x4ED0 type 6
 0x005516F5	0x0054F635	-8384	kernel/dds3ConfigMain+0x64 type 7
 0x005516FC	0x0054F63C	-8384	kernel/dds3ConfigMain+0x28 type 7
 0x00551700	0x0054F640	-8384	kernel/dds3ConfigMain+0x98 type 6
@@ -12464,17 +12470,17 @@ usa	mnax	delta	source
 0x00551D24	0x0054FCA4	-8320	field/fldAutoMap+0x258C type 7
 0x00551D28	0x0054FCA8	-8320	mc/slMain+0x438 type 7
 0x00551D2C	0x0054FCAC	-8320	mc/slMain+0x4A0 type 7
-0x00551D38	0x0054FCB8	-8320	mc/slMain+0x4050 type 7
+0x00551D38	0x0054FCB8	-8320	mc/slMain+0x5118 type 7
 0x00551D3C	0x0054FCBC	-8320	mc/slMain+0x19BC type 7
 0x00551D40	0x0054FCC0	-8320	mc/slMain+0x2878 type 7
-0x00551D44	0x0054FCC4	-8320	mc/slMain+0x40A0 type 7
+0x00551D44	0x0054FCC4	-8320	mc/slMain+0x5168 type 7
 0x00551D48	0x0054FCC8	-8320	mc/slMain+0x349C type 7
 0x00551D4C	0x0054FCCC	-8320	mc/slMain+0x34A0 type 7
 0x00551D50	0x0054FCD0	-8320	mc/slMain+0x17A4 type 7
 0x00551D54	0x0054FCD4	-8320	mc/slMain+0x17D8 type 7
 0x00551D58	0x0054FCD8	-8320	mc/slMain+0xF4 type 7
-0x00551D5C	0x0054FCDC	-8320	mc/slMain+0x4B44 type 7
-0x00551D60	0x0054FCE0	-8320	mc/slMain+0x4B64 type 7
+0x00551D5C	0x0054FCDC	-8320	mc/slMain+0x5C0C type 7
+0x00551D60	0x0054FCE0	-8320	mc/slMain+0x5C2C type 7
 0x00551D64	0x0054FCE4	-8320	mc/slMain+0x3744 type 7
 0x00551D68	0x0054FCE8	-8320	mc/slMain+0x3748 type 7
 0x00551D6C	0x0054FCEC	-8320	mc/slMain+0x3758 type 7
@@ -12552,7 +12558,7 @@ usa	mnax	delta	source
 0x00551E94	0x0054FE14	-8320	code_001C55F8+0x5E4 type 7
 0x00551E98	0x0054FE18	-8320	code_001C55F8+0x5F4 type 7
 0x00551E9C	0x0054FE1C	-8320	interface/frFont+0x798 type 7
-0x00551EA0	0x0054FE20	-8320	interface/frWrap+0xCB8 type 7
+0x00551EA0	0x0054FE20	-8320	interface/frWrap+0xCA8 type 7
 0x00551EA4	0x0054FE24	-8320	interface/itfTestMesManager+0xC18 type 7
 0x00551EA8	0x0054FE28	-8320	interface/itfTestMesManager+0xBE0 type 7
 0x00551EAC	0x0054FE2C	-8320	pb/pbDraw+0x214 type 7
@@ -12641,8 +12647,8 @@ usa	mnax	delta	source
 0x00552008	0x0054FF88	-8320	newbattle/nbPanelProcess+0x54 type 7
 0x0055200C	0x0054FF8C	-8320	newbattle/nbDebugProcess+0xBC8 type 7
 0x00552010	0x0054FF90	-8320	newbattle/nbDebugProcess+0xBC0 type 7
-0x00552018	0x0054FF98	-8320	nme/Nme_Init+0x70C type 7
-0x00552020	0x0054FFA0	-8320	nme/Nme_Init+0x114 type 7
+0x00552018	0x0054FF98	-8320	nme/Nme_Init+0x6C4 type 7
+0x00552020	0x0054FFA0	-8320	nme/Nme_Init+0xAC type 7
 0x00552024	0x0054FFA4	-8320	nme/Nme_Calc+0x14 type 7
 0x00552028	0x0054FFA8	-8320	nme/Nme_Calc+0x54 type 7
 0x0055202C	0x0054FFAC	-8320	nme/Nme_Draw+0x694 type 7
@@ -12816,6 +12822,7 @@ usa	mnax	delta	source
 0x00569700	0x00567680	-8320	mc/slMain+0x1C74 type 6
 0x00569740	0x005676C0	-8320	mc/slMain+0x18A8 type 6
 0x00569743	0x005676C3	-8320	mc/slMain+0x74 type 6
+0x0056974E	0x005676CE	-8320	mc/slMain+0x4790 type 6
 0x00569848	0x005677B0	-8344	effect/billManager+0x1C type 6
 0x00569870	0x005677D0	-8352	effect/parManager+0xCE8 type 6
 0x00569880	0x005677E0	-8352	effect/parManager+0x5A1C type 6

@@ -1,5 +1,5 @@
 unit	state
-kernel/dds3KernelMain	demoted: .text bytes differ from Maniax
+kernel/dds3KernelMain	demoted: .sdata is 0x50 bytes where Maniax has room for 0x4C
 kernel/dds3KernelCore	C with fallbacks
 sdf/sdfDefaultMain	C
 kernel/dds3KernelProcess	C with fallbacks
@@ -20,8 +20,8 @@ basic/dds3Basic	C
 basic/dds3WorldBasic	C
 basic/dds3SceneBasic	C
 basic/dds3AreaBasic	C
-basic/dds3MoverBasic	demoted: .sdata is 0x8 bytes where Maniax has room for 0x4
-basic/dds3ObjectBase	demoted: .sdata is 0x3C bytes where Maniax has room for 0x34
+basic/dds3MoverBasic	C
+basic/dds3ObjectBase	C
 basic/dds3CameraObjectBasic	C
 basic/dds3UnitObjectBasic	C
 basic/dds3MatterObjectBasic	C
@@ -49,14 +49,14 @@ field/fldSky	C with fallbacks
 field/fldHit	C with fallbacks
 field/fldEveHit	C with fallbacks, 1 functions kept as Maniax assembly
 field/fldInf	C
-field/fldWap	.rodata bounds overlap field/fldInf
+field/fldWap	.rodata bounds overlap field/fldPanel (fldWap 0x52F7E0+0x218, fldPanel 0x52F9E8)
 field/fldPanel	C
-field/fldSe	demoted: .sdata is 0x298 bytes where Maniax has room for 0x290
+field/fldSe	.sdata bytes differ
 field/fldAutoMap	C with fallbacks
-field/fld_Npc	demoted: .rodata is 0xF8 bytes where Maniax has room for 0xE0
+field/fld_Npc	C with fallbacks
 field/fldTitle	C
 field/fldSnow	C with fallbacks
-mc/slMain	demoted: .rodata bytes differ from Maniax
+mc/slMain	C with fallbacks, 2 functions kept as Maniax assembly
 field/fldCommand	C with fallbacks
 effect/effManager	C
 effect/billManager	C with fallbacks
@@ -92,13 +92,13 @@ newbattle/nbCameraPress	C with fallbacks
 newbattle/nbCameraBoss	C with fallbacks
 code_001C55F8	C
 interface/fmGslCont	.sdata bounds unknown in Maniax
-interface/frFont	.sdata bounds overlap effect/effSpline
-interface/frName	.sdata bytes differ
-interface/frWrap	demoted: .text is 0xD70 bytes where Maniax has room for 0xE90
-interface/frTestFont	demoted: .rodata is 0x51 bytes where Maniax has room for 0x58
-interface/itfMisc	.rodata bytes differ
+interface/frFont	.sdata bounds overlap interface/frName (frFont 0x54D6F8+0x34, frName 0x54D728)
+interface/frName	C
+interface/frWrap	C
+interface/frTestFont	C
+interface/itfMisc	C
 interface/itfPanel	C
-interface/itfMesManager	demoted: .rodata is 0x12D bytes where Maniax has room for 0xF0
+interface/itfMesManager	.rodata bounds overlap interface/itfTestMesManager (itfMesManager 0x533410+0xF0, itfTestMesManager 0x5334E0)
 interface/itfTestMesManager	C
 pb/pbCamera	C
 pb/pbModel	C with fallbacks
@@ -130,43 +130,43 @@ event/evtEventViewerFrameVar	C
 event/evtEventViewerMenu	C with fallbacks
 event/evtSound	C
 event/evtEventPack	demoted: defines D_0053A0E0, which the split also puts in a blob
-facility/fclCombineInit	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclShopInit	demoted: .sdata is 0x60 bytes where Maniax has room for 0x40
-facility/fclShopCalc	demoted: .sdata is 0x1C bytes where Maniax has room for 0xC
-facility/fclShopUpdate	.rodata bytes differ
-facility/fclRagInit	demoted: .sdata is 0x44 bytes where Maniax has room for 0x2C
+facility/fclCombineInit	demoted: Maniax has a TU boundary inside the unit (rodata base 0x53A1A8 vs jump tables at 0x53A1B0)
+facility/fclShopInit	C
+facility/fclShopCalc	demoted: .text bytes differ from Maniax
+facility/fclShopUpdate	C
+facility/fclRagInit	demoted: .text bytes differ from Maniax
 facility/fclRagCalc	demoted: ragDrawList2: undefined reference to ragDrawListRows
 facility/fclRagDraw	C
-facility/fclRagUpdate	.rodata bytes differ
-facility/fclRecoverInit	.rodata bytes differ
+facility/fclRagUpdate	C
+facility/fclRecoverInit	C
 facility/fclRecoverCalc	C with fallbacks
 facility/fclRecoverDraw	C
-facility/fclRecoverUpdate	.rodata bytes differ
-facility/fclTerminalInit	.sdata bounds overlap facility/fclDraw
+facility/fclRecoverUpdate	.rodata start ambiguous
+facility/fclTerminalInit	C
 facility/fclTerminalCalc	C
 facility/fclTerminalDraw	C
 facility/fclTerminalUpdate	C
 facility/fclDraw	C
 interface/lstListWindow	demoted: .rodata bytes differ from Maniax
-facility/fclMisc	.sdata bytes differ
+facility/fclMisc	C
 facility/fclShare	C with fallbacks
 facility/fclPanel	C with fallbacks
 facility/fclDebug	C
-facility/fclEncyc	.sdata bounds overlap facility/fclDebug
+facility/fclEncyc	.sdata bounds overlap result/rstinit (fclEncyc 0x54DF40+0x64, rstinit 0x54DF78)
 facility/fclRibbon	C
 result/rstinit	C
 result/rstcalc	C with fallbacks
 result/rstdraw	C
 result/rstupdate	demoted: .rodata must start 16-aligned; Maniax place 0x0053B5C8 is not
 sound/sndManager	C
-kernel/dds3TitleMain	.rodata bounds overlap sound/sndManager
-kernel/ModeSelect	.rodata bytes differ
+kernel/dds3TitleMain	.rodata bounds overlap kernel/ModeSelect (dds3TitleMain 0x53B7E0+0xF0, ModeSelect 0x53B8B0)
+kernel/ModeSelect	C
 kernel/dds3CreateData	C
 staff/stfMain	C
 movie/mviManager	demoted: no Maniax assembly for movieDebugRowFmt
-movie/MovieViewer	.rodata start ambiguous
-code_0022C578	.sdata bounds overlap kernel/dds3CreateData
-newdata/datCalc	demoted: .text bytes differ from Maniax
+movie/MovieViewer	.sdata bytes differ
+code_0022C578	.sdata bounds overlap newdata/datDebugUnit (code_0022C578 0x54E018+0xDD9, datDebugUnit 0x54EDE8)
+newdata/datCalc	C with fallbacks
 newdata/datDebugUnit	C
 newbattle/nbInit	C
 newbattle/nbMainProcess	C with fallbacks
@@ -202,7 +202,7 @@ newbattle/NbNegoFlowKoketa	C
 newbattle/nbPanelProcess	C with fallbacks
 newbattle/nbDebugProcess	C with fallbacks
 newbattle/nbAi	C with fallbacks
-newbattle/nbAiScript	demoted: .sdata is 0x8 bytes where Maniax has room for 0x4
+newbattle/nbAiScript	C
 newbattle/nbHelpProcess	C
 newbattle/nbAutoCommProcess	C
 newbattle/nbFormation	C with fallbacks
@@ -226,22 +226,22 @@ newbattle/nbE910	C
 newbattle/nbE911	C
 newbattle/nbE912	C
 newbattle/nbE913	C
-newbattle/nbE914	demoted: .sdata is 0xC bytes where Maniax has room for 0x8
+newbattle/nbE914	C
 newbattle/nbE915	C
-file/fileManager	demoted: .rodata is 0x1EF8 bytes where Maniax has room for 0x1E80
-nme/Nme_Init	demoted: does not compile for Maniax
-nme/Nme_Calc	demoted: nmeCalc: undefined reference to nmeConfirmQuestion
-nme/Nme_Draw	demoted: nmeUpdateInput: undefined reference to func_00299C78
+file/fileManager	C
+nme/Nme_Init	demoted: .rodata is 0x98 bytes where Maniax has room for 0x90
+nme/Nme_Calc	demoted: .text is 0x19D0 bytes where Maniax has room for 0x1B10
+nme/Nme_Draw	demoted: .text bytes differ from Maniax
 nme/Nme_Update	C
 mc/mcManager	C
-code_0029B780	.sdata bounds overlap kernel/dds3ConfigMain
+code_0029B780	.sdata bounds overlap kernel/dds3ConfigMain (code_0029B780 0x54F608+0x40, dds3ConfigMain 0x54F640)
 kernel/dds3ConfigMain	C
-pipe/pipeMain	demoted: .sdata is 0x18 bytes where Maniax has room for 0x14
+pipe/pipeMain	C
 pipe/pipeSection	C with fallbacks
 pipe/pipeSelect	C
-pipe/pipeObject	demoted: .rodata is 0x333 bytes where Maniax has room for 0x328
+pipe/pipeObject	C with fallbacks
 pipe/pipePosTable	C
-pipe/pipeCamera	demoted: .sdata is 0x10 bytes where Maniax has room for 0xC
+pipe/pipeCamera	C
 pipe/pipeResult	C
 pipe/pipeModel	C
 pipe/pipeEffect	C
@@ -273,7 +273,7 @@ sdf/sdfBillBoard	C
 sdf/sdf_PadManager	C
 sdf/sdfDevCons	C
 sdf/sdfPrint	C
-sdf/sdfCd	demoted: .sdata is 0x10 bytes where Maniax has room for 0xC
+sdf/sdfCd	C
 sdf/sdfFile	C
 sdf/sdfFileIO	C
 sdf/sdfHdd	C
@@ -303,7 +303,7 @@ sdk/libm	C with fallbacks
 sdk/libgcc	C with fallbacks
 sdk/libc	C with fallbacks
 sdk/libkernl	demoted: .text must start 64-aligned; Maniax place 0x002DB0F8 is not
-sdk/libgcc_longlong	demoted: .rodata is 0x850 bytes where Maniax has room for 0x448
+sdk/libgcc_longlong	demoted: .text must start 8-aligned; links 4 bytes late
 sdk/libgcc_fixunsdfdi	C
 sdk/libgcc_dpdiv	C
 sdk/libgcc_floatdidf	C
