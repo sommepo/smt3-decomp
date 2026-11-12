@@ -139,6 +139,10 @@ def main() -> None:
             r = run(py, "tools/mnax_config.py")
             if r.returncode:
                 sys.exit(r.stdout + r.stderr)
+            # mnax_config.py rewrites src/mnax, dropping the INCLUDE_RODATA/SDATA lines
+            # the split's include passes added; the split stamp only tracks
+            # INCLUDE_ASM ownership, so force the split to run them again.
+            (ROOT / "build/mnax/.splat_stamp").unlink(missing_ok=True)
             r = run(py, "configure.py", "mnax")
             if r.returncode:
                 sys.exit((r.stdout + r.stderr)[-3000:])
