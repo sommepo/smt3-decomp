@@ -299,6 +299,81 @@ def main() -> None:
             return base, size
         return None
 
+    def reloc_place(unit, secname):
+        """Maniax start of the unit's data section, read from the Maniax code: each
+        function of the unit's last full build object that sits at a known Maniax
+        address refers to its own data through section-relative relocations, and the
+        Maniax instructions at the same place hold the real addresses (exact, no
+        estimate). Needs the full object (with its assembly pieces), so a unit gets
+        it after one build in which it was admitted."""
+        from collections import Counter
+        full = True
+        path = ROOT / "build/mnax/src/mnax" / (unit + ".o")
+        if not path.exists() or path.read_bytes()[:4] != b"\x7fELF":
+            # No full build yet: the Maniax-mode probe object lacks the assembly pieces,
+            # so offsets after a missing piece are off; the majority still finds the
+            # start when the unit's first data is referenced from C. Size then unknown.
+            full = False
+            path = ROOT / "build/probe" / (unit + ".o")
+            if not path.exists() or path.read_bytes()[:4] != b"\x7fELF":
+                return None
+        e = ELFFile(path.open("rb"))
+        target = e.get_section_by_name(secname)
+        text = e.get_section_by_name(".text")
+        if target is None or text is None or not target["sh_size"]:
+            return None
+        tidx, didx = e.get_section_index(".text"), e.get_section_index(secname)
+        syms = list(e.get_section_by_name(".symtab").iter_symbols())
+        code = text.data()
+        funcs = sorted((sy["st_value"], sy.name) for sy in syms
+                       if sy["st_shndx"] == tidx and sy.name in prev_syms and not sy.name.startswith(".")
+                       and sy["st_info"]["type"] in ("STT_FUNC", "STT_NOTYPE"))
+        starts_ = [o for o, _ in funcs]
+        gp0 = struct.unpack_from("<I", e.get_section_by_name(".reginfo").data(), 20)[0]
+        votes = Counter()
+        rel = e.get_section_by_name(".rel.text")
+        if not isinstance(rel, RelocationSection):
+            return None
+        last_hi = {}
+        for r in sorted(rel.iter_relocations(), key=lambda r: r["r_offset"]):
+            sy = syms[r["r_info_sym"]]
+            if sy["st_shndx"] != didx:
+                continue
+            off, kind = r["r_offset"], r["r_info_type"]
+            i = bisect.bisect_right(starts_, off) - 1
+            if i < 0:
+                continue
+            fo, fname = funcs[i]
+            at = prev_syms[fname] + off - fo
+            word = lambda a: struct.unpack_from("<I", raw, a - DELTA)[0]
+            wo = struct.unpack_from("<I", code, off)[0]
+            sext = lambda v: v - 0x10000 if v & 0x8000 else v
+            if kind == 5:
+                last_hi[r["r_info_sym"]] = (off, at, wo)
+                continue
+            if kind == 6 and r["r_info_sym"] in last_hi:
+                ho, hat, hw = last_hi[r["r_info_sym"]]
+                addend = ((hw & 0xFFFF) << 16) + sext(wo & 0xFFFF) + sy["st_value"]
+                value = ((word(hat) & 0xFFFF) << 16) + sext(word(at) & 0xFFFF)
+            elif kind in (7, 8):
+                addend = sext(wo & 0xFFFF) + gp0 + sy["st_value"]
+                value = 0x00552470 + sext(word(at) & 0xFFFF)
+            else:
+                continue
+            votes[value - addend] += 1
+        if not votes:
+            return None
+        if not full:
+            # Offsets after a missing assembly piece read low, so their votes land
+            # high; the true start is the lowest well-supported cluster.
+            strong = [b for b, n in votes.items() if n >= max(3, sum(votes.values()) // 20)]
+            return (min(strong), None) if strong else None
+        (base, n), = votes.most_common(1)
+        if n < 2 or n * 3 < sum(votes.values()) * 2:
+            return None
+        size = (target["sh_size"] + 7) & ~7 if secname == ".rodata" else (target["sh_size"] + 3) & ~3
+        return base, size
+
     # ---- which units build from C ------------------------------------------------
     usa_start = defaultdict(dict)
     for sec, rows in order.items():
@@ -368,12 +443,14 @@ def main() -> None:
                     if name == ".text":
                         continue
                     size = usa_extent[unit][name]
-                    placed_by_name = named_place(unit, name, clean=False)
-                    if placed_by_name is not None:
+                    placed_by_name = reloc_place(unit, name) or named_place(unit, name, clean=False)
+                    if placed_by_name is not None and placed_by_name[1] is not None:
                         starts[name] = (placed_by_name[0], placed_by_name[1], u0)
                         continue
                     m0 = near(amap, u0, same)
                     m1 = mregion_end[name] if u0 + size == bounds[name][1] else near(amap, u0 + size, same)
+                    if placed_by_name is not None and m0 is not None and m1 is not None:
+                        m0, m1 = placed_by_name[0], placed_by_name[0] + (m1 - m0)
                     if m0 is None or m1 is None or m1 <= m0:
                         why = f"{name} bounds unknown in Maniax"
                         break
@@ -454,7 +531,7 @@ def main() -> None:
                     if guess is not None:
                         votes.add(guess)
             if len(votes) != 1 and sec.name != ".text":
-                byname = named_place(unit, sec.name, clean=True)
+                byname = reloc_place(unit, sec.name) or named_place(unit, sec.name, clean=True)
                 if byname is not None:
                     votes = {byname[0]}
             if len(votes) != 1:
