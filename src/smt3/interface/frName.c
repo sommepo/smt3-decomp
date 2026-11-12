@@ -4,13 +4,29 @@
 #include "kernel.h"
 #include "sdk_libc.h"
 
+#ifdef VERSION_MNAX
+#define NAME_GLYPHS 8
+#else
+#define NAME_GLYPHS 16
+#endif
+
 typedef struct
 {
+#ifdef VERSION_MNAX
+    u8 reserved0000[0x1D78];
+    u8 nameBitmap[4][8][0x120];
+#else
     u8 reserved0000[0x1D7C];
     u8 nameBitmap[4][16][0x120];
+#endif
     u8 nameCounts[4][2];
+#ifdef VERSION_MNAX
+    u8 nameGlyphCodes[32][2];
+    u8 cNames[4][16];
+#else
     u8 nameGlyphCodes[64][2];
     u8 cNames[4][20];
+#endif
     u8 cNameCounts[4];
 } frNameGlobalWork_t;
 
@@ -44,10 +60,10 @@ void frInitNameData(void)
     i = 0;
     do {
         nameLength = (s8)strlen(name);
-        memcpy(frNameGlobalWork->nameGlyphCodes[i * 16], name, nameLength);
+        memcpy(frNameGlobalWork->nameGlyphCodes[i * NAME_GLYPHS], name, nameLength);
         frNameGlobalWork->nameCounts[i][0] = nameLength / 2;
         secondLength = (s8)strlen(name);
-        memcpy((u8 *)frNameGlobalWork->nameGlyphCodes[i * 16] + nameLength,
+        memcpy((u8 *)frNameGlobalWork->nameGlyphCodes[i * NAME_GLYPHS] + nameLength,
                name, secondLength);
         frNameGlobalWork->nameCounts[i][1] = secondLength / 2;
         cNameLength = (s8)strlen(frCNameTable[i]);
@@ -58,7 +74,11 @@ void frInitNameData(void)
 }
 
 extern void *sdfChipAllocDirect(s32 size);
+#ifdef VERSION_MNAX
+extern GsFont_t *pFont[4][8];
+#else
 extern GsFont_t *pFont[4][16];
+#endif
 extern GsFont_t *frTranslateUserData(s32 width, s32 height, void *data, s8 dataFreeMode);
 
 void frSetNameData(s8 target, s8 type, s8 glyphCount, u8 *imageData)
@@ -114,7 +134,11 @@ void frTransNameImage(s8 target, s8 type)
     }
 }
 
+#ifdef VERSION_MNAX
+extern GsFont_t *pFont[4][8];
+#else
 extern GsFont_t *pFont[4][16];
+#endif
 extern void fmRetFontMem(FontMem_t *memory);
 
 void frRestoreNameImage(s8 target)
@@ -160,6 +184,39 @@ frFontHandle_t *frCreateNameHandle(s8 target, s8 glyph, frFontHandle_t *chain)
     return chain;
 }
 
+#ifdef VERSION_MNAX
+frFontHandle_t *frGetName1NFRQ(s8 target, frFontHandle_t *chain)
+{
+    s8 glyph = 0;
+    s32 i = 0;
+
+    frTransNameImage(target, 0);
+    for (; i < frNameGlobalWork->nameCounts[target][0]; i++, glyph++) {
+        chain = frCreateNameHandle(target, glyph, chain);
+    }
+    return chain;
+}
+
+frFontHandle_t *frGetName2NFRQ(s8 target, frFontHandle_t *chain)
+{
+    s8 glyph = (s8)frNameGlobalWork->nameCounts[target][0];
+    s32 i = 0;
+
+    frTransNameImage(target, 1);
+    for (; i < frNameGlobalWork->nameCounts[target][1]; i++, glyph++) {
+        chain = frCreateNameHandle(target, glyph, chain);
+    }
+    return chain;
+}
+
+frFontHandle_t *frGetNameFRQ(s8 target, frFontHandle_t *chain)
+{
+    frFontHandle_t *name = frGetName1NFRQ(target, chain);
+    name->advance += 8;
+    name->lastChild->advance += 8;
+    return frGetName2NFRQ(target, name);
+}
+#else
 frFontHandle_t *frGetName1NFRQ(s8 target, frFontHandle_t *chain, s32 firstOption)
 {
     s8 glyph = 0;
@@ -196,12 +253,27 @@ frFontHandle_t *frGetNameFRQ(s8 target, frFontHandle_t *chain, s32 firstOption)
     name->lastChild->advance += 8;
     return frGetName1NFRQ(target, name, firstOption);
 }
+#endif
 
 extern u8 frEnableMode(s32 flag);
 extern u8 frDisableMode(u8 flag);
 extern frFontHandle_t *frLinkFontString(u8 *text, s8 style, s8 color, s8 type, frFontHandle_t *chain);
 extern void frSetFontSpace(frFontHandle_t *font, s32 spacing);
 
+#ifdef VERSION_MNAX
+frFontHandle_t *frGetCNameFRQ(s8 target, s8 style, frFontHandle_t *chain)
+{
+    u8 text[frNameGlobalWork->cNameCounts[0] * 2 + 1];
+    frFontHandle_t *font;
+
+    memcpy(text, frNameGlobalWork->cNames[0], frNameGlobalWork->cNameCounts[0] * 2);
+    text[frNameGlobalWork->cNameCounts[0] * 2] = 0;
+    frEnableMode(1);
+    font = frLinkFontString(text, style, 0, 0, chain);
+    frDisableMode(1);
+    return font;
+}
+#else
 frFontHandle_t *frGetCNameFRQ(s8 target, s8 style, frFontHandle_t *chain, s32 firstOption)
 {
     u8 text[frNameGlobalWork->cNameCounts[target] * 2 + 1];
@@ -227,6 +299,7 @@ frFontHandle_t *frGetCNameFRQ(s8 target, s8 style, frFontHandle_t *chain, s32 fi
     frSetFontSpace(font, 4);
     return font;
 }
+#endif
 
 char frWrapEmptyString[4] = "";
 

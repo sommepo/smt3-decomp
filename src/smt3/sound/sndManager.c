@@ -139,6 +139,9 @@ extern void aDrawBoxG(s32 x, s32 y, s32 w, s32 h, u32 r0, u32 g0, u32 b0, u32 a0
 extern f32 sdfSin(f32 angle);
 extern void fldKanjiDraw(s32 x, s32 y, u32 rgba, const u8 *text);
 extern const u8 *D_00342FD0[], *D_00342FD8[], *D_00342FE0[], *D_00342FE8[];
+#ifdef VERSION_MNAX
+extern const u8 *D_00343080[], *D_00343088[], *D_00343090[], *D_00343098[];
+#endif
 extern f32 dds3TitleMenuPhase;
 
 void dds3TitleDrawMenu(void)
@@ -251,6 +254,30 @@ void dds3TitleDrawMenu(void)
                     (alpha << 24) | 0x808080, work->texHandle[4]);
     }
     if (titleWork->unk_2C >= 24) {
+#ifdef VERSION_MNAX
+        switch (titleWork->cursor) {
+        case 0:
+            fldKanjiDraw(0x117, 0x28, 0x64618780, D_00343088[0]);
+            fldKanjiDraw(0x117, 0x34, 0x64618780, D_00343088[1]);
+            break;
+        case 1:
+            fldKanjiDraw(0x117, 0x28, 0x64618780, D_00343080[0]);
+            break;
+        case 2:
+            fldKanjiDraw(0x117, 0x28, 0x64618780, D_00343090[0]);
+            fldKanjiDraw(0x117, 0x34, 0x64618780, D_00343090[1]);
+            break;
+        case 3:
+            /* The loop nesting blocks the sibling call on the last draw. */
+            do {
+                fldKanjiDraw(0x117, 0x28, 0x64618780, D_00343098[0]);
+                fldKanjiDraw(0x117, 0x34, 0x64618780, D_00343098[1]);
+                fldKanjiDraw(0x117, 0x40, 0x64618780, D_00343098[2]);
+                fldKanjiDraw(0x117, 0x4C, 0x64618780, D_00343098[3]);
+            } while (0);
+            break;
+        }
+#else
         switch (titleWork->cursor) {
         case 0:
             fldKanjiDraw(0x117, 0x28, 0x64618780, D_00342FD8[0]);
@@ -273,6 +300,7 @@ void dds3TitleDrawMenu(void)
             } while (0);
             break;
         }
+#endif
     }
 }
 
@@ -308,12 +336,19 @@ void dds3TitleDrawFade(void)
             age = 0x96;
         }
         alpha = (age * 0x80) / 0x96;
+#ifdef VERSION_MNAX
+        DrwSprite2D(0xA7, 0x198, 0xB2, 0x18, 2, 0x7C, 0xB2, 0x18,
+            ((u32)alpha << 24) | 0x00808080, titleWork->texHandle[2]);
+    }
+
+#else
         DrwSprite2D(0xA7, 0x186, 0xB2, 0x18, 2, 0x7C, 0xB2, 0x18,
             ((u32)alpha << 24) | 0x00808080, titleWork->texHandle[2]);
     }
 
     DrwSprite2D(0x1A, 0x1A4, 0x1C7, 0x14, 0, 0x96, 0x1C7, 0x14,
         0x80808080, titleWork->texHandle[2]);
+#endif
     rsetAlpha(1);
     age = titleWork->unk_30;
     if (age >= 0x32) {
@@ -440,8 +475,13 @@ void dds3TitleUpdateFade(void)
     frame = titleWork->unk_34;
     if (frame > 12) frame = 12;
     color = ((u32)((s32)((u32)frame << 7) / 12) << 24) | 0x808080;
+#ifdef VERSION_MNAX
+    DrwSprite2D(0xE, 0x54, 0x1D4, 0x7D, 2, 2, 0x1D4, 0x7D,
+                color, titleWork->texHandle[1]);
+#else
     DrwSprite2D(0xF, 0x54, 0x1D5, 0x7D, 2, 2, 0x1D4, 0x7D,
                 color, titleWork->texHandle[1]);
+#endif
     DrwSprite2D(0x128, 0xAC, 0xC6, 0x34, 2, 0x84, 0xC6, 0x34,
                 color, titleWork->texHandle[1]);
     frame = titleWork->unk_34;

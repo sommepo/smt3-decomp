@@ -961,6 +961,91 @@ s32 slDrawWindow(void) {
 #define SL_INFO_X 0x28
 #endif
 
+#ifdef VERSION_MNAX
+void slDrawError(void) {
+    if (gslErrorCode == 0) {
+        return;
+    }
+    if (gslErrorCode == 1) {
+        slFileSelError = 0;
+        if (slDrawWindow() != 0) {
+            if (slDDS3To31Flg != 0) {
+                slKanjiDrawH(0x55, 0x4C, 0x64618780, slNoCardSaveMsg0);
+                slKanjiDrawH(0x55, 0x58, 0x64618780, slNoCardSaveMsg1);
+                slKanjiDrawH(0x55, 0x64, 0x64618780, slNoCardSaveMsg2);
+                slKanjiDrawH(0x55, 0x70, 0x64618780, slNoCardSaveMsg3);
+                slKanjiDrawH(0x55, 0x7C, 0x64618780, slNoCardSaveMsg4);
+            } else {
+                slKanjiDrawH(0x55, 0x4C, 0x64618780, slNoCardMsg0);
+                slKanjiDrawH(0x55, 0x58, 0x64618780, slNoCardMsg1);
+                slKanjiDrawH(0x55, 0x64, 0x64618780, slNoCardMsg2);
+            }
+            slNextPageDraw();
+            gslDrawFlagFile = 0;
+        }
+    }
+    if (gslErrorCode == 2) {
+        if (slDrawWindow() != 0) {
+            if (slDDS3To31Flg != 0) {
+                slKanjiDrawH(0x55, 0x4C, 0x64618780, slNotCardSaveMsg0);
+                slKanjiDrawH(0x55, 0x58, 0x64618780, slNotCardSaveMsg1);
+                slKanjiDrawH(0x55, 0x64, 0x64618780, slNotCardSaveMsg2);
+                slKanjiDrawH(0x55, 0x70, 0x64618780, slNotCardSaveMsg3);
+                slKanjiDrawH(0x55, 0x7C, 0x64618780, slNotCardSaveMsg4);
+            } else {
+                slKanjiDrawH(0x55, 0x4C, 0x64618780, slNotCardMsg0);
+                slKanjiDrawH(0x55, 0x58, 0x64618780, slNotCardMsg1);
+                slKanjiDrawH(0x55, 0x64, 0x64618780, slNotCardMsg2);
+            }
+            slNextPageDraw();
+            gslDrawFlagFile = 0;
+        }
+    }
+    if (gslErrorCode == 3) {
+        if (slDrawWindow() != 0) {
+            slKanjiDrawH(0x55, 0x4C, 0x64618780, slLoadFailedMsg);
+            slNextPageDraw();
+            gslDrawFlagFile = 0;
+        }
+    }
+    if (gslErrorCode == 4) {
+        if (slDrawWindow() != 0) {
+            slKanjiDrawH(0x55, 0x4C, 0x64618780, slSaveFailedMsg);
+            slNextPageDraw();
+            gslDrawFlagFile = 0;
+        }
+    }
+    if (gslErrorCode == 5) {
+        if (slDrawWindow() != 0) {
+            slKanjiDrawH(0x55, 0x4C, 0x64618780, slNoSpaceMsg0);
+            slKanjiDrawH(0x55, 0x58, 0x64618780, slNoSpaceMsg1);
+            slKanjiDrawH(0x55, 0x64, 0x64618780, slNoSpaceMsg2);
+            slKanjiDrawH(0x55, 0x70, 0x64618780, slNoSpaceMsg3);
+            slNextPageDraw();
+            gslDrawFlagFile = 0;
+        }
+    }
+    if (gslErrorCode == 6) {
+        if (slDrawWindow() != 0) {
+            slKanjiDrawH(0x55, 0x4C, 0x64618780, slFormatFailedMsg);
+            slNextPageDraw();
+            gslDrawFlagFile = 0;
+        }
+    }
+    if (gslErrorCode == 7) {
+        if (slDrawWindow() != 0) {
+            if (slDDS3To31Flg != 0) {
+                slKanjiDrawH(0x55, 0x4C, 0x64618780, slNoSaveDataMsg0);
+                slKanjiDrawH(0x55, 0x58, 0x64618780, slNoSaveDataMsg1);
+            } else {
+                slKanjiDrawH(0x55, 0x4C, 0x64618780, slNoNocturneDataMsg0);
+            }
+            slNextPageDraw();
+            gslDrawFlagFile = 0;
+        }
+    }
+}
+#else
 void slDrawError(void) {
     if (gslErrorCode == 0) {
         return;
@@ -1048,6 +1133,7 @@ void slDrawError(void) {
         }
     }
 }
+#endif
 
 void slSetInfo(u32 id) {
     s32 previous;

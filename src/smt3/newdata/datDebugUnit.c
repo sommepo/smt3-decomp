@@ -24,7 +24,7 @@ void DispList(s32 listX, s32 listY, sdfDrawTag_t *tag)
 {
     s32 x = listX;
     s32 y = listY;
-    s32 count = ((datDebugStockWorkView_t *)DDS3_GBWK)->stockCount;
+    s32 count = DDS3_GBWK->stockCount;
     s32 i;
 
     sdfDrawTagLink(tag, EE_ADDR(sdfDevPrintf(0x7000 + x * 0xC0,
@@ -37,13 +37,13 @@ void DispList(s32 listX, s32 listY, sdfDrawTag_t *tag)
     y++;
 
     for (i = 0; i < 16; i++) {
-        u8 item = ((datDebugStockWorkView_t *)DDS3_GBWK)->stock[i];
+        u8 item = DDS3_GBWK->stock[i];
         s32 attr = i < count ? 5 : 0xE;
 
         sdfDrawTagLink(tag, EE_ADDR(sdfDevPrintf(0x7000 + x * 0xC0,
                                                0x7900 + y * 0x60,
                                                0xFEFFFF, attr, datDebugStockItemFmt, item)));
-        item = ((datDebugStockWorkView_t *)DDS3_GBWK)->stock[i];
+        item = DDS3_GBWK->stock[i];
         if (item >= 10) {
             x += 3;
         } else {
@@ -63,7 +63,7 @@ extern const char *nbUnitBadStatusNames[13];
 
 void DispUnit1(s32 unit, s32 x, s32 y, sdfDrawTag_t *tag)
 {
-    datUnitWork_t *work = (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54) + unit;
+    datUnitWork_t *work = DDS3_GBWK->unitwork + unit;
     s32 column = x;
     s32 baseY = 0x7900 + y * 0x60;
     s32 badstatus;

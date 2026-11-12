@@ -91,6 +91,40 @@ extern fclEncycDebugWork_t *g_pdebug;
 
 #include "sdk_libc.h"
 
+#ifdef VERSION_MNAX
+#define FCL_ENCYC_RECORD_OFS 0xFA40
+#else
+#define FCL_ENCYC_RECORD_OFS 0x11E90
+#endif
+
+#ifdef VERSION_MNAX
+#define ENCYC_LIST_X0 0x670
+#define ENCYC_LIST_X1 0xA20
+#define ENCYC_LIST_X2 0x1180
+#define ENCYC_LIST_X3 0x15D0
+#define ENCYC_ICON_L0 0x1380
+#define ENCYC_ICON_L1 0x14A0
+#define ENCYC_ICON_R0 0x17D0
+#define ENCYC_ICON_R1 0x18F0
+#define ENCYC_HELP_A0 0x1A20
+#define ENCYC_HELP_A1 0x1CA0
+#define ENCYC_HELP_B0 0x1C30
+#define ENCYC_HELP_B1 0x1EB0
+#else
+#define ENCYC_LIST_X0 0x620
+#define ENCYC_LIST_X1 0xB10
+#define ENCYC_LIST_X2 0x1220
+#define ENCYC_LIST_X3 0x1670
+#define ENCYC_ICON_L0 0x1440
+#define ENCYC_ICON_L1 0x1560
+#define ENCYC_ICON_R0 0x1880
+#define ENCYC_ICON_R1 0x19A0
+#define ENCYC_HELP_A0 0x1C20
+#define ENCYC_HELP_A1 0x1ED0
+#define ENCYC_HELP_B0 0x19F0
+#define ENCYC_HELP_B1 0x1D10
+#endif
+
 typedef struct
 {
     /* 0x00 */ s16 recordIndex;
@@ -313,7 +347,7 @@ extern s32 evtBitOff(s32 no);
 s32 fclEncycRegist2(fclencyceelem_t *pelemsrc, s32 overwrite)
 {
     s32 *num = &DDS3_GBWK->encycNum;
-    fclencyceelem_t *table = (fclencyceelem_t *)((u8 *)DDS3_GBWK + 0x11E90);
+    fclencyceelem_t *table = (fclencyceelem_t *)((u8 *)DDS3_GBWK + FCL_ENCYC_RECORD_OFS);
     s32 index = fclEncycSearch(*(u16 *)((u8 *)pelemsrc + 0x0));
     s32 known = 1;
     s32 count;
@@ -346,7 +380,7 @@ s32 fclEncycRegist2(fclencyceelem_t *pelemsrc, s32 overwrite)
 s32 fclEncycRegist(datUnitWork_t *entry, s32 store)
 {
     s32 *num = &DDS3_GBWK->encycNum;
-    fclencyceelem_t *table = (fclencyceelem_t *)((u8 *)DDS3_GBWK + 0x11E90);
+    fclencyceelem_t *table = (fclencyceelem_t *)((u8 *)DDS3_GBWK + FCL_ENCYC_RECORD_OFS);
     s32 index = fclEncycSearch(*(u16 *)((u8 *)entry + 0x4));
     s32 known = 1;
     s32 count;
@@ -378,7 +412,7 @@ s32 fclEncycRegist(datUnitWork_t *entry, s32 store)
 
 s32 fclEncycSearch(s32 id)
 {
-    fclencyceelem_t *entry = (fclencyceelem_t *)((u8 *)DDS3_GBWK + 0x11E90);
+    fclencyceelem_t *entry = (fclencyceelem_t *)((u8 *)DDS3_GBWK + FCL_ENCYC_RECORD_OFS);
     s32 count = DDS3_GBWK->encycNum;
     s32 i;
 
@@ -1679,7 +1713,7 @@ void DrawPhaseReadView(fclEncyc_instance_tag *pinst)
         if (model != NULL) {
             if ((pinst->stat & 0x400) == 0) {
                 u16 modelId = *(u16 *)((u8 *)DDS3_GBWK +
-                                       work->phase.recordIndex * 0xB0 + 0x11E90);
+                                       work->phase.recordIndex * 0xB0 + FCL_ENCYC_RECORD_OFS);
                 InitModelPosRot(model, modelId);
                 pinst->stat |= 0x400;
             }
@@ -1776,7 +1810,7 @@ s32 GetValidUnitIndex(u8 *pindex)
         flags &= 1;
         if (flags && !unavailable && !(unit->badstatus & 0x800)) {
             s32 recordIndex = fclEncycSearch(unit->id);
-            fclencyceelem_t *record = (fclencyceelem_t *)((u8 *)DDS3_GBWK + recordIndex * (s32)sizeof(fclencyceelem_t) + 0x11E90);
+            fclencyceelem_t *record = (fclencyceelem_t *)((u8 *)DDS3_GBWK + recordIndex * (s32)sizeof(fclencyceelem_t) + FCL_ENCYC_RECORD_OFS);
             if (CompareUnitToRecord(unit, record) != 0) {
                 count++;
                 if (writeIndices) {
@@ -2075,8 +2109,8 @@ extern datDevilTableEntry_t datDevilTable[];
 
 s32 cmpRaceOrder(const void *a, const void *b)
 {
-    fclencyceelem_t *left = (fclencyceelem_t *)((u8 *)DDS3_GBWK + *(const s16 *)a * (s32)sizeof(fclencyceelem_t) + 0x11E90);
-    fclencyceelem_t *right = (fclencyceelem_t *)((u8 *)DDS3_GBWK + *(const s16 *)b * (s32)sizeof(fclencyceelem_t) + 0x11E90);
+    fclencyceelem_t *left = (fclencyceelem_t *)((u8 *)DDS3_GBWK + *(const s16 *)a * (s32)sizeof(fclencyceelem_t) + FCL_ENCYC_RECORD_OFS);
+    fclencyceelem_t *right = (fclencyceelem_t *)((u8 *)DDS3_GBWK + *(const s16 *)b * (s32)sizeof(fclencyceelem_t) + FCL_ENCYC_RECORD_OFS);
     s32 result;
     s32 l = datDevilTable[left->id].race;
     s32 r = datDevilTable[right->id].race;
@@ -2094,8 +2128,8 @@ s32 cmpRaceOrder(const void *a, const void *b)
 
 s32 cmpLevelOrder(const void *a, const void *b)
 {
-    fclencyceelem_t *left = (fclencyceelem_t *)((u8 *)DDS3_GBWK + *(const s16 *)a * (s32)sizeof(fclencyceelem_t) + 0x11E90);
-    fclencyceelem_t *right = (fclencyceelem_t *)((u8 *)DDS3_GBWK + *(const s16 *)b * (s32)sizeof(fclencyceelem_t) + 0x11E90);
+    fclencyceelem_t *left = (fclencyceelem_t *)((u8 *)DDS3_GBWK + *(const s16 *)a * (s32)sizeof(fclencyceelem_t) + FCL_ENCYC_RECORD_OFS);
+    fclencyceelem_t *right = (fclencyceelem_t *)((u8 *)DDS3_GBWK + *(const s16 *)b * (s32)sizeof(fclencyceelem_t) + FCL_ENCYC_RECORD_OFS);
     s32 result;
     s32 l = right->level;
     s32 r = left->level;
@@ -2155,7 +2189,7 @@ extern void SetRecordToUnitCore(datUnitWork_t *punit, fclencyceelem_t *pelem);
 
 void SetRecordToUnit(datUnitWork_t *punit, s32 id)
 {
-    u8 *base = (u8 *)DDS3_GBWK + 0x11E80;
+    u8 *base = (u8 *)DDS3_GBWK + FCL_ENCYC_RECORD_OFS - 0x10;
     s32 index = fclEncycSearch(id);
 
     SetRecordToUnitCore(punit, (fclencyceelem_t *)(base + index * 0xB0 + 0x10));
@@ -2226,7 +2260,7 @@ extern s32 datAddDevil(s32 id, s32 sw);
 
 void ExecSummon(s32 recindex)
 {
-    fclencyceelem_t *record = (fclencyceelem_t *)((u8 *)DDS3_GBWK + recindex * 0xB0 + 0x11E90);
+    fclencyceelem_t *record = (fclencyceelem_t *)((u8 *)DDS3_GBWK + recindex * 0xB0 + FCL_ENCYC_RECORD_OFS);
     s32 slot = datAddDevil((u16)record->id, 0);
 
     SetRecordToUnitCore(&DDS3_GBWK->party[slot].unit, record);
@@ -2257,14 +2291,14 @@ void drawRegistList(fclEncyc_instance_tag *pinst)
         datUnitWork_t *unit = &DDS3_GBWK->party[pinst->entries.regist.validUnit[index]].unit;
         u16 id = unit->id;
         frFontHandle_t *font;
-        font = frwGetSmallFontFRQ2(0x620, y, 0xFFFFF0, 0xA09DC380,
+        font = frwGetSmallFontFRQ2(ENCYC_LIST_X0, y, 0xFFFFF0, 0xA09DC380,
             (char *)datExplainTable[datDevilTable[id].race], NULL);
-        font = frwGetSmallFontFRQ2(0xB10, y + 0x10, 0xFFFFF0, 0xA09DC380,
+        font = frwGetSmallFontFRQ2(ENCYC_LIST_X1, y + 0x10, 0xFFFFF0, 0xA09DC380,
             (char *)text2[id], font);
         sprintf(text, fclEncycNum3Fmt, unit->maxhp);
-        font = frwGetSmallNumFontFRQ(0x1220, y + 0x20, 0xFFFFF0, 0xA09DC380, text, font);
+        font = frwGetSmallNumFontFRQ(ENCYC_LIST_X2, y + 0x20, 0xFFFFF0, 0xA09DC380, text, font);
         sprintf(text, fclEncycNum3Fmt, unit->maxmp);
-        font = frwGetSmallNumFontFRQ(0x1670, y + 0x20, 0xFFFFF0, 0xA09DC380, text, font);
+        font = frwGetSmallNumFontFRQ(ENCYC_LIST_X3, y + 0x20, 0xFFFFF0, 0xA09DC380, text, font);
         sprintf(text, fclEncycNum3Fmt, datGetLevelForDraw(unit));
         font = frwGetSmallNumFontFRQ(0x19F0, y + 0x20, 0xFFFFF0, 0xA09DC380, text, font);
         *fonts++ = font;
@@ -2387,25 +2421,39 @@ void CreateFontExplain(fclEncyc_instance_tag *pinst)
 {
     fclEncycReadStatusWork_t *work = (fclEncycReadStatusWork_t *)pinst->pwork;
     u16 id = ((fclencyceelem_t *)((u8 *)DDS3_GBWK +
-              work->phase.recordIndex * (s32)sizeof(fclencyceelem_t) + 0x11E90))->id;
+              work->phase.recordIndex * (s32)sizeof(fclencyceelem_t) + FCL_ENCYC_RECORD_OFS))->id;
     frFontHandle_t *font;
 
     if (work->phase.msgid < 0) {
         work->phase.msgid = itfMesMngInitialize(pinst->explainData);
+#ifdef VERSION_MNAX
+        itfMesMngSetMesPosition(work->phase.msgid, 0x550, 0x3C0);
+#else
         itfMesMngSetMesPosition(work->phase.msgid, 0x200, 0x3C0);
+#endif
     }
     itfMesMngMarkBitStat(work->phase.msgid, 0x400000);
     itfMesMngSetDefaultSpeed(work->phase.msgid, 0xD);
     itfMesMngRequestMessage(work->phase.msgid, id, 0);
     frEnableMode(1);
     font = frLinkFontString(datExplainTable[datDevilTable[id].race], 0, 3, 0, NULL);
+#ifdef VERSION_MNAX
+    frSetDrawPosition(font, 0x150, 0x2D8);
+    frSetPriority(font, 0xFFFFF0);
+#else
     frSetDrawPosition(font, 0xC0, 0x2E0);
     frSetPriority(font, 0xFFFFF0);
     frSetFontSpace(font, 3);
+#endif
     font = frLinkFontString(text2[id], 0, 3, 0, font);
+#ifdef VERSION_MNAX
+    frSetDrawPosition(font, 0x550, 0x2D8);
+    frSetPriority(font, 0xFFFFF0);
+#else
     frSetDrawPosition(font, 0x550, 0x2E0);
     frSetPriority(font, 0xFFFFF0);
     frSetFontSpace(font, 3);
+#endif
     frDisableMode(1);
     work->explainFont = font;
 }
@@ -2483,7 +2531,7 @@ s32 PrepSummon(fclEncyc_readmainwork_tag *phase)
 {
     fclEncycReadStatusWork_t *work = (fclEncycReadStatusWork_t *)phase;
     fclencyceelem_t *record = (fclencyceelem_t *)((u8 *)DDS3_GBWK +
-                              phase->recordIndex * (s32)sizeof(fclencyceelem_t) + 0x11E90);
+                              phase->recordIndex * (s32)sizeof(fclencyceelem_t) + FCL_ENCYC_RECORD_OFS);
     s32 devilId = record->id;
     s32 level = record->level;
     s32 param0 = GetDevilParam(record, 0);
@@ -2787,7 +2835,7 @@ void ControlModel(fclEncyc_instance_tag *pinst, mdlObj_t *model, s32 key)
 
         InitCameraForViewMode(pinst);
         save = DDS3_GBWK;
-        id = *(u16 *)((u8 *)save + work->phase.recordIndex * (s32)sizeof(fclencyceelem_t) + 0x11E90);
+        id = *(u16 *)((u8 *)save + work->phase.recordIndex * (s32)sizeof(fclencyceelem_t) + FCL_ENCYC_RECORD_OFS);
         InitModelPosRot(model, id);
         work->viewOffsetX = 0;
         work->viewOffsetY = 0;
@@ -2987,7 +3035,7 @@ void InitCameraForViewMode(fclEncyc_instance_tag *pinst)
 {
     fclEncyc_readmainwork_tag *work = (fclEncyc_readmainwork_tag *)pinst->pwork;
     sdfVector4_t model;
-    u16 modelId = *(u16 *)((u8 *)DDS3_GBWK + work->recordIndex * (s32)sizeof(fclencyceelem_t) + 0x11E90);
+    u16 modelId = *(u16 *)((u8 *)DDS3_GBWK + work->recordIndex * (s32)sizeof(fclencyceelem_t) + FCL_ENCYC_RECORD_OFS);
 
     rstGetEvoModelParam(modelId, &model.x);
     initViewCamera(pinst->camera);
@@ -3013,7 +3061,7 @@ extern datUnitVisual_t datModelParamTable[];
 void SetBoundControl(fclEncyc_instance_tag *pinst)
 {
     fclEncycBoundWork_t *work = (fclEncycBoundWork_t *)pinst->pwork;
-    u16 id = *(u16 *)((u8 *)DDS3_GBWK + work->phase.recordIndex * (s32)sizeof(fclencyceelem_t) + 0x11E90);
+    u16 id = *(u16 *)((u8 *)DDS3_GBWK + work->phase.recordIndex * (s32)sizeof(fclencyceelem_t) + FCL_ENCYC_RECORD_OFS);
     work->rotationMin = -fclEncycViewParamTable[id].rotation;
     work->rotationMax = fclEncycViewParamTable[id].rotation;
     work->radiusMin = pinst->camera[1].w + datModelParamTable[id].formsize + 80.0f + fclEncycViewParamTable[id].radius;
@@ -3323,8 +3371,16 @@ void drawRegistSprites(fclEncyc_instance_tag *pinst)
 
     tag = sdfGrAllocPacketBuff(0x20);
     sdfDrawTagInit(tag);
+#ifdef VERSION_MNAX
+    pos[0].y = 0x210;
+#else
     pos[0].y = 0x218;
+#endif
+#ifdef VERSION_MNAX
+    pos[1].y = 0x258;
+#else
     pos[1].y = 0x260;
+#endif
     strip = fclEncycRegistStrips;
     for (i = 4; i >= 0; i--, strip++) {
         pos[0].x = strip->left;
@@ -3332,8 +3388,16 @@ void drawRegistSprites(fclEncyc_instance_tag *pinst)
         itfMiscDrawSpritePlanePrim(pos, &fclEncycRegistStripColor, 0xFFFFF0, 0, tag);
     }
 
+#ifdef VERSION_MNAX
+    pos[0].x = 0x6A0; pos[0].y = 0x1F8;
+#else
     pos[0].x = 0x690; pos[0].y = 0x1F8;
+#endif
+#ifdef VERSION_MNAX
+    pos[1].x = 0x980; pos[1].y = 0x270;
+#else
     pos[1].x = 0x920; pos[1].y = 0x270;
+#endif
     uv.components[0] = 0x10; uv.components[1] = 0x160;
     uv.components[2] = 0x2F0; uv.components[3] = 0x250;
     itfMiscDrawSpritePrim(pos, &uv, g_uv_summon_back, 0xFFFFF0,
@@ -3343,17 +3407,29 @@ void drawRegistSprites(fclEncyc_instance_tag *pinst)
     uv.components[0] = 0x300; uv.components[2] = 0x600;
     itfMiscDrawSpritePrim2(pos, &uv, g_uv_summon_back, 0xFFFFF0, 0, tag);
 
+#ifdef VERSION_MNAX
+    pos[0].x = 0x1130; pos[1].x = 0x14D0;
+#else
     pos[0].x = 0x11D0; pos[1].x = 0x1570;
+#endif
     uv.components[0] = 0xA50; uv.components[1] = 0x640;
     uv.components[2] = 0xDF0; uv.components[3] = 0x730;
     itfMiscDrawSpritePrim2(pos, &uv, g_uv_summon_back, 0xFFFFF0, 0, tag);
 
+#ifdef VERSION_MNAX
+    pos[0].x = 0x1A30; pos[1].x = 0x1BE0;
+#else
     pos[0].x = 0x1A50; pos[1].x = 0x1C00;
+#endif
     uv.components[0] = 0x610; uv.components[1] = 0x160;
     uv.components[2] = 0x7C0; uv.components[3] = 0x250;
     itfMiscDrawSpritePrim2(pos, &uv, g_uv_summon_back, 0xFFFFF0, 0, tag);
 
+#ifdef VERSION_MNAX
+    pos[0].x = 0x1580; pos[1].x = 0x1970;
+#else
     pos[0].x = 0x1620; pos[1].x = 0x19C0;
+#endif
     uv.components[0] = 0xC40; uv.components[1] = 0x150;
     uv.components[2] = 0xFF0; uv.components[3] = 0x240;
     itfMiscDrawSpritePrim(pos, &uv, g_uv_summon_back, 0xFFFFF0,
@@ -3389,15 +3465,15 @@ void DrawRegistListwinElem(fclEncyc_instance_tag *instance)
 
         request = work->fonts[i];
         if (request != NULL) {
-            pos[0].x = 0x1440;
+            pos[0].x = ENCYC_ICON_L0;
             pos[0].y = y + 0x48;
-            pos[1].x = 0x1560;
+            pos[1].x = ENCYC_ICON_L1;
             pos[1].y = y + 0x90;
             itfMiscDrawSpritePrim2(pos, &fclEncycListIconLeftUv, g_uv_summon_back,
                                    0x00FFFFF0, 0, tag);
 
-            pos[0].x = 0x1880;
-            pos[1].x = 0x19A0;
+            pos[0].x = ENCYC_ICON_R0;
+            pos[1].x = ENCYC_ICON_R1;
             itfMiscDrawSpritePrim2(pos, &fclEncycListIconRightUv, g_uv_summon_back,
                                    0x00FFFFF0, 0, tag);
             frDrawFontOt(request, 0, 0x47);
@@ -3432,14 +3508,23 @@ void DrawReadListwinCaption(fclEncyc_instance_tag *pinst)
                                   0xFFFFF0, 0, tag);
     }
 
+#ifdef VERSION_MNAX
+    pos[0].x = 0x6A0; pos[0].y = 0x398;
+    pos[1].x = 0x980; pos[1].y = 0x410;
+#else
     pos[0].x = 0x690; pos[0].y = 0x398;
     pos[1].x = 0x920; pos[1].y = 0x410;
+#endif
     uv.components[0] = 0x10; uv.components[1] = 0x160;
     uv.components[2] = 0x2F0; uv.components[3] = 0x250;
     itfMiscDrawSpritePrim(pos, &uv, g_uv_summon_back, 0xFFFFF0,
                          pinst->texHandle[0], 0, tag);
 
+#ifdef VERSION_MNAX
+    pos[0].x = 0xBD0; pos[1].x = 0xED0;
+#else
     pos[0].x = 0xCA0; pos[1].x = 0xFA0;
+#endif
     uv.components[0] = 0x300; uv.components[2] = 0x600;
     itfMiscDrawSpritePrim2(pos, &uv, g_uv_summon_back, 0xFFFFF0, 0, tag);
 
@@ -3738,11 +3823,11 @@ void DrawRegistAllHelp(fclEncyc_instance_tag *pinst)
     itfMiscDrawSpritePrim2(pos, &uv, g_uv_summon_back, 0xFFFFF0, 0, tag);
     uv.components[0] = 0xCE0; uv.components[1] = 0x610;
     uv.components[2] = 0xF60; uv.components[3] = 0x750;
-    pos[0].x = 0x1C20; pos[1].x = 0x1ED0;
+    pos[0].x = ENCYC_HELP_A0; pos[1].x = ENCYC_HELP_A1;
     itfMiscDrawSpritePrim2(pos, &uv, g_uv_summon_back, 0xFFFFF0, 0, tag);
     uv.components[0] = 0x2D0; uv.components[1] = 0x4B0;
     uv.components[2] = 0x550; uv.components[3] = 0x5F0;
-    pos[0].x = 0x19F0; pos[1].x = 0x1D10;
+    pos[0].x = ENCYC_HELP_B0; pos[1].x = ENCYC_HELP_B1;
     itfMiscDrawSpritePrim2(pos, &uv, g_uv_summon_back, 0xFFFFF0, 0, tag);
     D_002F67F8.regFunc(&D_002F67F8, tag);
 }
@@ -4131,7 +4216,7 @@ s32 DebugProcDispBound(fclEncyc_instance_tag *pinst, fclEncycDebugWork_t *debugW
 
     {
         fclEncycReadStatusWork_t *work = (fclEncycReadStatusWork_t *)pinst->pwork;
-        u16 devilId = *(u16 *)((u8 *)DDS3_GBWK + work->phase.recordIndex * (s32)sizeof(fclencyceelem_t) + 0x11E90);
+        u16 devilId = *(u16 *)((u8 *)DDS3_GBWK + work->phase.recordIndex * (s32)sizeof(fclencyceelem_t) + FCL_ENCYC_RECORD_OFS);
         f32 radius = work->phase.cameraRadius;
 
         radius -= pinst->camera[1].w;
@@ -4162,7 +4247,7 @@ void DebugRemoveRecord(s32 id)
     s32 remaining;
 
     if (index < 0) return;
-    dest = (fclencyceelem_t *)((u8 *)DDS3_GBWK + index * (s32)sizeof(*dest) + 0x11E90);
+    dest = (fclencyceelem_t *)((u8 *)DDS3_GBWK + index * (s32)sizeof(*dest) + FCL_ENCYC_RECORD_OFS);
     source = dest + 1;
     remaining = DDS3_GBWK->encycNum - index - 1;
     if (remaining > 0) {

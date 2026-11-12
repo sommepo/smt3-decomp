@@ -146,6 +146,9 @@ s32 MovieViewerProc(dds3ProcessID_t *process)
             movieViewerWork.playing = 1;
         } else {
             movieStop();
+#ifdef VERSION_MNAX
+            dds3PlayMovieByIndex(1);
+#else
             dds3PlayMovieByIndex(movieViewerPhase);
             movieViewerPhase++;
             if (movieViewerPhase >= 0x19) {
@@ -154,6 +157,7 @@ s32 MovieViewerProc(dds3ProcessID_t *process)
             if (movieViewerPhase == 0xA || movieViewerPhase == 0xE || movieViewerPhase == 0x12) {
                 movieViewerPhase++;
             }
+#endif
         }
     } else if ((dds3PadButtonState[0x27] & 2) &&
                movieViewerWork.cursor < movieViewerWork.count - 1) {

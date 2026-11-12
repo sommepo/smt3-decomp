@@ -98,7 +98,11 @@ typedef struct nbActionFunc_t {
 
 /* Persistent unit work begins four bytes into the save record array. */
 typedef struct dds3LiveBattleUnitsView_t {
+#ifdef VERSION_MNAX
+    u8 unk00[0xA50];
+#else
     u8 unk00[0xA54];
+#endif
     datUnitWork_t units[16];
 } dds3LiveBattleUnitsView_t;
 
@@ -481,6 +485,9 @@ void SetMakaPacket(nbActionProcessData_t *a, s32 dformindex, s32 sframe)
         }
     }
     SetTimeList(a, a->form->formindex, sframe, 0x1E, 0x1E);
+#ifdef VERSION_MNAX
+    printf("\244\320\244\351\244\336\244\255 = %d\n", maka);
+#endif
     nbSetJyokyoMes(a, 0x2C, 0, maka);
     if (nbCheckFormationPlayerSide(a->form->formindex) != 0) {
         datAddMaka(-maka);
@@ -587,6 +594,9 @@ void SetOngShadowPacket(nbActionProcessData_t *a, s32 nskill, s32 sformindex, s3
 {
     s32 i;
 
+#ifdef VERSION_MNAX
+    printf("\245\252\245\363\245\256\245\347\245\246\245\270\261\306\276\303\314\307(1)\n");
+#endif
     nbAddMojiEffKoukaPacket(frame, 0x2D, EE_ADDR_S(a), &a->data->form[dformindex], 4);
     nbAddOngOutPacket(frame, a, &a->data->form[dformindex]);
     nbAddUnitAKoukaPacket(frame + 1, a, &a->data->form[dformindex], 0, 0);
@@ -618,6 +628,9 @@ void SetOngShadowPacket2(nbActionProcessData_t *a, s32 dformindex, s32 frame)
     s32 cnt = 0;
     s32 i;
 
+#ifdef VERSION_MNAX
+    printf("\245\252\245\363\245\256\245\347\245\246\245\270\261\306\276\303\314\307(ALL)\n");
+#endif
     for (i = 4; i < 0xE; i++) {
         nbFormation_t *form;
         u32 stat;
@@ -1674,7 +1687,15 @@ s32 CheckSenseiNego(nbActionProcessData_t *a)
     if (datCheckTalk(work) == 0) {
         return 0;
     }
+#ifdef VERSION_MNAX
+    if (datCheckTalk((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA50)) == 0) {
+#else
+#ifdef VERSION_MNAX
+    if (datCheckTalk((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA50)) == 0) {
+#else
     if (datCheckTalk((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54)) == 0) {
+#endif
+#endif
         return 0;
     }
     if ((a->data->stat & 0x2000000) == 0) {

@@ -655,7 +655,11 @@ const char trmDrawProcessName[16] = "terminal_draw";
 
 const char trmUpdateProcessName[16] = "terminal_update";
 
+#ifdef VERSION_MNAX
+const char D_0053D670[16] = "\204\217\205\264\201\214\207\275\207\276";
+#else
 const char D_0053D670[16] = "AMALA LINK";
+#endif
 
 trmTerminalWork_t *GBWK_3 = NULL;
 
@@ -663,6 +667,19 @@ s8 gProcessStat_3 = 0;
 
 s8 trmMode = 0;
 
+#ifdef VERSION_MNAX
+char trmMenuLabelLeave[8] = "\211\241\214\246";
+
+char trmProcessNameTrmFmt[8] = "e%d_trm";
+
+char trmHexLineFmt[8] = "%x\n";
+
+char trmMenuLabelLeave2[8] = "\211\241\214\246";
+
+char trmDecFmt[8] = "%d";
+
+char trmDec2Fmt[8] = "%2d";
+#else
 char trmMenuLabelLeave[8] = "Leave";
 
 char trmMenuLabelTalk[8] = "Talk";
@@ -674,4 +691,5 @@ char trmProcessNameTrmFmt[8] = "e%d_trm";
 char trmHexLineFmt[8] = "%x\n";
 
 char D_0054FC30[8] = "SAVE";
+#endif
 

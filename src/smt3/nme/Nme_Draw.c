@@ -1,6 +1,46 @@
 #include "common.h"
 #include "facility.h"
+#ifdef VERSION_MNAX
+/* Maniax: the name rows hold 8 characters instead of 16, so the work area
+ * is 0x30 bytes shorter after inputChars. Keep the USA header's view out of
+ * the way and describe the Maniax one here. */
+#define nmeWork_t nmeWorkUsa_t
+#define nmeProcessId nmeProcessIdUsa
+#define nmeUpdateWork nmeUpdateWorkUsa
+#endif
 #include "nme.h"
+#ifdef VERSION_MNAX
+#undef nmeWork_t
+#undef nmeProcessId
+#undef nmeUpdateWork
+typedef struct {
+    nmeSeqInfo_t sequence;
+    sdfMemHandle_t *memHandle;
+    s8 targetNo;
+    s8 entryMode;
+    s8 inputMode;
+    u8 unk1B;
+    cmpCursorInfo_t modeCursor;
+    u8 reserved54[0x1004];
+    cmpCursorInfo_t inputCursor;
+    u8 reserved1090[0x1004];
+    cmpCursorInfo_t nameCursor;
+    u8 reserved20CC[0x1004];
+    s8 primaryCursorActive;
+    u8 reserved30D1[3];
+    cmpCursorInfo_t cursor;
+    u8 reserved310C[0x1004];
+    cmpCursorInfo_t wrapCursor;
+    u8 reserved4148[0x1004];
+    s8 alternateCursorActive;
+    s8 inputRowEnabled[3];
+    s8 inputPos;
+    u8 inputChars[3][8][2];
+    u8 reserved5181[3];
+    sdfTexHandle_t *textures[4];
+    s32 animation;
+} nmeWork_t;
+#endif
 #include "sdfFrame.h"
 
 extern u32 dds3GetKernelCount(void);
@@ -22,10 +62,19 @@ void nmeDrawInputUBar(s8 mode)
     switch (mode) {
     case 0:
     case 1:
+#ifdef VERSION_MNAX
+        return nmeDrawNameText(0x9B, 0x96, 0x10B, 0x96, 0xA09DC380, 0);
+#else
         return nmeDrawNameText(0x2A, 0x96, 0xF4, 0x96, 0xA09DC380, 0);
+#endif
     case 2:
+#ifdef VERSION_MNAX
+        nmeDrawNameText(0x3E, 0x54, 0xAE, 0x54, 0x5A503980, 1);
+        nmeDrawNameString(0xAC, 0x9A, 0xA09DC380, 0);
+#else
         nmeDrawNameText(0x2A, 0x54, 0xF4, 0x54, 0x5A503980, 1);
         nmeDrawNameString(0x83, 0x9A, 0xA09DC380, 0);
+#endif
         break;
     }
 }
@@ -86,6 +135,12 @@ void nmeDrawFuncIcon(void)
 
 extern void nmeDrawPanelSprites(void);
 
+#ifdef VERSION_MNAX
+#define NME_PANEL_X 0x320
+#else
+#define NME_PANEL_X 0x2D0
+#endif
+
 void nmeDrawInputPanel(void)
 {
     fclSpriteTbl_t *table;
@@ -105,9 +160,9 @@ void nmeDrawInputPanel(void)
                      (s32 *)namelist_buttonAnim_end->textures, table, ot);
     fclDrawSpriteRes(0x1860, 0xCE0, 0, 0, 3, 4,
                      (s32 *)namelist_buttonAnim_end->textures, table, ot);
-    fclDrawSpriteRes(0x2D0, 0, 0, 0, 0, 0x25,
+    fclDrawSpriteRes(NME_PANEL_X, 0, 0, 0, 0, 0x25,
                      (s32 *)namelist_buttonAnim_end->textures, table, ot);
-    fclDrawSpriteRes(0x2D0, 0, 0, 0, 0, 0x26,
+    fclDrawSpriteRes(NME_PANEL_X, 0, 0, 0, 0, 0x26,
                      (s32 *)namelist_buttonAnim_end->textures, table, ot);
     fclDrawSpriteRes(0x320, 0, 0, 0, 0, 0x27,
                      (s32 *)namelist_buttonAnim_end->textures, table, ot);
@@ -120,6 +175,10 @@ extern void nmeDrawBlendText(s32 sprite, s32 page, sdfTexHandle_t **textures, fc
 extern void nmeDrawNamePanel(void);
 extern void nmeDrawInputPanel(void);
 extern void nmeDrawCursor(void);
+#ifdef VERSION_MNAX
+extern void func_00298268(s8 mode, u8 inputMode);
+extern void func_00298DA8(void);
+#endif
 extern void nmeDrawModeTabs(s8 mode);
 extern void nmeDrawInputUBar(s8 mode);
 extern void nmeDrawButtonGuide(void);
@@ -140,8 +199,16 @@ s32 nmeDraw(dds3ProcessID_t *id)
     fclDrawSpriteRes(0, 0, 0, 0, 2, 0,
                      (s32 *)namelist_buttonAnim_end->textures, table, 0x47);
     nmeDrawNamePanel();
+#ifdef VERSION_MNAX
+    func_00298268((s8)((u8)namelist_buttonAnim_end->modeCursor.unk_22 +
+                       (u8)namelist_buttonAnim_end->modeCursor.unk_24),
+                  namelist_buttonAnim_end->inputMode);
+    nmeDrawInputPanel();
+    func_00298DA8();
+#else
     nmeDrawInputPanel();
     nmeDrawCursor();
+#endif
     nmeDrawFuncIcon();
     if ((s8)namelist_buttonAnim_end->unk1B == 0) {
         nmeDrawModeTabs(namelist_buttonAnim_end->inputMode);
@@ -160,7 +227,11 @@ s32 nmeGetCursorPos(nmeWork_t *work) {
         return work->inputPos;
     case 1: {
         s32 position = (u8)work->inputPos;
+#ifdef VERSION_MNAX
+        position -= 4;
+#else
         position -= 8;
+#endif
         return (s8)position;
     }
     default:
@@ -613,6 +684,10 @@ extern void nmeInitNameRows(s8 mode, nmeWork_t *work);
 extern void cmpInitCursorRange(void *cursor, u8 count, u8 visible, saddr_t layout);
 extern void cmpInitCursorLayout(void *cursor, s32 a, s32 b, s32 c, s32 d, s32 mode);
 
+#ifdef VERSION_MNAX
+extern void func_00299C78(void);
+#endif
+
 void nmeUpdateInput(void)
 {
     u32 button = (u16)cmpGetPressedButton(0x1000);
@@ -636,6 +711,9 @@ void nmeUpdateInput(void)
             cursorSource = 1;
         }
     }
+#ifdef VERSION_MNAX
+    if (cursorSource < 2) func_00299C78();
+#endif
     if (cursorSource == 0) nmeFindNextChar();
     if (button == 0x1000) moved = 1;
     if (moved != 0) {

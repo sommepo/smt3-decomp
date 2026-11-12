@@ -2,7 +2,56 @@
 #include "facility.h"
 #include "fpu.h"
 #include "libsdf.h"
+#ifdef VERSION_MNAX
+/* Maniax: the saved game header inside the work is 4 bytes shorter, so every
+ * later field moves down by 4. */
+#include "sdf_resource.h"
+#include "field.h"
+typedef struct
+{
+    void *unk_00;
+    sdfMemHandle_t *unk_04;
+    sdfMemHandle_t *unk_08;
+    struct {
+        u8 verstr[3];
+        u8 ver;
+        u8 TmnlMode;
+        u8 TmnlId;
+        u8 Lv;
+        u8 mode;
+        s32 PlayTime;
+        union { struct { u16 endcnt; u16 newfile; }; s32 endCounterWord; };
+        s32 work[4];
+        u8 autoMapOpen;
+        u8 autoMapOpenEX[15];
+    } fileInfo;
+    s32 unk_40;
+    s32 unk_44;
+    s32 unk_48;
+    s32 unk_4C;
+    s32 unk_50;
+    s32 cursor;
+    void *unk_58;
+    void *unk_5C;
+    s32 unk_60;
+    s32 tover[5];
+    u8 Zalpha_cnt;
+    u8 reserved79[3];
+    u32 Z_RGBA;
+    u32 ZNalpha_cnt;
+    u32 ZN_RGBA;
+    s8 unk_88;
+    u8 unk_89[3];
+    s32 unk_8C;
+    s32 unk_90;
+    s32 unk_94[5];
+    s32 unk_A8;
+    u32 cur_alpha;
+    u32 cur_alphacnt;
+} mselGlobalWork_t;
+#else
 #include "mselGlobal.h"
+#endif
 #include "newdata.h"
 #include "ps2asm.h"
 #include "event.h"
@@ -228,7 +277,7 @@ dds3ProcessID_t *mselShutDown(u32 mode)
     s32 i;
     void *fileHandle;
 
-    handle = sdfMemAllocDirect(0xB4);
+    handle = sdfMemAllocDirect(sizeof(mselGlobalWork_t));
     work = sdfMemLock(handle);
     gGlobal = (mselGlobalWork_t *)work;
     gGlobal->unk_00 = handle;
@@ -241,7 +290,7 @@ dds3ProcessID_t *mselShutDown(u32 mode)
     gGlobal->unk_60 = 0;
     mselLoadBackground();
     gGlobal->unk_A8 = mode;
-    gGlobal->unk_04 = sdfMemAllocDirect(0x1A510);
+    gGlobal->unk_04 = sdfMemAllocDirect(sizeof(dds3GlobalWork_t));
     gGlobal->unk_08 = sdfMemAllocDirect(0x7E90);
     fileHandle = sdfDevLoadFileEx(mselDataFilePath, (u32 *)&gGlobal->unk_5C, NULL);
     gGlobal->unk_58 = fileHandle;
@@ -365,12 +414,25 @@ s32 mselMain(dds3ProcessID_t *id)
                     evtBitOff(0xAF2);
                 }
                 p2sdPlaySE(8, 127, 63);
+#ifdef VERSION_MNAX
+                gGlobal->unk_50 = 0;
+                if (gGlobal->unk_A8 != 0) {
+                    Msel_TOverData_Clear();
+                    p2sdStopBGM(0x710001);
+                    gGlobal->unk_4C = 16;
+                    dds3FadeOut(0, 0, 0, 20);
+                } else {
+                    gGlobal->unk_4C = 15;
+                    dds3FadeOut(0, 0, 0, 20);
+                }
+#else
                 gGlobal->unk_A8 = 1;
                 gGlobal->unk_50 = 0;
                 Msel_TOverData_Clear();
                 p2sdStopBGM(0x710001);
                 gGlobal->unk_4C = 16;
                 dds3FadeOut(0, 0, 0, 20);
+#endif
             }
         }
         break;
@@ -469,7 +531,7 @@ s32 mselMain(dds3ProcessID_t *id)
                 if (exitMode != 2) break;
                 loadedSave = sdfMemGetPtr(gGlobal->unk_08);
                 *loadedSave = DDS3_GBWK->encyclopedia;
-                memcpy(&gGlobal->fileInfo, DDS3_GBWK, sizeof(GameFileInfo_t));
+                memcpy(&gGlobal->fileInfo, DDS3_GBWK, sizeof(gGlobal->fileInfo));
                 handle = DDS3_GBWK->memHandle;
                 snapshot = sdfMemGetPtr(gGlobal->unk_04);
                 *DDS3_GBWK = *snapshot;

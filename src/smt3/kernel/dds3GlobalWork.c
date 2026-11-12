@@ -156,7 +156,15 @@ extern s32 frDrawFont(_FRQ *pFRQ);
 
 extern void frSetFontColorNo(_FRQ *pFRQ, u8 ColorNo);
 
+#ifdef VERSION_MNAX
+#define DDS3_GBWK_SIZE 0x180C0
+#define DDS3_GBWK_SAVE_OFS 0xFA30
+extern _FRQ *frSetFontString(char *str, s32 style, s32 colorno, s32 tp, _FRQ *frq);
+#else
+#define DDS3_GBWK_SIZE 0x1A510
+#define DDS3_GBWK_SAVE_OFS 0x11E80
 extern _FRQ *frSetFontString(char *str, s32 style, s32 colorno, s32 tp, _FRQ *frq, s32 mode);
+#endif
 
 extern void frSetDrawPosition(_FRQ *pFRQ, s32 X, s32 Y);
 
@@ -164,10 +172,10 @@ extern _FRQ *frDestroyFontRequestAfter(_FRQ *pFRQ);
 
 void dds3GlobalWorkInit(void)
 {
-    sdfMemHandle_t *handle = sdfMemAllocDirect(0x1A510);
+    sdfMemHandle_t *handle = sdfMemAllocDirect(DDS3_GBWK_SIZE);
     dds3GlobalWork_t *work = sdfMemLock(handle);
 
-    memset(work, 0, 0x1A510);
+    memset(work, 0, DDS3_GBWK_SIZE);
     work->memHandle = handle;
     work->unk38 = 0;
     work->playtime = 0;
@@ -208,7 +216,11 @@ void func_00116C30(void)
 {
     dds3GlobalWorkClearFlags();
     evtInitGlobalWork();
+#ifdef VERSION_MNAX
+    DDS3_GBWK->maxstock = 8;
+#else
     ((dds3GlobalStockView_t *)DDS3_GBWK)->maxstock = 8;
+#endif
     datInitPlayer();
     datInitBossPress();
     dds3ClearStockTable();
@@ -263,7 +275,7 @@ void NewGame2Push(void)
     dds3NewGameSavedHalf0C = DDS3_GBWK->half0C;
     D_0054EA18 = DDS3_GBWK->playtime;
     D_0054EA1C = sdfMemAllocDirect(0x7E90);
-    memcpy(sdfMemGetPtr(D_0054EA1C), (u8 *)DDS3_GBWK + 0x11E80, 0x7E90);
+    memcpy(sdfMemGetPtr(D_0054EA1C), (u8 *)DDS3_GBWK + DDS3_GBWK_SAVE_OFS, 0x7E90);
     dds3NewGameSavedBossPress = sdfMemAllocDirect(0xA0);
     memcpy(sdfMemGetPtr(dds3NewGameSavedBossPress), DDS3_GBWK->boss_press, 0xA0);
     for (i = 0; i < 0x18; i++) {
@@ -374,7 +386,7 @@ void NewGame2Pop(void)
     DDS3_GBWK->playtime = D_0054EA18;
     DDS3_GBWK->word08 = D_0054EA18;
     DDS3_GBWK->half0C = dds3NewGameSavedHalf0C;
-    memcpy((u8 *)DDS3_GBWK + 0x11E80, sdfMemGetPtr(D_0054EA1C), 0x7E90);
+    memcpy((u8 *)DDS3_GBWK + DDS3_GBWK_SAVE_OFS, sdfMemGetPtr(D_0054EA1C), 0x7E90);
     sdfMemFreeDirect(D_0054EA1C);
     memcpy(DDS3_GBWK->boss_press, sdfMemGetPtr(dds3NewGameSavedBossPress), 0xA0);
     sdfMemFreeDirect(dds3NewGameSavedBossPress);
@@ -459,14 +471,18 @@ void dds3GlobalWorkUserInit2(s32 mode)
     if (mode == 1) {
         NewGame2Push();
         saved = EE_ADDR(DDS3_GBWK->memHandle);
-        memset(DDS3_GBWK, 0, 0x1A510);
+        memset(DDS3_GBWK, 0, DDS3_GBWK_SIZE);
         DDS3_GBWK->memHandle = EE_ADDR_PTR(saved);
     }
     DDS3_GBWK->unk38 = 0;
     DDS3_GBWK->playtime = 0;
     dds3GlobalWorkClearFlags();
     evtInitGlobalWork();
+#ifdef VERSION_MNAX
+    DDS3_GBWK->maxstock = 8;
+#else
     ((dds3GlobalStockView_t *)DDS3_GBWK)->maxstock = 8;
+#endif
     datInitPlayer();
     datInitBossPress();
     dds3ClearStockTable();
@@ -583,7 +599,11 @@ dds3FontReq_t *dds3FontReqAddString(s32 x, s32 y, char *str)
     dds3FontReqString_t *req;
     _FRQ *frq;
 
+#ifdef VERSION_MNAX
+    frq = frSetFontString(str, 0, 0, 0, NULL);
+#else
     frq = frSetFontString(str, 0, 0, 0, NULL, 0);
+#endif
     if (x == 0x800000) {
         x = (0x200 - frq->w_pxls) * 8;
     }

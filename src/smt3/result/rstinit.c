@@ -396,5 +396,9 @@ SDATA_PAD(3);
 
 char rstProcName[8] = "result2";
 
+#ifdef VERSION_MNAX
+u32 D_0054FCF8[2] = {0xA881E386, 0x00000000};
+#else
 u32 D_0054FCF8[2] = {0xCA81F784, 0x00000000};
+#endif
 

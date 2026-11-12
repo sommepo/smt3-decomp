@@ -61,6 +61,42 @@ extern s8 slLoadKillFlag;
 extern u8 *GBWK;
 
 extern u8 *DDS3_GBWK;
+#ifdef VERSION_MNAX
+#define CFG_ITEM_BAR_Y0 0x778
+#define CFG_ITEM_BAR_Y1 0x7D8
+#define CFG_SLIDER_H 0xE0
+#define CFG_PANEL_SLIDER_Y 0xC8
+#define CFG_PANEL_Y0 0x398
+#define CFG_PANEL_Y1 0x530
+#define CFG_PANEL_Y2 0x778
+#define CFG_PANEL_Y3 0x9C0
+#define CFG_PANEL_N0 1
+#define CFG_PANEL_N1 2
+#define CFG_PANEL_N2 2
+#define CFG_PANEL_SPR_A 0x20
+#define CFG_PANEL_SPR_B (-0x178)
+#define CFG_PANEL_ITEM_Y 0x308
+#else
+#define CFG_ITEM_BAR_Y0 0x998
+#define CFG_ITEM_BAR_Y1 0x9F8
+#define CFG_SLIDER_H 0x121
+#define CFG_PANEL_SLIDER_Y (-0x48)
+#define CFG_PANEL_Y0 0x268
+#define CFG_PANEL_Y1 0x4B0
+#define CFG_PANEL_Y2 0x7A8
+#define CFG_PANEL_Y3 0xAB0
+#define CFG_PANEL_N0 2
+#define CFG_PANEL_N1 3
+#define CFG_PANEL_N2 3
+#define CFG_PANEL_SPR_A (-0x110)
+#define CFG_PANEL_SPR_B (-0x80)
+#define CFG_PANEL_ITEM_Y 0x1D8
+#endif
+#ifdef VERSION_MNAX
+#define DDS3_CONFIG_FLAGS_OFFSET 0xF668
+#else
+#define DDS3_CONFIG_FLAGS_OFFSET 0x11AB8
+#endif
 
 extern s32 fclGetPanelAnimPhase(void *p);
 
@@ -119,13 +155,13 @@ s32 dds3ConfigChanged(void)
 void dds3ConfigSaveBackup(void)
 {
     printf(dds3ConfigSaveBackupMsg);
-    dds3ConfigValue[0] = dds3ConfigValue[1] = *(s32 *)(DDS3_GBWK + 0x11AB8);
+    dds3ConfigValue[0] = dds3ConfigValue[1] = *(s32 *)(DDS3_GBWK + DDS3_CONFIG_FLAGS_OFFSET);
 }
 
 void dds3ConfigRestoreBackup(void)
 {
     printf(dds3ConfigRestoreBackupMsg);
-    *(s32 *)(DDS3_GBWK + 0x11AB8) = dds3ConfigValue[1];
+    *(s32 *)(DDS3_GBWK + DDS3_CONFIG_FLAGS_OFFSET) = dds3ConfigValue[1];
 }
 
 void dds3InitConfigItems(u8 *gbwk)
@@ -211,7 +247,7 @@ s32 dds3GetConfigFlag(u32 index, s32 *table)
 
 s32 dds3GetGlobalConfigFlag(s32 index)
 {
-    return dds3GetConfigFlag(index, (s32 *)(DDS3_GBWK + 0x11AB8));
+    return dds3GetConfigFlag(index, (s32 *)(DDS3_GBWK + DDS3_CONFIG_FLAGS_OFFSET));
 }
 
 typedef struct frTextBank_t frTextBank_t;
@@ -339,8 +375,8 @@ void dds3DrawConfigItem(s32 x, s32 y, s32 z, s32 ot)
         fclDrawPanelSprite2(0x44, ot);
         cmpDrawBoxF(x, y, z, 0x200, 3, color0, ot);
         cmpDrawBoxF(x, y + 0x18, z, 0x200, 0xC, color1, ot);
-        cmpDrawBoxF(x, y + 0x998, z, 0x200, 0xC, color1, ot);
-        cmpDrawBoxF(x, y + 0x9F8, z, 0x200, 3, color0, ot);
+        cmpDrawBoxF(x, y + CFG_ITEM_BAR_Y0, z, 0x200, 0xC, color1, ot);
+        cmpDrawBoxF(x, y + CFG_ITEM_BAR_Y1, z, 0x200, 3, color0, ot);
     }
 }
 
@@ -357,13 +393,13 @@ void dds3DrawConfigSlider(s32 x, s32 y, s32 z, s32 ot)
     colors[1] = 0;
     colors[2] = 0x15043A40;
     colors[3] = 0;
-    cmpDrawBoxGDefault((s32)((u32)x - (u32)target), (s32)((u32)y + 0x2B0u), z, 0x9E, 0x121, colors, ot);
+    cmpDrawBoxGDefault((s32)((u32)x - (u32)target), (s32)((u32)y + 0x2B0u), z, 0x9E, CFG_SLIDER_H, colors, ot);
     target = (s32)((u32)target + 0x1120u);
     colors[0] = 0;
     colors[1] = alpha;
     colors[2] = 0;
     colors[3] = alpha;
-    cmpDrawBoxGDefault((s32)((u32)x + (u32)target), (s32)((u32)y + 0x2B0u), z, 0xEE, 0x121, colors, ot);
+    cmpDrawBoxGDefault((s32)((u32)x + (u32)target), (s32)((u32)y + 0x2B0u), z, 0xEE, CFG_SLIDER_H, colors, ot);
 }
 
 extern const s32 dds3ConfigBarSprites[3][4];
@@ -524,26 +560,26 @@ void dds3DrawConfigPanel(s32 ot)
     if (((dds3ConfigWork_t *)GBWK)->textureHandle != NULL) {
         dds3DrawConfigBackground(ot);
     }
-    dds3DrawConfigSlider(0, -0x48, 0, ot);
-    dds3DrawConfigText(0, 0x268, 0, 2, 0,
-                        dds3GetConfigFlag(0, (s32 *)(DDS3_GBWK + 0x11AB8)), ot);
-    dds3DrawConfigText(0, 0x4B0, 0, 3, 1,
-                        dds3GetConfigFlag(1, (s32 *)(DDS3_GBWK + 0x11AB8)), ot);
-    dds3DrawConfigText(0, 0x7A8, 0, 3, 2,
-                        dds3GetConfigFlag(2, (s32 *)(DDS3_GBWK + 0x11AB8)), ot);
-    dds3DrawConfigText(0, 0xAB0, 0, 1, 3, -1, ot);
+    dds3DrawConfigSlider(0, CFG_PANEL_SLIDER_Y, 0, ot);
+    dds3DrawConfigText(0, CFG_PANEL_Y0, 0, CFG_PANEL_N0, 0,
+                        dds3GetConfigFlag(0, (s32 *)(DDS3_GBWK + DDS3_CONFIG_FLAGS_OFFSET)), ot);
+    dds3DrawConfigText(0, CFG_PANEL_Y1, 0, CFG_PANEL_N1, 1,
+                        dds3GetConfigFlag(1, (s32 *)(DDS3_GBWK + DDS3_CONFIG_FLAGS_OFFSET)), ot);
+    dds3DrawConfigText(0, CFG_PANEL_Y2, 0, CFG_PANEL_N2, 2,
+                        dds3GetConfigFlag(2, (s32 *)(DDS3_GBWK + DDS3_CONFIG_FLAGS_OFFSET)), ot);
+    dds3DrawConfigText(0, CFG_PANEL_Y3, 0, 1, 3, -1, ot);
     color = dds3GetConfigFadeAlpha() | 0x80808000;
     colors[0] = color;
     colors[1] = color;
     colors[2] = color;
     colors[3] = color;
-    fclDrawSpriteRes(0, -0x110, 0, colors, 0, 2, D_00345D88, dds3ConfigLayoutTable, ot);
-    fclDrawSpriteRes(0, -0x110, 0, colors, 0, 3, D_00345D88, dds3ConfigLayoutTable, ot);
-    fclDrawSpriteRes(0, -0x110, 0, colors, 0, 4, D_00345D88, dds3ConfigLayoutTable, ot);
-    fclDrawSpriteRes(0, -0x80, 0, colors, 0, 5, D_00345D88, dds3ConfigLayoutTable, ot);
-    fclDrawSpriteRes(0, -0x80, 0, colors, 0, 6, D_00345D88, dds3ConfigLayoutTable, ot);
-    fclDrawSpriteRes(0, -0x80, 0, colors, 0, 7, D_00345D88, dds3ConfigLayoutTable, ot);
-    dds3DrawConfigItem(0, 0x1D8, 0, ot);
+    fclDrawSpriteRes(0, CFG_PANEL_SPR_A, 0, colors, 0, 2, D_00345D88, dds3ConfigLayoutTable, ot);
+    fclDrawSpriteRes(0, CFG_PANEL_SPR_A, 0, colors, 0, 3, D_00345D88, dds3ConfigLayoutTable, ot);
+    fclDrawSpriteRes(0, CFG_PANEL_SPR_A, 0, colors, 0, 4, D_00345D88, dds3ConfigLayoutTable, ot);
+    fclDrawSpriteRes(0, CFG_PANEL_SPR_B, 0, colors, 0, 5, D_00345D88, dds3ConfigLayoutTable, ot);
+    fclDrawSpriteRes(0, CFG_PANEL_SPR_B, 0, colors, 0, 6, D_00345D88, dds3ConfigLayoutTable, ot);
+    fclDrawSpriteRes(0, CFG_PANEL_SPR_B, 0, colors, 0, 7, D_00345D88, dds3ConfigLayoutTable, ot);
+    dds3DrawConfigItem(0, CFG_PANEL_ITEM_Y, 0, ot);
 }
 
 void *cfgTexLoad(void)

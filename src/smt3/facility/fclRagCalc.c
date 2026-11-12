@@ -258,7 +258,9 @@ void ragDrawHeartsRows(lstWork_t *list, u8 kind, s8 *rows, s8 mode, s32 ot)
     s32 i;
 
     lstDrawListWindow(list, mode, ot);
+#ifndef VERSION_MNAX
     cmpSetSkillListRows(0x13);
+#endif
     for (i = 0; i < cursor->unk_26; i++) {
         s8 index = rows[i];
         u8 flag = (u8)rows[i];
@@ -284,7 +286,9 @@ void ragDrawHeartsRows(lstWork_t *list, u8 kind, s8 *rows, s8 mode, s32 ot)
         fclDrawListSprite(x + 0x210, y + 0x160, z, 0x93, 2, 0x22242F80, 0, ot);
         y += cursor->StepY << 3;
     }
+#ifndef VERSION_MNAX
     cmpSetSkillListRows(-1);
+#endif
     ragDrawHeartsFooter(&list->pos, ot);
     if (mode == 0) {
         lstDrawListWindowCursor((lstWindowWork_t *)list, ot);

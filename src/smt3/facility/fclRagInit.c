@@ -658,7 +658,11 @@ ragItemReq_t *ragGetConfirmEntry(s8 kind, u8 index)
 
 s32 ragFindItemSlot(ragItemReq_t *req)
 {
+#ifdef VERSION_MNAX
+    u8 *base = (u8 *)DDS3_GBWK + 4;
+#else
     u8 *base = (u8 *)DDS3_GBWK + 8;
+#endif
     s32 i;
 
     for (i = 0; i < 3; i++) {

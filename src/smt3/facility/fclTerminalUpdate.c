@@ -609,5 +609,9 @@ void fclDrawListSprite(s32 x, s32 y, s32 color, s32 w, s32 h, s32 arg6, s32 blen
     cmpDrawBoxF(x, y, color, w, h, arg6, ot);
 }
 
+#ifdef VERSION_MNAX
+const char fclGemsNeededText[16] = "\204\324\204\325\204\276\204\277\204\253";
+#else
 const char fclGemsNeededText[16] = "Gems Needed";
+#endif
 

@@ -222,7 +222,7 @@ void fclDestroyRecover(void)
 
 void fclRecoverProcessStart(s8 mode)
 {
-    if (*(s32 *)((u8 *)DDS3_GBWK + 0x1924) == 0) {
+    if (DDS3_GBWK->stockCount == 0) {
         return;
     }
     if (shutdownfunc != NULL) {

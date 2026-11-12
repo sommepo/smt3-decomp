@@ -19,7 +19,19 @@ extern char *pStr[];
 
 extern char nbCommSelNumFormat[];
 
+#ifdef VERSION_MNAX
+#define NB_COMM_UNIT_OFS 0xA50
+#define NB_COMM_ITEM_OFS 0x1924
+#else
+#define NB_COMM_UNIT_OFS 0xA54
+#define NB_COMM_ITEM_OFS 0x1928
+#endif
+#ifdef VERSION_MNAX
+/* Maniax has a single fixed skill-list row count, so the panel code never sets it. */
+#define cmpSetSkillListRows(rows) ((void)0)
+#else
 extern void cmpSetSkillListRows(s32 rows);
+#endif
 
 extern void *frwGetSmallFontFRQ(s32 X, s32 Y, u32 Pri, u32 Color, char *pStr, void *pFRQ);
 
@@ -836,7 +848,7 @@ void AnimeCommandList(nbCommSelProcessData_t *s)
 void DispComm1Summon(nbCommSelProcessData_t *s, u16 d, s32 ox, s32 oy, s32 oz, u32 col)
 {
     char buf[16];
-    datUnitWork_t *w = (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54) + d;
+    datUnitWork_t *w = (datUnitWork_t *)((u8 *)DDS3_GBWK + NB_COMM_UNIT_OFS) + d;
     void *frq;
     void *frq2;
     u32 c;
@@ -884,7 +896,7 @@ void DispComm1Item(nbCommSelProcessData_t *s, u16 d, s32 ox, s32 oy, s32 oz, u32
 
     cmpSetSkillListRows(0x13);
     frq = frwGetSmallFontFRQ(ox << 4, oy << 3, 0xFF0051, col, pStr[d], NULL);
-    sprintf(buf, nbCommSelNumFormat, ((u8 *)EE_ADDR_PTR(d) + EE_ADDR(DDS3_GBWK))[0x1928]);
+    sprintf(buf, nbCommSelNumFormat, ((u8 *)EE_ADDR_PTR(d) + EE_ADDR(DDS3_GBWK))[NB_COMM_ITEM_OFS]);
     frq = frwGetSmallNumFontFRQ((ox + 0x8E) << 4, (oy + 4) << 3, 0xFF0051, col, buf, frq);
     frDrawFontEx(frq, 1);
     frDestroyFontRequestAfter(frq);
@@ -947,7 +959,13 @@ void DispComm1Comm(nbCommSelProcessData_t *s, u16 d, s32 ox, s32 oy, s32 oz, u32
 typedef struct frFontRequest_t frFontRequest_t;
 typedef struct frTextBank_t frTextBank_t;
 typedef struct frFontHandle_t frFontHandle_t;
+#ifdef VERSION_MNAX
+extern frFontRequest_t *frwGetHelpFRQ(s32 x, s32 y, s32 priority, s32 bank, s32 index, s32 mode);
+#define DISP_HELP_POS(x, y, pri, bank, index) frwGetHelpFRQ(x, y, pri, bank, index, 1)
+#else
 extern frFontRequest_t *frGetHelpPos(s32 x, s32 y, s32 priority, s32 bank, s32 index);
+#define DISP_HELP_POS(x, y, pri, bank, index) frGetHelpPos(x, y, pri, bank, index)
+#endif
 extern u8 *MessageNumSearch(s32 index, frTextBank_t *bank, s32 size);
 extern frFontHandle_t *MessageRequestNS(s32 x, s32 y, s32 depth, s32 style, s32 color0,
                                         s32 color1, s32 color2, u8 *text,
@@ -980,32 +998,40 @@ void DispHelp1(nbCommSelProcessData_t *s, u16 d, s32 ox, s32 oy, s32 oz, s32 alp
         case 0x8000:
             font = MessageRequestNS(x, y, oz, 1, 0, 0, 0x80,
                                     MessageNumSearch(1, &itfMesEmbedded_3F7FC8, 0), NULL);
+#ifndef VERSION_MNAX
             D_00551134 = 0;
+#endif
             break;
         case 0x8001:
             font = MessageRequestNS(x, y, oz, 1, 0, 0, 0x80,
                                     MessageNumSearch(4, &itfMesEmbedded_3F7FC8, 0), NULL);
+#ifndef VERSION_MNAX
             D_00551134 = 0;
+#endif
             break;
         case 0x8002:
             font = MessageRequestNS(x, y, oz, 1, 0, 0, 0x80,
                                     MessageNumSearch(2, &itfMesEmbedded_3F7FC8, 0), NULL);
+#ifndef VERSION_MNAX
             D_00551134 = 0;
+#endif
             break;
         case 0x8003:
             font = MessageRequestNS(x, y, oz, 1, 0, 0, 0x80,
                                     MessageNumSearch(5, &itfMesEmbedded_3F7FC8, 0), NULL);
+#ifndef VERSION_MNAX
             D_00551134 = 0;
+#endif
             break;
         default:
-            font = frGetHelpPos(x, y, oz, 0, index);
+            font = DISP_HELP_POS(x, y, oz, 0, index);
             break;
         }
         break;
     case 1:
         if (index != 0x8004) {
             cmpSetSkillListRows(0x12);
-            font = frGetHelpPos(x, y, oz, 0, index);
+            font = DISP_HELP_POS(x, y, oz, 0, index);
         } else {
             font = MessageRequestNS(x, y, oz, 1, 0, 0, 0x80,
                                     MessageNumSearch(3, &itfMesEmbedded_3F7FC8, 0), NULL);
@@ -1013,7 +1039,7 @@ void DispHelp1(nbCommSelProcessData_t *s, u16 d, s32 ox, s32 oy, s32 oz, s32 alp
         break;
     case 2:
         cmpSetSkillListRows(0x12);
-        font = frGetHelpPos(x, y, oz, 1, index);
+        font = DISP_HELP_POS(x, y, oz, 1, index);
         break;
     case 4:
         font = MessageRequestNS(x, y, oz, 1, 0, 0, 0x80,
@@ -1479,7 +1505,11 @@ extern nbNegoSkillEntry_t nbNegoSkillTable[];
 /* Partial save-work view: datAddDevil corroborates the unit, stock-list
  * and count offsets; this routine reads the following inventory bytes. */
 typedef struct {
+#ifdef VERSION_MNAX
+    u8 prefix[0xA50];
+#else
     u8 prefix[0xA54];
+#endif
     datUnitWork_t unit[16];
     u8 stocklist[16];
     s32 stockcnt;

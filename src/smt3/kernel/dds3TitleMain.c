@@ -5,7 +5,44 @@
 #include "fpu.h"
 #include "libsdf.h"
 #include "titleGlobal.h"
+#ifdef VERSION_MNAX
+/* Maniax: the saved game header inside the work is 4 bytes shorter, so every
+ * later field moves down by 4. */
+#include "sdf_resource.h"
+#include "field.h"
+typedef struct
+{
+    void *unk_00;
+    sdfMemHandle_t *unk_04;
+    sdfMemHandle_t *unk_08;
+    u8 savedHeader[0x30];
+    s32 unk_40;
+    s32 unk_44;
+    s32 unk_48;
+    s32 unk_4C;
+    s32 unk_50;
+    s32 cursor;
+    void *unk_58;
+    void *unk_5C;
+    s32 unk_60;
+    s32 tover[5];
+    u8 Zalpha_cnt;
+    u8 reserved79[3];
+    u32 Z_RGBA;
+    u32 ZNalpha_cnt;
+    u32 ZN_RGBA;
+    s8 unk_88;
+    u8 unk_89[3];
+    s32 unk_8C;
+    s32 unk_90;
+    s32 unk_94[5];
+    s32 unk_A8;
+    u32 cur_alpha;
+    u32 cur_alphacnt;
+} mselGlobalWork_t;
+#else
 #include "mselGlobal.h"
+#endif
 #include "newdata.h"
 #include "ps2asm.h"
 #include "event.h"

@@ -827,7 +827,11 @@ void nbPanelSmallStringDraw(s32 x, s32 y, nbPanelProcess_nbPanelXYZ_t *pXYZ, u32
 }
 
 extern char *text2[];
+#ifdef VERSION_MNAX
+extern frFontHandle_t *frGetCNameFRQ(s8 TargetNo, s8 Style, frFontHandle_t *pFRQ);
+#else
 extern frFontHandle_t *frGetCNameFRQ(s8 TargetNo, s8 Style, frFontHandle_t *pFRQ, s32 FirstOption);
+#endif
 extern frFontRequest_t *frwGetSmallFontFRQ2(s32 X, s32 Y, s32 Pri, u32 Color, const char *pStr, frFontRequest_t *pFRQ);
 extern void frSetDrawPosition(frFontHandle_t *pFRQ, u32 X, u32 Y);
 extern void frSetFontColor(frFontHandle_t *pFRQ, u32 Color);
@@ -838,7 +842,11 @@ void nbPanelSmallNameStringDraw(s32 x, s32 y, nbPanelProcess_nbPanelXYZ_t *pXYZ,
     u32 col;
 
     if (DDS3_GBWK->akuma[statindex].flag & 4) {
+#ifdef VERSION_MNAX
+        frq = frGetCNameFRQ(0, 1, NULL);
+#else
         frq = frGetCNameFRQ(0, 1, NULL, 0);
+#endif
         frSetDrawPosition(frq, (pXYZ->x + x) << 4, (pXYZ->y + y) << 3);
         col = effMagaCylinderCalcColor(abgr, nbPanelBaseRGBA);
         frSetFontColor(frq, col);
@@ -1197,7 +1205,11 @@ void nbPanelDrawPP1(s32 x, s32 y, s32 i, s32 j, s32 jun, s32 act, nbMainProcessD
     frDestroyFontRequestAfter(gnbPnlWork);
     cmpSetSkillListRows(0x13);
     if (DDS3_GBWK->akuma[j].flag & 4) {
+#ifdef VERSION_MNAX
+        gnbPnlWork = frGetCNameFRQ(0, 1, NULL);
+#else
         gnbPnlWork = frGetCNameFRQ(0, 1, NULL, 0);
+#endif
         frSetDrawPosition(gnbPnlWork, (x + 0x2D) << 4, (y + 4) << 3);
         c = effMagaCylinderCalcColor(0xA09DC380, nbPanelBaseRGBA);
         frSetFontColor(gnbPnlWork, c);
@@ -3357,7 +3369,11 @@ void nbPanelAnalyzeRun(void)
             nbPnlSprite(geometry->x, geometry->y + 0xF6, geometry->w, geometry->h,
                         uv->u0, uv->v0, uv->u1, uv->v1, color, texture);
         } else if (pNbPanelAnalyzeUnitWork->flag & 4) {
+#ifdef VERSION_MNAX
+            font = frGetCNameFRQ(0, 1, NULL);
+#else
             font = frGetCNameFRQ(0, 1, NULL, 0);
+#endif
             frSetDrawPosition(font, (nbPanelPolyXYZ[19].x + 15) * 16,
                               (nbPanelPolyXYZ[19].y + 0xF6) * 8);
             frSetFontColor(font, effMagaCylinderCalcColor((textColor & 0xFF) | 0xA09DC300, nbPanelBaseRGBA));

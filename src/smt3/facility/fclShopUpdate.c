@@ -174,7 +174,11 @@ void shpExit(void)
 }
 
 typedef struct {
+#ifdef VERSION_MNAX
+    u8 reserved0000[0x1924];
+#else
     u8 reserved0000[0x1928];
+#endif
     u8 items[0xA0];
 } shopInventory_t;
 extern shopInventory_t *shopInventory FAKEMATCH_ASM_NAME("DDS3_GBWK");

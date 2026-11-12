@@ -3,6 +3,31 @@
 #include "datCalc.h"
 #include "ps2asm.h"
 
+#ifdef VERSION_MNAX
+#define GBO(x) ((x) - 4)
+#else
+#define GBO(x) (x)
+#endif
+
+/* The party records walked through the anahori view: Maniax has no leading
+ * word, so the view is the unit record itself and starts at the unit. */
+#ifdef VERSION_MNAX
+typedef struct
+{
+    u32 flag;
+    u16 devilId;
+    u16 hp;
+    u16 maxhp;
+    u16 mp;
+    u16 maxmp;
+    u16 badstatus;
+} datAkumaView_t;
+#define DAT_AKUMA_OFS 0xA50
+#else
+typedef fldAnahoriAkuma_t datAkumaView_t;
+#define DAT_AKUMA_OFS 0xA50
+#endif
+
 extern s32 evtBitCheck(s32 no);
 typedef struct datTakaraSagasiItem_t {
     u16 item;
@@ -772,7 +797,7 @@ void datAddItem(s32 id, s32 num)
         if (id != 0x8D) {
             return;
         }
-        count = (EE_ADDR_AS(u8 *, id) + EE_ADDR(DDS3_GBWK))[0x1928];
+        count = (EE_ADDR_AS(u8 *, id) + EE_ADDR(DDS3_GBWK))[GBO(0x1928)];
         if (num > 0) {
             count += num;
             if (count >= 0x64) {
@@ -785,11 +810,11 @@ void datAddItem(s32 id, s32 num)
                 evtBitOff(0x3ED);
             }
         }
-        (EE_ADDR_AS(u8 *, id) + EE_ADDR(DDS3_GBWK))[0x1928] = count;
+        (EE_ADDR_AS(u8 *, id) + EE_ADDR(DDS3_GBWK))[GBO(0x1928)] = count;
     } else {
         u32 ofs = id + 0x1920;
 
-        count = ((u8 *)DDS3_GBWK + ofs)[8];
+        count = ((u8 *)DDS3_GBWK + ofs)[GBO(8)];
         count += num;
         if (count < 0) {
             count = 0;
@@ -803,13 +828,13 @@ void datAddItem(s32 id, s32 num)
                 count = 0x63;
             }
         }
-        ((u8 *)DDS3_GBWK + ofs)[8] = count;
+        ((u8 *)DDS3_GBWK + ofs)[GBO(8)] = count;
     }
 }
 
 s32 datCheckItem(s32 id, s32 num)
 {
-    if ((EE_ADDR_AS(u8 *, id) + EE_ADDR(DDS3_GBWK))[0x1928] < num) {
+    if ((EE_ADDR_AS(u8 *, id) + EE_ADDR(DDS3_GBWK))[GBO(0x1928)] < num) {
         return 0;
     }
     return 1;
@@ -817,7 +842,7 @@ s32 datCheckItem(s32 id, s32 num)
 
 s32 datCheckItemFull(s32 id)
 {
-    s32 count = (EE_ADDR_AS(u8 *, id) + EE_ADDR(DDS3_GBWK))[0x1928];
+    s32 count = (EE_ADDR_AS(u8 *, id) + EE_ADDR(DDS3_GBWK))[GBO(0x1928)];
 
     if (id >= 0x70) {
         if (count > 0) {
@@ -858,6 +883,28 @@ s32 datCheckTalk(datUnitWork_t *work)
     return 1;
 }
 
+#ifdef VERSION_MNAX
+s32 datSearchDevilStock(s32 id)
+{
+    s32 i;
+
+    for (i = 0; i < 16; i++) {
+        datUnitWork_t *unit = &DDS3_GBWK->unitwork[i];
+        u32 flag = unit->flag;
+
+        if ((flag & 1) == 0) {
+            continue;
+        }
+        if (flag & 4) {
+            continue;
+        }
+        if (unit->id == id) {
+            return i;
+        }
+    }
+    return -1;
+}
+#else
 s32 datSearchDevilStock(s32 id)
 {
     s32 i;
@@ -877,15 +924,16 @@ s32 datSearchDevilStock(s32 id)
     }
     return -1;
 }
+#endif
 
 s32 datGetPlayerLevel(void)
 {
-    return ((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54))->level;
+    return ((datUnitWork_t *)((u8 *)DDS3_GBWK + GBO(0xA54)))->level;
 }
 
 s32 datCheckPlayerDead(void)
 {
-    return (((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54))->badstatus & 0xFFF) == 0x800;
+    return (((datUnitWork_t *)((u8 *)DDS3_GBWK + GBO(0xA54)))->badstatus & 0xFFF) == 0x800;
 }
 
 /* NON_MATCHING: 7 of 20 words differ (first at +0x4). */
@@ -910,24 +958,24 @@ INCLUDE_ASM(const s32, "newdata/datCalc", datGetPlayerParam);
 
 void datAddPlayerParam(s32 id, s32 add)
 {
-    s8 *param = (s8 *)(EE_ADDR_AS(u8 *, id) + EE_ADDR(DDS3_GBWK)) + 0xA6A;
+    s8 *param = (s8 *)(EE_ADDR_AS(u8 *, id) + EE_ADDR(DDS3_GBWK)) + GBO(0xA6A);
     s32 value = *param + add;
 
     if (value >= 0x29) {
         value = 0x28;
     }
     *param = value;
-    cmpSetMaxHPMP((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54));
-    ((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54))->hp =
-        ((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54))->maxhp;
-    ((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54))->mp =
-        ((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54))->maxmp;
+    cmpSetMaxHPMP((datUnitWork_t *)((u8 *)DDS3_GBWK + GBO(0xA54)));
+    ((datUnitWork_t *)((u8 *)DDS3_GBWK + GBO(0xA54)))->hp =
+        ((datUnitWork_t *)((u8 *)DDS3_GBWK + GBO(0xA54)))->maxhp;
+    ((datUnitWork_t *)((u8 *)DDS3_GBWK + GBO(0xA54)))->mp =
+        ((datUnitWork_t *)((u8 *)DDS3_GBWK + GBO(0xA54)))->maxmp;
 }
 
 s32 datGetNakamaParam(s32 did, s32 id)
 {
-    u16 *devilid = &((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54) + 1)->id;
-    s8 *param = (s8 *)(EE_ADDR_AS(u8 *, id) + EE_ADDR(DDS3_GBWK)) + 0xB56;
+    u16 *devilid = &((datUnitWork_t *)((u8 *)DDS3_GBWK + GBO(0xA54)) + 1)->id;
+    s8 *param = (s8 *)(EE_ADDR_AS(u8 *, id) + EE_ADDR(DDS3_GBWK)) + GBO(0xB56);
     s32 value = 0;
     s32 i;
 
@@ -943,7 +991,7 @@ s32 datGetNakamaParam(s32 did, s32 id)
 
 s32 datGetPlayerLND(void)
 {
-    s32 level = datGetPlayerLNDLevel((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54));
+    s32 level = datGetPlayerLNDLevel((datUnitWork_t *)((u8 *)DDS3_GBWK + GBO(0xA54)));
 
     if (level == 0) {
         return 1;
@@ -952,7 +1000,7 @@ s32 datGetPlayerLND(void)
 }
 
 /* NON_MATCHING: 28 of 48 words differ (first at +0x44). */
-#ifdef NON_MATCHING
+#if defined(NON_MATCHING) || defined(VERSION_MNAX)
 void datDeadNakama(s32 did)
 {
     s32 ofs;
@@ -960,16 +1008,16 @@ void datDeadNakama(s32 did)
 
     ofs = 0xEC;
     for (i = 0; i < 15; i++) {
-        u32 aofs = ofs + 0xA50;
+        u32 aofs = ofs + DAT_AKUMA_OFS;
 
-        if (((fldAnahoriAkuma_t *)((u8 *)DDS3_GBWK + aofs))->flag & 1) {
-            if (((fldAnahoriAkuma_t *)((u8 *)DDS3_GBWK + aofs))->devilId == did) {
-                if (((fldAnahoriAkuma_t *)((u8 *)DDS3_GBWK + aofs))->hp != 0) {
-                    ((fldAnahoriAkuma_t *)((u8 *)DDS3_GBWK + aofs))->hp = 0;
-                    datSetBadStat((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs + 0xA54), 0x800);
+        if (((datAkumaView_t *)((u8 *)DDS3_GBWK + aofs))->flag & 1) {
+            if (((datAkumaView_t *)((u8 *)DDS3_GBWK + aofs))->devilId == did) {
+                if (((datAkumaView_t *)((u8 *)DDS3_GBWK + aofs))->hp != 0) {
+                    ((datAkumaView_t *)((u8 *)DDS3_GBWK + aofs))->hp = 0;
+                    datSetBadStat((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs + GBO(0xA54)), 0x800);
                 }
-                if (((fldAnahoriAkuma_t *)((u8 *)DDS3_GBWK + aofs))->flag & 2) {
-                    ((fldAnahoriAkuma_t *)((u8 *)DDS3_GBWK + aofs))->flag &= ~2;
+                if (((datAkumaView_t *)((u8 *)DDS3_GBWK + aofs))->flag & 2) {
+                    ((datAkumaView_t *)((u8 *)DDS3_GBWK + aofs))->flag &= ~2;
                 }
             }
         }
@@ -999,7 +1047,7 @@ void datDeadNakama(s32 did)
 
 /* Partial view of the persistent party and stock records. */
 typedef struct {
-    u8 unknown00[0xA50];
+    u8 unknown00[GBO(0xA50)];
     /* 0xA50 */ s32 maxstock;
     /* 0xA54 */ datUnitWork_t unitwork[16];
     /* 0x1914 */ s8 stocklist[16];
@@ -1185,10 +1233,10 @@ void datPartyDamagePipe(s32 big, s32 sml)
     if (big == 0 && sml == 0) {
         return;
     }
-    aofs = 0xA50;
+    aofs = DAT_AKUMA_OFS;
     for (i = 0; i < 16; i++) {
-        if (((fldAnahoriAkuma_t *)((u8 *)DDS3_GBWK + aofs))->flag & 2) {
-            s32 hp = ((fldAnahoriAkuma_t *)((u8 *)DDS3_GBWK + aofs))->hp;
+        if (((datAkumaView_t *)((u8 *)DDS3_GBWK + aofs))->flag & 2) {
+            s32 hp = ((datAkumaView_t *)((u8 *)DDS3_GBWK + aofs))->hp;
 
             if (hp != 0) {
                 s32 damage = hp / 10 * big + hp * 3 / 100 * sml;
@@ -1203,7 +1251,7 @@ void datPartyDamagePipe(s32 big, s32 sml)
                 if (hp <= 0) {
                     hp = 1;
                 }
-                ((fldAnahoriAkuma_t *)((u8 *)DDS3_GBWK + aofs))->hp = hp;
+                ((datAkumaView_t *)((u8 *)DDS3_GBWK + aofs))->hp = hp;
             }
         }
         aofs += 0xEC;
@@ -1247,12 +1295,12 @@ void datPartyKaifuku(void)
 
     ofs = 0;
     for (i = 0; i < 16; i++) {
-        u32 aofs = ofs + 0xA50;
+        u32 aofs = ofs + DAT_AKUMA_OFS;
 
-        if (((fldAnahoriAkuma_t *)((u8 *)DDS3_GBWK + aofs))->flag & 1) {
-            datAddHp((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs + 0xA54), 0x270F);
-            datAddMp((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs + 0xA54), 0x270F);
-            ((fldAnahoriAkuma_t *)((u8 *)DDS3_GBWK + aofs))->badstatus = 0;
+        if (((datAkumaView_t *)((u8 *)DDS3_GBWK + aofs))->flag & 1) {
+            datAddHp((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs + GBO(0xA54)), 0x270F);
+            datAddMp((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs + GBO(0xA54)), 0x270F);
+            ((datAkumaView_t *)((u8 *)DDS3_GBWK + aofs))->badstatus = 0;
         }
         ofs += 0xEC;
     }
@@ -1277,7 +1325,7 @@ s32 datGet3Zokusei(datUnitWork_t *work)
 
 s32 datCheckStockFull(void)
 {
-    datUnitWork_t *unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54) + 4;
+    datUnitWork_t *unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + GBO(0xA54)) + 4;
     s32 num = 0;
     s32 i;
 
@@ -1285,7 +1333,7 @@ s32 datCheckStockFull(void)
         num += unit->flag & 1;
         unit++;
     }
-    if (num < *(s32 *)((u8 *)DDS3_GBWK + 0xA50)) {
+    if (num < *(s32 *)((u8 *)DDS3_GBWK + GBO(0xA50))) {
         return 0;
     }
     return 1;
@@ -1368,8 +1416,8 @@ s32 datAddUniqueDevil(s32 id, s32 sw, s32 uid)
 
 s32 datSearchUniqueDevilStock(s32 uid)
 {
-    u16 *uidp = &((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54))->uniqueid;
-    u32 *flagp = &((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54))->flag;
+    u16 *uidp = &((datUnitWork_t *)((u8 *)DDS3_GBWK + GBO(0xA54)))->uniqueid;
+    u32 *flagp = &((datUnitWork_t *)((u8 *)DDS3_GBWK + GBO(0xA54)))->flag;
     s32 i;
 
     for (i = 0; i < 16; i++, flagp = (u32 *)((u8 *)flagp + 0xEC), uidp = (u16 *)((u8 *)uidp + 0xEC)) {
@@ -1391,10 +1439,36 @@ s32 datSearchUniqueDevilStock(s32 uid)
     return -1;
 }
 
+#ifdef VERSION_MNAX
 s32 datGetUniqueDevilId(s32 uid)
 {
-    u16 *idp = &((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54))->id;
-    u32 *flagp = &((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54))->flag;
+    u16 *uidp = &DDS3_GBWK->unitwork[0].uniqueid;
+    datUnitWork_t *unit = DDS3_GBWK->unitwork;
+    s32 i;
+
+    for (i = 0; i < 16; i++, uidp = (u16 *)((u8 *)uidp + 0xEC), unit++) {
+        u32 flag = unit->flag;
+
+        if ((flag & 1) == 0) {
+            continue;
+        }
+        if (flag & 4) {
+            continue;
+        }
+        if ((flag & 0x400) == 0) {
+            continue;
+        }
+        if (*uidp == uid) {
+            return unit->id;
+        }
+    }
+    return -1;
+}
+#else
+s32 datGetUniqueDevilId(s32 uid)
+{
+    u16 *idp = &((datUnitWork_t *)((u8 *)DDS3_GBWK + GBO(0xA54)))->id;
+    u32 *flagp = &((datUnitWork_t *)((u8 *)DDS3_GBWK + GBO(0xA54)))->flag;
     s32 i;
 
     for (i = 0; i < 16; i++, flagp = (u32 *)((u8 *)flagp + 0xEC), idp = (u16 *)((u8 *)idp + 0xEC)) {
@@ -1415,6 +1489,7 @@ s32 datGetUniqueDevilId(s32 uid)
     }
     return -1;
 }
+#endif
 
 void datAddExp(datUnitWork_t *w, s32 exp)
 {
@@ -1436,19 +1511,19 @@ s32 datAddHearts(s32 id)
         return 0;
     }
 #endif
-    ((u8 *)EE_ADDR_PTR(DDS3_GBWK->heartscnt) + EE_ADDR(DDS3_GBWK))[0x1CFB] = id;
+    ((u8 *)EE_ADDR_PTR(DDS3_GBWK->heartscnt) + EE_ADDR(DDS3_GBWK))[GBO(0x1CFB)] = id;
     DDS3_GBWK->heartscnt++;
-    (EE_ADDR_AS(u8 *, id) + EE_ADDR(DDS3_GBWK))[0x1D3B] = 0;
+    (EE_ADDR_AS(u8 *, id) + EE_ADDR(DDS3_GBWK))[GBO(0x1D3B)] = 0;
     if (datCountRegisteredHearts() != 0) {
         evtBitOn(0x860);
     }
-    datAddHeartsEntry((u8)id, (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54));
+    datAddHeartsEntry((u8)id, (datUnitWork_t *)((u8 *)DDS3_GBWK + GBO(0xA54)));
     return 1;
 }
 
 void datRemoveHearts(void)
 {
-    datUnitWork_t *player = (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54);
+    datUnitWork_t *player = (datUnitWork_t *)((u8 *)DDS3_GBWK + GBO(0xA54));
 
     if (DDS3_GBWK->heartscnt != 0) {
         cmbSubHeartsParam(DDS3_GBWK->heartsequip, player);
@@ -1460,7 +1535,7 @@ void datRemoveHearts(void)
 
 void datEquipHearts(s32 HeartsID)
 {
-    datUnitWork_t *player = (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54);
+    datUnitWork_t *player = (datUnitWork_t *)((u8 *)DDS3_GBWK + GBO(0xA54));
 
     if (DDS3_GBWK->heartscnt != 0) {
         if (DDS3_GBWK->heartsequip != HeartsID) {
@@ -1526,7 +1601,7 @@ void datFieldSkillKaifuku(void)
 
     ofs = 0;
     for (i = 0; i < 16; i++) {
-        datUnitWork_t *unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + ofs + 0xA54);
+        datUnitWork_t *unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + ofs + GBO(0xA54));
         u32 flag = unit->flag;
 
         ofs += 0xEC;
@@ -1545,7 +1620,7 @@ s32 datCheckSkillInParty(s32 skillid)
     s32 ofs;
 
     for (i = 0, ofs = 0; i < 16; i++) {
-        datUnitWork_t *unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + ofs + 0xA54);
+        datUnitWork_t *unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + ofs + GBO(0xA54));
         u32 flag = unit->flag;
 
         ofs += 0xEC;
@@ -1568,7 +1643,7 @@ s32 datCheckSkillTakaraSagasi(void)
         return 0;
     }
     for (i = 0; i < 16; i++) {
-        datUnitWork_t *unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54 + i * 0xEC);
+        datUnitWork_t *unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + GBO(0xA54) + i * 0xEC);
         s32 luck;
         s32 random;
 
@@ -1606,14 +1681,14 @@ void datAllClearCommMemory(void)
 
     ofs = 0;
     for (i = 0; i < 16; i++) {
-        datClearCommMemory((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs + 0xA54));
+        datClearCommMemory((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs + GBO(0xA54)));
         ofs += 0xEC;
     }
 }
 
 s32 datGetNakamaNum(void)
 {
-    datUnitWork_t *unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54) + 4;
+    datUnitWork_t *unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + GBO(0xA54)) + 4;
     s32 num = 0;
     s32 i;
 
@@ -1630,7 +1705,7 @@ void datAddKotowariPoint(s32 type, s32 point)
     s32 value;
 
     if (type != 0) {
-        slot = EE_ADDR_AS(u8 *, type) + EE_ADDR(DDS3_GBWK) + 0x1CEC;
+        slot = EE_ADDR_AS(u8 *, type) + EE_ADDR(DDS3_GBWK) + GBO(0x1CEC);
         value = *slot + point;
         if (value < 0) {
             value = 0;
@@ -1713,14 +1788,14 @@ void datInitPlayer(void)
     u8 *gbwk;
     s32 i;
 
-    memset((u8 *)DDS3_GBWK + 0xA54, 0, 0xEC0);
-    *(datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54) = datPlayerUnitTemplate;
+    memset((u8 *)DDS3_GBWK + GBO(0xA54), 0, 0xEC0);
+    *(datUnitWork_t *)((u8 *)DDS3_GBWK + GBO(0xA54)) = datPlayerUnitTemplate;
     gbwk = (u8 *)DDS3_GBWK;
-    *(s32 *)(gbwk + 0x1924) = 1;
-    gbwk[0x1914] = 0;
+    *(s32 *)(gbwk + GBO(0x1924)) = 1;
+    gbwk[GBO(0x1914)] = 0;
     DDS3_GBWK->maka = 0;
     for (i = 0; i < 0xA0; i++) {
-        (EE_ADDR_AS(u8 *, i) + EE_ADDR(DDS3_GBWK))[0x1928] = 0;
+        (EE_ADDR_AS(u8 *, i) + EE_ADDR(DDS3_GBWK))[GBO(0x1928)] = 0;
     }
     evtBitOn(0xC04);
 }
@@ -1745,7 +1820,7 @@ void datInitPlayer(void)
 
 void datInitBossPress(void)
 {
-    s16 *rec = (s16 *)((u8 *)DDS3_GBWK + 0x19CA);
+    s16 *rec = (s16 *)((u8 *)DDS3_GBWK + GBO(0x19CA));
     s32 i;
 
     for (i = 0; i < 40; i++) {
@@ -1862,10 +1937,10 @@ void datBossRashUpdRec(s32 eid, s32 press)
             if (evtBitCheck(rec->flag) == 0) {
                 return;
             }
-            *(s16 *)(EE_ADDR_AS(u8 *, (i * 4)) + EE_ADDR(DDS3_GBWK) + 0x19CA) = value;
+            *(s16 *)(EE_ADDR_AS(u8 *, (i * 4)) + EE_ADDR(DDS3_GBWK) + GBO(0x19CA)) = value;
             best = datBossRashGetRec(eid, 0);
             if (value < best) {
-                *(s16 *)(EE_ADDR_AS(u8 *, (i * 4)) + EE_ADDR(DDS3_GBWK) + 0x19C8) = value;
+                *(s16 *)(EE_ADDR_AS(u8 *, (i * 4)) + EE_ADDR(DDS3_GBWK) + GBO(0x19C8)) = value;
                 evtBitOn(rec->flag2);
             }
             return;

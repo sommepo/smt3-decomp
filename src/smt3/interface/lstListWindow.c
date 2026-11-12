@@ -205,5 +205,9 @@ s32 datGetItemSlotIndex(u16 id)
     return index;
 }
 
+#ifdef VERSION_MNAX
+const char D_0053D708[9] = "\203\353\203\307\211\227\204\270\207";
+#else
 const char D_0053D708[9] = "Register";
+#endif
 

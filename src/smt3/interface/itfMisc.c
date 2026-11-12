@@ -151,6 +151,9 @@ itfLink_t *itfMiscLinkTake(itfmisclinkstack_t *pstack) {
     itfLink_t *next;
 
     if (node == NULL) {
+#ifdef VERSION_MNAX
+        printf("\314\244\273\310\315\321\244\254\244\342\244\246\244\312\244\244\n");
+#endif
         return NULL;
     }
     next = node->next;

@@ -553,7 +553,7 @@ s32 cmpClearButtonGuide(s32 skill, u32 select)
 {
     /* Same unit-list capacity as nbCheckBattleSkillError2. */
     datUnitWork_t *unitList[32];
-    datUnitWork_t *unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54);
+    datUnitWork_t *unit = DDS3_GBWK->unitwork;
     s32 unitCount = 0;
     s32 i;
     s32 result = 0;

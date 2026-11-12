@@ -59,7 +59,9 @@ struct frFontData_t {
     void *ysht;
     GsFont_t **trans;
     struct frFontResource_t *resource;
+#ifndef VERSION_MNAX
     addr_t data;
+#endif
 };
 
 /* Free-list header stored immediately before each interface-pool payload. */
@@ -414,7 +416,11 @@ void frSetMessageDefStepY(void);
 
 extern u32 gMessageStepY;
 
+#ifdef VERSION_MNAX
+#define FR_FONT_DEFAULT_CURSOR_SPACING 0x19
+#else
 #define FR_FONT_DEFAULT_CURSOR_SPACING 0x14
+#endif
 
 void frSetMessageStepY(u32 StepY);
 
@@ -463,7 +469,11 @@ extern u8 frSetFontString_style;
 
 extern void frGetMessageCode(u16 code);
 
+#ifdef VERSION_MNAX
+frTextHandle_t *frSetFont(u16 glyphCode, u8 fontIndex, u8 firstOption, u8 secondOption);
+#else
 frTextHandle_t *frSetFont(u16 glyphCode, u8 fontIndex, u8 firstOption, u8 secondOption, s32 shiftFlag);
+#endif
 
 void frCreateVariableRequest(u8 VarNo, frMsgInfo_t *pMsgInfo);
 
@@ -477,7 +487,11 @@ extern void frRestoreNameImage(s8 TargetNo);
 
 extern s32 frFreeFontNode(void *payload, frFontNodeHeader_t *pool);
 
+#ifdef VERSION_MNAX
+extern void frGetXShiftLev(frTextHandle_t *glyph, s32 shiftIndex);
+#else
 extern void frGetXShiftLev(frTextHandle_t *glyph, s32 shiftIndex, s32 isFirst);
+#endif
 
 u32 frPreCalcStrWidth(s8 *pStr, s32 Style, s32 Mode);
 
@@ -486,7 +500,14 @@ s32 frCalcStringHash(s8 *text);
 
 extern u8 frEmptyString[];
 
+#ifdef VERSION_MNAX
+extern frFontHandle_t *frSetFontString(u8 *text, s8 fontIndex, s8 firstOption, s8 secondOption, frFontHandle_t *chain);
+/* Maniax has no relative-shift argument. */
+#define FR_SET_FONT_STRING(text, style, first, second, chain, relative) frSetFontString(text, style, first, second, chain)
+#else
 extern frFontHandle_t *frSetFontString(u8 *text, s8 fontIndex, s8 firstOption, s8 secondOption, frFontHandle_t *chain, s32 flag);
+#define FR_SET_FONT_STRING(text, style, first, second, chain, relative) frSetFontString(text, style, first, second, chain, relative)
+#endif
 
 frFontHandle_t *frLinkFontString(u8 *pStr, s8 Style, s8 ColNo, s8 Tp, frFontHandle_t *pFRQ);
 
@@ -682,6 +703,11 @@ void frClearTexBuf(void) {
     sdfMemFreeDirect(allocation);
 }
 
+#ifdef VERSION_MNAX
+void frLoadFontData(s32 StyleNo, const char *pFileName) {
+    frAddFontStyle(StyleNo, NULL, sdfDevLoadFileEx(pFileName, 0, 0));
+}
+#else
 void frLoadFontData(s32 StyleNo, const char *pFileName) {
     u32 slotIndex = StyleNo & FR_FONT_BYTE_MASK;
 
@@ -695,6 +721,7 @@ void frLoadFontData(s32 StyleNo, const char *pFileName) {
     }
     frFontLoaded[slotIndex] = 1;
 }
+#endif
 
 void frInitFontTable(s32 GsFontNums, s32 TextNums) {
     s32 i;
@@ -799,22 +826,42 @@ void frAddFontStyle(
         valueSectionBytes = valueDataBytes + FR_FONT_WORD_BYTES;
         sectionOffset += valueSectionBytes;
     } else {
+#ifdef VERSION_MNAX
+        entry->metricByteCount = 0;
+        entry->prop = NULL;
+        entry->valueByteCount = 0;
+        entry->ysht = NULL;
+#else
         entry->prop = NULL;
         entry->ysht = NULL;
         entry->metricByteCount = 0;
         entry->valueByteCount = 0;
+#endif
     }
     entry->trans = (GsFont_t **)(pFontData + sectionOffset);
     sectionOffset += entry->resourceHeader->widthCount * FR_FONT_WORD_BYTES;
     entry->resource = (struct frFontResource_t *)(pFontData + sectionOffset);
+#ifndef VERSION_MNAX
     lookupOffset = entry->resourceHeader->lookupOffset;
     if (lookupOffset != 0) {
         entry->data = EE_ADDR((pFontData + lookupOffset));
     } else {
         entry->data = 0;
     }
+#endif
 }
 
+#ifdef VERSION_MNAX
+void frDelFontStyle(s32 StyleNo) {
+    frFontData_t *entry = &gFT.entries[StyleNo & FR_FONT_BYTE_MASK];
+
+    if (entry->allocation != NULL) {
+        sdfMemFreeDirect(entry->allocation);
+        entry->resource = NULL;
+    }
+    entry->trans = NULL;
+}
+#else
 /* Slots zero/one are not freed here; clear the data pointer only when an allocation exists. */
 void frDelFontStyle(s32 StyleNo) {
     u32 slotIndex = StyleNo & FR_FONT_BYTE_MASK;
@@ -831,6 +878,7 @@ void frDelFontStyle(s32 StyleNo) {
     }
     entry->trans = NULL;
 }
+#endif
 
 /* Ensure the four named default font files are installed, in slot order. */
 void frLoadStyleAll(void) {
@@ -958,6 +1006,64 @@ s32 frGetYShiftLev(s8 Style, s32 FontNo) {
 
 extern u32 frSpaceAdvanceOffset;
 
+#ifdef VERSION_MNAX
+void frGetXShiftLev(frTextHandle_t *glyph, s32 shiftIndex)
+{
+    frFontData_t *entry = &gFT.entries[glyph->renderValueOrSetupOrShade.setupBytes.fontIndex];
+    u8 flags;
+    s32 baseWidth;
+    s32 leftOffset;
+    s32 advance;
+    s32 metricCodeIndex;
+    s8 left;
+    s8 right;
+
+    glyph->cellDimensions.cellWidth = frGetFontWidth(glyph->renderValueOrSetupOrShade.setupBytes.fontIndex);
+    glyph->cellDimensions.cellHeight = frGetFontHeight(glyph->renderValueOrSetupOrShade.setupBytes.fontIndex);
+    baseWidth = gFontBaseWidth[glyph->renderValueOrSetupOrShade.setupBytes.fontIndex];
+    flags = glyph->renderValueOrSetupOrShade.setupBytes.sharedFlags;
+    glyph->advance = baseWidth;
+    if ((flags & 2) != 0) {
+        if (glyph->glyphCodeOrContext.glyphCode < 0x80) {
+            glyph->advance = baseWidth >> 1;
+            glyph->cellDimensions.cellWidth >>= 1;
+        }
+    }
+    if ((flags & 1) == 0) {
+        return;
+    }
+    if (entry->resourceHeader->hasExtra == 0) {
+        return;
+    }
+    if (shiftIndex >= 0x1C6) {
+        return;
+    }
+    shiftIndex = shiftIndex << 1;
+    if (shiftIndex >= entry->metricByteCount) {
+        return;
+    }
+    right = entry->prop[shiftIndex + 1];
+    if (right == 0) {
+        return;
+    }
+    left = entry->prop[shiftIndex];
+    advance = right - left;
+    leftOffset = left << 4;
+    if ((flags & 2) != 0) {
+        if (glyph->glyphCodeOrContext.glyphCode < 0x80) {
+            leftOffset >>= 1;
+            advance >>= 1;
+        }
+    }
+    metricCodeIndex = (shiftIndex >> 1) + 0x20;
+    if (metricCodeIndex == 0x21 || metricCodeIndex == 0x31) {
+        leftOffset -= 0x20;
+        advance += 4;
+    }
+    glyph->advance = advance;
+    glyph->x = -leftOffset;
+}
+#else
 void frGetXShiftLev(frTextHandle_t *glyph, s32 shiftIndex, s32 isFirst)
 {
     frFontData_t *entry;
@@ -1070,6 +1176,7 @@ notSpace:
     glyph->advance = advance;
     glyph->x = -leftOffset;
 }
+#endif
 
 /* Create a glyph wrapper for source and append it to an optional destination chain. */
 frFontHandle_t *frSetUserImage(GsFont_t *pFont, frFontHandle_t *pFRQ) {
@@ -1225,6 +1332,35 @@ void frInitFontHandle(frFontHandle_t *pFRQ) {
     pFRQ->childCount = 0;
 }
 
+#ifdef VERSION_MNAX
+frTextHandle_t *frSetFont(u16 glyphCode, u8 fontIndex, u8 firstOption, u8 secondOption) {
+    frTextHandle_t *glyph = frAllocFontNode(gFT.itemPool);
+    s32 shiftIndex;
+    frFontHeader_t *header;
+
+    gFT.itemCount++;
+    frInitTextHandle(glyph, glyphCode, fontIndex, firstOption, 0xA09DC300, secondOption);
+    if (glyph->glyphCodeOrContext.glyphCode < 0x80) {
+        shiftIndex = glyph->glyphCodeOrContext.glyphCode - 0x20;
+    } else {
+        s32 relative = glyph->glyphCodeOrContext.glyphCode - 0x8080;
+
+        shiftIndex = ((relative & FR_FONT_MIDDLE_BYTE_MASK) >> 1) + (relative & 0x7F);
+    }
+    header = gFT.entries[fontIndex].resourceHeader;
+    if (shiftIndex >= header->widthCount) {
+        shiftIndex = 0x147;
+    }
+    glyph->cachedItem = frTranslateFont2GS(glyph, shiftIndex);
+    frGetXShiftLev(glyph, shiftIndex);
+    if ((glyph->renderValueOrSetupOrShade.setupBytes.sharedFlags & 0x10) != 0) {
+        glyph->y = frGetYShiftLev((s8)fontIndex, shiftIndex);
+    } else {
+        glyph->y = 0;
+    }
+    return glyph;
+}
+#else
 frTextHandle_t *frSetFont(u16 glyphCode, u8 fontIndex, u8 firstOption, u8 secondOption, s32 shiftFlag) {
     frTextHandle_t *glyph = frAllocFontNode(gFT.itemPool);
     s32 shiftIndex = 0;
@@ -1252,9 +1388,14 @@ frTextHandle_t *frSetFont(u16 glyphCode, u8 fontIndex, u8 firstOption, u8 second
     }
     return glyph;
 }
+#endif
 
 frFontHandle_t *frLinkFontString(u8 *pStr, s8 Style, s8 ColNo, s8 Tp, frFontHandle_t *pFRQ) {
+#ifdef VERSION_MNAX
+    frFontHandle_t *chain = frSetFontString(pStr, Style, ColNo, Tp, NULL);
+#else
     frFontHandle_t *chain = frSetFontString(pStr, Style, ColNo, Tp, NULL, 0);
+#endif
 
     if (chain == NULL) {
         return pFRQ;
@@ -1262,7 +1403,11 @@ frFontHandle_t *frLinkFontString(u8 *pStr, s8 Style, s8 ColNo, s8 Tp, frFontHand
     return frCombineFontRequest(pFRQ, chain);
 }
 
+#ifdef VERSION_MNAX
+frFontHandle_t *frSetFontString(u8 *text, s8 style, s8 firstOption, s8 secondOption, frFontHandle_t *chain) {
+#else
 frFontHandle_t *frSetFontString(u8 *text, s8 style, s8 firstOption, s8 secondOption, frFontHandle_t *chain, s32 relative) {
+#endif
     s32 i;
     u32 length = 0;
     frTextHandle_t *glyph;
@@ -1302,8 +1447,14 @@ frFontHandle_t *frSetFontString(u8 *text, s8 style, s8 firstOption, s8 secondOpt
                 i++;
                 code = (u8)text[i] | (code << FR_FONT_BYTE_SHIFT);
             }
+#ifdef VERSION_MNAX
+            glyph = frSetFont(code, frSetFontString_style, firstOption, secondOption);
+#else
             glyph = frSetFont(code, frSetFontString_style, firstOption, secondOption, (i != 0) ? 0 : (relative != 0));
+#endif
+#ifndef VERSION_MNAX
             i++;
+#endif
             if (previous == NULL) {
                 chain->firstChild = glyph;
             } else {
@@ -1312,7 +1463,12 @@ frFontHandle_t *frSetFontString(u8 *text, s8 style, s8 firstOption, s8 secondOpt
             glyph->previous = previous;
             chain->advance += glyph->advance;
             chain->childCount++;
+#ifdef VERSION_MNAX
+            i++;
+#endif
+#ifndef VERSION_MNAX
             frGetMessageCode(code);
+#endif
             previous = glyph;
         } while (i < length);
     }
@@ -1449,10 +1605,17 @@ s32 frDrawEffect(frFontHandle_t *parent, frTextHandle_t *glyph,
     frFontHandle_t *previousParent;
     frTextHandle_t *previousGlyph;
     u32 *fadeWord;
+#ifdef VERSION_MNAX
+    s32 glyphJitter = 0;
+    s32 canAdvanceFade = 0;
+    u8 previousFade = 0x80;
+    u8 previousOption;
+#else
     u8 previousOption;
     u8 previousFade = 0x80;
     s32 glyphJitter = 0;
     s32 canAdvanceFade = 0;
+#endif
 
     previousGlyph = glyph->previous;
     previousOption = 0;
@@ -1463,6 +1626,7 @@ s32 frDrawEffect(frFontHandle_t *parent, frTextHandle_t *glyph,
             if (previousGlyph != NULL) {
                 previousFade = previousGlyph->parentDimensionsOrRenderWord.fadeByte.value;
                 previousOption = previousGlyph->renderValueOrSetupOrShade.setupBytes.secondOption;
+#ifndef VERSION_MNAX
             } else {
                 if (previousParent->previous != NULL) {
                     previousGlyph = previousParent->previous->lastChild;
@@ -1472,6 +1636,9 @@ s32 frDrawEffect(frFontHandle_t *parent, frTextHandle_t *glyph,
                     }
                 }
             }
+#else
+            }
+#endif
         }
     } else {
         previousFade = previousGlyph->parentDimensionsOrRenderWord.fadeByte.value;
@@ -1487,14 +1654,22 @@ s32 frDrawEffect(frFontHandle_t *parent, frTextHandle_t *glyph,
     }
     if (canAdvanceFade != 0) {
         u32 currentFadeWord;
+#ifdef VERSION_MNAX
+        if ((s8)step >= 0) {
+            step = (step * 22) / (glyph->advance + parent->glyphCodeOrContext.byteRoles.spacing);
+        }
+#else
         s32 advance = glyph->advance + parent->glyphCodeOrContext.byteRoles.spacing;
 
+#ifndef VERSION_MNAX
         if (advance == 0) {
             advance = 24;
         }
+#endif
         if ((s8)step >= 0) {
             step = (step * 22) / advance;
         }
+#endif
         currentFadeWord = *fadeWord;
         if ((u32)(0x80 - (currentFadeWord & 0xFF)) >= step) {
             *fadeWord = currentFadeWord + step;
@@ -1538,10 +1713,17 @@ extern u32 frDrawFontWork;
  * Nocturne adds its ASCII bearings and per-parent draw count, not DDS waits. */
 s32 frDrawFontOt(frFontHandle_t *glyph, s8 mode, u32 renderFlags) {
     frTextHandle_t *child;
+#ifdef VERSION_MNAX
+    s32 enabled = 1;
+    s32 result = 0;
+    s32 totalGlyphCount = 0;
+    s32 ready = 1;
+#else
     s32 ready = 1;
     s32 enabled = 1;
     s32 result = 0;
     s32 totalGlyphCount = 0;
+#endif
 
     if (glyph != NULL) {
         glyph = glyph->chainHead;
@@ -1552,7 +1734,9 @@ s32 frDrawFontOt(frFontHandle_t *glyph, s8 mode, u32 renderFlags) {
                 s8 spacing = glyph->glyphCodeOrContext.byteRoles.spacing;
 
                 child = glyph->firstChild;
+#ifndef VERSION_MNAX
                 frDrawFontWork = 0;
+#endif
                 if (child != NULL) {
                     do {
                         s32 xOffset = mode != 0 ? 0 :
@@ -1561,6 +1745,7 @@ s32 frDrawFontOt(frFontHandle_t *glyph, s8 mode, u32 renderFlags) {
                         s32 yOffset = 0;
                         u32 glyphState;
 
+#ifndef VERSION_MNAX
                         if (child->renderValueOrSetupOrShade.setupBytes.fontIndex < 2) {
                             if ((u16)(child->glyphCodeOrContext.glyphCode - 'A') < 26) {
                                 xOffset += frFontUpperXOffset[child->glyphCodeOrContext.glyphCode - 'A'];
@@ -1570,6 +1755,7 @@ s32 frDrawFontOt(frFontHandle_t *glyph, s8 mode, u32 renderFlags) {
                                 yOffset = frFontLowerYOffset[child->glyphCodeOrContext.glyphCode - 'a'];
                             }
                         }
+#endif
                         if (child->sourceItem == NULL) {
                             /* Native 0x1C7FA4 retains this ASCII reassertion;
                              * the DDS twin has the same initialized-one state. */
@@ -1592,7 +1778,9 @@ s32 frDrawFontOt(frFontHandle_t *glyph, s8 mode, u32 renderFlags) {
                                 glyph->renderValueOrSetupOrShade.renderValue, enabled,
                                 &child->sourceItem->font_mem->uv, &gFT.atlas, renderFlags);
                         }
+#ifndef VERSION_MNAX
                         frDrawFontWork++;
+#endif
                         glyphState = child->parentDimensionsOrRenderWord.fadeByte.value;
                         if (glyphState != 0) {
                             child->drawCount++;
@@ -1644,6 +1832,10 @@ frFontHandle_t *frCombineFontRequestEx(frFontHandle_t *pFRQ1, frFontHandle_t *pF
     pFRQ2->chainHead->previous = pFRQ1;
     pFRQ2->chainHead = pFRQ1->chainHead;
     if (Mode == 1) {
+#ifdef VERSION_MNAX
+        pFRQ2->x = pFRQ1->x + pFRQ1->advance * 16;
+        pFRQ2->y = pFRQ1->y;
+#else
         if ((pFRQ2->firstChild != NULL) && (pFRQ2->firstChild->glyphCodeOrContext.glyphCode == 0xD)) {
             s32 cellHeight = (s16)pFRQ1->parentDimensionsOrRenderWord.parentDimensions.cellHeight;
 
@@ -1653,6 +1845,7 @@ frFontHandle_t *frCombineFontRequestEx(frFontHandle_t *pFRQ1, frFontHandle_t *pF
             pFRQ2->x = pFRQ1->x + pFRQ1->advance * 16;
             pFRQ2->y = pFRQ1->y;
         }
+#endif
     }
     return pFRQ2;
 }
@@ -1723,6 +1916,47 @@ u32 frGetStrWidth2(frFontHandle_t *pFRQ) {
     return totalAdvance;
 }
 
+#ifdef VERSION_MNAX
+u32 frPreCalcStrWidth(s8 *pStr, s32 Style, s32 Mode) {
+    frTextHandle_t glyph;
+    s32 i = 0;
+    u32 totalWidth = 0;
+    u32 length;
+
+    glyph.renderValueOrSetupOrShade.setupBytes.sharedFlags = Mode;
+    glyph.renderValueOrSetupOrShade.setupBytes.fontIndex = Style;
+    glyph.advance = 0;
+    glyph.cellDimensions.cellWidth = frGetFontWidth(glyph.renderValueOrSetupOrShade.setupBytes.fontIndex);
+    glyph.cellDimensions.cellHeight = frGetFontHeight(glyph.renderValueOrSetupOrShade.setupBytes.fontIndex);
+    length = strlen((const char *)pStr);
+    if (length != 0) {
+        do {
+            u32 code = (u8)pStr[i];
+            s32 shiftIndex;
+            s32 singleByte = code < 0x80;
+
+            if (!singleByte) {
+                shiftIndex = code << FR_FONT_BYTE_SHIFT;
+                i++;
+                code = shiftIndex | (u8)pStr[i];
+                singleByte = code < 0x80;
+            }
+            glyph.glyphCodeOrContext.glyphCode = code;
+            if (singleByte) {
+                shiftIndex = code - 0x20;
+            } else {
+                u32 relative = code - 0x8080;
+
+                shiftIndex = ((relative & FR_FONT_MIDDLE_BYTE_MASK) >> 1) + (relative & 0x7F);
+            }
+            frGetXShiftLev(&glyph, shiftIndex);
+            i++;
+            totalWidth += glyph.advance;
+        } while (i < length);
+    }
+    return totalWidth;
+}
+#else
 /* Measure encoded glyph advances, retaining native modulo-2^32 accumulation. */
 u32 frPreCalcStrWidth(s8 *pStr, s32 Style, s32 Mode) {
     frTextHandle_t glyph;
@@ -1771,6 +2005,7 @@ u32 frPreCalcStrWidth(s8 *pStr, s32 Style, s32 Mode) {
     }
     return totalWidth;
 }
+#endif
 
 
 /* Slots 0/1 use the shared default size; later slots read their resource width.
@@ -1838,6 +2073,48 @@ u8 *MessageNumSearch(s32 Index, frTextBank_t *pData, s32 Size) {
     return (u8 *)pData + offset;
 }
 
+#ifdef VERSION_MNAX
+void frCreateVariableRequest(u8 VarNo, frMsgInfo_t *pMsgInfo) {
+    u8 encoded[3];
+    u8 *text = EE_ADDR_AS(u8 *, gVarStr[VarNo]);
+    s32 length;
+    s32 i;
+    s8 lastFontIndex;
+
+    memset(encoded, 0, 3);
+    if (text == NULL) {
+        return;
+    }
+    length = strlen((const char *)text);
+    lastFontIndex = pMsgInfo->Style;
+    for (i = 0; i < length;) {
+        s8 fontIndex;
+
+        encoded[0] = text[i];
+        i++;
+        encoded[1] = text[i];
+        i++;
+        fontIndex = pMsgInfo->Style;
+        if (fontIndex != lastFontIndex) {
+            frFontHandle_t *chain = pMsgInfo->pFRQ;
+
+            if (chain != NULL) {
+                if (chain->firstChild != NULL) {
+                    pMsgInfo->pFRQ = frLinkFontString(frEmptyString, 0, pMsgInfo->ColNo, pMsgInfo->Tp, chain);
+                    chain = pMsgInfo->pFRQ;
+                }
+            } else {
+                pMsgInfo->pFRQ = frLinkFontString(frEmptyString, 0, pMsgInfo->ColNo, pMsgInfo->Tp, NULL);
+                chain = pMsgInfo->pFRQ;
+            }
+            frSetDrawSpeed(chain, pMsgInfo->Spd);
+            lastFontIndex = fontIndex;
+        }
+        pMsgInfo->pFRQ = frSetFontString(encoded, fontIndex, pMsgInfo->ColNo, pMsgInfo->Tp, pMsgInfo->pFRQ);
+        frSetFontSpace(pMsgInfo->pFRQ, gMessageSpaceX);
+    }
+}
+#else
 void frCreateVariableRequest(u8 VarNo, frMsgInfo_t *pMsgInfo) {
     u8 encoded[3];
     u8 *text = EE_ADDR_AS(u8 *, gVarStr[VarNo]);
@@ -1881,11 +2158,12 @@ void frCreateVariableRequest(u8 VarNo, frMsgInfo_t *pMsgInfo) {
             frSetDrawSpeed(chain, pMsgInfo->Spd);
             lastFontIndex = fontIndex;
         }
-        pMsgInfo->pFRQ = frSetFontString(encoded, fontIndex, pMsgInfo->ColNo, pMsgInfo->Tp, pMsgInfo->pFRQ, i == 0);
+        pMsgInfo->pFRQ = FR_SET_FONT_STRING(encoded, fontIndex, pMsgInfo->ColNo, pMsgInfo->Tp, pMsgInfo->pFRQ, i == 0);
         frSetFontSpace(pMsgInfo->pFRQ, gMessageSpaceX);
         frGetMessageCode(code);
     }
 }
+#endif
 
 void frCreateNewHandle(frMsgInfo_t *pMsgInfo) {
     frFontHandle_t *chain = pMsgInfo->pFRQ;
@@ -1920,7 +2198,7 @@ void frPushTagChar(frMsgInfo_t *ctx, u16 code) {
     encoded[0] = (u32)code >> FR_FONT_BYTE_SHIFT;
     encoded[2] = 0;
     frCreateNewHandle(ctx);
-    ctx->pFRQ = frSetFontString(encoded, ctx->Style, ctx->ColNo, ctx->Tp, ctx->pFRQ, 0);
+    ctx->pFRQ = FR_SET_FONT_STRING(encoded, ctx->Style, ctx->ColNo, ctx->Tp, ctx->pFRQ, 0);
     frSetFontSpace(ctx->pFRQ, gMessageSpaceX);
     frSetPriority(ctx->pFRQ, ctx->Z);
 }
@@ -2204,20 +2482,20 @@ frFontHandle_t *frAnalyzeMessage(frMsgInfo_t *pMsgInfo) {
         if (code < 0x80) {
             encoded[0] = code;
             encoded[1] = 0;
-            pMsgInfo->pFRQ = frSetFontString(encoded, pMsgInfo->Style, pMsgInfo->ColNo, pMsgInfo->Tp, pMsgInfo->pFRQ, isFirst);
+            pMsgInfo->pFRQ = FR_SET_FONT_STRING(encoded, pMsgInfo->Style, pMsgInfo->ColNo, pMsgInfo->Tp, pMsgInfo->pFRQ, isFirst);
         } else {
             code = (code << FR_FONT_BYTE_SHIFT) | pMsgInfo->pMsg[(*offset)++];
             if (code <= 0xC07F) {
                 encoded[0] = (u32)code >> FR_FONT_BYTE_SHIFT;
                 encoded[1] = code;
                 encoded[2] = 0;
-                pMsgInfo->pFRQ = frSetFontString(encoded, pMsgInfo->Style, pMsgInfo->ColNo, pMsgInfo->Tp, pMsgInfo->pFRQ, isFirst);
+                pMsgInfo->pFRQ = FR_SET_FONT_STRING(encoded, pMsgInfo->Style, pMsgInfo->ColNo, pMsgInfo->Tp, pMsgInfo->pFRQ, isFirst);
             } else {
                 code -= 0x4000;
                 encoded[0] = (u32)code >> FR_FONT_BYTE_SHIFT;
                 encoded[1] = code;
                 encoded[2] = 0;
-                pMsgInfo->pFRQ = frSetFontString(encoded, FR_FONT_TEMPORARY_SLOT, pMsgInfo->ColNo, pMsgInfo->Tp, pMsgInfo->pFRQ, isFirst);
+                pMsgInfo->pFRQ = FR_SET_FONT_STRING(encoded, FR_FONT_TEMPORARY_SLOT, pMsgInfo->ColNo, pMsgInfo->Tp, pMsgInfo->pFRQ, isFirst);
             }
             frGetMessageCode(code & 0xFFFF);
         }
@@ -2261,7 +2539,12 @@ frFontHandle_t *MessageRequestEx2(s32 X, s32 Y, s32 Z, s32 Style, s32 ColNo, s32
 
 frFontHandle_t *MessageRequestNS(s32 x, s32 y, s32 depth, s32 channel0, s32 channel1, s32 channel2, s32 channel3, u8 *encodedText, frFontHandle_t *unusedPrevious) {
     s8 savedSpacing = gMessageSpaceX;
-    frFontHandle_t *chain = MessageRequestEx2(x, y, depth, channel0 & 0xFF, channel1 & 0xFF, channel2 & 0xFF, channel3 & 0xFF, encodedText, NULL);
+    frFontHandle_t *chain;
+
+#ifdef VERSION_MNAX
+    gMessageSpaceX = 0;
+#endif
+    chain = MessageRequestEx2(x, y, depth, channel0 & 0xFF, channel1 & 0xFF, channel2 & 0xFF, channel3 & 0xFF, encodedText, NULL);
 
     gMessageSpaceX = savedSpacing;
     return chain;

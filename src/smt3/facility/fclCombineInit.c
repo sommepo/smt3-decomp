@@ -2738,17 +2738,27 @@ void cmbDrawUnitLevel(s32 x, s32 y, s32 z, u32 color, u32 levelColor,
         color = 0x4D4B4B4D;
         levelColor = color;
     }
+#ifndef VERSION_MNAX
     x -= 0x20;
+#endif
     request = frwGetSmallFontFRQ2(x, y, z, color,
                                   datExplainTable[datDevilTable[unit->id].race], NULL);
     frDrawFontOt(request, 1, ot);
     frDestroyFontRequestAfter(request);
+#ifdef VERSION_MNAX
+    x += 0x3E0;
+#else
     x += 0x480;
+#endif
     {
         /* Capture the name at its current X, then advance to the level column. */
         const char *name = text2[unit->id];
         s32 nameX = x;
+#ifdef VERSION_MNAX
+        x += 0x730;
+#else
         x += 0x6E0;
+#endif
         request = frwGetSmallFontFRQ2(nameX, y + 8, z, color, name, NULL);
     }
     frDrawFontOt(request, 1, ot);
@@ -3036,6 +3046,22 @@ extern void *frwGetSmallNumFontFRQ(s32 x, s32 y, s32 priority, u32 color, const 
 extern s32 frDrawFontOt(void *request, s8 mode, u32 ot);
 extern u16 datGetLevelForDraw(datUnitWork_t *work);
 
+#ifdef VERSION_MNAX
+#define CMB_STATS_X1 0x330
+#define CMB_STATS_Y1 0x170
+#define CMB_STATS_X2 0x6C0
+#define CMB_STATS_Y2 0x178
+#define CMB_STATS_X3 0xF50
+#define CMB_STATS_Y3 0x180
+#else
+#define CMB_STATS_X1 0x300
+#define CMB_STATS_Y1 0x148
+#define CMB_STATS_X2 0x780
+#define CMB_STATS_Y2 0x148
+#define CMB_STATS_X3 0xFC0
+#define CMB_STATS_Y3 0x168
+#endif
+
 void cmbDrawDevilStats(s32 x, s32 y, s32 z, datUnitWork_t *unit, s32 unused, u32 alpha, s32 ot)
 {
     char text[64];
@@ -3043,17 +3069,17 @@ void cmbDrawDevilStats(s32 x, s32 y, s32 z, datUnitWork_t *unit, s32 unused, u32
     u32 color = fclBlendColor(0x89FEFF80, 0, alpha);
 
     sprintf(text, fclCombineStrFmt, datExplainTable[datDevilTable[unit->id].race]);
-    request = frwGetSmallFontFRQ2(x + 0x300, y + 0x148, z, color, text, NULL);
+    request = frwGetSmallFontFRQ2(x + CMB_STATS_X1, y + CMB_STATS_Y1, z, color, text, NULL);
     frDrawFontOt(request, 1, ot);
     frDestroyFontRequestAfter(request);
 
     sprintf(text, fclCombineStrFmt, text2[unit->id]);
-    request = frwGetSmallFontFRQ2(x + 0x780, y + 0x148, z, color, text, NULL);
+    request = frwGetSmallFontFRQ2(x + CMB_STATS_X2, y + CMB_STATS_Y2, z, color, text, NULL);
     frDrawFontOt(request, 1, ot);
     frDestroyFontRequestAfter(request);
 
     sprintf(text, fclCombineNum2dFmt, datGetLevelForDraw(unit));
-    request = frwGetSmallNumFontFRQ(x + 0xFC0, y + 0x168, z, color, text, NULL);
+    request = frwGetSmallNumFontFRQ(x + CMB_STATS_X3, y + CMB_STATS_Y3, z, color, text, NULL);
     frDrawFontOt(request, 1, ot);
     frDestroyFontRequestAfter(request);
 }
@@ -3061,7 +3087,11 @@ void cmbDrawDevilStats(s32 x, s32 y, s32 z, datUnitWork_t *unit, s32 unused, u32
 
 extern char fclCombineNum2dFmt[];
 
+#ifdef VERSION_MNAX
+extern void *frGetCNameFRQ(s8 targetNo, s8 style, void *previous);
+#else
 extern void *frGetCNameFRQ(s8 targetNo, s8 style, void *previous, s32 firstOption);
+#endif
 extern void frSetDrawPosition(void *request, u32 x, u32 y);
 extern void frSetPriority(void *request, u32 priority);
 extern void frSetFontColor(void *request, u32 color);
@@ -3075,7 +3105,11 @@ void cmbDrawDevilNameLevel(s32 x, s32 y, s32 priority, datUnitWork_t *work, s32 
     void *request;
     char text[64];
 
+#ifdef VERSION_MNAX
+    request = frGetCNameFRQ(0, 1, NULL);
+#else
     request = frGetCNameFRQ(0, 1, NULL, 0);
+#endif
     frSetDrawPosition(request, 0x1340, 0x1D0);
     frSetPriority(request, priority << 4);
     frSetFontColor(request, 0xA09DC380);
@@ -3091,6 +3125,12 @@ void cmbDrawDevilNameLevel(s32 x, s32 y, s32 priority, datUnitWork_t *work, s32 
 extern void fclDrawSpriteFilter(s32 x, s32 y, s32 z, u8 filter, s32 *color,
                                 s32 id, s32 spriteId, s32 *texs,
                                 fclSpriteTbl_t *table, s32 ot);
+
+#ifdef VERSION_MNAX
+#define CMB_RESULT_ICON_X 0
+#else
+#define CMB_RESULT_ICON_X 0xB4
+#endif
 
 void cmbDrawResultIcon(s8 mode, s32 z, s32 unused2, s32 unused3, s32 alpha, s32 ot)
 {
@@ -3108,7 +3148,7 @@ void cmbDrawResultIcon(s8 mode, s32 z, s32 unused2, s32 unused3, s32 alpha, s32 
                             CMB_GBWK->texHandle, cmbSpriteTable, ot);
         fclDrawSpriteRes(0, 0, z << 4, color, 0, 0xE, CMB_GBWK->texHandle,
                          cmbSpriteTable, ot);
-        fclDrawSpriteRes(0xB4, 0, z << 4, color, 0, 0x10, CMB_GBWK->texHandle,
+        fclDrawSpriteRes(CMB_RESULT_ICON_X, 0, z << 4, color, 0, 0x10, CMB_GBWK->texHandle,
                          cmbSpriteTable, ot);
     } else {
         fclDrawSpriteRes(0, 0, z << 4, color, 0, 0xB, CMB_GBWK->texHandle,
@@ -3117,7 +3157,7 @@ void cmbDrawResultIcon(s8 mode, s32 z, s32 unused2, s32 unused3, s32 alpha, s32 
                          cmbSpriteTable, ot);
         fclDrawSpriteRes(0, 0, z << 4, color, 0, 0xF, CMB_GBWK->texHandle,
                          cmbSpriteTable, ot);
-        fclDrawSpriteRes(0xB4, 0, z << 4, color, 0, 0x11, CMB_GBWK->texHandle,
+        fclDrawSpriteRes(CMB_RESULT_ICON_X, 0, z << 4, color, 0, 0x11, CMB_GBWK->texHandle,
                          cmbSpriteTable, ot);
     }
 }

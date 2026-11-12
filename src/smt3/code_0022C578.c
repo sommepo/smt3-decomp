@@ -807,8 +807,8 @@ void campDebugRegistAll(void)
 
 void dds3ClearStockTable(void)
 {
-    datUnitWork_t *stock = (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54);
-    u8 *gbwk;
+    datUnitWork_t *stock = DDS3_GBWK->unitwork;
+    dds3GlobalWork_t *gbwk;
     s32 i;
 
     for (i = 0xF; i >= 0; i--, stock++) {
@@ -818,9 +818,9 @@ void dds3ClearStockTable(void)
      * where DDS3_GBWK-> per statement reloads it. +0x1924 is stocklist, whose
      * first four bytes this clears as a word; the IDB has only unk2644 for
      * +0xA54. */
-    gbwk = (u8 *)DDS3_GBWK;
-    *(s32 *)(gbwk + 0x1924) = 1;
-    *(u32 *)(gbwk + 0xA54) |= 7;
+    gbwk = DDS3_GBWK;
+    gbwk->stockCount = 1;
+    gbwk->unitwork[0].flag |= 7;
 }
 
 void cmpInitLocalStock(void)
@@ -1144,7 +1144,7 @@ datUnitWork_t *cmpGetSelectSrcStock(void)
 {
     s32 index = cmpGetStockInfoIndex(&campWork->stock[0], 0, 0);
 
-    return (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54) + index;
+    return &DDS3_GBWK->unitwork[index];
 }
 
 s8 cmpGetSelectedStockIndex(void)
@@ -1166,8 +1166,13 @@ u16 cmpGetSelectItemID(void)
 
 /* Encoded player name and glyph count written by frInitNameData. */
 typedef struct {
+#ifdef VERSION_MNAX
+    u8 reserved00[0x41C0];
+    u8 nameBytes[0x40];
+#else
     u8 reserved00[0x6604];
     u8 nameBytes[0x50];
+#endif
     u8 nameLength;
 } cmpSavedNameView_t;
 
@@ -1210,7 +1215,7 @@ s32 cmpGetItSkErrSelFlag(u16 skillId)
         flags = 1 << cmpGetSelectedStockIndex();
         break;
     case 2:
-        unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54);
+        unit = DDS3_GBWK->unitwork;
         for (i = 0; i < 16; i++)
         {
             if ((unit->flag & 2) != 0)
@@ -1407,7 +1412,7 @@ s32 cmpGetKugatatiMsg(void)
         return 27;
     }
     diff = entry - stock->level;
-    lvl = ((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54))->level;
+    lvl = (DDS3_GBWK->unitwork)->level;
     msg = 26;
     if (diff >= 2)
     {
@@ -1481,7 +1486,7 @@ extern void p2sdPlaySE(s32 id, s32 volume, s32 pan);
 s32 cmpUseItem(void)
 {
     u16 itemId = cmpGetSelectItemID();
-    datUnitWork_t *stock = (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54);
+    datUnitWork_t *stock = DDS3_GBWK->unitwork;
     datUnitWork_t *target = cmpGetSelectDstStock();
     u16 skill = datGetItemSkillNo(itemId);
     u16 currentItem;
@@ -1564,7 +1569,7 @@ s32 cmpChkDoNotUseSkill(u16 skill)
     u8 use;
     u32 normalSkill;
 
-    if (cmpGetSkillEntry(skill, (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54) + index) == 0) {
+    if (cmpGetSkillEntry(skill, DDS3_GBWK->unitwork + index) == 0) {
         return -1;
     }
     use = datSkillTable.normal[skill].use & 1;
@@ -1633,10 +1638,10 @@ void cmpApplyStockRecover(void)
 {
     s32 index = cmpGetStockInfoIndex(&campWork->stock[0], 0, 0);
 
-    cmpSetStockFlag((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54) + index);
+    cmpSetStockFlag(DDS3_GBWK->unitwork + index);
     cmpRemoveStockSlot(cmpGetStockInfoIndex(&campWork->stock[0], 0, 1));
     cmpCompactStockList(index);
-    datClearCommMemory((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54) + index);
+    datClearCommMemory(DDS3_GBWK->unitwork + index);
     datAllClearCommMemory();
 }
 
@@ -2373,7 +2378,7 @@ s32 cmpCalcSequence(void)
     case 14:
         if (campWork->unk_0004 == 1 && (s8)campWork->stockMessagePhase == 1) {
             s8 index = cmpGetStockInfoIndex(campWork->stock, 0, 0);
-            datUnitWork_t *unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54) + index;
+            datUnitWork_t *unit = DDS3_GBWK->unitwork + index;
 
             cmpSetIniStockRecoverEff((u8 *)campWork->stock);
             fclSetMessageVar_20743088(0, EE_ADDR_S(text2[unit->id]));
@@ -2703,6 +2708,23 @@ extern void fclDrawSpriteRes(s32 x, s32 y, s32 z, s32 *colors, s32 page,
 extern u32 frGetStrWidth2(frFontHandle_t *font);
 extern void frSetDrawPosition(frFontHandle_t *font, u32 x, u32 y);
 
+#ifdef VERSION_MNAX
+void campDrawText(s32 id, s32 *colors)
+{
+    s8 index = id;
+    u8 alpha = colors != NULL ? *(u8 *)colors : 0x80;
+    frFontHandle_t *font;
+    s32 x;
+
+    font = frwGetSmallFontFRQ2(0, 0, 0xFFFFF, alpha | 0xA09DC300,
+                               cmpMenuStrings[index], NULL);
+    fclDrawSpriteRes(0, 0, 0, colors, 0, 0x19, D_00345D88, fclSpriteTable, 0x47);
+    x = (0xA5 - (s32)frGetStrWidth2(font)) / 2 + 0x10;
+    frSetDrawPosition(font, x * 16, 0xC8);
+    frDrawFontOt(font, 1, 0x47);
+    frDestroyFontRequestAfter(font);
+}
+#else
 void campDrawText(s32 id, s32 *colors)
 {
     s8 index = id;
@@ -2725,6 +2747,7 @@ void campDrawText(s32 id, s32 *colors)
     frDestroyFontRequestAfter(font);
     cmpSetSkillListRows(-1);
 }
+#endif
 
 #ifdef NON_MATCHING
 extern const volatile f32 D_0054E45C;
@@ -2902,7 +2925,13 @@ void campDrawNumber(void)
                          D_00345D88, fclSpriteTable, 0x47);
         fontColor = 0xA09DC300 | fade;
         sprintf(text, cmpFmtMaka, DDS3_GBWK->maka);
-        font = frwGetNumFontFRQ(0x3C0, 0xC90, 0xFFFFF,
+        font = frwGetNumFontFRQ(0x3C0,
+#ifdef VERSION_MNAX
+                                 0xCA0,
+#else
+                                 0xC90,
+#endif
+                                 0xFFFFF,
                                 fontColor, text, NULL);
         frDrawFontOt(font, 1, 0x47);
         frDestroyFontRequestAfter(font);
@@ -3910,7 +3939,7 @@ s32 cmpHeartsIconIsVisible(s8 id)
 {
     s32 i;
 
-    for (i = 0; i < ((u8 *)DDS3_GBWK)[0x1D7B]; i++) {
+    for (i = 0; i < DDS3_GBWK->heartscnt; i++) {
         if (DDS3_GBWK->unk_01CFB[i] == id) {
             return 1;
         }
@@ -4912,7 +4941,13 @@ void campDhDrawHeartsGauge(campDhIconGauge_t *gauge, s8 arg)
                              sprite,
                              (s32 *)((u8 *)campDhDrawWork + 0x1160), fclSpriteTable, 0x47);
             sprintf(text, campDhFmtAmount, amount);
-            font = (frFontHandle_t *)frwGetSmallNumFontFRQ(0x5E0, y + 0x910, 0, (u32)color, text, NULL);
+            font = (frFontHandle_t *)frwGetSmallNumFontFRQ(0x5E0,
+#ifdef VERSION_MNAX
+                                                       y + 0x930,
+#else
+                                                       y + 0x910,
+#endif
+                                                       0, (u32)color, text, NULL);
             frDrawFontOt(font, 1, 0x47);
             frDestroyFontRequestAfter(font);
             y += 0xD0;
@@ -4942,7 +4977,7 @@ void campDhDrawHeartsIcon(s32 a, s32 b, s32 c, s8 d, s32 e)
     campDhWork_t *work = campDhDrawWork;
 
     if ((work->flags & 1) == 0) {
-        if (*((u8 *)DDS3_GBWK + 0x1CFA) == 0) {
+        if (DDS3_GBWK->heartsequip == 0) {
             return;
         }
     }
@@ -5084,7 +5119,7 @@ s32 campDhFindEntry(void)
         {
             return 2;
         }
-        for (i = 0; i < ((u8 *)DDS3_GBWK)[0x1D7B]; i++)
+        for (i = 0; i < DDS3_GBWK->heartscnt; i++)
         {
             if (id == DDS3_GBWK->unk_01CFB[i])
             {
@@ -5123,15 +5158,15 @@ void cmpReturnParamDH(void)
 
 void campDhEquipHearts(void)
 {
-    u8 *gbwk;
+    dds3GlobalWork_t *gbwk;
 
     datEquipHearts(cmpGetHeartsIconId(campDhUpdateWork->unk_31));
-    gbwk = (u8 *)DDS3_GBWK;
-    if (*(u16 *)(gbwk + 0xA5A) == 0) {
-        *(u16 *)(gbwk + 0xA5A) = 1;
+    gbwk = DDS3_GBWK;
+    if (gbwk->unitwork[0].hp == 0) {
+        gbwk->unitwork[0].hp = 1;
     }
-    if (*(u16 *)(gbwk + 0xA5E) == 0) {
-        *(u16 *)(gbwk + 0xA5E) = 1;
+    if (gbwk->unitwork[0].mp == 0) {
+        gbwk->unitwork[0].mp = 1;
     }
 }
 
@@ -5226,7 +5261,7 @@ void cmpUpdateHeartsAttachStatus(void)
                 campDhUpdateWork->unk_01[0] = 4;
                 campDhUpdateWork->unk_04 = button;
                 break;
-            } else if ((*(u16 *)((u8 *)DDS3_GBWK + 0xA62) & 0x8000) != 0) {
+            } else if ((DDS3_GBWK->unitwork[0].badstatus & 0x8000) != 0) {
                 fclSetMessageInvalid(1);
                 fclStartMessage(1);
                 campDhUpdateWork->unk_01[0] = 4;
@@ -5366,7 +5401,7 @@ void cmpUpdateHeartsRemoveConfirm(void)
 
     if (phase > 0) {
         if (phase == 1) {
-            fclSetMessageVar_20743088(0xC, EE_ADDR_S(pstr[*((u8 *)DDS3_GBWK + 0x1CFA)]));
+            fclSetMessageVar_20743088(0xC, EE_ADDR_S(pstr[DDS3_GBWK->heartsequip]));
             fclSetMessageInvalid(1);
             fclStartMessage(5);
             datRemoveHearts();
@@ -5637,9 +5672,13 @@ extern void cmpSetSkillListRows(s32 rows);
 
 void campDrawSkillPanel(void)
 {
+#ifdef VERSION_MNAX
+    campDrawText(0, 0);
+#else
     cmpSetSkillListRows(0x14);
     campDrawText(0, 0);
     cmpSetSkillListRows(-1);
+#endif
     campWork->drawPhase = 0;
 }
 
@@ -5793,7 +5832,13 @@ void rstDrawNumber(s32 x, s32 y, s8 number)
                          6, 1, D_00345D88, fclSpriteTable, 0x47);
     }
     sprintf(text, cmpFmtDec2, number);
-    font = frwGetSmallNumFontFRQ(x + 0x7B0, yBase + 0x420, 0xFFFF,
+    font = frwGetSmallNumFontFRQ(x + 0x7B0,
+#ifdef VERSION_MNAX
+                                 yBase + 0x438,
+#else
+                                 yBase + 0x420,
+#endif
+                                 0xFFFF,
                                  0xA09DC380, text, NULL);
     frDrawFontOt(font, 1, 0x47);
     frDestroyFontRequestAfter(font);
@@ -6999,11 +7044,15 @@ void cmpDrawSkillListHeader(s32 x, s32 y, s32 c, u16 index)
 {
     void *frq;
 
+#ifndef VERSION_MNAX
     cmpSetSkillListRows(0x12);
+#endif
     frq = frwGetSmallFontFRQ2(x, y, 0xFFFFFF, c, text1[index], 0);
     frDrawFontOt(frq, 1, 0x47);
     frDestroyFontRequestAfter(frq);
+#ifndef VERSION_MNAX
     cmpSetSkillListRows(-1);
+#endif
 }
 
 u8 cmpGetSkillIcon(u16 skill)
@@ -7775,7 +7824,11 @@ campStatusPanel_t *cmpInitStatus(s8 arg, cmpSeqInfo_t *pParent)
     work->slotCount = 0;
     work->slotCursor = 0;
     for (i = 0; i < 16; i++) {
+#ifdef VERSION_MNAX
+        if (DDS3_GBWK->party[i].unit.flag & 1) {
+#else
         if (DDS3_GBWK->akuma[i].flag & 1) {
+#endif
             if (i == arg) {
                 work->slotCursor = work->slotCount;
             }
@@ -7867,7 +7920,7 @@ s32 camp_calc_status_Process(s32 id)
 s32 camp_draw_status_Process(s32 id)
 {
     datUnitWork_t *unit =
-        (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54) + cmpStatusPhase->slot[cmpStatusPhase->slotCursor];
+        DDS3_GBWK->unitwork + cmpStatusPhase->slot[cmpStatusPhase->slotCursor];
 
     cmpStatusPhase = dds3GetProcessData(id);
     if (cmpStatusWindowHidden != 0)
@@ -8291,7 +8344,9 @@ void cmpDrawListItemText(s32 x, s32 y, s32 priority, u8 rowHeight,
     s32 i;
 
     if (mode == 2) boxMode = 2;
+#ifndef VERSION_MNAX
     cmpSetSkillListRows(0x12);
+#endif
     for (i = 0; i < cursor->unk_20; i++) {
         u32 color = cmpDrawListItemBox(cursor, i, row, boxMode, alpha);
 
@@ -8304,7 +8359,9 @@ void cmpDrawListItemText(s32 x, s32 y, s32 priority, u8 rowHeight,
     }
     frDrawFontOt(font, 1, ot);
     frDestroyFontRequestAfter(font);
+#ifndef VERSION_MNAX
     cmpSetSkillListRows(-1);
+#endif
 }
 
 #ifdef NON_MATCHING
@@ -10273,7 +10330,7 @@ void cmpGetStatusModelMotion(mdlObj_t *model)
     s8 motion = (s8)cmpModelParamTable[cmpStatusModelId].motionId;
 
     if (cmpStatusModelId == 0 &&
-        (((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54))->badstatus & 0x8000) != 0) {
+        ((DDS3_GBWK->unitwork)->badstatus & 0x8000) != 0) {
         motion = 2;
     }
     mdlLoopMotion(model, 0, motion);
@@ -11801,9 +11858,15 @@ s32 func_002429C0(void)
     s32 total = 0;
     s32 i;
 
+#ifdef VERSION_MNAX
+    for (i = 0; i < DDS3_GBWK->party[0].unit.skillcnt; i++) {
+        total += attr[DDS3_GBWK->party[0].unit.skill[i]].capacity;
+    }
+#else
     for (i = 0; i < DDS3_GBWK->akuma[0].skillcnt; i++) {
         total += attr[DDS3_GBWK->akuma[0].skill[i]].capacity;
     }
+#endif
     return total;
 }
 

@@ -720,11 +720,18 @@ extern void fldSetSceneParam5(fldSceneParam_t *pParam, s32 loadField, s32 loadAr
 extern const char fldElevatorPosName[]; /* "01pos_01" */
 extern const char fldElevatorStartLabel[]; /* "elvstart_label" */
 
+#ifdef VERSION_MNAX
+/* Maniax has no elevator strings here: the jump tables of fldDoor_Warp and
+ * fldDoor_WarpEx sit in their place. */
+INCLUDE_RODATA(const s32, "field/fldWap", jtbl_0052F830);
+INCLUDE_RODATA(const s32, "field/fldWap", jtbl_0052F850);
+#else
 const char fldElevatorPosName[16] = "01pos_01";
 
 const char fldElevatorStartLabel[24] = "elvstart_label";
 
 INCLUDE_RODATA(const s32, "field/fldWap", jtbl_00531F40);
+#endif
 
 void fldDoor_WarpEx(s32 ex_no) {
     fldSceneParam_t record;

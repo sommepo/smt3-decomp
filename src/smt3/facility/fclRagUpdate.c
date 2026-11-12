@@ -59,7 +59,11 @@ extern ragUpdateWork_t *ragUpdateWork;
 
 typedef struct
 {
+#ifdef VERSION_MNAX
+    u8 unk_00000[0xA4C];
+#else
     u8 unk_00000[0xA50];
+#endif
     u8 maxstock;
     u8 unk_00A51[3];
     datUnitWork_t unitwork[16];

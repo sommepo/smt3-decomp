@@ -158,7 +158,25 @@ void itfMesMngSetMesPosition(s32 id, s32 x, s32 y);
 
 #define ITF_MES_DEFAULT_TEXT_X 0x4B0
 
+#ifdef VERSION_MNAX
+#define ITF_MES_SELECT_ROW 25
+#define ITF_MES_SELECT_ROW_U 25U
+#else
+#define ITF_MES_SELECT_ROW 20
+#define ITF_MES_SELECT_ROW_U 20U
+#endif
+
+#ifdef VERSION_MNAX
+#define ITF_MES_DEFAULT_TEXT_Y 0xAF8
+#define ITF_MES_SPEAKER_Y 0xA20
+#define ITF_MES_SELECT_Y 0xC88
+#define ITF_MES_SPEAKER_PANEL_BOTTOM 0x110
+#else
 #define ITF_MES_DEFAULT_TEXT_Y 0xA88
+#define ITF_MES_SPEAKER_Y 0x9B0
+#define ITF_MES_SELECT_Y 0xBC8
+#define ITF_MES_SPEAKER_PANEL_BOTTOM 0xE8
+#endif
 
 s32 itfMesMngInitialize(itfMesResource_t *sub);
 
@@ -783,7 +801,9 @@ s32 itfMesMngRequestMessage(s32 window, s32 entryIndex, s32 itemIndex) {
     mes->table = table;
     mes->maxpage = table->page;
     if (table->page == 0) {
+#ifndef VERSION_MNAX
         printf("itfMesMngRequestMessage() escape 1\n");
+#endif
         return 0;
     }
     CommitVarTable((s32 *)panel->variable.pptr);
@@ -879,26 +899,39 @@ void itfMesMngRequestSelect(s32 id, s32 select) {
     frFontHandle_t *chain;
 
     entry = GetTypeHeader(panel, select);
+#ifndef VERSION_MNAX
     if (entry->type != (u32 *)1) {
         printf("itfMesMngRequestSelect() - Invalid Type : %d\n", entry->type);
     }
+#endif
     if (sel->pfont != NULL) {
         frDestroyFontRequestAfter(sel->pfont);
         sel->pfont = NULL;
     }
     table = entry->ptr;
     count = GetNumSelectItem(table->speaker, sel->mask);
+#ifdef VERSION_MNAX
+    y = sel->y - ((count * ITF_MES_SELECT_ROW_U - ITF_MES_SELECT_ROW_U) << 3);
+#else
     y = sel->y - count * 160;
     y += 0xB4;
+#endif
     CommitVarTable((s32 *)panel->variable.pptr);
     if (panel->pext != NULL) {
         frSetExtDic(panel->pext);
     }
     chain = GetFontHandleUnit(&table->addr[1], table->speaker, sel->mask, sel->x, y, panel->z);
+#ifdef VERSION_MNAX
+    sel->lines = count;
+    sel->pfont = chain;
+    panel->stat = (panel->stat & ~0x38) | 0x10;
+    sel->phase = 1;
+#else
     sel->phase = 1;
     sel->lines = count;
     sel->pfont = chain;
     panel->stat = (panel->stat & ~0x38) | 0x10;
+#endif
 }
 
 /* Release option glyphs, clear option selection/state and invalidate its rank.
@@ -1158,6 +1191,29 @@ void itfMesMngSetVar(s32 id, s32 index, s32 num, s32 type) {
     case 3:
         itfMesMngSetVarImmediate(id, index, pStr[num]);
         break;
+#ifdef VERSION_MNAX
+    case 4: {
+        u16 text[0x20];
+        u16 *p;
+
+        p = text;
+        if (num >= 0x3E9) {
+            *p = 0xB280;
+            text[1] = 0;
+        } else {
+            if (num < 0) {
+                num = -num;
+                *p = 0xA280;
+                p = &text[1];
+            }
+            p = (u16 *)ConvertZenkakuNumber(num, (char *)p);
+            p[0] = 0xA680;
+            p[1] = 0;
+        }
+        itfMesMngSetVarImmediate(id, index, (char *)text);
+        break;
+    }
+#else
     case 4: {
         char text[0x40];
         char *p;
@@ -1179,6 +1235,7 @@ void itfMesMngSetVar(s32 id, s32 index, s32 num, s32 type) {
         itfMesMngSetVarImmediate(id, index, text);
         break;
     }
+#endif
     case 5:
         itfMesMngSetVarImmediate(id, index, text1[num]);
         break;
@@ -1191,6 +1248,11 @@ void itfMesMngSetVar(s32 id, s32 index, s32 num, s32 type) {
     case 9:
         itfMesMngSetVarImmediate(id, index, pstr[num]);
         break;
+#ifdef VERSION_MNAX
+    case 10:
+        itfMesMngSetVarImmediate2(id, index, (char *)DDS3_GBWK + 0x41C0 + num * 16, *(u8 *)((u32)num + (u32)DDS3_GBWK + 0x4200) * 2);
+        break;
+#else
     case 10: {
         char *buffer = itfMesMngVarText;
 
@@ -1198,6 +1260,7 @@ void itfMesMngSetVar(s32 id, s32 index, s32 num, s32 type) {
         itfMesMngSetVarImmediate2(id, index, buffer, strlen(buffer));
         break;
     }
+#endif
     }
 }
 
@@ -1666,7 +1729,9 @@ frFontHandle_t *GetFontHandleUnit(u32 *list, s32 count, u32 mask, s32 x, s32 y, 
         }
         chain = MessageRequestEx(x, y, 0, 0, 0, 0x80, EE_ADDR_AS(u8 *, *list), chain);
         y += (s16)chain->parentDimensionsOrRenderWord.parentDimensions.cellHeight * 8;
+#ifndef VERSION_MNAX
         y += 0xA;
+#endif
         mask >>= 1;
     }
     if (chain != NULL) {
@@ -1897,7 +1962,7 @@ void OpenCheckSpeakerWindow(instanceMes_tag *pinst) {
         if (place->spk == NULL) {
             s32 width = origin->pfont->advance * 16;
             place->spk = itfPnlRegist2(7, EE_ADDR(itfMesMngManager.windowTexture));
-            itfPnlSetPosition(place->spk, origin->x - 0x2D0, origin->y - 0x68, origin->x + width + 0x2D0, origin->y + 0xE8, pinst->z);
+            itfPnlSetPosition(place->spk, origin->x - 0x2D0, origin->y - 0x68, origin->x + width + 0x2D0, origin->y + ITF_MES_SPEAKER_PANEL_BOTTOM, pinst->z);
             itfPnlSetColor(place->spk, 0x7F, 0x7F, 0x7F, 0);
         }
         pinst->stat = (pinst->stat & ~0x3000) | 0x1000;
@@ -1909,7 +1974,7 @@ void OpenCheckSpeakerWindow(instanceMes_tag *pinst) {
 void InitializeSpeaker(Speaker_tag *pspeaker, s32 defaultpos) {
     if (defaultpos != 0) {
         pspeaker->x = 0x430;
-        pspeaker->y = 0x9B0;
+        pspeaker->y = ITF_MES_SPEAKER_Y;
     }
     pspeaker->pfont = 0;
     pspeaker->num = 0xffff;
@@ -1918,7 +1983,7 @@ void InitializeSpeaker(Speaker_tag *pspeaker, s32 defaultpos) {
 void InitializeMessage(message_tag *pmessage, s32 defaultpos) {
     if (defaultpos != 0) {
         pmessage->x = 0x4B0;
-        pmessage->y = 0xA88;
+        pmessage->y = ITF_MES_DEFAULT_TEXT_Y;
     }
     pmessage->pfont = NULL;
     pmessage->phase = 0;
@@ -1936,7 +2001,7 @@ void InitializeMessage(message_tag *pmessage, s32 defaultpos) {
 void InitializeSelect(select_tag *pselect)
 {
     pselect->x = 0x560;
-    pselect->y = 0xBC8;
+    pselect->y = ITF_MES_SELECT_Y;
     pselect->pfont = NULL;
     pselect->mask = 0;
     pselect->phase = 0;
@@ -2027,11 +2092,19 @@ char *ConvertZenkakuNumber(s32 buf, char *num) {
         p++;
     } while (buf > 0 && count < 10);
 
+#ifdef VERSION_MNAX
+    for (i = count - 1; i >= 0; i--) {
+        *(u16 *)num = ((u16)digits[i] << 8) - 0x6F80;
+        num += 2;
+    }
+    *(u16 *)num = 0;
+#else
     for (i = count - 1; i >= 0; i--) {
         *num = (u8)digits[i] + 0x30;
         num++;
     }
     *num = 0;
+#endif
     return num;
 }
 
@@ -2188,9 +2261,9 @@ void CalcSelect(instanceMes_tag *panel) {
     switch (selection->phase) {
     case 1:
         entryY = entry->y;
-        bottom = entryY + entry->lines * (20 << 3);
+        bottom = entryY + entry->lines * (ITF_MES_SELECT_ROW << 3);
         /* RequestSelect also permits zero rows: scale in unsigned coordinates. */
-        top = selection->y - ((selection->lines * 20U - 20U) << 3);
+        top = selection->y - ((selection->lines * ITF_MES_SELECT_ROW_U - ITF_MES_SELECT_ROW_U) << 3);
         if (entry->pfont != NULL && top < bottom) {
             func_001D0518(panel, -64);
             return;
@@ -2228,7 +2301,7 @@ void CalcSelect(instanceMes_tag *panel) {
         ChangeFontAlpha(selection->pfont, selection->glyphColorIntensity);
         return;
     case 4:
-        if (entry->pfont != NULL && entry->y < 0xA88) {
+        if (entry->pfont != NULL && entry->y < ITF_MES_DEFAULT_TEXT_Y) {
             func_001D0518(panel, 64);
             return;
         }

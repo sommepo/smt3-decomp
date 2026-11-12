@@ -121,10 +121,10 @@ s32 rcvUpdateData(void)
 
         slot = (s8)(*((u8 *)work + 0x12AE) + *((u8 *)work + 0x12B0));
         unitIndex = work->stockList.stock[slot];
-        unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54) + unitIndex;
+        unit = DDS3_GBWK->unitwork + unitIndex;
     } else {
         slot = 0;
-        unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54);
+        unit = DDS3_GBWK->unitwork;
     }
 
     price = *(s32 *)((u8 *)work + 0x105C + slot * 4);

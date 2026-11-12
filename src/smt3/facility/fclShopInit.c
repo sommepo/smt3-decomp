@@ -463,6 +463,21 @@ s8 shpProcessStat = 0;
 
 SDATA_PAD(3);
 
+#ifdef VERSION_MNAX
+char shpCmdLeave[8] = "\211\252\201\251";
+
+char shpCmdTalk[8] = "\211\207\200\344";
+
+char shpProcName[8] = "shop";
+
+char shpCmdBuy[8] = "\211\252\207\215";
+
+char shpCmdSell[8] = "\215\305\204\274";
+
+char shpSellText[8] = "%7d";
+
+char shpBuyText[8] = "%2d";
+#else
 char shpCmdLeave[8] = "Leave";
 
 char shpCmdTalk[8] = "Talk";
@@ -476,4 +491,5 @@ char shpProcName[8] = "shop";
 char shpSellText[8] = "SELL";
 
 char shpBuyText[8] = "BUY";
+#endif
 

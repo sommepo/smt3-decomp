@@ -57,7 +57,11 @@ extern void scrSetIntReturnValue(s32 i);
 
 typedef struct
 {
+#ifdef VERSION_MNAX
+    u8 unk_00000[0x1924];
+#else
     u8 unk_00000[0x1928];
+#endif
     u8 item[0xA0];
 } fclGlobalWorkItemInventory_t;
 
@@ -221,7 +225,11 @@ void fclCreateItemList(fclItemList_t *list)
 
     list->count = 0;
     for (item = 1; item < 0xA0; item++) {
+#ifdef VERSION_MNAX
+        if ((EE_ADDR_AS(u8 *, item) + EE_ADDR(DDS3_GBWK))[0x1924] != 0) {
+#else
         if ((EE_ADDR_AS(u8 *, item) + EE_ADDR(DDS3_GBWK))[0x1928] != 0) {
+#endif
             list->item[list->count++] = item;
         }
     }

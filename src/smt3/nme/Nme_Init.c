@@ -1,7 +1,48 @@
 #include "common.h"
 #include "kernel.h"
 #include "libsdf.h"
+#ifdef VERSION_MNAX
+/* Maniax: the name rows hold 8 characters instead of 16, so the work area
+ * is 0x30 bytes shorter after inputChars. Keep the USA header's view out of
+ * the way and describe the Maniax one here. */
+#define nmeWork_t nmeWorkUsa_t
+#define nmeProcessId nmeProcessIdUsa
+#define nmeUpdateWork nmeUpdateWorkUsa
+#endif
 #include "nme.h"
+#ifdef VERSION_MNAX
+#undef nmeWork_t
+#undef nmeProcessId
+#undef nmeUpdateWork
+typedef struct {
+    nmeSeqInfo_t sequence;
+    sdfMemHandle_t *memHandle;
+    s8 targetNo;
+    s8 entryMode;
+    s8 inputMode;
+    u8 unk1B;
+    cmpCursorInfo_t modeCursor;
+    u8 reserved54[0x1004];
+    cmpCursorInfo_t inputCursor;
+    u8 reserved1090[0x1004];
+    cmpCursorInfo_t nameCursor;
+    u8 reserved20CC[0x1004];
+    s8 primaryCursorActive;
+    u8 reserved30D1[3];
+    cmpCursorInfo_t cursor;
+    u8 reserved310C[0x1004];
+    cmpCursorInfo_t wrapCursor;
+    u8 reserved4148[0x1004];
+    s8 alternateCursorActive;
+    s8 inputRowEnabled[3];
+    s8 inputPos;
+    u8 inputChars[3][8][2];
+    u8 reserved5181[3];
+    sdfTexHandle_t *textures[4];
+    s32 animation;
+} nmeWork_t;
+extern nmeWork_t *nmeProcessId;
+#endif
 #include "newdata.h"
 
 
@@ -42,13 +83,19 @@ extern const char nmeFontPath[];
 
 extern void *memset(void *a, s32 b, size_t c);
 
+#ifdef VERSION_MNAX
+#define NME_WORK_SIZE 0x5198
+#else
+#define NME_WORK_SIZE 0x51C8
+#endif
+
 void frAllocNameData(void)
 {
     s8 target = 0;
-    sdfMemHandle_t *handle = sdfMemAllocDirect(0x51C8);
+    sdfMemHandle_t *handle = sdfMemAllocDirect(NME_WORK_SIZE);
     nmeWork_t *work = sdfMemLock(handle);
 
-    memset(work, 0, 0x51C8);
+    memset(work, 0, NME_WORK_SIZE);
     frLoadFontData(4, nmeFontPath);
     for (; target < 4; target++) {
         nmeInitNameRows(target, work);
@@ -71,7 +118,11 @@ s32 nmeGetInputMode(nmeWork_t *work) {
     if (work->inputMode < 2) {
         if (work->inputMode >= 0) {
             inputPos = work->inputPos;
+#ifdef VERSION_MNAX
+            return inputPos / 4 != 0;
+#else
             return inputPos / 8 != 0;
+#endif
         }
     }
     return 2;
@@ -166,7 +217,11 @@ void nmeInitNameBuffer(s8 mode, nmeWork_t *work) {
     work->primaryCursorActive = 0;
     work->alternateCursorActive = 0;
     work->unk1B = 0;
+#ifdef VERSION_MNAX
+    nmeInitNameCursor(0, work);
+#else
     nmeInitNameCursor(2, work);
+#endif
     switch (mode) {
     case 0:
     case 1:
@@ -274,10 +329,10 @@ extern const char nmeFontPath[];
 
 nmeWork_t *nmeLoadFont(s8 target, s8 mode, s32 parent)
 {
-    sdfMemHandle_t *handle = sdfMemAllocDirect(0x51C8);
+    sdfMemHandle_t *handle = sdfMemAllocDirect(NME_WORK_SIZE);
     nmeWork_t *work = sdfMemLock(handle);
 
-    memset(work, 0, 0x51C8);
+    memset(work, 0, NME_WORK_SIZE);
     work->memHandle = handle;
     cmpInitSeqInfo(work, parent);
     work->sequence.current = 0;
@@ -289,7 +344,11 @@ nmeWork_t *nmeLoadFont(s8 target, s8 mode, s32 parent)
     work->inputRowEnabled[1] = 0;
     work->inputRowEnabled[2] = 0;
     nmeInitNameBuffer(0, work);
+#ifdef VERSION_MNAX
+    nmeInitCursor(0, work);
+#else
     nmeInitCursor(4, work);
+#endif
     nmeInitNameRows(target, work);
     frLoadFontData(4, nmeFontPath);
     nmeTexLoad(target, work);

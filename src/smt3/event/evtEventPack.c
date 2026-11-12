@@ -643,6 +643,32 @@ const char D_0053C760[40] = "/facility/tmx/combine/comb_02.tmx";
 
 const char D_0053C788[40] = "/facility/tmx/combine/comb_01.tmx";
 
+#ifdef VERSION_MNAX
+const char D_0053A0E0[16] = "\204\265\201\211\204\323\201\251";
+
+const char D_0053A0F0[16] = "\206\243\201\260\205\253\200\355";
+
+const char D_0053A100[16] = "\203\353\203\307\211\227\204\270";
+
+const char D_0053A110[16] = "\203\350\203\351\200\367\201\251";
+
+const char D_0053A120[16] = "\207\255\206\262\200\367\201\251";
+
+const char D_0053A130[16] = "\215\335\207\276\200\367\201\251";
+
+const char D_0053A140[16] = "\201\357\201\275\201\320\201\357";
+
+const char D_0053A150[16] = "\201\312\201\276\201\374\201\214\210\261\206\324";
+
+const char D_0053A160[16] = "\203\350\203\351\205\275\210\244";
+
+const char D_0053A170[24] = "\201\274\201\301\201\325\201\322\201\206\201\265\201\302\201\334\201\271";
+
+const char D_0053A188[16] = "\203\320\203\327\201\206\204\337\210\263";
+
+const char D_0053A198[16] = "\203\350\203\351\201\214\210\365\204\305";
+
+#else
 const char D_0053C7B0[24] = "Demonic Compendium";
 
 const char D_0053C7C8[16] = "Register";
@@ -658,6 +684,7 @@ const char D_0053C818[16] = "Sacrifices";
 const char D_0053C828[24] = "Elements & Mitama";
 
 const char D_0053C840[16] = "Fusion basics";
+#endif
 
 s32 evtMotionSeWork = 0x3E8;
 

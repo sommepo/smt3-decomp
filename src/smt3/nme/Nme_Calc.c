@@ -4,6 +4,13 @@
 #include "nme.h"
 #include "font.h"
 
+/* Maniax's name-entry work is 0x30 bytes shorter before the texture handles. */
+#ifdef VERSION_MNAX
+#define NME_TEXTURES(w) ((sdfTexHandle_t **)((u8 *)(w) + 0x5184))
+#else
+#define NME_TEXTURES(w) ((w)->textures)
+#endif
+
 extern nmeWork_t *nmeCalcWork;
 extern void *dds3GetProcessData(dds3ProcessID_t *id);
 extern s32 dds3FadeCheck(void);
@@ -40,11 +47,11 @@ void nmeDrawCharRow(s32 x, s32 y, s32 unused)
     s32 ot = 0x47;
 
     fclDrawSpriteRes(x, y, 0, 0, 3, 0x12,
-                     (s32 *)namelist_buttonAnim_end->textures, table, ot);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, ot);
     fclDrawSpriteRes(x, y, 0, 0, 3, 0x13,
-                     (s32 *)namelist_buttonAnim_end->textures, table, ot);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, ot);
     fclDrawSpriteRes(x, y, 0, 0, 3, 0x14,
-                     (s32 *)namelist_buttonAnim_end->textures, table, ot);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, ot);
 }
 
 void nmeDrawSymbolRow(s32 x, s32 y, s32 unused)
@@ -53,11 +60,11 @@ void nmeDrawSymbolRow(s32 x, s32 y, s32 unused)
     s32 ot = 0x47;
 
     fclDrawSpriteRes(x, y, 0, 0, 3, 0x12,
-                     (s32 *)namelist_buttonAnim_end->textures, table, ot);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, ot);
     fclDrawSpriteRes(x, y, 0, 0, 3, 0x1B,
-                     (s32 *)namelist_buttonAnim_end->textures, table, ot);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, ot);
     fclDrawSpriteRes(x, y, 0, 0, 3, 0x1C,
-                     (s32 *)namelist_buttonAnim_end->textures, table, ot);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, ot);
 }
 
 /* NON_MATCHING. Behaviour checked against retail: 3 PCSX2 call vectors give the same return and memory,
@@ -97,7 +104,7 @@ void nmeDrawNameText(s32 x, s32 y, s32 secondX, s32 secondY, u32 color, s32 mode
             sprite = 9;
         }
         fclDrawSpriteRes(x * 16 + 0xF0 + i * 0x150, (y + 0x16) * 8,
-                         0, NULL, 0, sprite, (s32 *)namelist_buttonAnim_end->textures,
+                         0, NULL, 0, sprite, (s32 *)NME_TEXTURES(namelist_buttonAnim_end),
                          GBWK_2, 0x47);
     }
     for (i = 0; i < 8; i++) {
@@ -106,12 +113,12 @@ void nmeDrawNameText(s32 x, s32 y, s32 secondX, s32 secondY, u32 color, s32 mode
             sprite = 9;
         }
         fclDrawSpriteRes(secondX * 16 + 0xF0 + i * 0x150, (secondY + 0x16) * 8,
-                         0, NULL, 0, sprite, (s32 *)namelist_buttonAnim_end->textures,
+                         0, NULL, 0, sprite, (s32 *)NME_TEXTURES(namelist_buttonAnim_end),
                          GBWK_2, 0x47);
     }
     cmpSetSkillListRows(0x18);
     fclDrawSpriteRes((x - 0x13) * 16, (y + 9) * 8, 0, NULL, 0, 0x12,
-                     (s32 *)namelist_buttonAnim_end->textures, GBWK_2, 0x47);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
     frDisableMode(1);
     for (i = 0; i < namelist_buttonAnim_end->inputRowEnabled[0]; i++) {
         frFontHandle_t *font;
@@ -125,7 +132,7 @@ void nmeDrawNameText(s32 x, s32 y, s32 secondX, s32 secondY, u32 color, s32 mode
         frDestroyFontRequestAfter(font);
     }
     fclDrawSpriteRes((secondX - 0x13) * 16, (secondY + 9) * 8, 0, NULL, 0, 0x11,
-                     (s32 *)namelist_buttonAnim_end->textures, GBWK_2, 0x47);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
     for (i = 0; i < namelist_buttonAnim_end->inputRowEnabled[1]; i++) {
         frFontHandle_t *font;
         text[0] = namelist_buttonAnim_end->inputChars[1][i][0];
@@ -165,7 +172,7 @@ void nmeDrawNameString(s32 x, s32 y, u32 color, s32 mode)
             sprite = 0x42;
         }
         fclDrawSpriteRes((x + 0x10) * 16 + i * 0x120, (y + 0x12) * 8,
-                         0, NULL, 0, sprite, (s32 *)namelist_buttonAnim_end->textures,
+                         0, NULL, 0, sprite, (s32 *)NME_TEXTURES(namelist_buttonAnim_end),
                          GBWK_2, 0x47);
     }
     for (i = 0; i < namelist_buttonAnim_end->inputRowEnabled[2]; i++) {
@@ -196,9 +203,9 @@ void nmeDrawEditIcons(void)
     colors[3] = 0x80808079;
 
     fclDrawSpriteRes(0, 0, 0x10, colors, 3, 0x19,
-                     (s32 *)namelist_buttonAnim_end->textures, table, 0x47);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, 0x47);
     fclDrawSpriteRes(0, 0, 0x10, colors, 3, 0x1A,
-                     (s32 *)namelist_buttonAnim_end->textures, table, 0x47);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, 0x47);
 }
 
 void nmeDrawTextBox(s32 x, s32 y, s32 z)
@@ -229,6 +236,41 @@ extern s32 frDrawFontOt(frFontHandle_t *request, s8 mode, u32 ot);
 extern s32 frDestroyFontRequestAfter(frFontHandle_t *request);
 extern u8 frDisableMode(u8 flag);
 
+#ifdef VERSION_MNAX
+extern frFontHandle_t *frLinkFontString(u8 *text, s8 style, s8 color, s8 type, frFontHandle_t *chain);
+
+void nmeDrawColoredText(s8 selected)
+{
+    nmeColoredTextStrings_t text = nmeColoredText;
+    frFontHandle_t *request;
+
+    request = frLinkFontString((u8 *)text.question, 0, 0, 0, NULL);
+    frSetDrawPosition(request, 0x970, 0x808);
+    frSetPriority(request, 0xFF0);
+    frDrawFontOt(request, 0, 0x47);
+    frDestroyFontRequestAfter(request);
+
+    request = frLinkFontString((u8 *)text.yes, 0, 0, 0, NULL);
+    frSetDrawPosition(request, 0x9D0, 0x910);
+    if (selected == 0) {
+        frSetFontColorNo(request, 1);
+        nmeDrawTextBox(0x9A0, 0x920, 0xFF);
+    }
+    frSetPriority(request, 0xFF0);
+    frDrawFontOt(request, 0, 0x47);
+    frDestroyFontRequestAfter(request);
+
+    request = frLinkFontString((u8 *)text.no, 0, 0, 0, NULL);
+    frSetDrawPosition(request, 0x9D0, 0x9E8);
+    if (selected == 1) {
+        frSetFontColorNo(request, 1);
+        nmeDrawTextBox(0x9A0, 0x9F0, 0xFF);
+    }
+    frSetPriority(request, 0xFF0);
+    frDrawFontOt(request, 0, 0x47);
+    frDestroyFontRequestAfter(request);
+}
+#else
 void nmeDrawColoredText(s8 selected)
 {
     nmeColoredTextStrings_t text = nmeColoredText;
@@ -264,49 +306,67 @@ void nmeDrawColoredText(s8 selected)
     frDisableMode(1);
     cmpSetSkillListRows(-1);
 }
+#endif
 
 extern void nmeDrawNameText(s32 x, s32 y, s32 width, s32 height, u32 color, s32 mode);
 extern void nmeDrawNameString(s32 x, s32 y, u32 color, s32 mode);
 extern void nmeDrawEditIcons(void);
 extern void nmeDrawColoredText(s8 color);
 
+#ifdef VERSION_MNAX
 void nmeDrawButtonGuide(void)
 {
     fclDrawSpriteRes(0, 0, 0, 0, 3, 0x17,
-                     (s32 *)namelist_buttonAnim_end->textures, GBWK_2, 0x47);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
+    nmeDrawNameText(0x9B, 0x64, 0x10B, 0x64, 0xFFD19280, 1);
+    if (namelist_buttonAnim_end->entryMode == 0) {
+        fclDrawSpriteRes(0, 0, 0, 0, 3, 0x18,
+                         (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
+        nmeDrawNameString(0xAC, 0x9A, 0xFFD19280, 1);
+    }
+    nmeDrawEditIcons();
+    nmeDrawColoredText((s8)((u8)namelist_buttonAnim_end->wrapCursor.unk_22 +
+                            (u8)namelist_buttonAnim_end->wrapCursor.unk_24));
+}
+#else
+void nmeDrawButtonGuide(void)
+{
+    fclDrawSpriteRes(0, 0, 0, 0, 3, 0x17,
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
     fclDrawSpriteRes(0, 0, 0, 0, 3, 0x1D,
-                     (s32 *)namelist_buttonAnim_end->textures, GBWK_2, 0x47);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
     nmeDrawNameText(0x2A, 0x64, 0xF4, 0x64, 0xFFD19280, 1);
     if (namelist_buttonAnim_end->entryMode == 0) {
         fclDrawSpriteRes(0, 0, 0, 0, 3, 0x18,
-                         (s32 *)namelist_buttonAnim_end->textures, GBWK_2, 0x47);
+                         (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
         nmeDrawNameString(0x83, 0x9A, 0xFFD19280, 1);
     }
     nmeDrawEditIcons();
     nmeDrawColoredText((s8)((u8)namelist_buttonAnim_end->wrapCursor.unk_22 +
                             (u8)namelist_buttonAnim_end->wrapCursor.unk_24));
 }
+#endif
 
 void nmeDrawPanelSprites(void)
 {
     s32 colors[4];
 
     fclDrawSpriteRes(0, 0, 0, 0, 3, 0x5,
-                     (s32 *)namelist_buttonAnim_end->textures, GBWK_2, 0x47);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
     fclDrawSpriteRes(0, 0, 0, 0, 3, 0x6,
-                     (s32 *)namelist_buttonAnim_end->textures, GBWK_2, 0x47);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
     fclDrawSpriteRes(0, 0, 0, 0, 3, 0x7,
-                     (s32 *)namelist_buttonAnim_end->textures, GBWK_2, 0x47);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
     fclDrawSpriteRes(0, 0, 0, 0, 3, 0x8,
-                     (s32 *)namelist_buttonAnim_end->textures, GBWK_2, 0x47);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
     fclDrawSpriteRes(0, 0, 0, 0, 3, 0x9,
-                     (s32 *)namelist_buttonAnim_end->textures, GBWK_2, 0x47);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
     fclDrawSpriteRes(0, 0, 0, 0, 3, 0xA,
-                     (s32 *)namelist_buttonAnim_end->textures, GBWK_2, 0x47);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
     fclDrawSpriteRes(0, 0, 0, 0, 3, 0xB,
-                     (s32 *)namelist_buttonAnim_end->textures, GBWK_2, 0x47);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
     fclDrawSpriteRes(0, 0, 0, 0, 3, 0xC,
-                     (s32 *)namelist_buttonAnim_end->textures, GBWK_2, 0x47);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
 
     colors[0] = 0x80808053;
     colors[1] = 0x80808053;
@@ -314,23 +374,46 @@ void nmeDrawPanelSprites(void)
     colors[3] = 0x80808053;
 
     fclDrawSpriteRes(0, 0, 0, colors, 3, 0xD,
-                     (s32 *)namelist_buttonAnim_end->textures, GBWK_2, 0x47);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
     fclDrawSpriteRes(0, 0, 0, colors, 3, 0xE,
-                     (s32 *)namelist_buttonAnim_end->textures, GBWK_2, 0x47);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
 }
 
+#ifdef VERSION_MNAX
 void nmeDrawNamePanel(void)
 {
     fclSpriteTbl_t *table = GBWK_2;
     s32 ot = 0x47;
 
     fclDrawSpriteRes(0, 0, 0, 0, 3, 0,
-                     (s32 *)namelist_buttonAnim_end->textures, table, ot);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, ot);
     fclDrawSpriteRes(0, 0, 0, 0, 3, 1,
-                     (s32 *)namelist_buttonAnim_end->textures, table, ot);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, ot);
     fclDrawSpriteRes(0, 0, 0, 0, 3, 2,
-                     (s32 *)namelist_buttonAnim_end->textures, table, ot);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, ot);
+    fclDrawSpriteRes(0, 0, 0, 0, 0, 4,
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, ot);
+    fclDrawSpriteRes(0, 0, 0, 0, 0, 5,
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, ot);
+    fclDrawSpriteRes(0, 0, 0, 0, 0, 0xB,
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, ot);
+    fclDrawSpriteRes(0, 0, 0, 0, 0, 0x10,
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, ot);
 }
+#else
+void nmeDrawNamePanel(void)
+{
+    fclSpriteTbl_t *table = GBWK_2;
+    s32 ot = 0x47;
+
+    fclDrawSpriteRes(0, 0, 0, 0, 3, 0,
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, ot);
+    fclDrawSpriteRes(0, 0, 0, 0, 3, 1,
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, ot);
+    fclDrawSpriteRes(0, 0, 0, 0, 3, 2,
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, ot);
+}
+#endif
 
 void nmeDrawCharCell(s32 x, s32 y, u16 index, s8 row, frFontHandle_t *font)
 {
@@ -358,7 +441,7 @@ void nmeDrawCharCell(s32 x, s32 y, u16 index, s8 row, frFontHandle_t *font)
         goto done;
     }
     fclDrawSpriteRes(drawX << 4, drawY << 3, 0, 0, 0, spriteId,
-                     (s32 *)work->textures, GBWK_2, 0x47);
+                     (s32 *)NME_TEXTURES(work), GBWK_2, 0x47);
     frSetFontColor(font, 0xFFD19280);
 done:
     return;
@@ -394,7 +477,7 @@ void nmeDrawCursorAt(s32 x, s32 y, s32 z, s8 mode, s32 ot)
             frFontHandle_t *font;
 
             fclDrawSpriteRes(drawX * 16, drawY * 8, 0, NULL, 0, 0x2B,
-                             (s32 *)namelist_buttonAnim_end->textures, GBWK_2, 0x47);
+                             (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
             character = nmeCharTables[mode] + index * 2;
             text[0] = character[0];
             text[1] = character[1];
@@ -424,11 +507,11 @@ void nmeDrawTabSprite(s32 x, s32 y, s32 unused)
     s32 ot = 0x47;
 
     fclDrawSpriteRes(x, y, 0, 0, 3, 0xF,
-                     (s32 *)namelist_buttonAnim_end->textures, table, ot);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, ot);
     fclDrawSpriteRes(x, y, 0, 0, 3, 0x10,
-                     (s32 *)namelist_buttonAnim_end->textures, table, ot);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, ot);
     fclDrawSpriteRes(x, y, 0, 0, 3, 0x11,
-                     (s32 *)namelist_buttonAnim_end->textures, table, ot);
+                     (s32 *)NME_TEXTURES(namelist_buttonAnim_end), table, ot);
 }
 
 void nmeDrawModeTabs(s8 mode)
@@ -438,11 +521,11 @@ void nmeDrawModeTabs(s8 mode)
     case 0:
     case 1:
         fclDrawSpriteRes(0, 0, 0, 0, 3, 0x15,
-                         (s32 *)namelist_buttonAnim_end->textures, GBWK_2, 0x47);
+                         (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
         break;
     case 2:
         fclDrawSpriteRes(0, 0, 0, 0, 3, 0x16,
-                         (s32 *)namelist_buttonAnim_end->textures, GBWK_2, 0x47);
+                         (s32 *)NME_TEXTURES(namelist_buttonAnim_end), GBWK_2, 0x47);
         break;
     default:
         break;

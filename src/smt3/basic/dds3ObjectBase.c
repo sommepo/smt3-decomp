@@ -1195,7 +1195,11 @@ char dds3ObjectBaseChiakiNodeName[7] = "chiaki";
 
 char dds3ObjectBaseTiakiANodeName[8] = "tiaki_a";
 
+#ifdef VERSION_MNAX
+u16 frMessageCode = 0x4247;
+#else
 u16 frMessageCode = 0;
+#endif
 
 SDATA_PAD(6);
 

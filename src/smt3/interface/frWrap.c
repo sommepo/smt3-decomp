@@ -133,6 +133,68 @@ frFontHandle_t *frwGetSmallFont1FRQ(s32 x, s32 y, s32 priority, u32 color,
     return frCombineFontRequestEx(previous, request, 0);
 }
 
+#ifdef VERSION_MNAX
+frFontHandle_t *frwGetFontEx(s32 x, s32 y, s32 depth, u32 colors, const char *text,
+                         s8 glyphMode, s8 sharedFlag, frFontHandle_t *previousGlyph) {
+    char glyphData[3];
+    s32 length;
+    s32 position = 0;
+    s32 glyphLength;
+    frFontHandle_t *chain = previousGlyph;
+
+    length = strlen(text);
+    if (sharedFlag == 0) {
+        frEnableMode(1);
+    }
+    frDisableMode(2);
+
+    if (length > 0) {
+        do {
+            const u8 *character = (const u8 *)text + position;
+            const u8 *trail = character + 1;
+            frFontHandle_t *glyph;
+            u32 index;
+
+            if ((s8)character[0] >= 0) {
+                glyphData[0] = character[0];
+                glyphLength = 1;
+                glyphData[1] = 0;
+                index = character[0];
+            } else {
+                glyphData[0] = character[0];
+                glyphData[1] = trail[0];
+                glyphLength = 2;
+                glyphData[2] = 0;
+                {
+                    u32 code = trail[0] | (character[0] << 8);
+                    index = (((s32)((code + 0x7F80) & 0xFF00)) >> 1) + (code & 0x7F);
+                }
+            }
+            if (index < 0x1C6) {
+                glyph = frLinkFontString(glyphData, glyphMode, 0, 0, 0);
+            } else {
+                glyph = frLinkFontString(glyphData, 0, 0, 0, 0);
+                frSetFontSize(glyph, 20, 20);
+                frSetFontSpace(glyph, -3);
+            }
+            frSetPriority(glyph, depth << 4);
+            frSetFontColor(glyph, colors);
+            chain = frCombineFontRequest(chain, glyph);
+            if (position == 0) {
+                glyph->x = x;
+            }
+            position += glyphLength;
+            glyph->y = y;
+        } while (position < length);
+    }
+
+    frEnableMode(2);
+    if (sharedFlag == 0) {
+        frDisableMode(1);
+    }
+    return chain;
+}
+#else
 frFontHandle_t *frwGetFontEx(s32 x, s32 y, s32 depth, u32 colors, const char *text,
                          s8 glyphMode, s8 sharedFlag, frFontHandle_t *previousGlyph) {
     char glyphData[3];
@@ -182,6 +244,8 @@ frFontHandle_t *frwGetFontEx(s32 x, s32 y, s32 depth, u32 colors, const char *te
     return chain;
 }
 
+#endif
+
 frFontHandle_t *frwGetSmallFontFRQ(s32 X, s32 Y, s32 Pri, s32 Color, const char *pStr, frFontHandle_t *pFRQ)
 {
 #ifdef VERSION_MNAX
@@ -193,6 +257,10 @@ frFontHandle_t *frwGetSmallFontFRQ(s32 X, s32 Y, s32 Pri, s32 Color, const char 
     return handle;
 #endif
 }
+
+#ifdef VERSION_MNAX
+extern u32 func_001C93C8(u32 code);
+#endif
 
 frFontHandle_t *frwGetSmallFontFRQ2(s32 x, s32 y, s32 priority, u32 color,
                                       const char *text, frFontHandle_t *previous)
@@ -213,7 +281,11 @@ frFontHandle_t *frwGetSmallFontFRQ2(s32 x, s32 y, s32 priority, u32 color,
             } else {
                 u32 v = src[i + 1] | (c << 8);
 
+#ifdef VERSION_MNAX
+                c = func_001C93C8(v & 0xFFFF);
+#else
                 c = (u16)v;
+#endif
                 if (c != 0xFFFF) {
                     buf[i] = c >> 8;
                     buf[i + 1] = c;
@@ -227,13 +299,18 @@ frFontHandle_t *frwGetSmallFontFRQ2(s32 x, s32 y, s32 priority, u32 color,
         } while (i < len);
     }
     frEnableMode(1);
+#ifdef VERSION_MNAX
+    frDisableMode(2);
+#endif
     request = frLinkFontString(buf, 1, 0, 0, 0);
     frEnableMode(2);
     frDisableMode(1);
     frSetDrawPosition(request, x, y);
     frSetPriority(request, priority << 4);
     frSetFontColor(request, color);
+#ifndef VERSION_MNAX
     frSetFontSpace(request, 3);
+#endif
     return frCombineFontRequestEx(previous, request, 0);
 }
 

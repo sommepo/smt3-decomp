@@ -54,11 +54,25 @@ typedef struct {
 } shpPaymentWork_t;
 
 typedef struct {
+#ifdef VERSION_MNAX
+    u8 reserved0000[0xA44];
+#else
     u8 reserved0000[0xA48];
+#endif
     s32 money;
     u8 reserved0A4C[0xEDC];
     u8 items[0xA0];
 } shpPaymentGlobal_t;
+/* Maniax draws these shop rows 0x18 or 0x20 lower. */
+#ifdef VERSION_MNAX
+#define SHOP_PRICE_Y 0x88
+#define SHOP_ROW_NAME_Y 0x88
+#define SHOP_ROW_NUM_Y 0xA0
+#else
+#define SHOP_PRICE_Y 0x70
+#define SHOP_ROW_NAME_Y 0x68
+#define SHOP_ROW_NUM_Y 0x80
+#endif
 extern shpPaymentWork_t *shopProcWork;
 extern shpPaymentGlobal_t *shopMoneyGlobal FAKEMATCH_ASM_NAME("DDS3_GBWK");
 extern s32 shpGetSellPrice(s32 index, s8 kind);
@@ -282,7 +296,7 @@ void shopDrawPrice(fclPanelPos_t *pos, s32 count, s8 drawMode, s32 ot)
         request = frwGetSmallNumFontFRQ(pos->unk_00 + 0x10A0, pos->unk_04 + 0xA0,
                                         pos->unk_08, 0x89FEFF80, text, NULL);
     } else {
-        request = frwGetNumFontFRQ(pos->unk_00 + 0x1070, pos->unk_04 + 0x70,
+        request = frwGetNumFontFRQ(pos->unk_00 + 0x1070, pos->unk_04 + SHOP_PRICE_Y,
                                    pos->unk_08, 0x89FEFF80, text, NULL);
 
         if (drawMode == 1 || drawMode == 3) {
@@ -349,11 +363,11 @@ void shopDrawRowText(s32 x, s32 y, s32 z, u32 color, u16 item, s32 count, s32 ot
     char text[16];
     frFontHandle_t *request;
 
-    request = frwGetSmallFontFRQ2(x + 0x240, y + 0x68, z, color, pStr[item], NULL);
+    request = frwGetSmallFontFRQ2(x + 0x240, y + SHOP_ROW_NAME_Y, z, color, pStr[item], NULL);
     frDrawFontOt(request, 1, ot);
     frDestroyFontRequestAfter(request);
     sprintf(text, shpFmtCount7, count);
-    request = frwGetSmallNumFontFRQ(x + 0x9C0, y + 0x80, z, color, text, NULL);
+    request = frwGetSmallNumFontFRQ(x + 0x9C0, y + SHOP_ROW_NUM_Y, z, color, text, NULL);
     frDrawFontOt(request, 1, ot);
     frDestroyFontRequestAfter(request);
     fclDrawSpriteRes(x + 0xE50, y + 0x98, z << 4, NULL, 0, 2,
