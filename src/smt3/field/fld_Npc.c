@@ -850,7 +850,19 @@ void fldDmgStart(f32 x, f32 y, f32 z) {
 }
 
 /* NON_MATCHING: 10 of 38 words differ (first at +0x8). */
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+void fldSibukiStart(f32 x, f32 y, f32 z) {
+    sdfVector4_t position = { 0, 0, 0, 1.0f };
+
+    position.x = x;
+    position.y = y;
+    position.z = z;
+    dds3EffectReset(fldBlurEffectId[0]);
+    dds3EffectSetPosition(fldBlurEffectId[0], &position);
+    dds3EffectSetLoop(fldBlurEffectId[0], 0);
+    fldNpcBlurHandle = 1;
+}
+#elif defined(NON_MATCHING)
 void fldSibukiStart(f32 x, f32 y, f32 z) {
     sdfVector4_t position;
 

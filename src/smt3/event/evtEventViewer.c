@@ -210,7 +210,7 @@ void SortFrameInfo(evtViewerObject_s *parent) {
     }
 }
 
-#ifdef NON_MATCHING
+#if defined(NON_MATCHING) || defined(VERSION_MNAX)
 /* The viewer copies these records through pointers with no alignment guarantee. */
 typedef struct __attribute__((packed)) { dds3Effect_Blur_t value; } evtBlurCopy_t;
 typedef struct __attribute__((packed)) { dds3Effect_PartialMultiBlurParam_t value; } evtMultiBlurCopy_t;
@@ -2323,7 +2323,82 @@ s32 EnterEventPos(void)
     return 0;
 }
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+extern dds3Effect_PartialMultiBlurParam_t *mblurGetParam(void);
+extern dds3Effect_DistortionBlurParam_t *dblurGetParam(void);
+extern dds3Effect_RippleBlurParam_t *rblurGetParam(void);
+extern dds3Effect_Filter_t *dblurGetParam2(void);
+extern dds3Effect_PartialMultiFilterParam_t *mfilterGetParam(void);
+
+/* The ambient light by its own symbol (dds3LightParam + 0x10), as the kernel
+ * units name it: Maniax materialises its address afresh after the copies. */
+SYMBOL_AT(sdfVector4_t, dds3AmbientColor, dds3LightParam, 0x10);
+
+s32 EnterData(s32 action, s32 previousMenu)
+{
+    evtFrameInfo_t *frame = evtGetSelectFrameInfo();
+    void *destination;
+    pmdSceneFogTable_t *fog;
+    sdf3DFogParam_t *sourceFog;
+
+    switch (viewerinfo->framelist_target->type) {
+    case 10:
+        switch (viewerinfo->framelist_type) {
+        case 13: {
+            sdf3DLight_t *light = dds3LightParam.parallel[0];
+            pmdSceneLightTable_t *sceneLight = frame->work;
+            /* Operand-only copies: viewerinfo stays live across them. */
+            SDF_VU0_COPYVECTOR_NOMEM(sceneLight->color, &light->color);
+            SDF_VU0_COPYVECTOR_NOMEM(sceneLight->direction, &light->v);
+            SDF_VU0_COPYVECTOR_NOMEM(sceneLight->ambient, &dds3AmbientColor);
+            break;
+        }
+        case 14: {
+            frame->param.sf[0] = sdfFaceDivSoften;
+            frame->param.sf[1] = sdfFaceDivBias;
+            break;
+        }
+        }
+        break;
+    case 11:
+        fog = frame->work;
+        sourceFog = &dds3LightParam.fog;
+        fog->fog.vec[0] = sourceFog->fogMin;
+        fog->fog.color = sourceFog->color;
+        fog->fog.vec[1] = sourceFog->fogMax;
+        fog->fog.vec[2] = sourceFog->fogNear;
+        fog->fog.vec[3] = sourceFog->fogFar;
+        break;
+    case 13:
+        destination = frame->work;
+        *(evtBlurCopy_t *)destination = *(evtBlurCopy_t *)&evtGetUnityCalcArea()->source;
+        break;
+    case 14:
+        destination = frame->work;
+        *(evtMultiBlurCopy_t *)destination = *(evtMultiBlurCopy_t *)mblurGetParam();
+        break;
+    case 15:
+        destination = frame->work;
+        *(evtDistBlurCopy_t *)destination = *(evtDistBlurCopy_t *)dblurGetParam();
+        break;
+    case 23:
+        destination = frame->work;
+        *(evtRippleBlurCopy_t *)destination = *(evtRippleBlurCopy_t *)rblurGetParam();
+        break;
+    case 16:
+        destination = frame->work;
+        *(evtFilterCopy_t *)destination = *(evtFilterCopy_t *)dblurGetParam2();
+        break;
+    case 17:
+        destination = frame->work;
+        *(evtMultiFilterCopy_t *)destination = *(evtMultiFilterCopy_t *)mfilterGetParam();
+        break;
+    }
+    evtRunFrame(viewerinfo->nowframe);
+    PopMenu();
+    return 0;
+}
+#elif defined(NON_MATCHING)
 extern dds3Effect_PartialMultiBlurParam_t *mblurGetParam(void);
 extern dds3Effect_DistortionBlurParam_t *dblurGetParam(void);
 extern dds3Effect_RippleBlurParam_t *rblurGetParam(void);

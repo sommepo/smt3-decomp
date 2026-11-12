@@ -811,7 +811,204 @@ void effPCPBossONGYDelete(effPCPBossONGY_t *pPCPBossONGY)
 }
 
 /* NON_MATCHING: 306 of 358 words match at the exact 1432-byte size. */
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+extern u32 dds3CheckRenderTexture(void);
+extern void *dds3GetRenderTexture(void);
+extern void sdfMatSetTex(sdfMat_t *mat, sdfTexHandle_t *tex);
+extern void sdf3DPrimLinkMat(sdfDrawTag_t *tag, sdfMat_t *mat, s32 (*allocator)(s32));
+extern s32 mdlGetMotionNum(mdlObj_t *model, s32 group);
+extern void sdfMotionSeek(sdfMotionCtrlr_t *controller, f32 frame);
+extern f32 sdfSin(f32 angle);
+extern void Mult(void);
+extern void mdlSetScale(mdlObj_t *model);
+/* Maniax sets the height ($f12) before the formation ($a1), the order ee-gcc
+ * loads register arguments when the float comes second. Under this EABI the
+ * two parameter orders make the same call, and the renderer does not read
+ * the formation. */
+extern void effPCPBossONGYModelTexRender(const void *target, f32 height, nbFormation_t *form);
+EXTERN_LATE_CONST effPCPBossVector_t D_00533DA0;
+extern sdfGrOt_t sdfGrOtTable[];
+
+void effPCPBossONGYDraw(effPCPBossONGY_t *work)
+{
+    effPCPBossVector_t origin;
+    effPCPBossVector_t scale;
+    effPCPBossVector_t target;
+    effPCPBossVector_t points[32];
+    f32 uv[64];
+    u32 colors[32];
+    nbFormation_t *form;
+    sdfDrawTag_t *tag;
+    effPCPBossVector_t *point;
+    f32 *st;
+    u32 *color;
+    u32 count;
+    u32 i;
+    u32 phase;
+    f32 rate;
+    f32 angle;
+    f32 angleStep;
+    f32 sway;
+    f32 y;
+    f32 v;
+    f32 nextV;
+    f32 x;
+    f32 width;
+    f32 uvStep;
+    f32 yStep;
+    f32 height;
+    f32 renderHeight;
+    f32 offset;
+    f32 scaleValue;
+    mdlObj_t *model;
+    sdfGrOt_t *ot;
+
+    if (!dds3CheckRenderTexture()) {
+        return;
+    }
+    if (!dds3GetRenderTexture()) {
+        return;
+    }
+    model = effPCPBossTexHandle;
+    if (!model) {
+        return;
+    }
+    form = work->param;
+    height = 340.0f;
+    renderHeight = height;
+    width = 271.999969482421875f;
+    offset = 0.0f;
+    SDF_VU0_LOADVECTOR(&form->pos);
+    SDF_VU0_STOREVECTOR_MEMOPS(origin);
+    SDF_VU0_STOREVECTOR(&target);
+    mdlSetPosition(model);
+    SDF_VU0_LOADVECTOR(&form->rot);
+    SDF_VU0_LOADVECTOR_B(&D_00533DA0);
+    Mult();
+    mdlSetRotate(effPCPBossTexHandle);
+    scaleValue = form->scl;
+    scale.f[0] = scaleValue;
+    scale.f[1] = scaleValue;
+    scale.f[2] = scaleValue;
+    scale.f[3] = 0.0f;
+    SDF_VU0_LOADVECTOR(&scale);
+    mdlSetScale(effPCPBossTexHandle);
+    mdlSmoothLoopMotion(effPCPBossTexHandle, 0,
+                       mdlGetMotionNum(form->hunit->owner, 0), 0.0f, 4.0f);
+    sdfMotionSeek(((mdlObj_t *)effPCPBossTexHandle)->first,
+                  (form->hunit->owner)->first->frame);
+    target.f[1] -= height + offset;
+    effPCPBossONGYModelTexRender(&target, renderHeight, form);
+    if (work->frame >= SDF_FRAMES(12)) {
+        return;
+    }
+    tag = EE_ADDR_AS(sdfDrawTag_t *, sdfGrAllocPacketBuff(0x20));
+    sdfDrawTagInit(tag);
+    origin.f[1] -= height;
+    SDF_VU0_LOADIDENTITY();
+    SDF_VU0_LOADVECTOR_MEMOPS(origin);
+    VU0_ADD_VF31_VF10_XYZ();
+    sdf3DPrimLinkTm(tag, 0);
+    sdfMatSetTex(work->pMat, dds3GetRenderTexture());
+    sdf3DPrimLinkMat(tag, work->pMat, 0);
+    LookAtMatrix(dds3RenderTargetVector, dds3RenderEyeVector, effPCPBossTexRect);
+    ReverseMatrix();
+    rate = (f32)work->frame / SDF_FRAMES_F(12.0f);
+    effPCPBossWork.color = ((u32)((1.0f - rate) * 128.0f) << 24) | 0x808080;
+    count = 0;
+    effPCPBossWork.positions = points;
+    effPCPBossWork.uvs = uv;
+    effPCPBossWork.colors = colors;
+    effPCPBossWork.primCount = 16;
+    effPCPBossWork.vertexCount = 32;
+    phase = (u32)(rate * 15.0f);
+    angle = work->radian;
+    work->radian = angle + SDF_FRAME_STEP(0.043633227f);
+    angleStep = ((f32)phase * 3.141592502593994140625f) / 300.0f;
+    sway = rate * 67.99999237060546875f;
+    v = 0.0f;
+    uvStep = 0.0033333333f;
+    yStep = 2.2666666507720947265625f;
+    point = points;
+    st = uv;
+    y = -height;
+    color = colors;
+    for (i = 0; i < 300; i++) {
+        st[1] = v;
+        st[0] = 0.0f;
+        st += 2;
+        st[0] = 1.0f;
+        st[1] = v;
+        st += 2;
+        nextV = v + uvStep;
+        st[1] = nextV;
+        st[0] = 0.0f;
+        st += 2;
+        st[0] = 1.0f;
+        st[1] = nextV;
+        st += 2;
+        x = sdfSin(angle) * sway;
+        point->f[1] = y;
+        point->f[2] = 0.0f;
+        point->f[3] = 0.0f;
+        point->f[0] = x - width;
+        SDF_VU0_LOADVECTOR(point);
+        SDF_VU0_APPLYMATRIX();
+        SDF_VU0_STOREVECTOR(point);
+        point++;
+        point->f[1] = y;
+        point->f[2] = 0.0f;
+        point->f[3] = 0.0f;
+        point->f[0] = width + x;
+        SDF_VU0_LOADVECTOR(point);
+        SDF_VU0_APPLYMATRIX();
+        SDF_VU0_STOREVECTOR(point);
+        point++;
+        point->f[2] = 0.0f;
+        point->f[3] = 0.0f;
+        point->f[0] = x - width;
+        point->f[1] = y + yStep;
+        SDF_VU0_LOADVECTOR(point);
+        SDF_VU0_APPLYMATRIX();
+        SDF_VU0_STOREVECTOR(point);
+        point++;
+        point->f[2] = 0.0f;
+        point->f[3] = 0.0f;
+        point->f[0] = width + x;
+        point->f[1] = y + yStep;
+        /* The memory-clobber load: Maniax keeps y + yStep from here for the
+         * y advance below. */
+        SDF_VU0_LOADVECTOR_BARRIER(point);
+        SDF_VU0_APPLYMATRIX();
+        SDF_VU0_STOREVECTOR(point);
+        point++;
+        count += 4;
+        color[0] = 0x80808080;
+        color[1] = 0x80808080;
+        color[2] = 0x80808080;
+        color[3] = 0x80808080;
+        color += 4;
+        y += yStep;
+        angle += angleStep;
+        if (count >= 32) {
+            sdfDrawTagLink(tag, EE_ADDR(effPkt3DPrimMakePoly(&effPCPBossWork)));
+            color = colors;
+            point = points;
+            st = uv;
+            count = 0;
+        }
+        v = nextV;
+    }
+    if (count >= 4) {
+        effPCPBossWork.primCount = count >> 1;
+        effPCPBossWork.vertexCount = count;
+        sdfDrawTagLink(tag, EE_ADDR(effPkt3DPrimMakePoly(&effPCPBossWork)));
+    }
+    ot = &sdfGrOtTable[43];
+    ot->regFunc(ot, tag);
+    work->frame++;
+}
+#elif defined(NON_MATCHING)
 extern u32 dds3CheckRenderTexture(void);
 extern void *dds3GetRenderTexture(void);
 extern void sdfMatSetTex(sdfMat_t *mat, sdfTexHandle_t *tex);
@@ -2578,7 +2775,106 @@ void effPCPBossKAGUInvokeDelete(effPCPBossKAGUInvoke_t *hData)
 }
 
 /* NON_MATCHING: 3 of 184 words differ (first at +0x1A4). */
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+void effPCPBossKAGUInvokeDraw(effPCPBossKAGUInvoke_t *hData)
+{
+    nbFormation_t *model;
+    nbFormation_t *found;
+    effPCPBossVector_t marks[8];
+    effPCPBossVector_t center;
+    u128 *param;
+    s32 frame;
+    s32 limit;
+    s32 fadeIn;
+    s32 fadeOut;
+    s32 rest;
+    s32 i;
+    s32 id;
+    u32 count;
+    u32 index;
+    u32 listIndex;
+    u32 slot;
+    u32 vertex;
+    f32 blend;
+    f32 distance;
+    f32 scale;
+    u32 color;
+
+    if (effBTLSkillCheckRun() != 0) {
+        model = effBTLSkillGetInvokeFormation();
+    } else {
+        found = NULL;
+        model = nbGetMainProcessData()->form;
+        for (i = 0; i < 0x20; i++) {
+            if ((model->stat & 3) == 3) {
+                id = effBTLModelGetID(model);
+                if (id == 0x125 || id == 0x108) {
+                    found = model;
+                    break;
+                }
+            }
+            model++;
+        }
+        if (found == NULL) {
+            return;
+        }
+    }
+
+    frame = hData->frame;
+    limit = SDF_FRAMES(hData->draw.limit);
+    fadeIn = SDF_FRAMES(hData->draw.fadeIn);
+    fadeOut = SDF_FRAMES(hData->draw.fadeOut);
+    if (frame < limit) {
+        if (frame < fadeIn && fadeIn != 0) {
+            blend = (f32)frame / (f32)fadeIn;
+        } else {
+            rest = limit - frame;
+            if (fadeOut >= rest && fadeOut != 0) {
+                blend = (f32)rest / (f32)fadeOut;
+            } else {
+                blend = 1.0f;
+            }
+        }
+        color = effColorBlend(hData->color & 0xFFFFFF, hData->color, blend);
+
+        for (index = 0; index < 8; index++) {
+            effBTLModelGetMarkPosition2(model, 0x14 + index);
+            SDF_VU0_STOREVECTOR(&marks[index]);
+        }
+        effBTLModelGetMarkPosition2(model, 0);
+        /* The operand-only store: the loops below take &center afresh
+         * from the stack pointer. */
+        SDF_VU0_STOREVECTOR_NOMEM(&center);
+
+        SDF_VU0_LOADVECTOR_B(&center);
+        SDF_VU0_LOADVECTOR(&marks[0]);
+        SDF_VU0_SUBVECTOR();
+        SDF_VU0_GETLENGTH(distance);
+        count = (u32)hData->pTPList;
+        slot = 0;
+        distance -= 200.0f;
+
+        for (index = 0; index < count; index++) {
+            for (listIndex = 0; listIndex < 6; listIndex++) {
+                param = effPCP_ThunderPolyListGetParam(hData->point[slot]);
+                SDF_VU0_LOADVECTOR_B(&center);
+                for (vertex = 0; vertex < 9; vertex++) {
+                    SDF_VU0_LOADVECTOR(&hData->draw.directions[listIndex][vertex][0]);
+                    SDF_VU0_VECTOR_W_SET_ZERO();
+                    scale = distance + hData->draw.directions[listIndex][vertex][3];
+                    SDF_VU0_SCALEVECTOR_BITS(scale);
+                    SDF_VU0_ADDVECTOR();
+                    SDF_VU0_STOREVECTOR(&param[vertex]);
+                }
+                effPCP_ThunderPolyListSetColor(hData->point[slot], color);
+                effPCP_ThunderPolyListDraw(hData->point[slot]);
+                slot++;
+            }
+        }
+    }
+    hData->frame++;
+}
+#elif defined(NON_MATCHING)
 void effPCPBossKAGUInvokeDraw(effPCPBossKAGUInvoke_t *hData)
 {
     nbFormation_t *model;
@@ -4655,7 +4951,40 @@ void effPCPDANTE_ShowTime_SetPosition(effPCPDANTE_ShowTime_tag *hData, const voi
 }
 
 /* NON_MATCHING: 30 of 63 words differ (first at +0x80). */
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+effPCP_BED_tag *effPCP_BED_Create(effPCP_BED_Param_t *pParam, void *pBED)
+{
+    effPCP_BED_tag *work = sdfChipAllocDirect(0x6C);
+    effPCPBossPlace_t place;
+    effPCPBossBED_t *bed;
+
+    work->param = *pParam;
+    work->frame = 0;
+    work->abgr = 0x80808080;
+    /* The operand-only store (no clobber list): Maniax materialises the
+     * colour constant again in the guarded block. */
+    SDF_VU0_STOREIDENTITYVECTOR_NOMEM(work->pos);
+    SDF_VU0_STOREIDENTITY(work);
+    if (pBED != NULL) {
+        place.payload[0] = 0.0f;
+        place.payload[1] = 0.0f;
+        place.payload[2] = 0.0f;
+        place.payload[3] = 0.0f;
+        place.payload[4] = 0.0f;
+        place.payload[5] = 0.0f;
+        place.payload[6] = 0.0f;
+        place.payload[7] = 1.0f;
+        place.payload[8] = 100.0f;
+        place.payload[9] = 100.0f;
+        place.payload[10] = 1.0f;
+        place.color = 0x80808080;
+        bed = effEveBEDCreate(pBED);
+        work->hBED = bed;
+        work->hBEDCut = effEveBEDCutCreate(bed, 2, &place);
+    }
+    return work;
+}
+#elif defined(NON_MATCHING)
 effPCP_BED_tag *effPCP_BED_Create(effPCP_BED_Param_t *pParam, void *pBED)
 {
     effPCP_BED_tag *work = sdfChipAllocDirect(0x6C);
