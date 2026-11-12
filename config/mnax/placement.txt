@@ -40,4 +40,4 @@ movie/MovieViewer        .sdata   0x0054E030  0x18
 movie/mviManager         .sdata   0x0054E014  0x1C
 movie/MovieViewer        .rodata  0x0053CCB0  0x40
 sdk/libgcc_longlong      .text    0x002E49A0  -
-result/rstupdate         .rodata  0x0053B5C0  -
+result/rstupdate         .rodata  0x0053B580  0x208
