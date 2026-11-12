@@ -39,6 +39,12 @@ def main() -> None:
         m = re.match(r"(\w+) = (0x[0-9A-Fa-f]+);.*type:func", line)
         if m and TEXT[0] <= int(m.group(2), 16) < USA_TEXT_END:
             usa.add((int(m.group(2), 16), m.group(1)))
+    # Functions the C defines under splat's automatic name have no symbol_addrs row.
+    for r in csv.DictReader((ROOT / "config/mnax/functions.tsv").open(), delimiter="\t"):
+        if r["usa"] == "-" and re.fullmatch(r"func_[0-9A-F]{8}", r["function"]):
+            a = int(r["function"][5:], 16)
+            if TEXT[0] <= a < USA_TEXT_END:
+                usa.add((a, r["function"]))
     usa = sorted(usa)
     anchors = {int(r["usa"], 16): int(r["mnax"], 16)
                for r in csv.DictReader((ROOT / "config/mnax/anchors.tsv").open(), delimiter="\t")}

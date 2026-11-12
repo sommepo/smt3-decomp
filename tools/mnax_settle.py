@@ -44,6 +44,42 @@ def entries():
     return out
 
 
+def size_culprits():
+    """C units whose compiled sections do not fill exactly their place in Maniax:
+    larger than the room up to the next entry, or short of it by more than the
+    next object's alignment can explain. Reads the objects, so it needs no link."""
+    from elftools.elf.elffile import ELFFile
+
+    def section(obj, name):
+        if not obj.exists() or obj.read_bytes()[:4] != b"\x7fELF":
+            return None
+        sec = ELFFile(obj.open("rb")).get_section_by_name(name)
+        return (sec["sh_size"], max(sec["sh_addralign"], 1)) if sec is not None else (0, 1)
+
+    def obj_for(kind, name):
+        if kind == "c" or kind.startswith("."):
+            return ROOT / "build/mnax/src/mnax" / (name + ".o"), ".text" if kind == "c" else kind
+        if kind in ("asm", "pad"):
+            return ROOT / "build/mnax/asm/mnax" / (name + ".o"), ".text"
+        return ROOT / "build/mnax/asm/mnax/data" / f"{name}.{kind}.o", "." + kind if kind != "textbin" else ".text"
+
+    rows = entries()
+    out = {}
+    for (rom, kind, name), (nrom, nkind, nname) in zip(rows, rows[1:]):
+        if not (kind == "c" or kind.startswith(".")):
+            continue
+        obj, sec = obj_for(kind, name)
+        got = section(obj, sec)
+        if got is None:
+            continue
+        nobj, nsec = obj_for(nkind, nname)
+        nxt = section(nobj, nsec) or (0, 1)
+        room = nrom - rom
+        if got[0] > room or room - got[0] >= max(nxt[1], 4):
+            out.setdefault(name, f"{sec} is 0x{got[0]:X} bytes where Maniax has room for 0x{room:X}")
+    return out
+
+
 def drift_culprits():
     want = {}
     for rom, kind, name in entries():
@@ -113,8 +149,24 @@ def main() -> None:
                 found.setdefault(u.group(1), "does not compile for Maniax")
         for m in re.finditer(r"ninja: error: 'asm/mnax/nonmatchings/([\w/]+)/(\w+)\.s'", log):
             found.setdefault(m.group(1), f"no Maniax assembly for {m.group(2)}")
-        for m in re.finditer(r"build/mnax/src/mnax/([\w/]+)\.o: in function `(\w+)':\n[^\n]*(undefined reference to `\w+')", log):
-            found.setdefault(m.group(1), f"{m.group(2)}: {m.group(3)}")
+        # An undefined name is usually the fault of the C unit whose Maniax range
+        # covers its address (its C does not define it), not of the unit using it.
+        symbols = {}
+        for line in (CFG / "symbol_addrs.txt").read_text().splitlines():
+            mm = re.match(r"(\w+) = (0x[0-9A-Fa-f]+);", line)
+            if mm:
+                symbols[mm.group(1)] = int(mm.group(2), 16)
+        rows = entries()
+        for m in re.finditer(r"build/mnax/src/mnax/([\w/]+)\.o: in function `(\w+)':\n[^\n]*undefined reference to `(\w+)'", log):
+            user, func, name = m.groups()
+            at = symbols.get(name)
+            if at is None and re.fullmatch(r"(?:D|jtbl|func)_[0-9A-F]{8}", name):
+                at = int(name.split("_")[1], 16)
+            owner = [(r, k, n) for r, k, n in rows if at is not None and r <= at - DELTA][-1:] 
+            if owner and (owner[0][1] == "c" or owner[0][1].startswith(".")) and owner[0][2] != user:
+                found.setdefault(owner[0][2], f"its {owner[0][1]} range covers {name}, which its C does not define")
+            else:
+                found.setdefault(user, f"{func}: undefined reference to {name}")
         # A blob that cannot find its own jump table or data: a C unit's guessed
         # bounds swallowed it.
         rows = entries()
@@ -127,6 +179,8 @@ def main() -> None:
         matched = r.returncode == 0
         # A gp-relative overflow is what a shifted layout looks like to the linker:
         # the map is still written, and it says which unit has the wrong size.
+        if not found and not matched:
+            found = size_culprits()
         if not found and not matched and (linked or "relocation truncated" in log):
             found = drift_culprits()
             if not found and linked and IMAGE.exists():

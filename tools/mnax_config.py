@@ -131,6 +131,14 @@ def find_definition(text: str, name: str):
     return None
 
 
+def named_set(lines):
+    return {line.split(" = ")[0] for line in lines}
+
+
+# Lines the split tools place from the split itself; the USA placement does not apply.
+DATA_LINES = re.compile(r"^(?:INCLUDE_(?:RODATA|SDATA)\([^;]*\);|SDATA_PAD\(\d+\);|SDATA_RESUME\(\);)\n\n?", re.M)
+
+
 def adapt_source(text: str, unit: str, keep_asm, absent, extra):
     """The unit's source for Maniax: `keep_asm` functions become INCLUDE_ASM, `absent`
     ones go, and `extra` [(after function, name)] Maniax-only functions are included.
@@ -140,7 +148,10 @@ def adapt_source(text: str, unit: str, keep_asm, absent, extra):
         span = find_definition(text, name)
         if span is None:
             return None, f"cannot isolate {name} in the source"
-        text = text[:span[0]] + line(name) + text[span[1]:]
+        head = text[span[0]:text.index("{", span[0])].strip()
+        head = re.sub(r"^(?:static\s+|inline\s+)+", "", head)
+        head = re.sub(r"(?:/\*.*?\*/|//[^\n]*)", "", head, flags=re.S).strip()
+        text = text[:span[0]] + head + ";\n" + line(name) + text[span[1]:]
     for name in absent:
         span = find_definition(text, name)
         if span is not None:
@@ -502,16 +513,37 @@ def main() -> None:
                                (ROOT / "src/smt3" / (unit + ".c")).read_text(errors="replace")))
     have = {line.split(" = ")[0] for line in out}
     spans = sorted((u0, u0 + usa_extent[u][sec], m0) for u in good for sec, (m0, size, u0) in good[u].items())
+    # USA functions with sizes, for code addresses inside one (labels, fragments).
+    usa_fn = []
+    for line in (ROOT / "config/smt3/symbol_addrs.txt").read_text().splitlines():
+        m = re.match(r"(\w+) = (0x[0-9A-Fa-f]+);.*type:func.*size:(0x[0-9A-Fa-f]+)", line)
+        if m and isinstance(func_at.get(m.group(1)), int):
+            usa_fn.append((int(m.group(2), 16), int(m.group(3), 16), func_at[m.group(1)]))
+    usa_fn.sort()
+    usa_fn_keys = [a for a, _, _ in usa_fn]
+
+    def in_function(usa):
+        i = bisect.bisect_right(usa_fn_keys, usa) - 1
+        if i >= 0 and usa < usa_fn[i][0] + usa_fn[i][1]:
+            return usa_fn[i][2] + usa - usa_fn[i][0]
+        return None
+
     carried = {}
     for name in sorted(auto - have):
         usa = int(name.split("_")[1], 16)
-        at = next((m0 + usa - lo for lo, hi, m0 in spans if lo <= usa < hi), None)
+        at = in_function(usa) if bounds[".text"][0] <= usa < bounds[".text"][1] else None
+        if at is None:
+            at = next((m0 + usa - lo for lo, hi, m0 in spans if lo <= usa < hi), None)
         if at is None:
             at = amap.get(usa, same)
         if at is not None and at not in seen_addr:
             seen_addr[at] = name
             carried[name] = at
             out.append(f"{name} = 0x{at:08X};" + (" // type:func" if name.startswith("func_") else ""))
+    for at, name in maniax_only:
+        if at not in seen_addr and name not in named_set(out):
+            seen_addr[at] = name
+            out.append(f"{name} = 0x{at:08X}; // type:func")
     # A carried name can equal the automatic name splat gives a different Maniax
     # address. Those addresses get an explicit name; the list only grows, so a
     # re-split cannot bring the clash back.
@@ -556,10 +588,8 @@ def main() -> None:
     shutil.rmtree(dst, ignore_errors=True)
     for unit in good:
         (dst / unit).parent.mkdir(parents=True, exist_ok=True)
-        if unit in sources:
-            (dst / (unit + ".c")).write_text(sources[unit])
-        else:
-            shutil.copyfile(ROOT / "src/smt3" / (unit + ".c"), dst / (unit + ".c"))
+        text = sources.get(unit) or (ROOT / "src/smt3" / (unit + ".c")).read_text(errors="replace")
+        (dst / (unit + ".c")).write_text(text)
     shutil.copytree(ROOT / "src/smt3/sdf/vu", dst / "sdf/vu", dirs_exist_ok=True)
 
     tally = defaultdict(int)

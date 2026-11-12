@@ -91,9 +91,11 @@ dds3PadVibrationReset	0x00104170	0x00104170	placed
 dds3UpdateVibrationSlots	0x001041A8	0x001041A8	placed	
 InitTitleProcess	0x001042A0	0x001042A0	placed	
 InitNewBattleTestProcess	0x001042C8	0x001042C8	placed	
+func_001042F0	0x001042F0	0x001042F0	rigid	
 InitKernelTestProcess	0x001042F8	0x001042F8	placed	
 InitEventTestProcess	0x00104320	0x00104320	placed	
 InitEventViewerProcess	0x00104348	0x00104348	placed	
+func_00104370	0x00104370	0x00104370	rigid	
 InitMessageScriptTestProcess	0x00104378	0x00104378	placed	
 InitCampTestProcess	0x001043A0	0x001043A0	placed	
 InitCombineTestProcess	0x001043C8	0x001043C8	placed	
@@ -103,6 +105,7 @@ InitRecoverTestProcess	0x00104440	0x00104440	placed
 InitTerminalTestProcess	0x00104468	0x00104468	placed	
 InitResult2TestProcess	0x00104490	0x00104490	placed	
 InitNameTestProcess	0x001044B8	0x001044B8	placed	
+func_001044E0	0x001044E0	0x001044E0	rigid	
 InitMovieViewerTestProcess	0x001044E8	0x001044E8	placed	
 InitSoundTestProcess	0x00104510	0x00104510	placed	
 InitFontTestProcess	0x00104538	0x00104538	placed	
@@ -332,8 +335,11 @@ CallTgs	0x001097C0	0x001097C0	placed
 ExitTgs	0x001097C8	0x001097C8	placed	
 CheckTgs	0x001097D0	0x001097D0	placed	
 dat_1097D8	0x001097D8	0x001097D8	placed	
+func_001097E0	0x001097E0	0x001097E0	rigid	
 datDebugPrintf	0x001097E8	0x001097E8	placed	
 scr_109830	0x00109830	0x00109830	placed	
+func_00109838	0x00109838	0x00109838	rigid	
+func_00109840	0x00109840	0x00109840	rigid	
 scrLinkHandle	0x00109848	0x00109848	placed	
 scrUnlinkHandle	0x00109888	0x00109888	placed	
 scrPrintProcedureStart	0x001098E0	0x001098E0	placed	
@@ -522,11 +528,13 @@ dds3CheckPoseSetFlag	0x0010DE18	0x0010DDF8	placed
 dds3BackupPoseSet	0x0010DE28	0x0010DE08	placed	
 dds3SetRadiusPoseSet	0x0010DE50	0x0010DE30	placed	
 dds3GetRadiusPoseSet	0x0010DE88	0x0010DE68	placed	
+func_0010DE98	0x0010DE98	0x0010DE78	rigid	
 dds3SetPosPoseSet	0x0010DEA8	0x0010DE88	placed	
 dds3SetRotPoseSet	0x0010DED8	0x0010DEB8	placed	
 dds3SetSclPoseSet	0x0010DF08	0x0010DEE8	placed	
 dds3GetPosPoseSet	0x0010DF38	0x0010DF18	placed	
 dds3GetRotPoseSet	0x0010DF50	0x0010DF30	placed	
+func_0010DF70	0x0010DF70	0x0010DF50	rigid	
 dds3GetPosPoseSetMCR	0x0010DF88	0x0010DF68	placed	
 dds3AddRotPoseSet	0x0010DFC0	0x0010DFA0	placed	
 dds3GetSclPoseSetMCR	0x0010E010	0x0010DFF0	placed	
@@ -538,6 +546,7 @@ dds3CallBasicMainProc	0x0010E1C8	0x0010E1A8	placed
 dds3CallBasicDrawProc	0x0010E208	0x0010E1E8	placed	
 dds3AllocObjectId	0x0010E248	0x0010E228	placed	
 dds3SetUnitObjectId	0x0010E260	0x0010E240	placed	
+func_0010E270	0x0010E270	0x0010E250	rigid	
 worldconstructor	0x0010E288	0x0010E268	placed	
 worlddestructor	0x0010E2F8	0x0010E2D8	placed	
 worldmainprocuder	0x0010E390	0x0010E370	placed	
@@ -656,6 +665,7 @@ dds3CameraObjectBasicLoadCameraTM	0x00112888	0x00112868	placed
 dds3CameraObjectBasicGetCameraTM	0x001128A8	0x00112888	placed	
 dds3CameraObjectBasicGetTargetPos	0x001128C0	0x001128A0	placed	
 dds3CameraObjectBasicSetFovy	0x001128D8	0x001128B8	placed	
+func_001128F0	0x001128F0	0x001128D0	rigid	
 dds3CameraObjectBasicGetFovy	0x00112900	0x001128E0	placed	
 dds3CameraObjectBasicGetTgtCam	0x00112910	0x001128F0	placed	
 dds3CameraObjectBasicGetMode	0x00112A08	0x001129E8	placed	
@@ -788,6 +798,7 @@ dds3FontReqListRemove	0x00117740	0x00117720	placed
 dds3FontReqListAdd	0x00117780	0x00117760	placed	
 dds3FontReqListRunOne	0x001177C0	0x001177A0	placed	
 dds3FontReqListRunAll	0x00117800	0x001177E0	placed	
+func_00117830	0x00117830	0x00117810	rigid	
 dds3FontReqListRunTo	0x00117838	0x00117818	placed	
 dds3FontReqListCount	0x00117888	0x00117868	placed	
 dds3FontReqDestroy	0x001178C8	0x001178A8	placed	
@@ -797,6 +808,7 @@ dds3FontReqSetColorNo	0x001179B0	0x00117988	placed
 dds3FontReqFree	0x001179D0	0x001179A8	placed	
 dds3FontReqDrawBoxLine	0x001179E8	0x001179C0	placed	
 dds3FontReqAddBox	0x00117A60	0x00117A38	placed	
+func_00117AF8	0x00117AF8	0x00117AD0	rigid	
 dds3FontReqAllocDrawTag	0x00117B08	0x00117AE0	placed	
 dds3PrimFrameRect	0x00117B40	0x00117B18	placed	
 dds3PrimLine	0x00117CC8	0x00117CA0	placed	
@@ -838,6 +850,9 @@ fldRunDanteGetDistAngle	0x0011BE98	0x0011BED8	placed
 fldGetDistAngleTo	0x0011BF48	0x0011BF88	placed	
 fldTurnToward	0x0011BFE8	0x0011C028	placed	
 fldRunAiCng	0x0011C0B8	0x0011C0F8	called	
+func_0011C790	0x0011C790	0x0011C7C8	gap	
+func_0011C798	0x0011C798	0x0011C7D0	gap	
+func_0011C7B8	0x0011C7B8	0x0011C7F0	gap	
 fldRunDanteDoin	0x0011C7F8	0x0011C830	placed	
 fldRunDanteMove	0x0011C938	0x0011C970	placed	
 fldRunDantePwak	0x0011CCA0	0x0011CCD8	placed	
@@ -1020,6 +1035,7 @@ aDrawBoxF_Direct	0x00129870	0x00129868	placed
 aDrawTriG	0x001299D0	0x001299C8	placed	
 aDrawBoxG	0x00129C08	0x00129C00	placed	
 aDrawBoxGF	0x00129E88	0x00129E80	placed	
+func_0012A140	0x0012A140	0x0012A138	rigid	
 drawSprite3D	0x0012A2D0	0x0012A2C8	placed	
 rsetFrameMaskRgbOn	0x0012A3F0	0x0012A3E8	placed	
 rsetFrameMaskRgbOff	0x0012A490	0x0012A488	placed	
@@ -1152,6 +1168,9 @@ fldHitChkUnitElv	0x00139898	0x001398A0	placed
 fldHitChkUnitDamage	0x00139A20	0x00139A28	placed	
 fldHitChkUnit	0x00139D90	0x00139D98	called	
 fldHitChkUnitVWM	0x0013A9A0	0x0013A9B8	gap	
+func_0013B658	0x0013B658	0x0013B670	gap	
+func_0013B660	0x0013B660	0x0013B678	gap	
+func_0013B668	0x0013B668	0x0013B680	gap	
 fldHitWM_Mask	0x0013B670	0x0013B688	placed	
 HitPositionInside3	0x0013B928	0x0013B940	placed	
 fldHitChkCamera	0x0013BAD8	0x0013BAF0	placed	
@@ -1218,6 +1237,7 @@ fldGetDoorEntry	0x001430D0	0x001430C8	placed
 fldSetupDoorScenes	0x00143188	0x00143180	placed	
 fldFindDoorEvent	0x00143D50	0x00143D48	placed	
 fldDoor_Step	0x00143E20	0x00143E18	placed	
+func_00144288	0x00144288	0x00144280	rigid	
 fldInputPanelProcess2	0x00144290	0x00144288	called	
 fldInputPanelProcess1	0x001443B0	0x001443A8	placed	
 fldInputPanelShutdown	0x00144400	0x001443F8	placed	
@@ -1336,6 +1356,7 @@ fldSnowSpriteTex	0x00150DC0	0x00150D10	placed
 fldSnowSprite3D	0x00150EA0	0x00150DF0	placed	
 fldSnowSeedInit	0x00150F28	0x00150E78	placed	
 fldInitSnowSeed	0x00150F70	0x00150EC0	placed	
+func_00151018	0x00151018	0x00150F68	rigid	
 fldSnowSeedReset	0x00151040	0x00150F90	placed	
 fldSnowTask	0x001513D0	0x00151320	called	
 mcMakeFileName	0x001518D0	0x00151820	called	
@@ -1452,6 +1473,7 @@ fldCommand_ENCOUNT_ON	0x001582B0	0x00158080	placed
 fldCommand_ENCOUNT_OFF	0x001582D0	0x001580A0	placed	
 fldCommand_SET_FIX_CAMERA	0x001582F0	0x001580C0	placed	
 fldCommand_SET_CHASE_CAMERA	0x00158388	0x00158158	placed	
+func_00158548	0x00158548	0x00158318	rigid	
 fldCommand_CAM_DIR	0x00158560	0x00158330	placed	
 fldCommand_CAM_SEL_PHOKAN	0x00158730	0x00158500	placed	
 fldCommand_SET_NPC_CAMERA	0x00158858	0x00158628	placed	
@@ -1591,6 +1613,7 @@ dds3BillboardSetPosition	0x0015D020	0x0015CDF0	placed
 dds3BillboardSetRotate	0x0015D030	0x0015CE00	placed	
 dds3BillboardSetScale	0x0015D038	0x0015CE08	placed	
 dds3BillboardSetRGBA	0x0015D048	0x0015CE18	placed	
+func_0015D050	0x0015D050	0x0015CE20	rigid	
 dds3BillboardSetMode	0x0015D088	0x0015CE58	placed	
 dds3BillboardSetCondition	0x0015D138	0x0015CF08	placed	
 dds3BillboardGetTex	0x0015D1A8	0x0015CF78	placed	
@@ -1908,6 +1931,7 @@ effBTLModelGetDirection2	0x0016C6C8	0x0016C498	placed
 effBTLModelGetCircumference	0x0016C708	0x0016C4D8	placed	
 effBTLModelGetCircumferencePtr	0x0016C7B8	0x0016C588	placed	
 effBTLModelGetHeight	0x0016C850	0x0016C620	placed	
+func_0016C898	0x0016C898	0x0016C668	rigid	
 effBTLModelGetMarkPosition	0x0016C8A8	0x0016C678	placed	
 effBTLModelGetMarkPosition2	0x0016C8F0	0x0016C6C0	placed	
 effBTLModelGetMarkPosition3	0x0016C930	0x0016C700	placed	
@@ -2249,6 +2273,11 @@ effBTLSystemPartHandleDelete	0x00174500	0x001742D0	placed
 effCAMPBadCreate	0x00174570	0x00174340	placed	
 effCAMPBadDraw	0x00174710	0x001744E0	placed	
 effCAMPBadDelete	0x001747E0	0x001745B0	placed	
+func_00174858	0x00174858	0x00174628	rigid	
+func_00174860	0x00174860	0x00174630	rigid	
+func_00174868	0x00174868	0x00174638	rigid	
+func_00174870	0x00174870	0x00174640	rigid	
+func_00174878	0x00174878	0x00174648	rigid	
 effBTLSetFieldColor	0x00174880	0x00174650	placed	
 eff_174888	0x00174888	0x00174658	placed	
 effBTLFieldColorIsOn	0x00174890	0x00174660	placed	
@@ -2259,11 +2288,16 @@ effBTLSkillClearActive	0x00174940	0x00174710	placed
 effBTLCutReset	0x00174948	0x00174718	placed	
 effBTLCutSetMax	0x00174970	0x00174740	placed	
 effBTLCutDebugPrint	0x001749A0	0x00174770	placed	
+func_00174AB8	0x00174AB8	0x00174888	rigid	
+func_00174BB0	0x00174BB0	0x00174980	rigid	
+func_00174C50	0x00174C50	0x00174A20	rigid	
 effMakeBedPath	0x00174CB8	0x00174A88	placed	
 eff_174D38	0x00174D38	0x00174B08	placed	
 eff_174D98	0x00174D98	0x00174B68	placed	
 eff_174E88	0x00174E88	0x00174C58	rigid	
+func_00175030	0x00175030	0x00174E00	rigid	
 eff_175070	0x00175070	0x00174E40	placed	
+func_001750D0	0x001750D0	0x00174EA0	rigid	
 effBTLDebug_CameraAllEditCheck	0x00175318	0x001750E8	placed	
 effBTLDebug_CameraAllTableCheck	0x00175320	0x001750F0	placed	
 eff_175328	0x00175328	0x001750F8	placed	
@@ -2342,6 +2376,10 @@ effPCPThunderSphereLowRotateAxis	0x001775B8	0x00177388	placed
 effPCPThunderSpherePolyLowDraw	0x00177710	0x001774E0	placed	
 eff_177850	0x00177850	0x00177620	placed	
 eff_177A48	0x00177A48	0x00177818	placed	
+func_00177AB0	0x00177AB0	0x00177880	rigid	
+func_00177AC0	0x00177AC0	0x00177890	rigid	
+func_00177AC8	0x00177AC8	0x00177898	rigid	
+func_00177BC0	0x00177BC0	0x00177990	rigid	
 eff_178128	0x00178128	0x00177EF8	placed	
 effPCP_ThunderPolyCreate	0x00178430	0x00178200	placed	
 effPCP_ThunderPolyDelete	0x001785E8	0x001783B8	placed	
@@ -3218,6 +3256,7 @@ dds3EffectDistortionBlurCreate	0x001A22F0	0x001A20C0	placed
 dds3EffectDistortionBlurDelete	0x001A23E0	0x001A21B0	placed	
 dds3EffectDistortionBlurDraw	0x001A23F8	0x001A21C8	placed	
 dds3EffectDistortionBlurSetParam	0x001A2600	0x001A23D0	placed	
+func_001A2668	0x001A2668	0x001A2438	rigid	
 dds3EffectDistortionBlurSetTex	0x001A2670	0x001A2440	placed	
 dds3EffectRipBlurPartAreaSet	0x001A26A0	0x001A2470	placed	
 dds3EffectRipBlurPartInit	0x001A26F0	0x001A24C0	placed	
@@ -3315,12 +3354,15 @@ dds3MagatuhiParDraw	0x001A8C40	0x001A8A10	placed
 dds3MagatuhiParDelete	0x001A8C78	0x001A8A48	placed	
 dds3MagatuhiGetHandle	0x001A8CC0	0x001A8A90	placed	
 dds3MagatuhiGetType	0x001A8CC8	0x001A8A98	placed	
+func_001A8CD0	0x001A8CD0	0x001A8AA0	rigid	
 dds3MagatuhiParIsActive	0x001A8CD8	0x001A8AA8	placed	
 dds3MagatuhiParSetPosition	0x001A8CE0	0x001A8AB0	placed	
 dds3MagatuhiParSetRotateMatrix	0x001A8D20	0x001A8AF0	placed	
 dds3MagatuhiParSetRGBA	0x001A8D60	0x001A8B30	placed	
 dds3MagatuhiParSetByType	0x001A8DA0	0x001A8B70	placed	
+func_001A8DF8	0x001A8DF8	0x001A8BC8	rigid	
 dds3MagatuhiParCopy	0x001A8E58	0x001A8C28	placed	
+func_001A8EA8	0x001A8EA8	0x001A8C78	rigid	
 InitMagatuhiEditorProcess	0x001A8EB0	0x001A8C80	placed	
 dblurUpdateHandle	0x001A8ED8	0x001A8CA8	called	
 effDebugDrawRect3	0x001A9828	0x001A95F8	placed	
@@ -3338,6 +3380,7 @@ effDebugResetMenu	0x001AA310	0x001AA0E0	placed
 effDebugInit	0x001AA3A8	0x001AA178	called	
 effDebugUpdate	0x001AA3B0	0x001AA180	placed	
 effDebugDraw	0x001AA550	0x001AA320	placed	
+func_001AA598	0x001AA598	0x001AA368	rigid	
 effDebugClearPad	0x001AA5A0	0x001AA370	placed	
 effDebugMoveCamera	0x001AA6D0	0x001AA4A0	called	
 effDebugIsEnabled	0x001AACF8	0x001AAAC8	rigid	
@@ -3493,11 +3536,13 @@ effClearChanCursor	0x001B1478	0x001B1248	placed
 effSetChanStep	0x001B1488	0x001B1258	placed	
 nbCameraClearState	0x001B1490	0x001B1260	placed	
 nbCameraAnim_RotateSet	0x001B14A8	0x001B1278	placed	
+func_001B1518	0x001B1518	0x001B12E8	rigid	
 nbCameraState_InvokeTargetSelect_SearchSet	0x001B1558	0x001B1328	placed	
 nbCameraState_InvokeTarget_SearchSet	0x001B15F0	0x001B13C0	placed	
 nbCameraState_EnemyParty_SearchSet	0x001B1688	0x001B1458	placed	
 nbCameraState_DebugShotAll_Init	0x001B1720	0x001B14F0	placed	
 nbCameraSetState	0x001B1740	0x001B1510	placed	
+func_001B1770	0x001B1770	0x001B1540	rigid	
 nbCameraSetBougai	0x001B17A0	0x001B1570	placed	
 nbCameraSetTaizi	0x001B17E0	0x001B15B0	placed	
 nbCameraSetTarget	0x001B1810	0x001B15E0	placed	
@@ -3513,6 +3558,8 @@ nbCameraProcess_nbCameraProcess	0x001B1D78	0x001B1B48	placed
 nbCameraDraw	0x001B2090	0x001B1E60	placed	
 nbCameraShutdown	0x001B2098	0x001B1E68	placed	
 nbInitCameraProcess	0x001B20B8	0x001B1E88	placed	
+func_001B2158	0x001B2158	0x001B1F28	rigid	
+func_001B2270	0x001B2270	0x001B2040	rigid	
 nb_1B2340	0x001B2340	0x001B2110	placed	
 nbCameraState_Start_Set	0x001B2378	0x001B2148	called	
 nbCameraState_Start_Animation	0x001B2730	0x001B2500	placed	
@@ -3522,8 +3569,11 @@ nbCameraState_Start_Init	0x001B3348	0x001B3118	placed
 nbCameraState_Start_Calc	0x001B33A8	0x001B3178	placed	
 nb_1B33F0	0x001B33F0	0x001B31C0	placed	
 nbCameraStart	0x001B33F8	0x001B31C8	placed	
+func_001B3460	0x001B3460	0x001B3230	rigid	
+func_001B3468	0x001B3468	0x001B3238	rigid	
 nb_1B3470	0x001B3470	0x001B3240	placed	
 nb_1B3490	0x001B3490	0x001B3260	placed	
+func_001B34B0	0x001B34B0	0x001B3280	rigid	
 nbCamera_SkillInfo_Set	0x001B3590	0x001B3360	called	
 nbCameraShot_GroundCollision	0x001B3EF8	0x001B3CC8	placed	
 nbCameraShot_TargetParty_Set2	0x001B4010	0x001B3DE0	placed	
@@ -3558,6 +3608,8 @@ nbCameraState_SkillCut1_Init	0x001B78B8	0x001B7688	placed
 nbCameraState_SkillCut1_Calc	0x001B7A18	0x001B77E8	placed	
 nbCameraState_SkillCut2_Init	0x001B7B28	0x001B78F8	placed	
 nbCameraState_SkillCut2_Calc	0x001B7F08	0x001B7CD8	placed	
+func_001B8018	0x001B8018	0x001B7DE8	rigid	
+func_001B8020	0x001B8020	0x001B7DF0	rigid	
 nbCameraState_PlayerSide_Init	0x001B8028	0x001B7DF8	placed	
 nbCameraState_EnemySide_Init	0x001B8120	0x001B7EF0	placed	
 nbCameraEnemyPartySet	0x001B8218	0x001B7FE8	placed	
@@ -3748,7 +3800,9 @@ frFindTagCode2	0x001C60E0	absent	absent
 frGetMessageCode	0x001C6128	absent	absent	
 cmpSetSkillListRows	0x001C6160	absent	absent	
 cmp_1C6180	0x001C6180	absent	absent	
+func_001C61B8	0x001C61B8	absent	absent	
 fr_1C6270	0x001C6270	absent	absent	
+func_001C62F8	0x001C62F8	absent	absent	
 frSetWhiteSpaceW	0x001C6300	0x001C5E68	called	
 frSwapColor	0x001C6338	0x001C5E98	placed	
 frConvertVal2N	0x001C6360	0x001C5EC0	placed	
@@ -3854,6 +3908,9 @@ frwGetSmallCaptionFontFRQ	0x001CA5E0	0x001C9B08	called
 frwGetHelpFRQ	0x001CA6A8	0x001C9BD0	placed	
 frGetHelpPos	0x001CA860	absent	absent	
 fr_1CA990	0x001CA990	0x001C9D88	similar	
+func_001CA998	0x001CA998	0x001C9D90	similar	
+func_001CA9A0	0x001CA9A0	0x001C9D98	similar	
+func_001CA9A8	0x001CA9A8	0x001C9DA0	similar	
 fr_1CA9B0	0x001CA9B0	0x001C9DA8	placed	
 fr_1CA9B8	0x001CA9B8	0x001C9DB0	placed	
 frGetFontHeader	0x001CA9C0	0x001C9DB8	placed	
@@ -4057,6 +4114,7 @@ pbAllocPrimPacket	0x001D22A8	0x001D15E8	placed
 pbMakeSpritePacket	0x001D2410	0x001D1750	placed	
 pbMakePrimPacket	0x001D2468	0x001D17A8	placed	
 pbDrawRotatedPrim	0x001D24C0	0x001D1800	placed	
+func_001D2638	0x001D2638	0x001D1978	rigid	
 pbRotateXCamera	0x001D2678	0x001D19B8	placed	
 pbRotateYCamera	0x001D2758	0x001D1A98	placed	
 pb_1D2838	0x001D2838	0x001D1B78	placed	
@@ -4067,10 +4125,13 @@ pb_1D2AD8	0x001D2AD8	0x001D1E18	placed
 pbSetModelPos	0x001D2B00	0x001D1E40	placed	
 pb_1D2B18	0x001D2B18	0x001D1E58	placed	
 pbSetModelRotate	0x001D2B40	0x001D1E80	placed	
+func_001D2B68	0x001D2B68	0x001D1EA8	rigid	
+func_001D2B70	0x001D2B70	0x001D1EB0	rigid	
 pbInitMyCharacterDraw	0x001D2B78	0x001D1EB8	placed	
 pbGetPanelField	0x001D2CB0	0x001D1FF0	placed	
 pbMyCharacterDispStat	0x001D2CC8	0x001D2008	placed	
 pbSetPanelValue	0x001D2CE0	0x001D2020	placed	
+func_001D2D00	0x001D2D00	0x001D2040	called	
 pbChangeMotion	0x001D2D08	0x001D2048	rigid	
 pb_1D2D10	0x001D2D10	0x001D2050	placed	
 pbMoveMyCharcter	0x001D2D18	0x001D2058	placed	
@@ -4097,6 +4158,7 @@ pbSetExitDisp	0x001D4040	0x001D3380	placed
 pbGetExitDisp	0x001D4058	0x001D3398	placed	
 pbSetExitPos	0x001D4068	0x001D33A8	placed	
 pbInitMapBaseDraw	0x001D4078	0x001D33B8	placed	
+func_001D4140	0x001D4140	0x001D3480	rigid	
 pbLoadTextures	0x001D4150	0x001D3490	placed	
 pbEditInitProc	0x001D4478	0x001D37B8	placed	
 pbEditMainExitProc	0x001D45C0	0x001D3900	placed	
@@ -4108,15 +4170,28 @@ pbStartMapEditor	0x001D4918	0x001D3C58	placed
 pbGetMoveChar	0x001D4A00	0x001D3D40	placed	
 pbStartDummy	0x001D4A08	0x001D3D48	placed	
 pbStartBackGround	0x001D4AA0	0x001D3DE0	placed	
+func_001D4B28	0x001D4B28	0x001D3E68	rigid	
 pbMapIsValid	0x001D4B30	0x001D3E70	placed	
 pb_1D4B60	0x001D4B60	0x001D3EA0	placed	
+func_001D4B68	0x001D4B68	0x001D3EA8	rigid	
 pb_1D4B70	0x001D4B70	0x001D3EB0	rigid	
+func_001D4B78	0x001D4B78	0x001D3EB8	rigid	
 pb_1D4B80	0x001D4B80	0x001D3EC0	rigid	
 pb_1D4B88	0x001D4B88	0x001D3EC8	rigid	
+func_001D4B90	0x001D4B90	0x001D3ED0	rigid	
 pbLoadSystemDataDone	0x001D4B98	0x001D3ED8	placed	
+func_001D4BC0	0x001D4BC0	0x001D3F00	rigid	
+func_001D4BC8	0x001D4BC8	0x001D3F08	rigid	
+func_001D4BE8	0x001D4BE8	0x001D3F28	rigid	
+func_001D4C08	0x001D4C08	0x001D3F48	rigid	
 pbMakeMapPathHdd	0x001D4CA0	0x001D3FE0	placed	
 pbMakeMapPath	0x001D4D40	0x001D4080	placed	
+func_001D4E08	0x001D4E08	0x001D4148	rigid	
+func_001D4E10	0x001D4E10	0x001D4150	rigid	
 exitPB	0x001D4E18	0x001D4158	placed	
+func_001D4E70	0x001D4E70	0x001D41B0	rigid	
+func_001D4EB0	0x001D4EB0	0x001D41F0	rigid	
+func_001D4F08	0x001D4F08	0x001D4248	rigid	
 pbSetDebugOwner	0x001D4F20	0x001D4260	placed	
 pb_proc_menu_Process	0x001D4FA8	0x001D42E8	placed	
 pb_proc_menu_Shutdown	0x001D54F0	0x001D4830	placed	
@@ -4179,6 +4254,7 @@ pbPreviousRecord	0x001D8CF8	0x001D8038	placed
 pbStartClear	0x001D8D88	0x001D80C8	placed	
 pbStartGiveupConfirm	0x001D8E28	0x001D8168	placed	
 pbGetCameraParam	0x001D8E80	0x001D81C0	placed	
+func_001D8EA0	0x001D8EA0	0x001D81E0	rigid	
 pbSetCameraRadius	0x001D8EA8	0x001D81E8	placed	
 pbSetCameraDegree	0x001D8EB0	0x001D81F0	placed	
 pbSetCameraDegreeInit	0x001D8EB8	0x001D81F8	placed	
@@ -4218,9 +4294,11 @@ pbDumpRecordData	0x001DAB30	0x001D9E70	placed
 pb_draw_help_Process	0x001DAE30	0x001DA170	placed	
 pb_draw_help_Shutdown	0x001DAF20	0x001DA260	placed	
 pbStartHelp	0x001DAF58	0x001DA298	placed	
+func_001DB020	0x001DB020	0x001DA360	rigid	
 pbResetKeyState	0x001DB038	0x001DA378	placed	
 pbGetKeyAction	0x001DB0A8	0x001DA3E8	placed	
 pbGetKeyMode	0x001DB0D0	0x001DA410	placed	
+func_001DB0D8	0x001DB0D8	0x001DA418	rigid	
 pbRotRKeyAct	0x001DB0E0	0x001DA420	placed	
 pbRotLKeyAct	0x001DB110	0x001DA450	placed	
 pbInitMCard	0x001DB140	0x001DA480	placed	
@@ -4405,6 +4483,7 @@ GetBaseLightDir	0x001E3300	0x001E2640	placed
 MakeLightPacket	0x001E3388	0x001E26C8	placed	
 evtLinkLightObjectBasic	0x001E34D8	0x001E2818	placed	
 evtUnlinkLightObjectBasic	0x001E3548	0x001E2888	placed	
+func_001E35B0	0x001E35B0	0x001E28F0	rigid	
 evtUnlinkExternalLightPacket	0x001E35C8	0x001E2908	placed	
 evtSetUnitLightAndAmbient	0x001E35F8	0x001E2938	placed	
 evtSetUnitLightDir	0x001E3690	0x001E29D0	placed	
@@ -4430,11 +4509,13 @@ evtUnitRotationTarget	0x001E3D80	0x001E30C0	placed
 evtUnitRotationQuat	0x001E3F10	0x001E3250	placed	
 evtUnitMoveType0	0x001E3FB8	0x001E32F8	placed	
 evtUnitMoveTypePathTrace	0x001E4080	0x001E33C0	placed	
+func_001E4108	0x001E4108	0x001E3448	rigid	
 evtSetUnitRot1	0x001E4120	0x001E3460	placed	
 evtSetUnitRot2	0x001E4160	0x001E34A0	placed	
 evtSetUnitMove1	0x001E41D0	0x001E3510	placed	
 evtSetUnitMove2	0x001E4208	0x001E3548	placed	
 evtSetUnitMove3	0x001E42C8	0x001E3608	placed	
+func_001E4510	0x001E4510	0x001E3850	rigid	
 evtUnitManagerPrimaryFunc	0x001E4538	0x001E3878	placed	
 evtSearchBasic	0x001E4B50	0x001E3E90	placed	
 evtCommand_MODEL_PLAYER	0x001E4B90	0x001E3ED0	placed	
@@ -4622,6 +4703,7 @@ EventDebugShutdown	0x001EB530	0x001EA870	placed
 evtInitEventTest	0x001EB548	0x001EA888	placed	
 evtChkEndProcess	0x001EB590	0x001EA8D0	placed	
 evtSceneDispProcess	0x001EB5C8	0x001EA908	called	
+func_001EBC90	0x001EBC90	0x001EAFD0	rigid	
 LinkFrameInfo	0x001EBC98	0x001EAFD8	placed	
 UnlinkFrameInfo	0x001EBD38	0x001EB078	placed	
 SortFrameInfo	0x001EBD88	0x001EB0C8	placed	
@@ -4987,6 +5069,7 @@ cmbDrawStockPanel3	0x00201A40	0x00200D78	placed
 cmbDrawStatus	0x00201AE8	0x00200E20	rigid	
 cmbDrawBirthDevilMaskBG	0x00201BD8	0x00200F10	rigid	
 cmbDrawBirthDevil	0x00201D38	0x00201070	rigid	
+func_00201FB0	0x00201FB0	0x002012E8	rigid	
 cmbDrawPhase3	0x00202048	0x00201380	placed	
 cmbDrawPhasePanel	0x002020E8	0x00201420	placed	
 cmbDrawSequence	0x00202140	0x00201478	called	
@@ -5015,7 +5098,13 @@ cmbHandleDebugExit	0x00203B38	0x00202E70	placed
 cmbUpdatePanelAnim	0x00203BD0	0x00202F08	placed	
 cmbUpdateModelLoad	0x00203CF0	0x00203028	placed	
 cmbUpdateSequence	0x00203D48	0x00203080	placed	
+func_00203F18	0x00203F18	0x00203250	rigid	
+func_00203F40	0x00203F40	0x00203278	rigid	
+func_00203F78	0x00203F78	0x002032B0	rigid	
+func_00203FA0	0x00203FA0	0x002032D8	rigid	
+func_00203FC8	0x00203FC8	0x00203300	rigid	
 cmbGetSmokeType	0x00203FF0	0x00203328	placed	
+func_00204018	0x00204018	0x00203350	rigid	
 cmbGetModelScaleById	0x00204040	0x00203378	placed	
 cmbGetSmokeScale	0x00204068	0x002033A0	placed	
 cmbGetSmokeColor	0x00204090	0x002033C8	placed	
@@ -5027,6 +5116,7 @@ cmbLoadActionModel	0x002041D8	0x00203510	placed
 cmbFreeActionModel	0x00204230	0x00203568	placed	
 cmbGetActionModelHandle	0x002042C8	0x00203600	placed	
 cmbUpdateIntroduceModel	0x00204388	0x002036C0	placed	
+func_002043E0	0x002043E0	0x00203718	rigid	
 cmbGetPanelScale	0x00204400	0x00203738	placed	
 cmbRotateModelPanel	0x00204448	0x00203780	called	
 cmbDrawModelPoly	0x002046C8	0x00203A00	placed	
@@ -5049,18 +5139,27 @@ cmbStartSmokeEffect	0x002056C0	0x002049F8	placed
 cmbSetActionWorkValues	0x002058A8	0x00204BE0	placed	
 cmbRunActionSe	0x002059C8	0x00204D00	placed	
 cmbActionBGM	0x00205A50	0x00204D88	placed	
+func_00205AB8	0x00205AB8	0x00204DF0	rigid	
 cmbInitAction	0x00205AC0	0x00204DF8	placed	
 cmb_205CE8	0x00205CE8	0x00205020	placed	
+func_00205DB8	0x00205DB8	0x002050F0	rigid	
 cmb_205DF0	0x00205DF0	0x00205128	placed	
 cmb_205E68	0x00205E68	0x002051A0	placed	
+func_00205EA0	0x00205EA0	0x002051D8	rigid	
 cmbFreeActionModels	0x00205F30	0x00205268	placed	
 cmbChkActScript	0x00205F98	0x002052D0	placed	
 cmbChkPolygonMovie	0x00205FC0	0x002052F8	placed	
 cmbUpdateAction	0x00206028	0x00205360	placed	
+func_00206888	0x00206888	0x00205BC0	rigid	
+func_00206910	0x00206910	0x00205C48	rigid	
+func_00206940	0x00206940	0x00205C78	rigid	
 shop_206948	0x00206948	0x00205C80	rigid	
+func_00206A28	0x00206A28	0x00205D60	rigid	
+func_00206A30	0x00206A30	0x00205D68	rigid	
 shop_206A38	0x00206A38	0x00205D70	placed	
 shopStartEvent	0x00206B50	0x00205E88	placed	
 fclShopEventEnd	0x00206B80	0x00205EB8	placed	
+func_00206BA8	0x00206BA8	0x00205EE0	rigid	
 fclShopInitItemList	0x00206BC0	0x00205EF8	placed	
 fclShopTexLoad	0x00206C38	0x00205F70	placed	
 fclShopTexFree	0x00206CD8	0x00206010	placed	
@@ -5071,6 +5170,8 @@ shop_update_Shutdown	0x00206FA0	0x002062D8	placed
 fclShopProcessStart	0x00207018	0x00206350	placed	
 fclShopProcessEnd	0x00207100	0x00206438	placed	
 shpCheckProcessStat	0x00207140	0x00206478	placed	
+func_00207178	0x00207178	0x002064B0	rigid	
+func_00207198	0x00207198	0x002064D0	rigid	
 shpGetItemPrice	0x002071E0	0x00206518	placed	
 shpItemIsUnlocked	0x00207210	0x00206548	placed	
 shpCountUnlockedItems	0x00207290	0x002065C8	placed	
@@ -5113,6 +5214,9 @@ shopUpdatePanelAnim	0x00209AE8	0x00208E20	placed
 shop_update_Process	0x00209B50	0x00208E88	placed	
 fclRagEventStart	0x00209D18	0x00209050	placed	
 fclRagEventEnd	0x00209D60	0x00209098	placed	
+func_00209D88	0x00209D88	0x002090C0	rigid	
+func_00209DD0	0x00209DD0	0x00209108	rigid	
+func_00209E18	0x00209E18	0x00209150	rigid	
 ragGetListItem2	0x00209E60	0x00209198	placed	
 ragGetListItem3	0x00209F30	0x00209268	placed	
 ragInitHeartsList	0x0020A000	0x00209338	placed	
@@ -5131,6 +5235,7 @@ fclDestroyRag	0x0020AC30	0x00209F68	placed
 fclRagProcessStart	0x0020ACA8	0x00209FE0	placed	
 fclRagProcessEnd	0x0020AD68	0x0020A0A0	placed	
 ragCheckProcessStat	0x0020ADA8	0x0020A0E0	placed	
+func_0020ADE0	0x0020ADE0	0x0020A118	rigid	
 ragGetConfirmEntry	0x0020AE00	0x0020A138	placed	
 ragFindItemSlot	0x0020AEA0	0x0020A1D8	called	
 ragSetSeqPhase2	0x0020AEF0	0x0020A228	placed	
@@ -5181,6 +5286,7 @@ fclDestroyRecover	0x0020DA10	0x0020CD28	placed
 fclRecoverProcessStart	0x0020DA88	0x0020CDA0	called	
 fclRecoverProcessEnd	0x0020DB50	0x0020CE68	placed	
 rcvCheckProcessStat	0x0020DB90	0x0020CEA8	placed	
+func_0020DBC8	0x0020DBC8	0x0020CEE0	rigid	
 rcv_20DBE8	0x0020DBE8	0x0020CF00	placed	
 rcvCalcPriceRecover	0x0020DBF0	0x0020CF08	placed	
 rcvGetStatusPrice	0x0020DCC0	0x0020CFD8	placed	
@@ -5244,8 +5350,12 @@ fclDestroyTerminal	0x00210830	0x0020FB38	placed
 fclTerminalProcessStart	0x002108B8	0x0020FBC0	placed	
 fclTerminalProcessEnd	0x00210978	0x0020FC80	placed	
 trmCheckProcessStat	0x002109B8	0x0020FCC0	placed	
+func_002109E0	0x002109E0	0x0020FCE8	rigid	
 trm_210A00	0x00210A00	0x0020FD08	placed	
 trm_210AF8	0x00210AF8	0x0020FE00	placed	
+func_00210B38	0x00210B38	0x0020FE40	rigid	
+func_00210B68	0x00210B68	0x0020FE70	rigid	
+func_00210B90	0x00210B90	0x0020FE98	rigid	
 trmResetCursor	0x00210BB8	0x0020FEC0	placed	
 trmCalc	0x00210BD0	0x0020FED8	placed	
 trmGetListFont	0x00210D00	0x00210008	placed	
@@ -5291,6 +5401,8 @@ trmDrawListText	0x00212C08	0x00211F10	placed
 trm_212CB8	0x00212CB8	0x00211FC0	placed	
 fclDrawPriceText	0x00212E28	0x00212130	called	
 shopDrawItemCount	0x00212FD0	0x002122C8	called	
+func_00213148	0x00213148	0x00212440	rigid	
+func_00213190	0x00213190	0x00212488	rigid	
 cmpSkillOrder	0x002131E0	0x002124D8	placed	
 cmbSetEvoResult	0x00213230	0x00212528	placed	
 buildSkillSortArray	0x00213280	0x00212578	placed	
@@ -5300,6 +5412,8 @@ sort_213328	0x00213328	0x00212620	placed
 sortSkillList	0x00213350	0x00212648	placed	
 cmbSetRaceResult	0x002133A0	0x00212698	placed	
 lstInitListWindow	0x002133F8	0x002126F0	placed	
+func_002134E0	0x002134E0	0x002127D8	rigid	
+func_002134F8	0x002134F8	0x002127F0	rigid	
 lstMoveCursor	0x00213518	0x00212810	placed	
 lstMoveCursor2	0x002135E0	0x002128D8	placed	
 lstDrawUpDownCursor	0x002136A8	0x002129A0	placed	
@@ -5321,6 +5435,8 @@ fclCreateItemListEx	0x00213C10	0x00212F08	called
 cmpItemOrder	0x00213CB0	0x00212FA8	placed	
 fclCompactList	0x00213CD8	0x00212FD0	placed	
 shuffleIndices	0x00213D28	0x00213020	placed	
+func_00213DC0	0x00213DC0	0x002130B8	rigid	
+func_00213DF0	0x00213DF0	0x002130E8	rigid	
 fclBlendColor	0x00213E40	0x00213138	placed	
 fclInitMessage	0x00213EF0	0x002131E8	placed	
 fclStartMessage	0x00213F38	0x00213230	placed	
@@ -5354,9 +5470,11 @@ fclSetSprite	0x00214620	0x00213918	placed
 fclSetSpriteNormal	0x00214680	0x00213978	placed	
 fclDrawSprite	0x002146A8	0x002139A0	placed	
 fclDrawSpriteEx	0x002146D0	0x002139C8	placed	
+func_002146F8	0x002146F8	0x002139F0	rigid	
 fclDrawSpriteCore	0x00214730	0x00213A28	called	
 fclCalcRotPos	0x00214A08	0x00213D00	placed	
 fclDrawSpriteAngleCore	0x00214B30	0x00213E28	called	
+func_00214FD8	0x00214FD8	0x002142D0	rigid	
 fclRagCalcTexSize	0x00215010	0x00214308	placed	
 fclRagTexCalcSizes	0x00215048	0x00214340	placed	
 fclRagTexInit	0x00215098	0x00214390	placed	
@@ -5364,6 +5482,7 @@ fclRunPanelAnim	0x002150D8	0x002143D0	placed
 fclSetPanelAnimState	0x00215170	0x00214468	placed	
 fclGetPanelAnimTarget	0x00215178	0x00214470	placed	
 fclGetPanelAnimPhase	0x00215180	0x00214478	placed	
+func_00215188	0x00215188	0x00214480	rigid	
 fcl_215190	0x00215190	0x00214488	placed	
 fclDrawPhaseValue	0x00215198	0x00214490	placed	
 fclDrawPanelBorder	0x00215318	0x00214610	placed	
@@ -5442,6 +5561,7 @@ RegistAll	0x00219400	0x002186E0	called
 InitListWindow	0x00219488	0x00218768	placed	
 PushListwinCursor	0x002195A8	0x00218888	placed	
 PopListwinCursor	0x002195D0	0x002188B0	placed	
+func_00219600	0x00219600	0x002188E0	rigid	
 AdjustStackCursor	0x00219630	0x00218910	placed	
 ResetReadMainRibbon	0x00219680	0x00218960	placed	
 AcceptKeyChangeSort	0x002196B8	0x00218998	placed	
@@ -5543,6 +5663,8 @@ checkResultStat	0x0021FD40	0x0021EFF8	placed
 rstSetLevelUpFlag	0x0021FD78	0x0021F030	placed	
 rstAddExp	0x0021FD98	0x0021F050	placed	
 rstAdvanceLevelUpStep	0x0021FDB8	0x0021F070	placed	
+func_0021FE18	0x0021FE18	0x0021F0D0	rigid	
+func_0021FE30	0x0021FE30	0x0021F0E8	placed	
 rstDrawEvoModel	0x0021FE50	0x0021F108	placed	
 rstSetEvoState	0x0021FF38	0x0021F1F0	placed	
 rstSetMotionReqFromTbl	0x0021FF48	0x0021F200	placed	
@@ -5578,23 +5700,27 @@ rstRecalcHeartsSkill	0x002213E8	0x002206A0	gap
 rstLoadHeartsSkill	0x00221550	0x00220800	gap	
 rstStoreHeartsSkill	0x00221558	0x00220808	gap	
 rstInitSkillAct	0x00221560	0x00220810	placed	
+func_002215B8	0x002215B8	0x00220868	rigid	
 rstFindRegisteredDevil	0x002215C0	0x00220870	rigid	
 rstFindDevilSlot	0x002216E0	0x00220990	rigid	
 rstShakePad	0x00221760	0x00220A10	placed	
 rstCalc	0x00221780	0x00220A30	called	
 cmbGetParamBase	0x00221D00	0x00220FB0	called	
 cmbGetParam	0x00221D70	0x00221020	placed	
+func_00221DB0	0x00221DB0	0x00221060	rigid	
 cmbChkGetHearts	0x00221DD8	0x00221088	called	
 datFindCommentEntry	0x00221E30	0x002210E0	placed	
 datGetPlayerLNDLevel	0x00221E70	0x00221120	placed	
 datGetDevilRace	0x00221EF8	0x002211A8	placed	
 datGetPlayerLNDList	0x00221F20	0x002211D0	called	
 datGetDevilSlotIndex	0x002220C0	0x00221370	placed	
+func_00222120	0x00222120	0x002213D0	rigid	
 datDevilIsRegistered	0x00222140	0x002213F0	called	
 datCountPlayerLND	0x00222160	0x00221410	rigid	
 datGetDevilSlotState	0x002221D0	0x00221480	called	
 rstSetDevilRegistered	0x002221E8	0x00221498	rigid	
 rstGetHeartsSkillAt	0x00222210	0x002214C0	placed	
+func_00222250	0x00222250	0x00221500	rigid	
 datGetDevilParam	0x00222290	0x00221540	placed	
 cmbGetHeartsParamByIndex	0x002222C0	0x00221570	placed	
 cmbGetHeartsParamEx	0x00222318	0x002215C8	called	
@@ -5603,12 +5729,14 @@ cmbAddHeartsParam	0x00222408	0x002216B8	placed
 cmbSubHeartsParam	0x00222470	0x00221720	placed	
 datAddHeartsSlot	0x002224D8	0x00221788	called	
 datAddHeartsEntry	0x00222550	0x00221800	placed	
+func_00222610	0x00222610	0x002218C0	rigid	
 rstCheckHeartsSlot	0x002226B8	0x00221968	placed	
 cmbInitStockUnit	0x00222788	0x00221A38	placed	
 cmb_222828	0x00222828	0x00221AD8	placed	
 cmbCheckEvoUnlocked	0x002228D8	0x00221B88	placed	
 cmbCountEvoCandidates	0x00222928	0x00221BD8	placed	
 cmbChkEvoNeedFlag	0x00222970	0x00221C20	placed	
+func_002229E8	0x002229E8	0x00221C98	rigid	
 datFindKugatatiEntry	0x00222A28	0x00221CD8	called	
 cmbCopyEvoStats	0x00222AA0	0x00221D50	placed	
 cmbCheckEvoPair	0x00222B70	0x00221E20	placed	
@@ -5616,6 +5744,7 @@ cmbFindEvoEntry	0x00222BB0	0x00221E60	placed
 cmbCopyEvoDevil	0x00222BF0	0x00221EA0	placed	
 cmbEvoEntryExists	0x00222CF0	0x00221FA0	placed	
 cmbCountEvoReady	0x00222D38	0x00221FE8	placed	
+func_00222DC0	0x00222DC0	0x00222070	rigid	
 cmbAddLevelUpParamEx	0x00222E00	0x002220B0	called	
 rst_223080	0x00223080	0x00222330	placed	
 rstFindEvoEntryType7	0x002230A0	0x00222350	placed	
@@ -5630,7 +5759,10 @@ rstRollPowerUpSkill	0x00223520	0x002227D0	placed
 datCalcDevilExp	0x00223628	0x002228D8	placed	
 datCopyDevilWorkEntry	0x00223668	0x00222918	placed	
 datAdvanceDevilLevel	0x00223728	0x002229D8	placed	
+func_00223748	0x00223748	0x002229F8	rigid	
+func_00223788	0x00223788	0x00222A38	rigid	
 rstRollComment	0x002237C8	0x00222A78	called	
+func_00223890	0x00223890	0x00222B40	rigid	
 cmbGetLevelUpCount	0x00223928	0x00222BD8	placed	
 rstDrawGetCursorRow	0x002239B0	0x00222C60	placed	
 rstDrawStatusRow	0x00223A90	0x00222D40	placed	
@@ -5648,6 +5780,7 @@ rstBuildDestroyList	0x002240D0	0x00223380	placed
 rstSkillSlotIsFull	0x00224138	0x002233E8	placed	
 rstWaitConfirmButton	0x00224190	0x00223440	placed	
 rstResetAsignParam	0x00224208	0x002234B8	placed	
+func_00224230	0x00224230	0x002234E0	rigid	
 rstAddAsignParam	0x00224268	0x00223518	placed	
 rstUpdateSeqAsignPlayerParam	0x00224288	0x00223538	rigid	
 rstUpdateSeqPlayerLevelUpOnly	0x00224510	0x002237C0	placed	
@@ -5676,6 +5809,10 @@ rstUpdateSeqHeartsEvent	0x00225E08	0x002250B8	placed
 rstUpdateSeqHeartsMaster	0x00225F50	0x00225200	rigid	
 rstUpdateBgTimer	0x002260A0	0x00225350	placed	
 rstUpdate	0x002260C8	0x00225378	called	
+func_002262C8	0x002262C8	0x00225578	rigid	
+func_002262D0	0x002262D0	0x00225580	rigid	
+func_002262D8	0x002262D8	0x00225588	rigid	
+func_002262E0	0x002262E0	0x00225590	rigid	
 sdfSndMakeFilename	0x002262E8	0x00225598	placed	
 sndInit	0x00226318	0x002255C8	placed	
 snd_226388	0x00226388	0x00225638	placed	
@@ -5739,6 +5876,7 @@ moviePlayFile_27041744	0x0022B710	0x0022A938	placed
 dds3PlayMovieByIndex	0x0022B768	0x0022A990	placed	
 movieStop	0x0022B7A0	0x0022A9C8	placed	
 dds3WaitMovieEnd	0x0022B7D8	0x0022AA00	placed	
+func_0022B7F8	0x0022B7F8	0x0022AA20	rigid	
 movieMan_Process	0x0022B808	0x0022AA30	placed	
 dds3StartMovieManager	0x0022B840	0x0022AA68	placed	
 dds3_22B880	0x0022B880	0x0022AAA8	placed	
@@ -5761,6 +5899,7 @@ rstSetResultWork	0x0022C578	0x0022B760	placed
 rstClearResultWork	0x0022C588	0x0022B770	placed	
 cmpTexLoad	0x0022C598	0x0022B780	placed	
 camp_22C610	0x0022C610	0x0022B7F8	placed	
+func_0022C658	0x0022C658	0x0022B840	called	
 campDebugRegistAll	0x0022C660	0x0022B848	called	
 dds3ClearStockTable	0x0022CAA0	0x0022BC88	rigid	
 cmpInitLocalStock	0x0022CAE8	0x0022BCD0	placed	
@@ -5858,6 +5997,7 @@ cmpUpdateDestroyItemConfirm	0x00231F38	0x00231098	placed
 campShowStock	0x00232018	0x00231178	placed	
 cmpUpdateLoad	0x00232088	0x002311E8	placed	
 campUpdateEffectStep	0x00232158	0x002312B8	placed	
+func_00232198	0x00232198	0x002312F8	rigid	
 campUpdateEffects	0x00232228	0x00231388	placed	
 camp_update_Process	0x00232248	0x002313A8	placed	
 cmpStockEffIsActive	0x002323A8	0x00231508	placed	
@@ -5884,6 +6024,7 @@ campDhCheckTextures	0x00232A58	0x00231BB8	placed
 cmpLoadDHTextures	0x00232AE8	0x00231C48	placed	
 campDhFreeTexture	0x00232B40	0x00231CA0	placed	
 campDhFreeResources	0x00232BB0	0x00231D10	placed	
+func_00232C08	0x00232C08	0x00231D68	rigid	
 cmpSetHeartsSequenceRemove	0x00232C18	0x00231D78	rigid	
 cmpInitHeartsIcon	0x00232CC8	0x00231E28	called	
 cmpInitDHWindow	0x00232E90	0x00231FF0	placed	
@@ -5940,7 +6081,10 @@ rstClearHeartsMasterPhase	0x00235D98	0x00234EE0	placed
 rst_235DA0	0x00235DA0	0x00234EE8	placed	
 rstSetSkillActFlag	0x00235DA8	0x00234EF0	placed	
 rstClearFlag	0x00235DB0	0x00234EF8	placed	
+func_00235DC8	0x00235DC8	0x00234F10	rigid	
 cmpStatSetTimer	0x00235DE0	0x00234F28	placed	
+func_00235E40	0x00235E40	0x00234F88	rigid	
+func_00235E60	0x00235E60	0x00234FA8	rigid	
 cmpGetGaugeBlinkAlpha	0x00235EA0	0x00234FE8	placed	
 cmpGetPanelAlphaOrDefault	0x00235FF8	0x00235140	placed	
 rstDrawNumber	0x00236018	0x00235160	called	
@@ -5976,12 +6120,14 @@ cmpDrawSkillList	0x00239678	0x002386F0	rigid
 cmpExpandColor	0x002399A0	0x00238A18	placed	
 cmpDrawSetup3DView	0x002399D8	0x00238A50	placed	
 cmpDrawSpriteFlag	0x00239B28	0x00238BA0	placed	
+func_00239C08	0x00239C08	0x00238C80	rigid	
 cmpDrawSprite	0x00239C28	0x00238CA0	placed	
 fclDrawPanelSprite	0x00239D00	0x00238D78	placed	
 cmpDrawSprite2	0x00239D20	0x00238D98	placed	
 fclDrawPanelSprite2	0x00239DF8	0x00238E70	placed	
 cmpDrawSpriteIndexed	0x00239E18	0x00238E90	placed	
 cmpDrawSpriteIndexed2	0x00239ED0	0x00238F48	placed	
+func_00239F88	0x00239F88	0x00239000	rigid	
 uiDrawUniformRgbRange	0x00239FA0	0x00239018	placed	
 cmpDrawTriG	0x00239FD0	0x00239048	placed	
 cmpDrawBoxSolid	0x0023A158	0x002391D0	placed	
@@ -5996,7 +6142,13 @@ cmpDisableRGB	0x0023A750	0x002397C8	placed
 cmpAllocRefGifTag	0x0023A800	0x00239878	placed	
 cmp_23A8B0	0x0023A8B0	0x00239928	placed	
 cmp_23A918	0x0023A918	0x00239990	placed	
+func_0023A958	0x0023A958	0x002399D0	rigid	
+func_0023A980	0x0023A980	0x002399F8	rigid	
+func_0023A9A8	0x0023A9A8	0x00239A20	rigid	
+func_0023A9F0	0x0023A9F0	0x00239A68	rigid	
 cmp_23AA28	0x0023AA28	0x00239AA0	placed	
+func_0023AA88	0x0023AA88	0x00239B00	rigid	
+func_0023AA90	0x0023AA90	0x00239B08	rigid	
 cmp_23AAC0	0x0023AAC0	0x00239B38	placed	
 cmp_23AAF8	0x0023AAF8	0x00239B70	placed	
 cmpDrawDebugPrint	0x0023AB30	0x00239BA8	placed	
@@ -6006,6 +6158,7 @@ cmpSetStatusModelFlag	0x0023ACF0	0x00239D68	placed
 cmpGetStatusModelLoadState	0x0023ACF8	0x00239D70	placed	
 cmpSetModelReloadFlag	0x0023AD00	0x00239D78	placed	
 cmpClearStatusModelLoadState	0x0023AD28	0x00239DA0	placed	
+func_0023AD30	0x0023AD30	0x00239DA8	rigid	
 cmpInitStatus	0x0023AD78	0x00239DF0	called	
 camp_update_status_Shutdown	0x0023AE88	0x00239F00	placed	
 cmpStartProcessStatus	0x0023AED0	0x00239F48	placed	
@@ -6019,6 +6172,7 @@ cmpAllocInfoProcess	0x0023B390	0x0023A408	placed
 camp_update_info_Shutdown	0x0023B400	0x0023A478	placed	
 cmpStartProcessInfo	0x0023B428	0x0023A4A0	placed	
 cmpSetInfoWindowHidden	0x0023B4E0	0x0023A558	placed	
+func_0023B500	0x0023B500	0x0023A578	rigid	
 camp_calc_info_Process	0x0023B518	0x0023A590	placed	
 camp_draw_info_Process	0x0023B560	0x0023A5D8	placed	
 camp_update_info_Process	0x0023B620	0x0023A698	placed	
@@ -6073,7 +6227,10 @@ campDrawStockSlots	0x0023E4C8	0x0023D530	called
 cmpRandomizePanelEff	0x0023E9C0	0x0023DA28	placed	
 cmpDrawPanelEffBar	0x0023EB98	0x0023DC00	placed	
 cmpUpdatePanelEffEntry	0x0023EC80	0x0023DCE8	placed	
+func_0023ECF0	0x0023ECF0	0x0023DD58	rigid	
+func_0023ED18	0x0023ED18	0x0023DD80	rigid	
 cmpSetPanelEffParam	0x0023ED88	0x0023DDF0	placed	
+func_0023EDB0	0x0023EDB0	0x0023DE18	rigid	
 rstGetPanelEffState	0x0023EDE0	0x0023DE48	placed	
 cmpAddPanelEffEntry	0x0023EE10	0x0023DE78	called	
 cmpAddQuePanelEff	0x0023EF30	0x0023DF98	placed	
@@ -6092,6 +6249,9 @@ rstSetStatusModelReady	0x0023F8C8	0x0023E930	placed
 cmpGetEncycWork	0x0023F8E0	0x0023E948	placed	
 cmpGetStatusModelId	0x0023F8E8	0x0023E950	placed	
 cmp_23F8F0	0x0023F8F0	0x0023E958	placed	
+func_0023F9F8	0x0023F9F8	0x0023EA60	rigid	
+func_0023FA98	0x0023FA98	0x0023EB00	rigid	
+func_0023FB10	0x0023FB10	0x0023EB78	rigid	
 cmpGetModelMotionId	0x0023FB90	0x0023EBF8	placed	
 cmpGetModelScale	0x0023FBC0	0x0023EC28	placed	
 rstGetEvoModelParam	0x0023FBF0	0x0023EC58	placed	
@@ -6138,6 +6298,7 @@ cmpPlayCursorSE	0x002413A0	0x00240400	placed
 func_002413B8	0x002413B8	0x00240418	called	
 cmpChkPadPressUpDown	0x00241588	0x002405E8	placed	
 cmpGetPadUpDown	0x002415B0	0x00240610	placed	
+func_002415D8	0x002415D8	0x00240638	rigid	
 cmpAllocEffectSlot	0x00241600	0x00240660	placed	
 cmpClearCursorSlots	0x002416D0	0x00240730	placed	
 cmpSetCursorSlot	0x00241728	0x00240788	called	
@@ -6166,11 +6327,14 @@ cmpMoveCursorListEnd	0x00242238	0x00241298	placed
 cmpDisablePadBitStop	0x00242258	0x002412B8	placed	
 cmpGetCursorRow	0x002422D8	0x00241338	placed	
 cmpMoveStockCursor	0x002422E0	0x00241340	placed	
+func_00242320	0x00242320	0x00241380	rigid	
 cmpCursorSlotIsSelectable	0x00242328	0x00241388	placed	
 cmpGetStockInfoIndex	0x002423C0	0x00241420	placed	
 cmpBuildStockNameList	0x00242440	0x002414A0	called	
 cmpGetStockCount	0x00242618	0x00241678	gap	
 cmpSortStockList	0x00242628	0x00241688	gap	
+func_002426F0	0x002426F0	0x00241748	gap	
+func_00242710	0x00242710	0x00241768	gap	
 cmpDebugDumpCount	0x00242760	0x002417B8	called	
 cmpInitSeqInfo	0x002427D8	0x00241830	placed	
 cmpChkSeqInfo	0x002427F8	0x00241850	placed	
@@ -6179,7 +6343,9 @@ cmpUpdateTerminate	0x002428F8	0x00241950	placed
 cmp_242918	0x00242918	0x00241970	placed	
 cmp_242958	0x00242958	0x002419B0	placed	
 cmp_242998	0x00242998	0x002419F0	placed	
+func_002429C0	0x002429C0	0x00241A18	rigid	
 cmpItemHasFlag	0x00242A18	0x00241A70	placed	
+func_00242A70	0x00242A70	0x00241AC8	rigid	
 campStatusIsActive	0x00242A78	0x00241AD0	placed	
 datGetBaseMaxHp	0x00242A88	0x00241AE0	placed	
 datGetBaseMaxMp	0x00242AE8	0x00241B40	placed	
@@ -6352,6 +6518,7 @@ SetBattleLight	0x0024C470	0x0024B490	placed
 nbAddStageCamera	0x0024C538	0x0024B558	placed	
 nbAddStageCamera2	0x0024C600	0x0024B620	placed	
 nbSetStageParam	0x0024C6C8	0x0024B6E8	placed	
+func_0024C6F0	0x0024C6F0	0x0024B710	rigid	
 nbGetStageData	0x0024C718	0x0024B738	placed	
 nbFreeStage	0x0024C728	0x0024B748	placed	
 StageLoad	0x0024C768	0x0024B788	placed	
@@ -6361,6 +6528,7 @@ nbStageShutdown	0x0024CA50	0x0024BA70	placed
 nbStageDrawProcess1	0x0024CA80	0x0024BAA0	placed	
 nbInitStageProcess	0x0024CAC8	0x0024BAE8	placed	
 nbStageFilterAlp	0x0024CBB8	0x0024BBD8	placed	
+func_0024CBD0	0x0024CBD0	0x0024BBF0	rigid	
 nbStageSp	0x0024CBE0	0x0024BC00	placed	
 GetDyingBadWaitMotion	0x0024CE78	0x0024BE98	placed	
 nbSetNegoWaitMotion	0x0024CF70	0x0024BF90	placed	
@@ -6373,6 +6541,7 @@ nbGetMotionSpeed	0x0024D428	0x0024C448	placed
 nbGetMotionNo	0x0024D490	0x0024C4B0	placed	
 nbAddUnitStock	0x0024D550	0x0024C570	called	
 nbSummonUnit	0x0024D8C0	0x0024C8E0	placed	
+func_0024D938	0x0024D938	0x0024C958	placed	
 nbReturnUnit	0x0024D980	0x0024C9A0	placed	
 nb_24DBF0	0x0024DBF0	0x0024CC10	placed	
 nb_24DC80	0x0024DC80	0x0024CCA0	placed	
@@ -7434,6 +7603,7 @@ effBTLModelLoadRotate	0x0028A2F0	0x002891B8	placed
 nbCameraGetBossDistance	0x0028A300	0x002891C8	placed	
 nbCameraGetSummonNear	0x0028A310	0x002891D8	placed	
 nbCameraGetSummonFar	0x0028A320	0x002891E8	placed	
+func_0028A330	0x0028A330	0x002891F8	rigid	
 nbGetEnemyInterval	0x0028A338	0x00289200	placed	
 nbSetPartyFormation	0x0028A340	0x00289208	called	
 nbSetEnemyFormation	0x0028A758	0x00289620	called	
@@ -7465,6 +7635,7 @@ nbGetEncountCnt	0x0028CC98	0x0028BB60	called
 nbEncountCalc	0x0028CCA8	0x0028BB70	called	
 nbCheckEncountLevel	0x0028CEE0	0x0028BDA8	placed	
 fclClearTerminalState	0x0028CFB0	0x0028BE78	called	
+func_0028CFC8	0x0028CFC8	0x0028BE90	rigid	
 nbInitMaeTableDefault	0x0028D028	0x0028BEF0	placed	
 nbInitMaeTable	0x0028D050	0x0028BF18	placed	
 nbGetUnitWorkFromAction	0x0028D070	0x0028BF38	placed	
@@ -7534,7 +7705,9 @@ nbFreeEventEntry	0x0028F840	0x0028E708	placed
 nbCheckEventEntries	0x0028F890	0x0028E758	placed	
 nbStartEventPacks	0x0028F958	0x0028E820	placed	
 nbUpdateEventProcessData	0x0028F9F0	0x0028E8B8	placed	
+func_0028FA30	0x0028FA30	0x0028E8F8	rigid	
 nbFreeEffectSlot	0x0028FA48	0x0028E910	placed	
+func_0028FA68	0x0028FA68	0x0028E930	rigid	
 nbGetEventForm	0x0028FA80	0x0028E948	placed	
 nbCreateBasicEffect	0x0028FAD8	0x0028E9A0	placed	
 ResetWaitMotion	0x0028FB10	0x0028E9D8	placed	
@@ -7606,6 +7779,7 @@ Model1Start	0x00292CE8	0x00291BA8	placed
 Model1Wait	0x00292DF0	0x00291CB0	placed	
 Model1Wait_2	0x00292EF0	0x00291DB0	placed	
 nbE905_Model2Start	0x00292FA0	0x00291E60	placed	
+func_002930E8	0x002930E8	0x00291FA8	rigid	
 nbE905_End	0x00293118	0x00291FD8	placed	
 nbE905Process_1	0x00293170	0x00292030	placed	
 nbE906_Test	0x00293620	0x002924E0	placed	
@@ -7710,6 +7884,7 @@ nmeDestroyName	0x00298478	0x00297248	placed
 nmeStartProcesses	0x002984E0	0x002972B0	placed	
 nmeNameProcessEnd	0x00298600	0x002973D0	placed	
 nmeCheckProcessStat	0x00298640	0x00297410	placed	
+func_00298678	0x00298678	0x00297448	rigid	
 nme_298698	0x00298698	0x00297468	placed	
 nmeCalc	0x00298748	0x00297518	placed	
 nmeDrawCharRow	0x00298798	0x00297568	similar	
@@ -7732,6 +7907,7 @@ nmeDrawFuncIcon	0x00299B38	0x002990C8	similar
 nmeDrawInputPanel	0x00299DD0	0x00299360	similar	
 nmeDraw	0x00299F90	0x00299520	called	
 nmeGetCursorPos	0x0029A0B8	0x00299668	called	
+func_0029A108	0x0029A108	0x002996B8	rigid	
 nmeStepCursor	0x0029A1B0	0x00299760	placed	
 nmeDeleteChar	0x0029A2C8	0x00299878	called	
 nmeConfirmChar	0x0029A430	0x002999E0	called	
@@ -7781,6 +7957,7 @@ sdfMcFuncWrite	0x0029B710	0x0029ADA8	placed
 sdfMcFuncWrite1	0x0029B728	0x0029ADC0	placed	
 slKillLoadProcess	0x0029B780	0x0029AE18	placed	
 dds3_29B7B0	0x0029B7B0	0x0029AE48	placed	
+func_0029B7B8	0x0029B7B8	0x0029AE50	rigid	
 dds3ConfigChanged	0x0029B7C0	0x0029AE58	placed	
 dds3ConfigSaveBackup	0x0029B808	0x0029AEA0	called	
 dds3ConfigRestoreBackup	0x0029B848	0x0029AEE0	called	
@@ -7902,6 +8079,8 @@ getPartsInfo	0x002A2E90	0x002A2518	placed
 getPartsType	0x002A2ED8	0x002A2560	placed	
 pipe_2A2F38	0x002A2F38	0x002A25C0	placed	
 pipe_2A2F40	0x002A2F40	0x002A25C8	placed	
+func_002A2F48	0x002A2F48	0x002A25D0	rigid	
+func_002A2F50	0x002A2F50	0x002A25D8	rigid	
 getViewPortMatrix	0x002A2F58	0x002A25E0	placed	
 PipeCamera	0x002A30C8	0x002A2750	placed	
 PipeCameraAction	0x002A3280	0x002A2908	placed	
@@ -7987,6 +8166,7 @@ mtxRotateZ	0x002A77A0	0x002A6E28	placed
 mtxStore	0x002A7A00	0x002A7088	placed	
 mtx_2A7B10	0x002A7B10	0x002A7198	placed	
 mtx_2A7BB8	0x002A7BB8	0x002A7240	placed	
+func_002A7DF8	0x002A7DF8	0x002A7480	rigid	
 vecDistance	0x002A7E38	0x002A74C0	placed	
 sdfDummyFunc	0x002A8078	0x002A7700	called	
 sdfCreateSema	0x002A8080	0x002A7708	placed	
@@ -9543,9 +9723,6 @@ func_001C91B0	-	0x001C91B0	maniax only	frGetNameFRQ
 func_001C93C8	-	0x001C93C8	maniax only	frwFreeStaffFont
 func_001C9410	-	0x001C9410	maniax only	frwFreeStaffFont
 func_001C9418	-	0x001C9418	maniax only	frwFreeStaffFont
-func_001C9D90	-	0x001C9D90	maniax only	fr_1CA990
-func_001C9D98	-	0x001C9D98	maniax only	fr_1CA990
-func_001C9DA0	-	0x001C9DA0	maniax only	fr_1CA990
 func_002501B0	-	0x002501B0	maniax only	SetAllPacket
 func_00250210	-	0x00250210	maniax only	SetAllPacket
 func_00250270	-	0x00250270	maniax only	SetAllPacket
