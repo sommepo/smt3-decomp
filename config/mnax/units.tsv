@@ -3,7 +3,7 @@ kernel/dds3KernelMain	.sdata start ambiguous
 kernel/dds3KernelCore	C with fallbacks
 sdf/sdfDefaultMain	C
 kernel/dds3KernelProcess	C with fallbacks
-kernel/dds3AdminiProcess	demoted: .data links at a different size than its place in Maniax
+kernel/dds3AdminiProcess	C with fallbacks
 kernel/dds3DebugMenu	C
 kernel/dds3KernelMisc	C
 kernel/dds3PadManager	C
@@ -11,17 +11,17 @@ kernel/dds3StartMenu	C
 kernel/dds3Randomize	C
 kernel/dds3KernelDraw	C
 kernel/dds3SequenceList	C
-script/scrScriptProcess	C with fallbacks, 1 functions kept as Maniax assembly
-script/scrTraceCode	C with fallbacks, 9 functions kept as Maniax assembly
+script/scrScriptProcess	C
+script/scrTraceCode	.text bounds overlap script/scrCommonCommand
 script/scrCommonCommand	C
-script/scrParameterCommand	C with fallbacks, 7 functions kept as Maniax assembly
+script/scrParameterCommand	C with fallbacks, 3 functions kept as Maniax assembly
 basic/dds3DbgBasic	C
 basic/dds3Basic	C
 basic/dds3WorldBasic	C
-basic/dds3SceneBasic	C with fallbacks, 1 functions kept as Maniax assembly
+basic/dds3SceneBasic	C
 basic/dds3AreaBasic	C
 basic/dds3MoverBasic	C
-basic/dds3ObjectBase	.sdata bytes differ
+basic/dds3ObjectBase	demoted: .sdata is 0x40 bytes where Maniax has room for 0x38
 basic/dds3CameraObjectBasic	C
 basic/dds3UnitObjectBasic	C
 basic/dds3MatterObjectBasic	C
@@ -34,11 +34,11 @@ basic/dds3ModelRangeBasic	C
 basic/dds3EventBasic	C
 basic/dds3PathBasic	C
 basic/dds3PointBasic	C
-kernel/dds3GlobalWork	demoted: .sdata is 0x38 bytes where Maniax has room for 0x30
+kernel/dds3GlobalWork	.sdata start ambiguous
 kernel/dds3DebugStuff	C
 field/fldTest	C with fallbacks, 1 functions kept as Maniax assembly
-field/fldGlobal	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldMain	C with fallbacks, 21 functions kept as Maniax assembly
+field/fldGlobal	C with fallbacks
+field/fldMain	C with fallbacks, 1 functions kept as Maniax assembly
 field/fldProcess	C with fallbacks
 field/fldFileResolver	C
 field/fldDraw	C with fallbacks
@@ -47,26 +47,26 @@ field/fldCamera	C with fallbacks
 field/fldPlayer	C with fallbacks
 field/fldSky	C with fallbacks
 field/fldHit	C with fallbacks
-field/fldEveHit	C with fallbacks, 2 functions kept as Maniax assembly
+field/fldEveHit	C with fallbacks, 1 functions kept as Maniax assembly
 field/fldInf	C
 field/fldWap	.rodata bounds overlap field/fldInf
-field/fldPanel	C with fallbacks, 1 functions kept as Maniax assembly
-field/fldSe	.sdata bytes differ
-field/fldAutoMap	C with fallbacks, 7 functions kept as Maniax assembly
+field/fldPanel	C
+field/fldSe	demoted: .sdata is 0x298 bytes where Maniax has room for 0x290
+field/fldAutoMap	C with fallbacks
 field/fld_Npc	demoted: .rodata is 0xF8 bytes where Maniax has room for 0xE0
-field/fldTitle	C with fallbacks, 1 functions kept as Maniax assembly
+field/fldTitle	C
 field/fldSnow	C with fallbacks
-mc/slMain	C with fallbacks, 14 functions kept as Maniax assembly
+mc/slMain	demoted: .rodata bytes differ from Maniax
 field/fldCommand	C with fallbacks
-effect/effManager	demoted: .data links at a different size than its place in Maniax
+effect/effManager	C
 effect/billManager	C with fallbacks
 effect/parManager	C with fallbacks
-effect/polyManager	demoted: .data links at a different size than its place in Maniax
+effect/polyManager	C
 effect/effPacket	C
 effect/effBattle	C
 effect/effBattleMisc	C with fallbacks
 effect/effBattleLight	C with fallbacks
-effect/effBattleSystem	demoted: .data links at a different size than its place in Maniax
+effect/effBattleSystem	C with fallbacks
 effect/effPart	C
 effect/effPCPThunder	C
 effect/effPCPBezier	C
@@ -93,12 +93,12 @@ newbattle/nbCameraBoss	C with fallbacks
 code_001C55F8	C
 interface/fmGslCont	.sdata bounds unknown in Maniax
 interface/frFont	.sdata bounds overlap effect/effSpline
-interface/frName	demoted: .sdata is 0x50 bytes where Maniax has room for 0x40
-interface/frWrap	C with fallbacks, 8 functions kept as Maniax assembly
-interface/frTestFont	C
-interface/itfMisc	.rodata bounds unknown in Maniax
+interface/frName	demoted: .sdata is 0x40 bytes where Maniax has room for 0x30
+interface/frWrap	demoted: .text is 0xD70 bytes where Maniax has room for 0xE90
+interface/frTestFont	demoted: .rodata is 0x51 bytes where Maniax has room for 0x58
+interface/itfMisc	.rodata bytes differ
 interface/itfPanel	C
-interface/itfMesManager	.rodata bounds overlap interface/frTestFont
+interface/itfMesManager	demoted: .rodata is 0x12D bytes where Maniax has room for 0xF0
 interface/itfTestMesManager	C
 pb/pbCamera	C
 pb/pbModel	C with fallbacks
@@ -112,15 +112,15 @@ pb/pbHelp	C
 pb/pbKeyConv	C
 pb/pbMCard	C
 pb/pbErrorDraw	C
-pb/pbDebugMode	C
+pb/pbDebugMode	demoted: .rodata is 0x4071 bytes where Maniax has room for 0x4010
 model/mdlManager	C
 model/mdlEffect	C
-event/EventBit	C with fallbacks, 4 functions kept as Maniax assembly
+event/EventBit	C
 event/evtBitEditor	C
 event/evtStage	C
 event/evtUnitManager	C
-event/evtCommand	C with fallbacks, 1 functions kept as Maniax assembly
-event/evtMoon	C with fallbacks, 12 functions kept as Maniax assembly
+event/evtCommand	C
+event/evtMoon	C with fallbacks
 event/evtDebug	C with fallbacks
 event/evtEventViewer	C with fallbacks
 event/evtPolygonMovie	C
@@ -129,69 +129,69 @@ event/evtSky	C
 event/evtEventViewerFrameVar	C
 event/evtEventViewerMenu	C with fallbacks
 event/evtSound	C
-event/evtEventPack	.rodata bytes differ
+event/evtEventPack	demoted: .rodata is 0x270 bytes where Maniax has room for 0x248
 facility/fclCombineInit	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclShopInit	.sdata start ambiguous
+facility/fclShopInit	demoted: .sdata is 0x60 bytes where Maniax has room for 0x40
 facility/fclShopCalc	demoted: .sdata is 0x20 bytes where Maniax has room for 0x10
-facility/fclShopUpdate	demoted: .rodata is 0x150 bytes where Maniax has room for 0xD0
+facility/fclShopUpdate	.rodata bytes differ
 facility/fclRagInit	demoted: .sdata is 0x44 bytes where Maniax has room for 0x30
-facility/fclRagCalc	demoted: .rodata is 0x90 bytes where Maniax has room for 0x60
+facility/fclRagCalc	demoted: ragDrawList2: undefined reference to ragDrawListRows
 facility/fclRagDraw	C
 facility/fclRagUpdate	demoted: .rodata is 0x1B0 bytes where Maniax has room for 0x100
-facility/fclRecoverInit	demoted: .rodata is 0xE0 bytes where Maniax has room for 0xB0
-facility/fclRecoverCalc	C with fallbacks, 2 functions kept as Maniax assembly
+facility/fclRecoverInit	.rodata bytes differ
+facility/fclRecoverCalc	C with fallbacks, 1 functions kept as Maniax assembly
 facility/fclRecoverDraw	C
-facility/fclRecoverUpdate	demoted: .rodata is 0x140 bytes where Maniax has room for 0xE0
-facility/fclTerminalInit	.rodata bytes differ
+facility/fclRecoverUpdate	.rodata bytes differ
+facility/fclTerminalInit	demoted: .sdata is 0x50 bytes where Maniax has room for 0x38
 facility/fclTerminalCalc	C
 facility/fclTerminalDraw	C
-facility/fclTerminalUpdate	.rodata bytes differ
-facility/fclDraw	C with fallbacks, 2 functions kept as Maniax assembly
-interface/lstListWindow	.rodata bytes differ
-facility/fclMisc	demoted: .sdata is 0x88 bytes where Maniax has room for 0x58
+facility/fclTerminalUpdate	C
+facility/fclDraw	demoted: .text is 0x11F4 bytes where Maniax has room for 0x1208
+interface/lstListWindow	demoted: .rodata bytes differ from Maniax
+facility/fclMisc	.sdata bytes differ
 facility/fclShare	C with fallbacks
 facility/fclPanel	C with fallbacks
 facility/fclDebug	C
 facility/fclEncyc	.sdata bounds overlap facility/fclDebug
 facility/fclRibbon	C
-result/rstinit	C with fallbacks, 5 functions kept as Maniax assembly
-result/rstcalc	C with fallbacks, 24 functions kept as Maniax assembly
+result/rstinit	C
+result/rstcalc	C with fallbacks
 result/rstdraw	C
-result/rstupdate	demoted: .rodata is 0x248 bytes where Maniax has room for 0x1C8
-sound/sndManager	demoted: .rodata is 0x43 bytes where Maniax has room for 0x30
+result/rstupdate	demoted: .rodata must start 16-aligned; Maniax place 0x0053B5C8 is not
+sound/sndManager	demoted: titleAllocWork: undefined reference to dds3Titlemain
 kernel/dds3TitleMain	demoted: .rodata is 0x160 bytes where Maniax has room for 0xF0
-kernel/ModeSelect	demoted: .rodata is 0x14DE bytes where Maniax has room for 0xFC0
+kernel/ModeSelect	.rodata bytes differ
 kernel/dds3CreateData	C
-staff/stfMain	C with fallbacks, 1 functions kept as Maniax assembly
+staff/stfMain	C
 movie/mviManager	demoted: no Maniax assembly for movieDebugRowFmt
-movie/MovieViewer	.sdata bounds unknown in Maniax
-code_0022C578	.sdata bounds overlap kernel/dds3CreateData
-newdata/datCalc	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datDebugUnit	demoted: .rodata is 0xD8 bytes where Maniax has room for 0xB8
+movie/MovieViewer	.rodata start ambiguous
+code_0022C578	cannot isolate cmpInitStatus in the source
+newdata/datCalc	demoted: .text bytes differ from Maniax
+newdata/datDebugUnit	C
 newbattle/nbInit	C
-newbattle/nbMainProcess	C with fallbacks, 5 functions kept as Maniax assembly
+newbattle/nbMainProcess	C with fallbacks
 newbattle/nbMaeProcess	C
-newbattle/nbAtoProcess	C with fallbacks, 1 functions kept as Maniax assembly
-newbattle/nbResultProcess	C with fallbacks, 2 functions kept as Maniax assembly
+newbattle/nbAtoProcess	C
+newbattle/nbResultProcess	C with fallbacks
 newbattle/nbStageProcess	C
 newbattle/nbUnitProcess	demoted: .rodata range holds a jump table into code it does not own
-newbattle/nbActionProcess	demoted: .rodata is 0xAE0 bytes where Maniax has room for 0x9B0
-newbattle/nbMisc	C with fallbacks, 3 functions kept as Maniax assembly
-newbattle/nbCommSelProcess	demoted: .sdata is 0xE bytes where Maniax has room for 0x8
+newbattle/nbActionProcess	demoted: .rodata is 0xB30 bytes where Maniax has room for 0x9B0
+newbattle/nbMisc	C with fallbacks, 1 functions kept as Maniax assembly
+newbattle/nbCommSelProcess	demoted: DispCommandList2: undefined reference to DispComm1Comm
 newbattle/nbTarSelProcess	C with fallbacks
 newbattle/nbKoukaProcess	C
 newbattle/nbMakePacket	C with fallbacks
-newbattle/nbCalc	C with fallbacks, 6 functions kept as Maniax assembly
-newbattle/nbNegoProcess	demoted: .rodata is 0x140 bytes where Maniax has room for 0x150
-newbattle/NbNegoFlowOne	C with fallbacks, 2 functions kept as Maniax assembly
+newbattle/nbCalc	C with fallbacks
+newbattle/nbNegoProcess	C
+newbattle/NbNegoFlowOne	C
 newbattle/NbNegoFlowTwo	C with fallbacks
-newbattle/NbNegoFlowOk	C with fallbacks, 1 functions kept as Maniax assembly
+newbattle/NbNegoFlowOk	C
 newbattle/NbNegoFlowNg	C
-newbattle/NbNegoFlowFullMoon	C with fallbacks, 1 functions kept as Maniax assembly
+newbattle/NbNegoFlowFullMoon	C
 newbattle/NbNegoFlowStock	C
 newbattle/NbNegoFlowDouchara	C
 newbattle/NbNegoFlowInnen	C with fallbacks
-newbattle/NbNegoFlowQuestion	C with fallbacks, 1 functions kept as Maniax assembly
+newbattle/NbNegoFlowQuestion	C
 newbattle/NbNegoFlowFight	C
 newbattle/NbNegoFlowDrain	C
 newbattle/NbNegoFlowBinjo	C
@@ -199,20 +199,20 @@ newbattle/NbNegoFlowMukan	C
 newbattle/NbNegoFlowSensei	C
 newbattle/NbNegoFlowInoti	C
 newbattle/NbNegoFlowKoketa	C
-newbattle/nbPanelProcess	C with fallbacks, 2 functions kept as Maniax assembly
-newbattle/nbDebugProcess	C with fallbacks, 1 functions kept as Maniax assembly
+newbattle/nbPanelProcess	C with fallbacks, 1 functions kept as Maniax assembly
+newbattle/nbDebugProcess	C with fallbacks
 newbattle/nbAi	C with fallbacks
 newbattle/nbAiScript	C
-newbattle/nbHelpProcess	C with fallbacks, 3 functions kept as Maniax assembly
+newbattle/nbHelpProcess	.text bounds overlap newbattle/nbAutoCommProcess
 newbattle/nbAutoCommProcess	C
 newbattle/nbFormation	C with fallbacks
-newbattle/nbTest	C with fallbacks, 4 functions kept as Maniax assembly
-newbattle/nbEncount	C with fallbacks, 3 functions kept as Maniax assembly
+newbattle/nbTest	C with fallbacks
+newbattle/nbEncount	C
 newbattle/nbSound	C with fallbacks
-newbattle/nbEncProcess	C with fallbacks, 1 functions kept as Maniax assembly
-newbattle/nbMakaProcess	C with fallbacks, 2 functions kept as Maniax assembly
-newbattle/nbEventProcess	C with fallbacks, 1 functions kept as Maniax assembly
-newbattle/nbSkillError	demoted: .rodata is 0x710 bytes where Maniax has room for 0x720
+newbattle/nbEncProcess	C with fallbacks
+newbattle/nbMakaProcess	C with fallbacks
+newbattle/nbEventProcess	demoted: .text is 0x7D4 bytes where Maniax has room for 0x7E0
+newbattle/nbSkillError	C with fallbacks
 newbattle/nbE901	C
 newbattle/nbE902	C
 newbattle/nbE903	C
@@ -228,14 +228,14 @@ newbattle/nbE912	C
 newbattle/nbE913	C
 newbattle/nbE914	C
 newbattle/nbE915	C
-file/fileManager	.rodata bytes differ
-nme/Nme_Init	demoted: .text is 0xD0C bytes where Maniax has room for 0xD30
-nme/Nme_Calc	demoted: .rodata is 0x80 bytes where Maniax has room for 0x40
-nme/Nme_Draw	demoted: nmeCheckInputMode: undefined reference to func_00299C78
+file/fileManager	demoted: .rodata is 0x1EF8 bytes where Maniax has room for 0x1E80
+nme/Nme_Init	demoted: does not compile for Maniax
+nme/Nme_Calc	demoted: nmeCalc: undefined reference to nmeConfirmQuestion
+nme/Nme_Draw	demoted: nmeUpdateInput: undefined reference to func_00299C78
 nme/Nme_Update	C
 mc/mcManager	C
-code_0029B780	demoted: .rodata is 0xF8 bytes where Maniax has room for 0x98
-kernel/dds3ConfigMain	C with fallbacks, 2 functions kept as Maniax assembly
+code_0029B780	demoted: .rodata is 0xC8 bytes where Maniax has room for 0x98
+kernel/dds3ConfigMain	.text bounds overlap pipe/pipeMain
 pipe/pipeMain	C
 pipe/pipeSection	C with fallbacks
 pipe/pipeSelect	C
@@ -283,28 +283,28 @@ sdf/sdfMath	C
 sdf/sdfQuat	C
 code_002C0BA8	C
 sdf/sdfRand	C
-sdf/sdfSound	demoted: .data links at a different size than its place in Maniax
-sdf/sdfDevFile	demoted: .data links at a different size than its place in Maniax
-sdf/sdfAddrResolve	demoted: .data links at a different size than its place in Maniax
-sdf/sdfIpu	demoted: .data links at a different size than its place in Maniax
-sdf/sdfMovie	demoted: .data links at a different size than its place in Maniax
-sdf/sdfPacDecode	demoted: .data links at a different size than its place in Maniax
-sdf/sdf_Decomp	demoted: .data links at a different size than its place in Maniax
-sdf/sdfTmx	demoted: .data links at a different size than its place in Maniax
-sdf/sdfSortOt	demoted: .data links at a different size than its place in Maniax
-sdk/libgraph	demoted: .data links at a different size than its place in Maniax
-sdk/libdma	demoted: .text links at a different size than its place in Maniax
-sdk/libpad	demoted: .text links at a different size than its place in Maniax
-sdk/libcdvd	demoted: .text links at a different size than its place in Maniax
-sdk/libmrpc	demoted: .text links at a different size than its place in Maniax
-sdk/libipu	demoted: .text links at a different size than its place in Maniax
-sdk/libmc	demoted: .text links at a different size than its place in Maniax
-sdk/libm	demoted: .text links at a different size than its place in Maniax
-sdk/libgcc	demoted: .text links at a different size than its place in Maniax
-sdk/libc	demoted: .text links at a different size than its place in Maniax
-sdk/libkernl	demoted: .data links at a different size than its place in Maniax
+sdf/sdfSound	C with fallbacks
+sdf/sdfDevFile	C
+sdf/sdfAddrResolve	C
+sdf/sdfIpu	C with fallbacks
+sdf/sdfMovie	C
+sdf/sdfPacDecode	C
+sdf/sdf_Decomp	C
+sdf/sdfTmx	C
+sdf/sdfSortOt	C
+sdk/libgraph	C with fallbacks
+sdk/libdma	C with fallbacks
+sdk/libpad	C with fallbacks
+sdk/libcdvd	C with fallbacks
+sdk/libmrpc	C
+sdk/libipu	C
+sdk/libmc	C with fallbacks
+sdk/libm	C with fallbacks
+sdk/libgcc	C with fallbacks
+sdk/libc	C with fallbacks
+sdk/libkernl	demoted: .text must start 64-aligned; Maniax place 0x002DB0F8 is not
 sdk/libgcc_longlong	demoted: .rodata is 0x850 bytes where Maniax has room for 0x448
-sdk/libgcc_fixunsdfdi	demoted: .data links at a different size than its place in Maniax
-sdk/libgcc_dpdiv	demoted: .data links at a different size than its place in Maniax
-sdk/libgcc_floatdidf	demoted: .data links at a different size than its place in Maniax
-sdk/libgcc_longlong_tail	demoted: .data links at a different size than its place in Maniax
+sdk/libgcc_fixunsdfdi	C
+sdk/libgcc_dpdiv	C
+sdk/libgcc_floatdidf	C
+sdk/libgcc_longlong_tail	C

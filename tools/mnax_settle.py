@@ -75,7 +75,9 @@ def size_culprits():
         nobj, nsec = obj_for(nkind, nname)
         nxt = section(nobj, nsec) or (0, 1)
         room = nrom - rom
-        if got[0] > room or room - got[0] >= max(nxt[1], 4):
+        if (rom + DELTA) % got[1]:
+            out.setdefault(name, f"{sec} must start {got[1]}-aligned; Maniax place 0x{rom + DELTA:08X} is not")
+        elif got[0] > room or room - got[0] >= max(nxt[1], 4):
             out.setdefault(name, f"{sec} is 0x{got[0]:X} bytes where Maniax has room for 0x{room:X}")
     return out
 
@@ -184,9 +186,13 @@ def main() -> None:
         # the map is still written, and it says which unit has the wrong size.
         if not found and not matched:
             found = size_culprits()
+        # Layout drift that no C object's size explains starts in a blob; blaming the
+        # C unit before it only walks backwards through innocent units, so report it.
         if not found and not matched and (linked or "relocation truncated" in log):
-            found = drift_culprits()
-            if not found and linked and IMAGE.exists():
+            drift = drift_culprits() if (ROOT / "build/mnax/SLPM_654.62.map").exists() else {}
+            if drift or not linked or not IMAGE.exists():
+                print("  layout drifts with every C unit the right size, near: " + str(list(drift.items())[:1]))
+            else:
                 found, stray = byte_culprits()
                 if stray:
                     print(f"  {stray} differing ranges outside C units")

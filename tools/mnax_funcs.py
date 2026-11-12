@@ -173,6 +173,17 @@ def main() -> None:
         fh.write("name\tusa\tmnax\thow\tafter\n")
         for a, name, m, h in rows:
             fh.write(f"{name}\t0x{a:08X}\t{m}\t{h}\t\n")
+        # A "start" inside a function whose C was found whole in Maniax is a shared
+        # epilogue or a label, not a function.
+        spans = [(placed[n], placed[n] + size_of[n]) for n in placed]
+        spans.sort()
+        import bisect as _b
+        starts_ = [a for a, _ in spans]
+
+        def inside(x):
+            i = _b.bisect_right(starts_, x) - 1
+            return i >= 0 and spans[i][0] < x < spans[i][1]
+        extra[:] = [(s, after) for s, after in extra if not inside(s)]
         for s, after in sorted(extra):
             fh.write(f"func_{s:08X}\t-\t0x{s:08X}\tmaniax only\t{usa[after][1]}\n")
     tally = Counter(h for _, _, _, h in rows)

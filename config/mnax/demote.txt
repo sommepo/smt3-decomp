@@ -1,58 +1,36 @@
-nme/Nme_Draw	nmeCheckInputMode: undefined reference to func_00299C78
-code_0029B780	.rodata is 0xF8 bytes where Maniax has room for 0x98
-facility/fclCombineInit	.text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclMisc	.sdata is 0x88 bytes where Maniax has room for 0x58
-facility/fclRagCalc	.rodata is 0x90 bytes where Maniax has room for 0x60
-facility/fclRagInit	.sdata is 0x44 bytes where Maniax has room for 0x30
-facility/fclRagUpdate	.rodata is 0x1B0 bytes where Maniax has room for 0x100
-facility/fclRecoverInit	.rodata is 0xE0 bytes where Maniax has room for 0xB0
-facility/fclRecoverUpdate	.rodata is 0x140 bytes where Maniax has room for 0xE0
-facility/fclShopCalc	.sdata is 0x20 bytes where Maniax has room for 0x10
-facility/fclShopUpdate	.rodata is 0x150 bytes where Maniax has room for 0xD0
-field/fld_Npc	.rodata is 0xF8 bytes where Maniax has room for 0xE0
-interface/frName	.sdata is 0x50 bytes where Maniax has room for 0x40
-kernel/ModeSelect	.rodata is 0x14DE bytes where Maniax has room for 0xFC0
-kernel/dds3GlobalWork	.sdata is 0x38 bytes where Maniax has room for 0x30
-kernel/dds3TitleMain	.rodata is 0x160 bytes where Maniax has room for 0xF0
-newbattle/nbActionProcess	.rodata is 0xAE0 bytes where Maniax has room for 0x9B0
-newbattle/nbCommSelProcess	.sdata is 0xE bytes where Maniax has room for 0x8
-newdata/datCalc	.text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datDebugUnit	.rodata is 0xD8 bytes where Maniax has room for 0xB8
-nme/Nme_Calc	.rodata is 0x80 bytes where Maniax has room for 0x40
-nme/Nme_Init	.text is 0xD0C bytes where Maniax has room for 0xD30
-pipe/pipeObject	.rodata is 0x333 bytes where Maniax has room for 0x328
-result/rstupdate	.rodata is 0x248 bytes where Maniax has room for 0x1C8
-sdk/libgcc_longlong	.rodata is 0x850 bytes where Maniax has room for 0x448
-sound/sndManager	.rodata is 0x43 bytes where Maniax has room for 0x30
+nme/Nme_Init	does not compile for Maniax
+facility/fclRagCalc	ragDrawList2: undefined reference to ragDrawListRows
+newbattle/nbCommSelProcess	DispCommandList2: undefined reference to DispComm1Comm
 newbattle/nbUnitProcess	.rodata range holds a jump table into code it does not own
-effect/effBattleSystem	.data links at a different size than its place in Maniax
-sdk/libc	.text links at a different size than its place in Maniax
-effect/polyManager	.data links at a different size than its place in Maniax
-sdk/libgcc	.text links at a different size than its place in Maniax
-effect/effManager	.data links at a different size than its place in Maniax
-sdk/libm	.text links at a different size than its place in Maniax
-kernel/dds3AdminiProcess	.data links at a different size than its place in Maniax
-sdk/libmc	.text links at a different size than its place in Maniax
-sdk/libgcc_longlong_tail	.data links at a different size than its place in Maniax
-sdk/libipu	.text links at a different size than its place in Maniax
-sdk/libgcc_floatdidf	.data links at a different size than its place in Maniax
-sdk/libmrpc	.text links at a different size than its place in Maniax
-sdk/libcdvd	.text links at a different size than its place in Maniax
-sdk/libgcc_dpdiv	.data links at a different size than its place in Maniax
-sdk/libgcc_fixunsdfdi	.data links at a different size than its place in Maniax
-sdk/libpad	.text links at a different size than its place in Maniax
-sdk/libdma	.text links at a different size than its place in Maniax
-sdk/libkernl	.data links at a different size than its place in Maniax
+nme/Nme_Calc	nmeCalc: undefined reference to nmeConfirmQuestion
+nme/Nme_Draw	nmeUpdateInput: undefined reference to func_00299C78
+sound/sndManager	titleAllocWork: undefined reference to dds3Titlemain
+basic/dds3ObjectBase	.sdata is 0x40 bytes where Maniax has room for 0x38
+code_0029B780	.rodata is 0xC8 bytes where Maniax has room for 0x98
+event/evtEventPack	.rodata is 0x270 bytes where Maniax has room for 0x248
+facility/fclRagUpdate	.rodata is 0x1B0 bytes where Maniax has room for 0x100
+facility/fclShopInit	.sdata is 0x60 bytes where Maniax has room for 0x40
+facility/fclTerminalInit	.sdata is 0x50 bytes where Maniax has room for 0x38
+field/fldSe	.sdata is 0x298 bytes where Maniax has room for 0x290
+field/fld_Npc	.rodata is 0xF8 bytes where Maniax has room for 0xE0
+file/fileManager	.rodata is 0x1EF8 bytes where Maniax has room for 0x1E80
+interface/frName	.sdata is 0x40 bytes where Maniax has room for 0x30
+interface/frTestFont	.rodata is 0x51 bytes where Maniax has room for 0x58
+interface/frWrap	.text is 0xD70 bytes where Maniax has room for 0xE90
+interface/itfMesManager	.rodata is 0x12D bytes where Maniax has room for 0xF0
+kernel/dds3TitleMain	.rodata is 0x160 bytes where Maniax has room for 0xF0
+newbattle/nbActionProcess	.rodata is 0xB30 bytes where Maniax has room for 0x9B0
+newbattle/nbEventProcess	.text is 0x7D4 bytes where Maniax has room for 0x7E0
+pb/pbDebugMode	.rodata is 0x4071 bytes where Maniax has room for 0x4010
+pipe/pipeObject	.rodata is 0x333 bytes where Maniax has room for 0x328
+result/rstupdate	.rodata must start 16-aligned; Maniax place 0x0053B5C8 is not
+sdk/libgcc_longlong	.rodata is 0x850 bytes where Maniax has room for 0x448
+sdk/libkernl	.text must start 64-aligned; Maniax place 0x002DB0F8 is not
+facility/fclCombineInit	.text is 0xBCE8 bytes where Maniax has room for 0xBCF8
+facility/fclRagInit	.sdata is 0x44 bytes where Maniax has room for 0x30
+facility/fclShopCalc	.sdata is 0x20 bytes where Maniax has room for 0x10
+interface/lstListWindow	.rodata bytes differ from Maniax
+mc/slMain	.rodata bytes differ from Maniax
+newdata/datCalc	.text bytes differ from Maniax
 movie/mviManager	no Maniax assembly for movieDebugRowFmt
-newbattle/nbNegoProcess	.rodata is 0x140 bytes where Maniax has room for 0x150
-newbattle/nbSkillError	.rodata is 0x710 bytes where Maniax has room for 0x720
-sdk/libgraph	.data links at a different size than its place in Maniax
-sdf/sdfSortOt	.data links at a different size than its place in Maniax
-sdf/sdfTmx	.data links at a different size than its place in Maniax
-sdf/sdf_Decomp	.data links at a different size than its place in Maniax
-sdf/sdfPacDecode	.data links at a different size than its place in Maniax
-sdf/sdfMovie	.data links at a different size than its place in Maniax
-sdf/sdfIpu	.data links at a different size than its place in Maniax
-sdf/sdfAddrResolve	.data links at a different size than its place in Maniax
-sdf/sdfDevFile	.data links at a different size than its place in Maniax
-sdf/sdfSound	.data links at a different size than its place in Maniax
+facility/fclDraw	.text is 0x11F4 bytes where Maniax has room for 0x1208
