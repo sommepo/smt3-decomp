@@ -3285,13 +3285,7 @@ void cmbDrawTopSprite(s32 unusedX, s32 unusedY, u32 unusedZ, s32 unusedOt)
 
 extern const char *cmbTopTextTable[];
 
-#if defined(VERSION_MNAX)
-/* Maniax: the only caller, cmbDrawSequence, ignores the result at all three
- * call sites (it reloads $v0 before reading it), so the drawing helper is
- * declared with its actual void contract. */
-extern void cmbDrawTopText(s8 index);
-INCLUDE_ASM(const s32, "facility/fclCombineInit", cmbDrawTopText);
-#elif defined(NON_MATCHING)
+#ifdef NON_MATCHING
 s32 cmbDrawTopText(s8 index)
 {
     void *request = frwGetSmallFontFRQ2(0, 0, 0xFFFFF, 0x8CA0FF80,
@@ -3674,101 +3668,7 @@ extern void fclDrawBG(fclSprite_t *sprite, s32 ot);
 extern void cmbUpdateCameraZoom(void);
 extern void cmbUpdateCameraPos(void);
 
-#if defined(VERSION_MNAX)
-s32 cmbDrawSequence(void)
-{
-    s32 phase = CMB_GBWK->unk_00001;
-
-    switch (phase) {
-    case 0: case 1: case 3: case 4: case 5: case 6:
-    case 8: case 13: case 14: case 16:
-        break;
-    default:
-        fclDrawBG(&CMB_GBWK->backgroundSprite, 7);
-        break;
-    }
-    if (CMB_GBWK->unk_00000 & 0x20) {
-        cmpUpdateTerminate((cmpInfoWindow_t *)CMB_GBWK);
-        return -1;
-    }
-    switch (CMB_GBWK->unk_00001) {
-    case 0:
-        cmbDrawPhaseDefault(1);
-        break;
-    case 3:
-        cmbDrawPhase3(1);
-        break;
-    case 4:
-        cmbDrawPhaseDefault(0);
-        break;
-    case 2:
-        func_00201FB0(0);
-        break;
-    case 5:
-        cmbDrawTopText(0);
-        if ((s8)CMB_GBWK->displayFlags[0] == 0) {
-            cmbDrawResultPanel(0);
-        }
-        cmbDrawStockPanel1();
-        break;
-    case 6:
-        cmbDrawTopText(1);
-        if ((s8)CMB_GBWK->displayFlags[0] == 0) {
-            cmbDrawResultPanel(1);
-        }
-        cmbDrawStockPanel2();
-        break;
-    case 9:
-        cmbDrawStatus();
-        break;
-    case 10:
-        cmbDrawBirthDevil(0);
-        break;
-    case 7:
-        cmpDrawStatusCom(&CMB_GBWK->birthUnit[0], 1, 0, 2);
-        break;
-    case 8:
-        cmbDrawTopText(2);
-        if ((s8)CMB_GBWK->displayFlags[0] == 0) {
-            cmbDrawResultPanel(2);
-        }
-        cmbDrawStockPanel3();
-        break;
-    case 13:
-        cmbUpdateCameraZoom();
-        break;
-    case 14:
-        if (CMB_GBWK->introductionFlag == 0) {
-            /* Retail still loads actionFrame and computes `< 120` before the
-             * call (slti in the jal delay slot) although both arms call the
-             * same function: the trace of a two-armed test whose branches
-             * were merged after dead-code removal. Behaviour is unchanged. */
-            if (CMB_GBWK->actionFrame < SDF_FRAMES(120)) {
-                cmbUpdateCameraPos();
-            } else {
-                cmbUpdateCameraPos();
-            }
-        }
-        break;
-    case 11:
-        cmbDrawBirthDevil(1);
-        break;
-    case 16:
-        cmbDrawPhasePanel();
-        break;
-    case 15:
-        if (CMB_GBWK->unk_00003 == 10) {
-            cmpDrawStatusCom(&CMB_GBWK->birthUnit[0], 1, 0, 2);
-            cmbDrawBirthDevilMaskBG();
-        }
-        break;
-    }
-    if ((s8)CMB_GBWK->displayFlags[0] != 0) {
-        cmbDrawInfoSprite(0, 0, 0xFFFFF, 0x47);
-    }
-    return 0;
-}
-#elif defined(NON_MATCHING)
+#ifdef NON_MATCHING
 s32 cmbDrawSequence(void)
 {
     s32 phase = CMB_GBWK->unk_00001;
