@@ -165,7 +165,7 @@ kernel/dds3CreateData	C
 staff/stfMain	C
 movie/mviManager	demoted: no Maniax assembly for movieDebugRowFmt
 movie/MovieViewer	.sdata bytes differ
-code_0022C578	demoted: .rodata is 0x4480 bytes where Maniax has room for 0x4520
+code_0022C578	C with fallbacks
 newdata/datCalc	C with fallbacks
 newdata/datDebugUnit	C
 newbattle/nbInit	C
@@ -175,7 +175,7 @@ newbattle/nbAtoProcess	C
 newbattle/nbResultProcess	C with fallbacks
 newbattle/nbStageProcess	C
 newbattle/nbUnitProcess	C
-newbattle/nbActionProcess	demoted: .sdata is 0x18 bytes where Maniax has room for 0x10
+newbattle/nbActionProcess	demoted: .rodata is 0xA60 bytes where Maniax has room for 0xAE0
 newbattle/nbMisc	C with fallbacks
 newbattle/nbCommSelProcess	C with fallbacks
 newbattle/nbTarSelProcess	C with fallbacks
