@@ -662,6 +662,7 @@ void mselMakeSaveText(s32 *devilIds, u32 color, u32 nameColor)
     }
 }
 
+#ifndef VERSION_MNAX
 const char mselTitleCursor0Line0[32] = "An average level of difficulty.";
 
 const char mselTitleCursor1Line2[21] = "the thrill of death.";
@@ -669,12 +670,17 @@ const char mselTitleCursor1Line2[21] = "the thrill of death.";
 const char mselTitleCursor1Line1[27] = "suitable for those seeking";
 
 const char mselTitleCursor1Line0[22] = "A level of difficulty";
+#endif
 
 s32 dds3TitleMovieCount = 0;
 
 s32 D_0054FD3C = 0;
 
+#ifdef VERSION_MNAX
+u32 D_0054FD40 = 0x00008080;
+#else
 u32 D_0054FD40 = 0x0000EA80;
+#endif
 
 mselGlobalWork_t *gGlobal = NULL;
 
@@ -686,6 +692,13 @@ char mselLevelLabel[3] = "Lv";
 
 char mselLevelFormat[4] = "%2d";
 
+#ifdef VERSION_MNAX
+char D_0054FD68[8] = "Planner";
+
+char D_0054FD70[6] = "Sales";
+
+char D_0054FD80[6] = "Staff";
+#else
 char D_0054FD60[3] = "QA";
 
 char D_0054FD68[8] = "Planner";
@@ -695,6 +708,7 @@ char D_0054FD70[6] = "Sales";
 char D_0054FD78[8] = "Artwork";
 
 char D_0054FD80[6] = "Staff";
+#endif
 
 char D_0054FD88[2] = " ";
 

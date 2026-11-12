@@ -631,6 +631,17 @@ s8 slLoadDoneFlag = 0;
 
 void *slLoadProcId = 0;
 
+#ifdef VERSION_MNAX
+char slYesLabel[8] = "\201\215\200\342";
+
+char slNoLabel[8] = "\200\342\200\342\200\346";
+
+char slNewCycleMsg3[8] = "";
+
+char slCycleLabel[8] = "\205\300\203\352";
+
+char D_005516F0[8] = "\204\256\201\251";
+#else
 char slYesLabel[8] = "Yes";
 
 char slNoLabel[8] = "No";
@@ -642,6 +653,7 @@ char slNewCycleMsg3[8] = "";
 char slCycleLabel[8] = "cycle";
 
 char D_005516F0[8] = "BACK";
+#endif
 
 s32 dds3ConfigValue[2] = {0, 0};
 

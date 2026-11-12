@@ -279,7 +279,11 @@ void fclEncycStartProcess(s32 mode)
 extern void ReleaseWork(fclEncyc_instance_tag *pinst);
 #endif
 
+#ifdef VERSION_MNAX
+const char fclEncycRecordFmt[28] = "ENCYC:record %3d/%3d (%3d)\n";
+#else
 const char fclEncycRecordFmt[29] = "ENCYC:record %3d/%3d (%3d) \n";
+#endif
 
 const char fclEncycCalcName[11] = "CALC_ENCYC";
 
@@ -289,7 +293,11 @@ const char fclEncycUpdtName[11] = "UPDT_ENCYC";
 
 const char fclEncycBookName[16] = "COLLECTION BOOK";
 
+#ifdef VERSION_MNAX
+const char fclEncycStartFmt[26] = "ENCYC:process start (%s)\n";
+#else
 const char fclEncycStartFmt[27] = "ENCYC:process start (%s) \n";
+#endif
 
 const char fclEncycRegistrationName[13] = "REGISTRATION";
 
@@ -4056,9 +4064,11 @@ s32 DebugProcMenu_fclEncyc(fclEncyc_instance_tag *pinst, fclEncycDebugWork_t *wo
     return 0;
 }
 
+#ifndef VERSION_MNAX
 extern char fclEncycStatusMissing[];
 extern char fclEncycStatusFound[];
 extern char fclEncycRowFmt[];
+#endif
 extern void DebugRemoveRecord(s32 id);
 extern void DebugUpdateListwin(fclEncyc_instance_tag *pinst);
 
@@ -4069,6 +4079,14 @@ const char D_0053D838[16] = "DISP VIEW PARAM";
 const char D_0053D848[13] = "VIEWMODE KEY";
 
 const char D_0053D858[15] = "DEVIL REGISTER";
+
+#ifdef VERSION_MNAX
+const char fclEncycStatusMissing[11] = "----------";
+
+const char fclEncycStatusFound[11] = "REGISTERED";
+
+const char fclEncycRowFmt[13] = "%s 0x%03X:%s";
+#endif
 
 #ifdef NON_MATCHING
 s32 DebugProcRegister(fclEncyc_instance_tag *pinst, fclEncycDebugWork_t *work,
@@ -4299,7 +4317,9 @@ fclEncyc_instance_tag *g_pinst = NULL;
 
 fclEncycDebugWork_t *g_pdebug = NULL;
 
+#ifndef VERSION_MNAX
 char D_0054FCB0[5] = "View";
+#endif
 
 char fclEncycReadingName[8] = "READING";
 

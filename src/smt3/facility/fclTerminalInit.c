@@ -675,10 +675,6 @@ char trmProcessNameTrmFmt[8] = "e%d_trm";
 char trmHexLineFmt[8] = "%x\n";
 
 char trmMenuLabelLeave2[8] = "\211\241\214\246";
-
-char trmDecFmt[8] = "%d";
-
-char trmDec2Fmt[8] = "%2d";
 #else
 char trmMenuLabelLeave[8] = "Leave";
 
