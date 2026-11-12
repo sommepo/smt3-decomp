@@ -751,9 +751,17 @@ const char rcvTmxPath02[35] = "/facility/tmx/recover/recov_02.tmx";
 
 const char rcvTmxPath01[35] = "/facility/tmx/recover/recov_01.tmx";
 
+#ifdef VERSION_MNAX
+const char rcvCmdRemoveCurse[9] = "\204\265\201\211\204\323\201\251";
+
+const char rcvCmdCureStatus[9] = "\206\243\201\260\205\253\200\355";
+
+const char rcvCmdHealHpMp[15] = "\201\312\201\327\202\231\201\320\201\312\212\240\215\343";
+#else
 const char rcvCmdRemoveCurse[13] = "Remove Curse";
 
 const char rcvCmdCureStatus[12] = "Cure Status";
 
 const char rcvCmdHealHpMp[11] = "Heal HP/MP";
+#endif
 

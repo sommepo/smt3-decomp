@@ -606,9 +606,21 @@ s32 rcvUpdate(dds3ProcessID_t *id)
 
 const char trmTmxPath[40] = "/facility/tmx/terminal/tminl_01.tmx";
 
+#ifdef VERSION_MNAX
+const char trmMenuLabelAmalaLink[9] = "\204\265\201\211\204\323\201\251";
+
+const char trmMenuLabelPursueHijiri[9] = "\206\243\201\260\205\253\200\355";
+
+const char trmMenuLabelLinkToTerminal[11] = "\204\217\205\264\201\214\207\275\207\276";
+
+const char trmMenuLabelTerminal2[13] = "\201\343\201\311\201\373\201\260\205\343\200\344";
+
+const char trmMenuLabelTerminal3[24] = "\201\320\202\231\201\360\201\333\201\374\201\226\204\256\201\251";
+#else
 const char trmMenuLabelAmalaLink[16] = "Amala Link";
 
 const char trmMenuLabelPursueHijiri[16] = "Pursue Hijiri";
 
 const char trmMenuLabelLinkToTerminal[24] = "Link to terminal";
+#endif
 

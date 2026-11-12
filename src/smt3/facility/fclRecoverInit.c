@@ -273,11 +273,17 @@ const char rcvDrawProcName[16] = "recover_draw";
 
 const char rcvUpdateProcName[24] = "recover_update";
 
+#ifdef VERSION_MNAX
+const char rcvRemoveCurseText[15] = "\201\312\201\327\202\231\201\320\201\312\206\232\213\234";
+
+const char rcvCureStatusText[15] = "\200\250\200\260\200\217\200\255\200\260\206\232\213\234";
+#else
 const char rcvRemoveCurseText[16] = "REMOVE CURSE";
 
 const char rcvCureStatusText[16] = "CURE STATUS";
 
 const char rcvHealHpMpText[16] = "HEAL HP/MP";
+#endif
 
 rcvWork_t *shutdownfunc = NULL;
 
@@ -285,6 +291,21 @@ s8 gProcessStat_2 = 0;
 
 SDATA_PAD(3);
 
+#ifdef VERSION_MNAX
+char rcvCmdLeave[8] = "\205\316\203\340";
+
+char rcvCmdTalk[8] = "\213\234\211\236";
+
+char rcvCmdRevive[8] = "\211\227\206\232\213\234";
+
+char rcvCalcProcName[8] = "recover";
+
+char rcvLeaveText[8] = "\205\316\203\340";
+
+char rcvTalkText[8] = "\213\234\211\236";
+
+char rcvReviveText[8] = "\211\227\206\232\213\234";
+#else
 char rcvCmdLeave[8] = "Leave";
 
 char rcvCmdTalk[8] = "Talk";
@@ -298,4 +319,5 @@ char rcvCalcProcName[8] = "recover";
 char rcvReviveText[8] = "REVIVE";
 
 char rcvHealText[8] = "HEAL";
+#endif
 

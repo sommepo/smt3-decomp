@@ -748,10 +748,12 @@ s8 gProcessStat_1 = 0;
 
 SDATA_PAD(3);
 
+#ifndef VERSION_MNAX
 char ragMenuTextLeave[6] = "Leave";
 
 char ragMenuTextTalk[5] = "Talk";
 
+#endif
 char ragNewlineText[2] = "\n";
 
 char ragHexByteFormat[6] = "%02x ";
