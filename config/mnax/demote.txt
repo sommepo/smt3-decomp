@@ -9,12 +9,11 @@ interface/lstListWindow	.rodata bytes differ from Maniax
 pb/pbDebugMode	defines D_0053A0E0, which the split also puts in a blob
 event/evtEventPack	defines D_0053A0E0, which the split also puts in a blob
 basic/dds3MoverBasic	defines jtbl_0052F830, which the split also puts in a blob
-field/fldWap	defines jtbl_0052F830, which the split also puts in a blob
-nme/Nme_Init	defines mccb, which the split also puts in a blob
-nme/Nme_Calc	nmeCalc: undefined reference to nmeConfirmQuestion
 code_0022C578	.text is 0x161BC bytes where Maniax has room for 0x16380
-code_0029B780	.sdata is 0x40 bytes where Maniax has room for 0x38
+field/fldWap	defines jtbl_0052F830, which the split also puts in a blob
 facility/fclEncyc	.rodata is 0x217 bytes where Maniax has room for 0x1E8
-facility/fclRagInit	.sdata is 0x24 bytes where Maniax has room for 0x1C
-kernel/dds3TitleMain	.sdata is 0x4C bytes where Maniax has room for 0x44
+facility/fclRagInit	.sdata must start 8-aligned; Maniax place 0x0054DE1C is not
+kernel/dds3TitleMain	.sdata must start 8-aligned; Maniax place 0x0054DFC4 is not
+nme/Nme_Calc	.text is 0x1A18 bytes where Maniax has room for 0x1B10
+nme/Nme_Init	.sdata is 0x78 bytes where Maniax has room for 0x70
 nme/Nme_Draw	.text bytes differ from Maniax

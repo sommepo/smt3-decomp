@@ -134,7 +134,7 @@ facility/fclCombineInit	demoted: Maniax has a TU boundary inside the unit (rodat
 facility/fclShopInit	.sdata bounds overlap facility/fclShopCalc (fclShopInit 0x54DDE0+0x40, fclShopCalc 0x54DE10)
 facility/fclShopCalc	C with fallbacks
 facility/fclShopUpdate	C
-facility/fclRagInit	demoted: .sdata is 0x24 bytes where Maniax has room for 0x1C
+facility/fclRagInit	demoted: .sdata must start 8-aligned; Maniax place 0x0054DE1C is not
 facility/fclRagCalc	C with fallbacks, 1 functions kept as Maniax assembly
 facility/fclRagDraw	C
 facility/fclRagUpdate	C
@@ -159,7 +159,7 @@ result/rstcalc	C with fallbacks
 result/rstdraw	C
 result/rstupdate	demoted: .rodata must start 16-aligned; Maniax place 0x0053B5C8 is not
 sound/sndManager	C
-kernel/dds3TitleMain	demoted: .sdata is 0x4C bytes where Maniax has room for 0x44
+kernel/dds3TitleMain	demoted: .sdata must start 8-aligned; Maniax place 0x0054DFC4 is not
 kernel/ModeSelect	C
 kernel/dds3CreateData	C
 staff/stfMain	C
@@ -229,12 +229,12 @@ newbattle/nbE913	C
 newbattle/nbE914	C
 newbattle/nbE915	C
 file/fileManager	C
-nme/Nme_Init	demoted: defines mccb, which the split also puts in a blob
-nme/Nme_Calc	demoted: nmeCalc: undefined reference to nmeConfirmQuestion
+nme/Nme_Init	demoted: .sdata is 0x78 bytes where Maniax has room for 0x70
+nme/Nme_Calc	demoted: .text is 0x1A18 bytes where Maniax has room for 0x1B10
 nme/Nme_Draw	demoted: .text bytes differ from Maniax
 nme/Nme_Update	C
 mc/mcManager	C
-code_0029B780	demoted: .sdata is 0x40 bytes where Maniax has room for 0x38
+code_0029B780	C with fallbacks
 kernel/dds3ConfigMain	C
 pipe/pipeMain	C
 pipe/pipeSection	C with fallbacks
