@@ -38,7 +38,11 @@ extern void nbAddUnitStock(nbMainProcessData_t *data, s32 side, s32 stockno, s32
 /* The selection block at +0x70 of an akuma record, which nbSetPlayerStartData
  * clears before the devil enters the stock. */
 typedef struct nbAkumaSelect_t {
+#ifdef VERSION_MNAX
+    u8 unk00[0x6];
+#else
     u8 unk00[0xA];
+#endif
     s16 unk0A;
     s16 unk0C;
 } nbAkumaSelect_t;
@@ -879,7 +883,7 @@ s32 nbAppendEnemyDevilWork(nbMainProcessData_t *data, s32 id, s32 formindex)
 
 typedef struct
 {
-    u8 unk_00000[0xA54];
+    u8 unk_00000[((u32)&((dds3GlobalWork_t *)0)->unitwork)];
     datUnitWork_t unitwork[16];
 } nbStockGlobalWork_t;
 

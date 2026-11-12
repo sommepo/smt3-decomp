@@ -278,7 +278,7 @@ s32 Flow7_3(nbNegoProcessData_t *n)
     nbAddNegoIdKouho(n, 0x7000F);
     nbAddNegoIdKouho(n, 0x7000B);
     n->qtype = nbGetQuestionType(n->ework);
-    p = EE_ADDR_AS(u8 *, (n->qtype + EE_ADDR_S(DDS3_GBWK) + 0x1CE8)); /* &negoques[n->qtype] */
+    p = EE_ADDR_AS(u8 *, (n->qtype + EE_ADDR_S(DDS3_GBWK) + (s32)&((dds3GlobalWork_t *)0)->negoques)); /* &negoques[n->qtype] */
     if (*p < 0xFF) {
         *p = *p + 1;
     }

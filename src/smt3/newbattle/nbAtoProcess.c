@@ -32,7 +32,7 @@ s32 nbAtoStoneProcess(dds3ProcessID_t *id)
         nbCameraSetState(0x14);
         return 0;
     case 30:
-        nbSetDevilNameMes(data->mesmngid, 0, (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54));
+        nbSetDevilNameMes(data->mesmngid, 0, &DDS3_GBWK->unitwork[0]);
         nbDispMsgHelp(data->mesmngid, 0x3A, 1);
         return 0;
     case 70:

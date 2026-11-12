@@ -18,6 +18,12 @@ enum sl_slot_flag
 extern const char fldTitleProcName[];
 #include "sdk_libc.h"
 
+#ifdef VERSION_MNAX
+#define FLD_TITLE_LOGO_Y 0x8F
+#else
+#define FLD_TITLE_LOGO_Y 0x73
+#endif
+
 extern s32 fldTitleState, fldTitlePhase, fldTitleFld, fldTitleWaitFrames;
 extern u32 dds3GetKernelCount(void);
 extern sdfTexHandle_t *sdfTexSet(const TMX_HEADER_t *texture);
@@ -139,7 +145,7 @@ s32 fldTitle_Process(dds3ProcessID_t *id)
         if (fldTitleState >= 20) {
             alpha = (fldTitleState * 128 - 2432) / 15;
             if (alpha > 128) alpha = 128;
-            DrwSprite2D(129, 115, 254, 69, 1, 1, 254, 69,
+            DrwSprite2D(129, FLD_TITLE_LOGO_Y, 254, 69, 1, 1, 254, 69,
                         0x00808080 | ((u32)alpha << 24), fldTitleFldTex);
         }
 
@@ -149,7 +155,7 @@ s32 fldTitle_Process(dds3ProcessID_t *id)
             alpha = (fldTitleState * 128 - 0xA00) / 10;
             if (alpha > 128) alpha = 128;
             if (alpha < 0) alpha = 0;
-            DrwSprite2D(0x81, 0x73, 0xFE, 0x45, 1, 1, 0xFE, 0x45,
+            DrwSprite2D(0x81, FLD_TITLE_LOGO_Y, 0xFE, 0x45, 1, 1, 0xFE, 0x45,
                         0x00807060 | ((u32)alpha << 24), fldTitleFldTex);
             rsetAlpha(0);
         }
@@ -160,7 +166,7 @@ s32 fldTitle_Process(dds3ProcessID_t *id)
             alpha = (0x30 - fldTitleState) * 128 / 18;
             if (alpha > 128) alpha = 128;
             if (alpha < 0) alpha = 0;
-            DrwSprite2D(0x81, 0x73, 0xFE, 0x45, 1, 1, 0xFE, 0x45,
+            DrwSprite2D(0x81, FLD_TITLE_LOGO_Y, 0xFE, 0x45, 1, 1, 0xFE, 0x45,
                         0x00807060 | ((u32)alpha << 24), fldTitleFldTex);
             rsetAlpha(0);
         }
@@ -198,7 +204,7 @@ s32 fldTitle_Process(dds3ProcessID_t *id)
                     color, fldTitleDun3Tex);
         DrwSprite2D(0x171, 0xE5, 0x7E, 2, 0x7E, 2, -0x7E, 2,
                     color, fldTitleDun3Tex);
-        DrwSprite2D(0x81, 0x73, 0xFE, 0x45, 1, 1, 0xFE, 0x45,
+        DrwSprite2D(0x81, FLD_TITLE_LOGO_Y, 0xFE, 0x45, 1, 1, 0xFE, 0x45,
                     color, fldTitleFldTex);
 
         if ((fldTitleState += SDF_FRAME_DUE(dds3GetKernelCount())) >= 61) {
@@ -264,7 +270,7 @@ s32 fldTitle_Process(dds3ProcessID_t *id)
         alpha = (20 - fldTitleState) * 128 / 20;
         if (alpha < 0) alpha = 0;
         if (alpha > 128) alpha = 128;
-        DrwSprite2D(0x81, 0x73, 0xFE, 0x45, 1, 1, 0xFE, 0x45,
+        DrwSprite2D(0x81, FLD_TITLE_LOGO_Y, 0xFE, 0x45, 1, 1, 0xFE, 0x45,
                     0x00808080 | ((u32)alpha << 24), fldTitleFldTex);
 
         if ((fldTitleState += SDF_FRAME_DUE(dds3GetKernelCount())) >= 61) {

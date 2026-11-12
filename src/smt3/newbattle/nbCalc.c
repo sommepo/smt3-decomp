@@ -223,6 +223,13 @@ typedef struct nbNegoProcessData_t
 
 #include "sdk_libc.h"
 
+/* Offset of the first unit record inside the shared work. */
+#ifdef VERSION_MNAX
+#define NB_UNITWORK_OFS 0xA50
+#else
+#define NB_UNITWORK_OFS 0xA54
+#endif
+
 extern nbMainProcessData_t *nbGetMainProcessData(void);
 
 extern datUnitWork_t *nbGetUnitWorkFromFormindex(s32 formindex);
@@ -2389,7 +2396,7 @@ s32 nbGetLvAvg2(nbMainProcessData_t *data, s32 side)
     sum = 0;
     cnt = 0;
     if (side == 0) {
-        w = (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54);
+        w = (datUnitWork_t *)((u8 *)DDS3_GBWK + NB_UNITWORK_OFS);
         for (i = 0; i < 16; i++) {
             if ((w->flag & 1) != 0) {
                 if ((w->flag & 2) != 0) {
@@ -2456,7 +2463,7 @@ s32 nbGetParamAvg2(nbMainProcessData_t *data, s32 side, s32 paratype)
     sum = 0;
     if (side == 0) {
         for (i = 0, ofs = 0; i < 16; i++) {
-            w = (datUnitWork_t *)((u8 *)DDS3_GBWK + ofs + 0xA54);
+            w = (datUnitWork_t *)((u8 *)DDS3_GBWK + ofs + NB_UNITWORK_OFS);
             ofs += 0xEC;
             if ((w->flag & 1) != 0) {
                 if ((w->flag & 2) != 0) {
@@ -2512,7 +2519,7 @@ s32 nbCheckSensei(nbMainProcessData_t *data)
     enemyLevel = nbGetLvAvg2(data, 1);
     enemyParam4 = nbGetParamAvg2(data, 1, 4);
     enemyParam5 = nbGetParamAvg2(data, 1, 5);
-    player = (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54);
+    player = (datUnitWork_t *)((u8 *)DDS3_GBWK + NB_UNITWORK_OFS);
     playerLevel = player->level;
     playerParam4 = datGetParam(player, 4);
     playerParam5 = datGetParam(player, 5);

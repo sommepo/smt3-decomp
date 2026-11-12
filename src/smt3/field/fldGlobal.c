@@ -55,7 +55,11 @@ void fldAllTblLoad(void)
 {
     s32 fd = sdfFileOpen(fldAllTblPath);
 
+#ifdef VERSION_MNAX
+    sdfFileRead(fd, fldAutoMapTitleTable, 0x480);
+#else
     sdfFileRead(fd, fldAutoMapTitleTable, 0x4E0);
+#endif
     sdfFileRead(fd, fldAreaNameTable, 0x2BC0);
     sdfFileRead(fd, fldPlaceNameTable, 0x24C0);
     sdfFileRead(fd, fldFloorNameTable, 0x1880);
@@ -191,7 +195,7 @@ void fldGbInit_System(s32 mode)
         fldGbFlagClear();
         DDS3_GBWK->previewX = 0;
         DDS3_GBWK->previewY = 0;
-        p = (s32 *)((u8 *)DDS3_GBWK + 0x11A8C);
+        p = (s32 *)(DDS3_GBWK->takaraOpenEx + 0xC);
         for (i = 14; i >= 0; i--) {
             *p = 0;
             p++;

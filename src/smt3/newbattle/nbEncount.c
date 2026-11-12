@@ -444,8 +444,8 @@ void fclClearTerminalState(void)
     u8 *gb;
 
     gb = (u8 *)DDS3_GBWK;
-    *(s32 *)(gb + 0x1CF4) = 0;
-    *(u16 *)(gb + 0x1CF8) = 0;
+    *(s32 *)(gb + ((u32)&((dds3GlobalWork_t *)0)->encountkyori)) = 0;
+    *(u16 *)(gb + ((u32)&((dds3GlobalWork_t *)0)->encountCount)) = 0;
     nbEncountMax = 0;
 }
 

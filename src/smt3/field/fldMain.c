@@ -9,6 +9,22 @@
 #include "field.h"
 #include "sdfFrame.h"
 
+#ifdef VERSION_MNAX
+/* Maniax's Anahori devil entries have no 4 byte head: the flag word is the
+ * first field. Same 0xEC stride, table at 0xA50. */
+typedef struct {
+    u32 flag;
+    u16 devilId;
+    u16 hp;
+    u8 unk08[0xE];
+    s8 level;
+    u8 unk17[0xD5];
+} fldMaAkuma_t;
+#define FLD_AKUMA(i) (((fldMaAkuma_t *)((u8 *)DDS3_GBWK + 0xA50))[i])
+#else
+#define FLD_AKUMA(i) (DDS3_GBWK->akuma[i])
+#endif
+
 extern dds3Basic_t *dds3GetControlScene(void);
 
 extern void dds3GetPosPoseSet(dds3Basic_t *pBasic);
@@ -1347,7 +1363,7 @@ void fldAnahoriSelectInit(void)
     gFldAnahoriAkumaIdx = 0;
     gFldAnahoriAkumaIdxMax = 0;
     for (i = 0; i < 16; i++) {
-        flag = DDS3_GBWK->akuma[i].flag;
+        flag = FLD_AKUMA(i).flag;
         if (!(flag & 1)) {
             continue;
         }
@@ -1360,7 +1376,7 @@ void fldAnahoriSelectInit(void)
         if (flag & 0x800) {
             continue;
         }
-        if (DDS3_GBWK->akuma[i].hp != 0) {
+        if (FLD_AKUMA(i).hp != 0) {
             /* The real next count occupies the native conditional-move
              * input. A local binding preserves that value's allocation;
              * the ordinary spelling omits retail's comparison copy. */
@@ -1381,7 +1397,7 @@ s32 fldAnahoriSelectGet(void)
         return 0;
     }
     for (i = 0; i < 16; i++) {
-        flag = DDS3_GBWK->akuma[i].flag;
+        flag = FLD_AKUMA(i).flag;
         if (!(flag & 1)) {
             continue;
         }
@@ -1394,11 +1410,11 @@ s32 fldAnahoriSelectGet(void)
         if (flag & 0x800) {
             continue;
         }
-        if (DDS3_GBWK->akuma[i].hp == 0) {
+        if (FLD_AKUMA(i).hp == 0) {
             continue;
         }
         if (gFldAnahoriAkumaIdx == n) {
-            return DDS3_GBWK->akuma[i].devilId;
+            return FLD_AKUMA(i).devilId;
         }
         n++;
     }
@@ -1422,7 +1438,7 @@ void fldAnahoriSelectDel(void)
     u32 flag;
 
     for (i = 0; i < 16; i++) {
-        flag = DDS3_GBWK->akuma[i].flag;
+        flag = FLD_AKUMA(i).flag;
         if (!(flag & 1)) {
             continue;
         }
@@ -1435,14 +1451,14 @@ void fldAnahoriSelectDel(void)
         if (flag & 0x800) {
             continue;
         }
-        if (DDS3_GBWK->akuma[i].hp == 0) {
+        if (FLD_AKUMA(i).hp == 0) {
             continue;
         }
         if (gFldAnahoriAkumaIdx == n) {
-            if (DDS3_GBWK->akuma[i].level >= 0x15) {
+            if (FLD_AKUMA(i).level >= 0x15) {
                 evtBitOn(0x504);
             }
-            datDelDevil(DDS3_GBWK->akuma[i].devilId);
+            datDelDevil(FLD_AKUMA(i).devilId);
             return;
         }
         n++;

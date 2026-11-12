@@ -2987,12 +2987,18 @@ u32 evt_1E91A8(void) {
     return 1;
 }
 
+#ifdef VERSION_MNAX
+#define KOTOWARI_OFFSET 0x1CE8
+#else
+#define KOTOWARI_OFFSET 0x1CEC
+#endif
+
 u32 evt_1E91E8(void)
 {
     u8 *gb;
 
     gb = DDS3_GBWK;
-    scrSetIntReturnValue((EE_ADDR_AS(u8 *, scrGetIntPara(0)) + EE_ADDR(gb))[0x1CEC]);
+    scrSetIntReturnValue((EE_ADDR_AS(u8 *, scrGetIntPara(0)) + EE_ADDR(gb))[KOTOWARI_OFFSET]);
     return 1;
 }
 

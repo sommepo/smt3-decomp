@@ -3,6 +3,16 @@
 #include "kernel.h"
 #include "newdata.h"
 
+/* Maniax reaches the party through the unit records. */
+#ifdef VERSION_MNAX
+#define PRM_UNIT(i) (((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA50))[i])
+#define PRM_FLAG(i) PRM_UNIT(i).flag
+#define PRM_DEVIL(i) PRM_UNIT(i).id
+#else
+#define PRM_FLAG(i) DDS3_GBWK->akuma[i].flag
+#define PRM_DEVIL(i) DDS3_GBWK->akuma[i].devilId
+#endif
+
 extern s32 scrGetIntPara(s32 n);
 
 extern void scrSetIntReturnValue(s32 i);
@@ -188,7 +198,7 @@ s32 prm_UDV_DELETE_OK(void)
     s32 index = datSearchUniqueDevilStock(scrGetIntPara(0));
 
     if (index != -1) {
-        DDS3_GBWK->akuma[index].flag &= ~0x800;
+        PRM_FLAG(index) &= ~0x800;
     }
     return 1;
 }
@@ -198,7 +208,7 @@ s32 prm_UDV_DELETE_NG(void)
     s32 index = datSearchUniqueDevilStock(scrGetIntPara(0));
 
     if (index != -1) {
-        DDS3_GBWK->akuma[index].flag |= 0x800;
+        PRM_FLAG(index) |= 0x800;
     }
     return 1;
 }
@@ -273,10 +283,10 @@ s32 prm_NAKAMA_CHK_PIKUKO(void)
     s32 devilId;
 
     for (i = 1; i < 16; i++) {
-        if ((DDS3_GBWK->akuma[i].flag & 1) != 0) {
-            devilId = DDS3_GBWK->akuma[i].devilId;
+        if ((PRM_FLAG(i) & 1) != 0) {
+            devilId = PRM_DEVIL(i);
             if (devilId == scrGetIntPara(0)) {
-                if ((DDS3_GBWK->akuma[i].flag & 0x1000) != 0) {
+                if ((PRM_FLAG(i) & 0x1000) != 0) {
                     scrSetIntReturnValue(1);
                     return 1;
                 }
@@ -292,9 +302,9 @@ s32 prm_PIKUKO_GETID(void)
     s32 i;
 
     for (i = 1; i < 16; i++) {
-        if ((DDS3_GBWK->akuma[i].flag & 1) != 0) {
-            if ((DDS3_GBWK->akuma[i].flag & 0x1000) != 0) {
-                scrSetIntReturnValue(DDS3_GBWK->akuma[i].devilId);
+        if ((PRM_FLAG(i) & 1) != 0) {
+            if ((PRM_FLAG(i) & 0x1000) != 0) {
+                scrSetIntReturnValue(PRM_DEVIL(i));
                 return 1;
             }
         }
@@ -319,9 +329,9 @@ s32 prm_DV_COPY_PARAM(void)
     s32 i;
 
     for (i = 1; i < 16; i++) {
-        if ((DDS3_GBWK->akuma[i].flag & 1) != 0) {
-            if (DDS3_GBWK->akuma[i].devilId == devilId) {
-                datCopyDevilWork(slot, (datUnitWork_t *)&DDS3_GBWK->akuma[i].flag);
+        if ((PRM_FLAG(i) & 1) != 0) {
+            if (PRM_DEVIL(i) == devilId) {
+                datCopyDevilWork(slot, (datUnitWork_t *)&PRM_FLAG(i));
                 return 1;
             }
         }

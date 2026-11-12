@@ -35,7 +35,13 @@ typedef struct
 
 extern u32 frFontRowBuf;
 extern char frWrapEmptyString[]; /* Shared empty font-chain seed. */
+#ifdef VERSION_MNAX
+extern frFontHandle_t *frSetFontString(const char *, s8, s8, s8, frFontHandle_t *);
+#define FR_SET_FONT_STRING(text, a, b, c, prev) frSetFontString(text, a, b, c, prev)
+#else
 extern frFontHandle_t *frSetFontString(const char *, s8, s8, s8, frFontHandle_t *, s32);
+#define FR_SET_FONT_STRING(text, a, b, c, prev) frSetFontString(text, a, b, c, prev, 0)
+#endif
 extern void frSetFontSize(frFontHandle_t *, s32, s32);
 extern frFontHandle_t *frCombineFontRequestEx(frFontHandle_t *, frFontHandle_t *, s32);
 
@@ -121,6 +127,9 @@ frFontHandle_t *frwGetSmallFont1FRQ(s32 x, s32 y, s32 priority, u32 color,
     frSetDrawPosition(request, x, y);
     frSetPriority(request, priority << 4);
     frSetFontColor(request, color);
+#ifdef VERSION_MNAX
+    frSetFontSpace(request, -4);
+#endif
     return frCombineFontRequestEx(previous, request, 0);
 }
 
@@ -175,10 +184,14 @@ frFontHandle_t *frwGetFontEx(s32 x, s32 y, s32 depth, u32 colors, const char *te
 
 frFontHandle_t *frwGetSmallFontFRQ(s32 X, s32 Y, s32 Pri, s32 Color, const char *pStr, frFontHandle_t *pFRQ)
 {
+#ifdef VERSION_MNAX
+    return frwGetFontEx(X, Y, Pri, Color, pStr, 1, 0, pFRQ);
+#else
     frFontHandle_t *handle = frwGetFontEx(X, Y, Pri, Color, pStr, 1, 0, pFRQ);
 
     frSetFontSpace(handle, 3);
     return handle;
+#endif
 }
 
 frFontHandle_t *frwGetSmallFontFRQ2(s32 x, s32 y, s32 priority, u32 color,
@@ -236,7 +249,7 @@ frFontHandle_t *frwGetSmallNumFontFRQ(s32 x, s32 y, s32 priority, u32 color,
 {
     frFontHandle_t *request = frLinkFontString(frWrapEmptyString, 0, 0, 0, previous);
     frDisableMode(2);
-    request = frSetFontString(text, 2, 0, 0, request, 0);
+    request = FR_SET_FONT_STRING(text, 2, 0, 0, request);
     frEnableMode(2);
     frSetDrawPosition(request, x, y);
     frSetPriority(request, priority << 4);
@@ -249,7 +262,7 @@ frFontHandle_t *frwGetNumFontFRQ(s32 x, s32 y, s32 priority, u32 color,
 {
     frFontHandle_t *request = frLinkFontString(frWrapEmptyString, 0, 0, 0, previous);
     frDisableMode(2);
-    request = frSetFontString(text, 3, 0, 0, request, 0);
+    request = FR_SET_FONT_STRING(text, 3, 0, 0, request);
     frEnableMode(2);
     frSetDrawPosition(request, x, y);
     frSetPriority(request, priority << 4);
@@ -260,9 +273,13 @@ frFontHandle_t *frwGetNumFontFRQ(s32 x, s32 y, s32 priority, u32 color,
 frFontHandle_t *frwGetSmallCaptionFontFRQ(s32 x, s32 y, s32 priority, u32 color,
                                            const char *text, frFontHandle_t *previous)
 {
-    frFontHandle_t *request = frSetFontString(text, 0, 0, 0, NULL, 0);
+    frFontHandle_t *request = FR_SET_FONT_STRING(text, 0, 0, 0, NULL);
     frSetFontSize(request, 12, 16);
+#ifdef VERSION_MNAX
+    frSetFontSpace(request, -3);
+#else
     frSetFontSpace(request, 3);
+#endif
     frSetDrawPosition(request, x, y);
     frSetPriority(request, priority << 4);
     frSetFontColor(request, color);

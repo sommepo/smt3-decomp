@@ -274,7 +274,11 @@ void trm_212CB8(fclPanelPos_t *panel, s8 count, s32 xOffset, s32 yOffset,
 /* Quantity layout shared by datAddItem and datCheckItem. */
 typedef struct
 {
+#ifdef VERSION_MNAX
+    u8 reserved[0x1924];
+#else
     u8 reserved[0x1928];
+#endif
     u8 itemQuantity[0xA0];
 } fclInventoryView_t;
 
@@ -292,6 +296,37 @@ extern char fclFmtItemCount[];
 extern frFontHandle_t *frwGetNumFontFRQ(s32 x, s32 y, s32 priority, u32 color,
                                          const char *text, frFontHandle_t *previous);
 
+#ifdef VERSION_MNAX
+void fclDrawPriceText(fclPanelPos_t *pos, u16 item, s32 ot)
+{
+    char text[16];
+    fclPanelPos_t panel;
+    s32 x = pos->unk_00;
+    s32 y = pos->unk_04 + 0x238;
+    s32 slot, quantity;
+    frFontHandle_t *request;
+
+    fclInitPanelPos(x, pos->unk_04, pos->unk_08, 0, 0, 0, &panel);
+    frSetMessageStepY(0x15);
+    cmpDrawHelp(&panel, item, 1, 1, 0x100, 0x47);
+    frSetMessageDefStepY();
+    fclDrawSpriteFilter(x + 0x390, y, pos->unk_08 << 4, 1, NULL,
+                        10, 10, D_00345D88, fclSpriteTable, ot);
+    fclDrawSpriteFilter(x + 0x960, y, pos->unk_08 << 4, 1, NULL,
+                        10, 11, D_00345D88, fclSpriteTable, ot);
+    slot = datGetItemSlotIndex(item);
+    if (slot != 0) {
+        quantity = cmbChkGetHearts((s8)slot) != 0;
+    } else {
+        quantity = ((fclInventoryView_t *)DDS3_GBWK)->itemQuantity[item];
+    }
+    sprintf(text, fclFmtItemCount, quantity);
+    request = frwGetNumFontFRQ(x + 0x7B0, y, pos->unk_08,
+                               0xA0F0EB80, text, NULL);
+    frDrawFontOt(request, 1, ot);
+    frDestroyFontRequestAfter(request);
+}
+#else
 void fclDrawPriceText(fclPanelPos_t *pos, u16 item, s32 ot)
 {
     char text[16];
@@ -323,6 +358,7 @@ void fclDrawPriceText(fclPanelPos_t *pos, u16 item, s32 ot)
     frDrawFontOt(request, 1, ot);
     frDestroyFontRequestAfter(request);
 }
+#endif
 
 extern char fclFmtMaka[]; /* Shared, padded "%7d" format. */
 
@@ -347,10 +383,15 @@ void shopDrawItemCount(fclPanelPos_t *pos, s32 color, s32 ot)
                         fclSpriteTable, ot);
 
     color = (color & 0xFF) | 0xA09DC300;
-    sprintf(text, fclFmtMaka, DDS3_GBWK->maka);
+        sprintf(text, fclFmtMaka, DDS3_GBWK->maka);
     /* The numeric baseline uses the X coordinate. */
+#ifdef VERSION_MNAX
+    request = frwGetNumFontFRQ(pos->unk_00 + 0x1840, pos->unk_00 + 0xB0,
+                               pos->unk_08, color, text, NULL);
+#else
     request = frwGetNumFontFRQ(pos->unk_00 + 0x1840, pos->unk_00 + 0x90,
                                pos->unk_08, color, text, NULL);
+#endif
     frDrawFontOt(request, 1, ot);
     frDestroyFontRequestAfter(request);
 }

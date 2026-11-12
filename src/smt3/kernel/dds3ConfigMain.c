@@ -38,6 +38,12 @@ extern u8 *GBWK;
 
 extern u8 *DDS3_GBWK;
 
+#ifdef VERSION_MNAX
+#define CONFIG_FLAGS_OFS 0xF668
+#else
+#define CONFIG_FLAGS_OFS 0x11AB8
+#endif
+
 extern s32 cmpUpdateTerminate(u8 *p);
 
 extern s32 dds3KillProcessName(char *name, s32 shutdowntimer);
@@ -67,7 +73,7 @@ void dds3DestroyConfig(void *PID)
     s32 seq = 1;
 
     if (GBWK != NULL) {
-        dds3ConfigValue[1] = *(s32 *)(DDS3_GBWK + 0x11AB8);
+        dds3ConfigValue[1] = *(s32 *)(DDS3_GBWK + CONFIG_FLAGS_OFS);
         if (GBWK[0x18] == 1) {
             dds3AdminiCallSequence(2, &seq, 4, 0);
         }
@@ -157,11 +163,11 @@ s32 dds3UpdateConfig(void *PID)
         if (dds3PadButtonState[0x24] >= 0) {
             goto no_sound;
         }
-        if (dds3GetConfigFlag(index, (s32 *)(DDS3_GBWK + 0x11AB8)) == 0) {
+        if (dds3GetConfigFlag(index, (s32 *)(DDS3_GBWK + CONFIG_FLAGS_OFS)) == 0) {
             if (index == 3) {
                 goto no_sound;
             }
-            dds3ToggleConfigFlag(index, (s32 *)(DDS3_GBWK + 0x11AB8));
+            dds3ToggleConfigFlag(index, (s32 *)(DDS3_GBWK + CONFIG_FLAGS_OFS));
             break;
         }
         goto no_sound;
@@ -169,13 +175,13 @@ s32 dds3UpdateConfig(void *PID)
         if (dds3PadButtonState[0x25] >= 0) {
             goto no_sound;
         }
-        if (dds3GetConfigFlag(index, (s32 *)(DDS3_GBWK + 0x11AB8)) == 0) {
+        if (dds3GetConfigFlag(index, (s32 *)(DDS3_GBWK + CONFIG_FLAGS_OFS)) == 0) {
             goto no_sound;
         }
         if (index == 3) {
             goto no_sound;
         }
-        dds3ToggleConfigFlag(index, (s32 *)(DDS3_GBWK + 0x11AB8));
+        dds3ToggleConfigFlag(index, (s32 *)(DDS3_GBWK + CONFIG_FLAGS_OFS));
         break;
     case 0x10:
         cmpMoveCursor((cmpCursorInfo_t *)(GBWK + 0x1C), -1);

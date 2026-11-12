@@ -594,7 +594,7 @@ s32 Flow1_12(nbNegoProcessData_t *n)
     nbAddNegoIdKouho(n, 0x10027);
     n->workid[3] = 0x1000F;
     n->nextnegoid = n->nextkouho[1];
-    cnt = *EE_ADDR_AS(u8 *, (datDevilTable[n->ework->id].race + EE_ADDR_S(DDS3_GBWK) + 0x1CA8));
+    cnt = DDS3_GBWK->syakkincnt[0x240 + datDevilTable[n->ework->id].race];
     if (cnt >= 3 && DDS3_GBWK->maka >= 0x1F4) {
         if ((u32)(cnt - 3) < 3) {
             rate = 0x1E;
@@ -640,7 +640,7 @@ s32 Flow1_16(nbNegoProcessData_t *n)
 {
     nbAddNegoIdKouho(n, 0x10011);
     n->getmakka = DDS3_GBWK->maka / 3;
-    *EE_ADDR_AS(u8 *, (datDevilTable[n->ework->id].race + EE_ADDR_S(DDS3_GBWK) + 0x1CA8)) = 0;
+    DDS3_GBWK->syakkincnt[0x240 + datDevilTable[n->ework->id].race] = 0;
     return 0;
 }
 

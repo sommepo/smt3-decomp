@@ -528,6 +528,24 @@ void nbInitEventProcess(nbMainProcessData_t *data)
     data->eventproc = id;
 }
 
+#ifdef VERSION_MNAX
+s32 nbFindStockSkillError(void)
+{
+    datUnitWork_t *w;
+    s32 i;
+
+    w = DDS3_GBWK->unitwork;
+    for (i = 0; i < 16; i++) {
+        if ((w->flag & 1) != 0) {
+            if ((w->badstatus & 0xFFF) == 0x800) {
+                return 1;
+            }
+        }
+        w = (datUnitWork_t *)((u8 *)w + 0xEC);
+    }
+    return 0;
+}
+#else
 s32 nbFindStockSkillError(void)
 {
     datUnitWork_t *w;
@@ -548,6 +566,7 @@ s32 nbFindStockSkillError(void)
     }
     return 0;
 }
+#endif
 
 s32 cmpAnyButtonGuideActive(datUnitWork_t **list, s32 cnt)
 {

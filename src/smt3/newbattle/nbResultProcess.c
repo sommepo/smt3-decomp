@@ -871,7 +871,11 @@ void nbResultAddExp(void)
     specialSkills = datSkillTable.special;
     for (i = 0; i < 16; i++) {
         exp = nbGetKakutokuExp(data);
+#ifdef VERSION_MNAX
+        unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA50) + i;
+#else
         unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54) + i;
+#endif
         flag = unit->flag;
         if ((flag & 1) != 0) {
             if ((flag & 2) == 0) {

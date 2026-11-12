@@ -87,8 +87,13 @@ s32 fldInputPanelProcess2(dds3ProcessID_t *id)
         goto ret0;
     }
     fldDrawInputPanel();
+#ifdef VERSION_MNAX
+    fldDrawInputCursor(fldInputPanelX[work->Type] - 0xC, 0x131);
+    fldKanjiDraw(fldInputPanelX[work->Type] + 0xA, 0x99, 0xA09DC380,
+#else
     fldDrawInputCursor(fldInputPanelX[work->Type] - 0xC, 0x132);
     fldKanjiDraw(fldInputPanelX[work->Type] + 0xA, 0x98, 0xA09DC380,
+#endif
         fldInputPanelLabel[work->Type]);
     work->Count++;
     work->Draw = 0;

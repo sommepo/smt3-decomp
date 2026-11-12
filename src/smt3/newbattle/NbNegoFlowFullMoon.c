@@ -349,7 +349,7 @@ s32 Flow2_4(nbNegoProcessData_t *n)
     nbAddNegoIdKouho(n, 0x20005);
     q = nbGetQuestionType(n->ework);
     n->qtype = q;
-    p = EE_ADDR_AS(u8 *, (q + EE_ADDR_S(DDS3_GBWK) + 0x1CE8)); /* &negoques[q]; retail adds as an integer */
+    p = EE_ADDR_AS(u8 *, (q + EE_ADDR_S(DDS3_GBWK) + ((u32)&((dds3GlobalWork_t *)0)->negoques))); /* &negoques[q]; retail adds as an integer */
     if (*p < 0xFF) {
         *p = *p + 1;
     }

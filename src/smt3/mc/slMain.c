@@ -370,7 +370,11 @@ extern u8 frEnableMode(s32 Flag);
 
 extern u8 frDisableMode(u8 Flag);
 
+#ifdef VERSION_MNAX
+extern void *frSetFontString(const char *text, s32 a1, s32 a2, s32 a3, s32 a4);
+#else
 extern void *frSetFontString(const char *text, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5);
+#endif
 
 extern void frSetFontSpace(void *pFRQ, s32 Space);
 
@@ -394,7 +398,11 @@ extern saddr_t slFileSelCalc(void);
 extern void *memset(void *a, s32 b, size_t c);
 
 typedef struct slFileName_t {
+#ifdef VERSION_MNAX
+    s8 ch[16];
+#else
     s8 ch[20];
+#endif
 } slFileName_t;
 
 
@@ -414,9 +422,15 @@ typedef struct slFileRec_t {
     s16 newfile;
     slFileName_t name;
     s8 nameLength;
+#ifdef VERSION_MNAX
+    s8 unk21[15];
+} slFileRec_t;
+SIZE_CHECK(slFileRecSizeCheck, slFileRec_t, 0x30);
+#else
     s8 unk25[15];
 } slFileRec_t;
 SIZE_CHECK(slFileRecSizeCheck, slFileRec_t, 0x34);
+#endif
 
 
 
@@ -575,12 +589,20 @@ void mcMakeFileName(char *path, s32 num) {
     if (slDDS3To31Flg != 0) {
         sprintf(path, slSaveDirFmt, 0xFEDA, num);
     } else {
+#ifdef VERSION_MNAX
+        sprintf(path, slSaveDirFmt, 0xFFB6, num);
+#else
         sprintf(path, slSaveDirFmt, 0x51AF, num);
+#endif
     }
 }
 
 void slVersionConvert_Step1(void) {
+#ifdef VERSION_MNAX
+    version_convert_ver = *(D_00569743 + sdfMcGetSlotIndex(mccb) * 48);
+#else
     version_convert_ver = *(D_00569743 + sdfMcGetSlotIndex(mccb) * 52);
+#endif
 }
 
 /* Save revisions have different persistent block extents. Keeping this
@@ -593,7 +615,12 @@ u32 slVersionConvert_GetSize(void) {
     if (version_convert_ver == 2) {
         return 0xFA30;
     }
-    return (u32)(version_convert_ver - 3) < 2 ? 0x16DC0 : 0x1A510;
+    return (u32)(version_convert_ver - 3) < 2 ? 0x16DC0 :
+#ifdef VERSION_MNAX
+        0x180C0;
+#else
+        0x1A510;
+#endif
 }
 
 
@@ -601,12 +628,21 @@ u32 slVersionConvert_GetSize(void) {
 /* Save fields used by revision conversion; the party and encyclopedia
  * records share the persistent allocation owned by dds3GlobalWorkInit. */
 typedef struct {
+#ifdef VERSION_MNAX
+    u8 unknown00[0x30];
+    sdfMemHandle_t *memHandle;
+    u8 unknown34[0xA50 - 0x34];
+    datUnitWork_t unitwork[16];
+    u8 unknown1910[0xFA40 - 0x1910];
+    fclencyceelem_t encyclopedia[184];
+#else
     u8 unknown00[0x34];
     sdfMemHandle_t *memHandle;
     u8 unknown38[0xA54 - 0x38];
     datUnitWork_t unitwork[16];
     u8 unknown1914[0x11E90 - 0x1914];
     fclencyceelem_t encyclopedia[184];
+#endif
 } slConvertWork_t;
 
 extern const char slConvert03Msg[];
@@ -640,7 +676,11 @@ void slVersionConvert_Step3(void)
         printf(slConvert03Msg);
         work = DDS3_GBWK;
         src = slLoadFileHandle;
+#ifdef VERSION_MNAX
+        bytes = 0x180C0;
+#else
         bytes = 0x1A510;
+#endif
         memset(work, 0, bytes);
         bytes = 0x16DC0;
         memcpy(work, src, bytes);
@@ -676,12 +716,20 @@ void slVersionConvert_Step3(void)
         printf(slConvert04Msg);
         work = DDS3_GBWK;
         src = slLoadFileHandle;
+#ifdef VERSION_MNAX
+        bytes = 0x180C0;
+#else
         bytes = 0x1A510;
+#endif
         memset(work, 0, bytes);
         bytes = 0x16DC0;
         memcpy(work, src, bytes);
     } else {
+#ifdef VERSION_MNAX
+        bytes = 0x180C0;
+#else
         bytes = 0x1A510;
+#endif
         memcpy(DDS3_GBWK, slLoadFileHandle, bytes);
     }
     DDS3_GBWK->memHandle = handle;
@@ -727,9 +775,15 @@ void slKanjiDraw(s32 x, s32 y, u32 rgba, const char *moji) {
 
 void slKanjiDrawH(s32 x, s32 y, u32 rgba, const char *moji) {
     frEnableMode(1);
+#ifdef VERSION_MNAX
+    slKanjiDrawH_handle = frSetFontString(moji, 0, 0, 0, 0);
+    frDisableMode(1);
+    frSetFontSpace(slKanjiDrawH_handle, 1);
+#else
     slKanjiDrawH_handle = frSetFontString(moji, 0, 0, 0, 0, 0);
     frDisableMode(1);
     frSetFontSpace(slKanjiDrawH_handle, 3);
+#endif
     frSetDrawPosition(slKanjiDrawH_handle, x << 4, y << 4);
     frSetFontColor(slKanjiDrawH_handle, rgba);
     frDrawFontOt(slKanjiDrawH_handle, 0, 0x4A);
@@ -901,6 +955,12 @@ s32 slDrawWindow(void) {
 }
 
 
+#ifdef VERSION_MNAX
+#define SL_INFO_X 0x55
+#else
+#define SL_INFO_X 0x28
+#endif
+
 void slDrawError(void) {
     if (gslErrorCode == 0) {
         return;
@@ -1005,43 +1065,43 @@ void slDrawInfo(void) {
     }
     if (gslInfoCode == 1) {
         if (slDrawWindow() != 0) {
-            slKanjiDrawH(0x28, 0x4C, 0x64618780, slCheckingMsg0);
-            slKanjiDrawH(0x28, 0x58, 0x64618780, slCheckingMsg1);
+            slKanjiDrawH(SL_INFO_X, 0x4C, 0x64618780, slCheckingMsg0);
+            slKanjiDrawH(SL_INFO_X, 0x58, 0x64618780, slCheckingMsg1);
         }
     }
     if (gslInfoCode == 2) {
         if (slDrawWindow() != 0) {
-            slKanjiDrawH(0x28, 0x4C, 0x64618780, slSavingMsg);
-            slKanjiDrawH(0x28, 0x58, 0x64618780, slDoNotRemoveMsg0);
-            slKanjiDrawH(0x28, 0x64, 0x64618780, slDoNotRemoveMsg1);
+            slKanjiDrawH(SL_INFO_X, 0x4C, 0x64618780, slSavingMsg);
+            slKanjiDrawH(SL_INFO_X, 0x58, 0x64618780, slDoNotRemoveMsg0);
+            slKanjiDrawH(SL_INFO_X, 0x64, 0x64618780, slDoNotRemoveMsg1);
             slMcAccessDraw();
         }
     }
     if (gslInfoCode == 3) {
         if (slDrawWindow() != 0) {
-            slKanjiDrawH(0x28, 0x4C, 0x64618780, slLoadingMsg);
-            slKanjiDrawH(0x28, 0x58, 0x64618780, slDoNotRemoveMsg0);
-            slKanjiDrawH(0x28, 0x64, 0x64618780, slDoNotRemoveMsg1);
+            slKanjiDrawH(SL_INFO_X, 0x4C, 0x64618780, slLoadingMsg);
+            slKanjiDrawH(SL_INFO_X, 0x58, 0x64618780, slDoNotRemoveMsg0);
+            slKanjiDrawH(SL_INFO_X, 0x64, 0x64618780, slDoNotRemoveMsg1);
         }
     }
     if (gslInfoCode == 4) {
         if (slDrawWindow() != 0) {
-            slKanjiDrawH(0x28, 0x4C, 0x64618780, slSaveDoneMsg);
+            slKanjiDrawH(SL_INFO_X, 0x4C, 0x64618780, slSaveDoneMsg);
             slNextPageDraw();
         }
         gSlExitMode = 1;
     }
     if (gslInfoCode == 5) {
         if (slDrawWindow() != 0) {
-            slKanjiDrawH(0x28, 0x4C, 0x64618780, slFormattingMsg);
-            slKanjiDrawH(0x28, 0x58, 0x64618780, slDoNotRemoveMsg0);
-            slKanjiDrawH(0x28, 0x64, 0x64618780, slDoNotRemoveMsg1);
+            slKanjiDrawH(SL_INFO_X, 0x4C, 0x64618780, slFormattingMsg);
+            slKanjiDrawH(SL_INFO_X, 0x58, 0x64618780, slDoNotRemoveMsg0);
+            slKanjiDrawH(SL_INFO_X, 0x64, 0x64618780, slDoNotRemoveMsg1);
             slMcAccessDraw();
         }
     }
     if (gslInfoCode == 6) {
         if (slDrawWindow() != 0) {
-            slKanjiDrawH(0x28, 0x4C, 0x64618780, slFormatDoneMsg);
+            slKanjiDrawH(SL_INFO_X, 0x4C, 0x64618780, slFormatDoneMsg);
             slNextPageDraw();
         }
     }
@@ -1053,7 +1113,7 @@ void slDrawInfo(void) {
     }
     if (gslInfoCode == 0xD) {
         if (slDrawWindow() != 0) {
-            slKanjiDrawH(0x28, 0x4C, 0x64618780, slLoadDoneMsg);
+            slKanjiDrawH(SL_INFO_X, 0x4C, 0x64618780, slLoadDoneMsg);
             slNextPageDraw();
         }
         gSlExitMode = 2;
@@ -1089,9 +1149,15 @@ saddr_t slHeadLoadProc_openFile(void) {
         return 0;
     }
     if (status == SL_MC_RESULT_SUCCESS) {
+#ifdef VERSION_MNAX
+        slLoadFileFd = sdfMemAllocDirect(0x30);
+        slLoadFileHandle = sdfMemLock(slLoadFileFd);
+        sdfMcFuncRead(slMcFd, EE_ADDR(slLoadFileHandle), 0x30);
+#else
         slLoadFileFd = sdfMemAllocDirect(0x34);
         slLoadFileHandle = sdfMemLock(slLoadFileFd);
         sdfMcFuncRead(slMcFd, EE_ADDR(slLoadFileHandle), 0x34);
+#endif
         return EE_ADDR_S(slHeadLoadProc_readFile);
     }
     return slNoCard();
@@ -1124,7 +1190,7 @@ s32 slHeadLoadProc_closeFile(void) {
         /* The file loader supplies serialized bytes, not a typed record. */
         memcpy(head, slLoadFileHandle, sizeof(*head));
         if (head->ver == 1) {
-            memset(&slFileRecs[index].name, 0, 0x14);
+            memset(&slFileRecs[index].name, 0, sizeof(slFileRecs[index].name));
             slFileRecs[index].nameLength = 0;
         }
         sdfMemFreeDirect(slLoadFileFd);
@@ -1997,10 +2063,15 @@ saddr_t slSaveWriteEnd_iconSys(void) {
 }
 
 s32 slSaveWriteEnd_baseIcon(void) {
+#ifdef VERSION_MNAX
+    slIconSysBuf[0xFA] = -0x7E;
+    slIconSysBuf[0xFB] = slFileSelError + 0x50;
+#else
     slIconSysBuf[0xE2] = -0x7E;
     slIconSysBuf[0xE3] = slFileSelError + 0x50;
     slIconSysBuf[0xE4] = 0;
     slIconSysBuf[0xE5] = 0;
+#endif
     return slSaveWriteFile(slIconSysName, &slIconSysSaveBuff, &slIconSysSaveSize, slSaveWriteEnd_iconSys, 0);
 }
 
@@ -3037,6 +3108,16 @@ extern char slNewCycleMsg3[];
 
 const char slCalcName[13] = "FileMentCalc";
 
+#ifdef VERSION_MNAX
+#define SL_BOX_X0 0x3D
+#define SL_BOX_X1 0x6D
+#define SL_BOX_H 0xC
+#else
+#define SL_BOX_X0 0x10
+#define SL_BOX_X1 0x40
+#define SL_BOX_H 0xB
+#endif
+
 void slQueryYesNoDraw(void)
 {
     s32 selectedY;
@@ -3051,83 +3132,83 @@ void slQueryYesNoDraw(void)
         rsetTest(1, 0, 0x80, 3, 0, 0, 1, 1);
         if (slQueryYesNoMsg == 1) {
             if (slDrawWindow() != 0) {
-                slKanjiDrawH(0x28, 0x4C, 0x64618780, slOverwriteMsg0);
-                slKanjiDrawH(0x28, 0x58, 0x64618780, slOverwriteMsg1);
-                slKanjiDrawH(0x28, 0x64, 0x64618780, slOverwriteMsg2);
+                slKanjiDrawH(SL_INFO_X, 0x4C, 0x64618780, slOverwriteMsg0);
+                slKanjiDrawH(SL_INFO_X, 0x58, 0x64618780, slOverwriteMsg1);
+                slKanjiDrawH(SL_INFO_X, 0x64, 0x64618780, slOverwriteMsg2);
             }
         }
         if (slQueryYesNoMsg == 2) {
             if (slDrawWindow() != 0) {
-                slKanjiDrawH(0x28, 0x4C, 0x64618780, slNotFormattedMsg0);
-                slKanjiDrawH(0x28, 0x58, 0x64618780, slNotFormattedMsg1);
-                slKanjiDrawH(0x28, 0x64, 0x64618780, slNotFormattedMsg2);
+                slKanjiDrawH(SL_INFO_X, 0x4C, 0x64618780, slNotFormattedMsg0);
+                slKanjiDrawH(SL_INFO_X, 0x58, 0x64618780, slNotFormattedMsg1);
+                slKanjiDrawH(SL_INFO_X, 0x64, 0x64618780, slNotFormattedMsg2);
             }
         }
         if (slQueryYesNoMsg == 3) {
             if (slDrawWindow() != 0) {
                 switch (slFileSelError) {
                 case 0:
-                    slKanjiDrawH(0x28, 0x4C, 0x64618780, slLoadingFileMsg1);
+                    slKanjiDrawH(SL_INFO_X, 0x4C, 0x64618780, slLoadingFileMsg1);
                     break;
                 case 1:
-                    slKanjiDrawH(0x28, 0x4C, 0x64618780, slLoadingFileMsg2);
+                    slKanjiDrawH(SL_INFO_X, 0x4C, 0x64618780, slLoadingFileMsg2);
                     break;
                 case 2:
-                    slKanjiDrawH(0x28, 0x4C, 0x64618780, slLoadingFileMsg3);
+                    slKanjiDrawH(SL_INFO_X, 0x4C, 0x64618780, slLoadingFileMsg3);
                     break;
                 case 3:
-                    slKanjiDrawH(0x28, 0x4C, 0x64618780, slLoadingFileMsg4);
+                    slKanjiDrawH(SL_INFO_X, 0x4C, 0x64618780, slLoadingFileMsg4);
                     break;
                 case 4:
-                    slKanjiDrawH(0x28, 0x4C, 0x64618780, slLoadingFileMsg5);
+                    slKanjiDrawH(SL_INFO_X, 0x4C, 0x64618780, slLoadingFileMsg5);
                     break;
                 }
-                slKanjiDrawH(0x28, 0x58, 0x64618780, slIsOkMsg);
+                slKanjiDrawH(SL_INFO_X, 0x58, 0x64618780, slIsOkMsg);
             }
         }
         if (slQueryYesNoMsg == 4) {
             if (slDrawWindow() != 0) {
-                slKanjiDrawH(0x28, 0x4C, 0x64618780, slNewCycleMsg0);
-                slKanjiDrawH(0x28, 0x58, 0x64618780, slNewCycleMsg1);
-                slKanjiDrawH(0x28, 0x64, 0x64618780, slNewCycleMsg2);
-                slKanjiDrawH(0x28, 0x70, 0x64618780, slNewCycleMsg3);
+                slKanjiDrawH(SL_INFO_X, 0x4C, 0x64618780, slNewCycleMsg0);
+                slKanjiDrawH(SL_INFO_X, 0x58, 0x64618780, slNewCycleMsg1);
+                slKanjiDrawH(SL_INFO_X, 0x64, 0x64618780, slNewCycleMsg2);
+                slKanjiDrawH(SL_INFO_X, 0x70, 0x64618780, slNewCycleMsg3);
             }
         }
         if (slQueryYesNoMsg == 5) {
             if (slDrawWindow() != 0) {
-                slKanjiDrawH(0x28, 0x3C, 0x64618780, slNoCardStartMsg0);
-                slKanjiDrawH(0x28, 0x48, 0x64618780, slNoCardStartMsg1);
-                slKanjiDrawH(0x28, 0x54, 0x64618780, slNoCardStartMsg2);
-                slKanjiDrawH(0x28, 0x60, 0x64618780, slNoCardStartMsg3);
-                slKanjiDrawH(0x28, 0x6C, 0x64618780, slNoCardStartMsg4);
-                slKanjiDrawH(0x28, 0x78, 0x64618780, slNoCardStartMsg5);
+                slKanjiDrawH(SL_INFO_X, 0x3C, 0x64618780, slNoCardStartMsg0);
+                slKanjiDrawH(SL_INFO_X, 0x48, 0x64618780, slNoCardStartMsg1);
+                slKanjiDrawH(SL_INFO_X, 0x54, 0x64618780, slNoCardStartMsg2);
+                slKanjiDrawH(SL_INFO_X, 0x60, 0x64618780, slNoCardStartMsg3);
+                slKanjiDrawH(SL_INFO_X, 0x6C, 0x64618780, slNoCardStartMsg4);
+                slKanjiDrawH(SL_INFO_X, 0x78, 0x64618780, slNoCardStartMsg5);
             }
         }
         if (slQueryYesNoMsg == 6) {
             if (slDrawWindow() != 0) {
-                slKanjiDrawH(0x28, 0x3C, 0x64618780, slNoSpaceStartMsg0);
-                slKanjiDrawH(0x28, 0x48, 0x64618780, slNoSpaceStartMsg1);
-                slKanjiDrawH(0x28, 0x54, 0x64618780, slNoSpaceStartMsg2);
-                slKanjiDrawH(0x28, 0x60, 0x64618780, slNoSpaceStartMsg3);
-                slKanjiDrawH(0x28, 0x6C, 0x64618780, slNoSpaceStartMsg4);
-                slKanjiDrawH(0x28, 0x78, 0x64618780, slNoSpaceStartMsg5);
-                slKanjiDrawH(0x28, 0x84, 0x64618780, slNoSpaceStartMsg6);
+                slKanjiDrawH(SL_INFO_X, 0x3C, 0x64618780, slNoSpaceStartMsg0);
+                slKanjiDrawH(SL_INFO_X, 0x48, 0x64618780, slNoSpaceStartMsg1);
+                slKanjiDrawH(SL_INFO_X, 0x54, 0x64618780, slNoSpaceStartMsg2);
+                slKanjiDrawH(SL_INFO_X, 0x60, 0x64618780, slNoSpaceStartMsg3);
+                slKanjiDrawH(SL_INFO_X, 0x6C, 0x64618780, slNoSpaceStartMsg4);
+                slKanjiDrawH(SL_INFO_X, 0x78, 0x64618780, slNoSpaceStartMsg5);
+                slKanjiDrawH(SL_INFO_X, 0x84, 0x64618780, slNoSpaceStartMsg6);
             }
         }
         if (slQueryYesNoMsg == 7) {
             if (slDrawWindow() != 0) {
-                slKanjiDrawH(0x28, 0x4C, 0x64618780, slCancelSaveMsg);
+                slKanjiDrawH(SL_INFO_X, 0x4C, 0x64618780, slCancelSaveMsg);
             }
         }
         if (slQueryYesNoMsg == 8) {
             if (slDrawWindow() != 0) {
-                slKanjiDrawH(0x28, 0x4C, 0x64618780, slReturnTitleMsg);
+                slKanjiDrawH(SL_INFO_X, 0x4C, 0x64618780, slReturnTitleMsg);
             }
         }
         if ((slQueryYesNoMsg == 9) && (slDrawWindow() != 0)) {
-            slKanjiDrawH(0x28, 0x4C, 0x64618780, slOverwriteWarnMsg0);
-            slKanjiDrawH(0x28, 0x58, 0x64618780, slOverwriteWarnMsg1);
-            slKanjiDrawH(0x28, 0x64, 0x64618780, slOverwriteWarnMsg2);
+            slKanjiDrawH(SL_INFO_X, 0x4C, 0x64618780, slOverwriteWarnMsg0);
+            slKanjiDrawH(SL_INFO_X, 0x58, 0x64618780, slOverwriteWarnMsg1);
+            slKanjiDrawH(SL_INFO_X, 0x64, 0x64618780, slOverwriteWarnMsg2);
         }
         if (slChkWindowOpenDone() != 0) {
             if ((s32)SDF_FRAME_TICK(gslAnimCnt) & 8) {
@@ -3151,18 +3232,26 @@ void slQueryYesNoDraw(void)
             rsetAlpha(1);
             rsetTest(1, 0, 0x80, 3, 0, 0, 1, 1);
             if (slQueryYesNoCursor == 0) {
-                aDrawBoxG(0x10, y, 0x30, 0xB, red, green, blue, 0, red, green, blue, 0x40, red, green, blue, 0x40, red, green, blue, 0);
-                aDrawBoxG(0x40, y, 0x30, 0xB, red, green, blue, 0x40, red, green, blue, 0, red, green, blue, 0, red, green, blue, 0x40);
+#ifdef VERSION_MNAX
+                selectedY = y + 0xC;
+#endif
+                aDrawBoxG(SL_BOX_X0, y, 0x30, SL_BOX_H, red, green, blue, 0, red, green, blue, 0x40, red, green, blue, 0x40, red, green, blue, 0);
+                aDrawBoxG(SL_BOX_X1, y, 0x30, SL_BOX_H, red, green, blue, 0x40, red, green, blue, 0, red, green, blue, 0, red, green, blue, 0x40);
             } else {
                 selectedY = y + 0xC;
-                aDrawBoxG(0x10, selectedY, 0x30, 0xB, red, green, blue, 0, red, green, blue, 0x40, red, green, blue, 0x40, red, green, blue, 0);
-                aDrawBoxG(0x40, selectedY, 0x30, 0xB, red, green, blue, 0x40, red, green, blue, 0, red, green, blue, 0, red, green, blue, 0x40);
+                aDrawBoxG(SL_BOX_X0, selectedY, 0x30, SL_BOX_H, red, green, blue, 0, red, green, blue, 0x40, red, green, blue, 0x40, red, green, blue, 0);
+                aDrawBoxG(SL_BOX_X1, selectedY, 0x30, SL_BOX_H, red, green, blue, 0x40, red, green, blue, 0, red, green, blue, 0, red, green, blue, 0x40);
             }
             /* Qualified allocation traces retain the label row in the live Y.
              * See docs/levers/cross-block-locals.md. */
+#ifdef VERSION_MNAX
+            slKanjiDrawH(SL_INFO_X, y, 0xA09DC380, slYesLabel);
+            slKanjiDrawH(SL_INFO_X, selectedY, 0xA09DC380, slNoLabel);
+#else
             y++;
-            slKanjiDrawH(0x28, y, 0xA09DC380, slYesLabel);
-            slKanjiDrawH(0x28, y + 0xC, 0xA09DC380, slNoLabel);
+            slKanjiDrawH(SL_INFO_X, y, 0xA09DC380, slYesLabel);
+            slKanjiDrawH(SL_INFO_X, y + 0xC, 0xA09DC380, slNoLabel);
+#endif
         }
         rsetOtOfs(0x47);
         rsetAlpha(0);

@@ -15,6 +15,13 @@
 #include "event.h"
 #include "effect.h"
 
+/* Offset of the first unit record inside the shared work. */
+#ifdef VERSION_MNAX
+#define FLD_UNITWORK_OFS 0xA50
+#else
+#define FLD_UNITWORK_OFS 0xA54
+#endif
+
 typedef struct fldTriggerSphere_t fldTriggerSphere_t;
 
 typedef struct fldTriggerPlane_t fldTriggerPlane_t;
@@ -275,9 +282,9 @@ void fldKaifukuTest(void) {
     s32 ofs = 0;
 
     for (i = 0; i < 16; i++) {
-        datAddHp((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs + 0xA54), 9999);
-        datAddMp((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs + 0xA54), 9999);
-        *(u16 *)(EE_ADDR_AS(u8 *, ofs) + EE_ADDR(DDS3_GBWK) + 0xA62) = 0;
+        datAddHp((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs + FLD_UNITWORK_OFS), 9999);
+        datAddMp((datUnitWork_t *)((u8 *)DDS3_GBWK + ofs + FLD_UNITWORK_OFS), 9999);
+        *(u16 *)(EE_ADDR_AS(u8 *, ofs) + EE_ADDR(DDS3_GBWK) + FLD_UNITWORK_OFS + 0xE) = 0;
         ofs += 0xEC;
     }
     p2sdPlaySE(0x10, 0x7F, 0x3F);

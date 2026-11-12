@@ -122,6 +122,19 @@ extern s32 fldNpcCamTarget;
 
 extern fldDanteGunState_t fldRunDanteGunFlag;
 
+/* Auto map bit rows inside dds3GlobalWork_t: rows for floors 10..39 at the end of
+ * gb[], rows for the higher floors inside the encyclopedia records, and 8 spare
+ * rows. Maniax's layout differs, so derive them from the struct there. */
+#ifdef VERSION_MNAX
+#define FLD_AM_LOW_OFS (((u32)&((dds3GlobalWork_t *)0)->gb) + 0x9600)
+#define FLD_AM_HIGH_OFS (((u32)&((dds3GlobalWork_t *)0)->encyclopedia) + 0x6090)
+#define FLD_AM_SPARE_OFS ((u32)&((dds3GlobalWork_t *)0)->reserved19D10)
+#else
+#define FLD_AM_LOW_OFS 0xFC58
+#define FLD_AM_HIGH_OFS 0x17F10
+#define FLD_AM_SPARE_OFS 0x19D10
+#endif
+
 /* BUG: retail prints a u64 with %lx, which is right where long is 64 bits and
  * reads half of it where long is 32. %llx is right on both. */
 #ifdef FIX_BUGS
@@ -181,7 +194,11 @@ extern char fldAutoMapFloorTable[][28];
 
 extern char fldAutoMapPlaceTable[][28];
 
+#ifdef VERSION_MNAX
+extern char fldAutoMapTitleTable[][24];
+#else
 extern char fldAutoMapTitleTable[][26];
+#endif
 
 extern u16 fldAutoMapTitleLen;
 
@@ -1704,9 +1721,9 @@ s32 fldAutoMapChkOpen(s32 fld, s32 area, u32 block) {
     }
     floor -= 10;
     if (floor >= 30) {
-        return (*(u64 *)((u8 *)DDS3_GBWK + 0x17F10 + (floor * 32 + area) * 8) >> block) & 1;
+        return (*(u64 *)((u8 *)DDS3_GBWK + FLD_AM_HIGH_OFS + (floor * 32 + area) * 8) >> block) & 1;
     }
-    return (*(u64 *)((u8 *)DDS3_GBWK + 0xFC58 + (floor * 32 + area) * 8) >> block) & 1;
+    return (*(u64 *)((u8 *)DDS3_GBWK + FLD_AM_LOW_OFS + (floor * 32 + area) * 8) >> block) & 1;
 }
 
 void fldAutoMapOpenBlock(s32 blockID) {
@@ -1725,11 +1742,11 @@ void fldAutoMapOpenBlock(s32 blockID) {
     floor -= 10;
     fldGlobalBase.blockID = blockID - 1;
     if (floor >= 30) {
-        u32 ofs = 0x17F10 + (floor * 32 + fldGlobalBase.floor) * 8;
+        u32 ofs = FLD_AM_HIGH_OFS + (floor * 32 + fldGlobalBase.floor) * 8;
 
         *(u64 *)((u8 *)DDS3_GBWK + ofs) |= (u64)1 << (blockID - 1);
     } else {
-        *(u64 *)((u8 *)DDS3_GBWK + 0xFC58 + (floor * 32 + fldGlobalBase.floor) * 8) |=
+        *(u64 *)((u8 *)DDS3_GBWK + FLD_AM_LOW_OFS + (floor * 32 + fldGlobalBase.floor) * 8) |=
             (u64)1 << (blockID - 1);
     }
     fldGlobalBase.amSBlock = blockID;
@@ -1786,11 +1803,11 @@ void fldAutoMapOpenBlock2(s32 fld, s32 area, s32 SBlock) {
     }
     room -= 10;
     if (room >= 30) {
-        u32 ofs = 0x17F10 + (room * 32 + index) * 8;
+        u32 ofs = FLD_AM_HIGH_OFS + (room * 32 + index) * 8;
 
         *(u64 *)((u8 *)DDS3_GBWK + ofs) |= (u64)1 << bit;
     } else {
-        *(u64 *)((u8 *)DDS3_GBWK + 0xFC58 + (room * 32 + index) * 8) |= (u64)1 << bit;
+        *(u64 *)((u8 *)DDS3_GBWK + FLD_AM_LOW_OFS + (room * 32 + index) * 8) |= (u64)1 << bit;
     }
 }
 
@@ -1809,11 +1826,11 @@ void fldAutoMapCloseBlock2(s32 fld, s32 area, s32 SBlock) {
     }
     room -= 10;
     if (room >= 30) {
-        u32 ofs = 0x17F10 + (room * 32 + index) * 8;
+        u32 ofs = FLD_AM_HIGH_OFS + (room * 32 + index) * 8;
 
         *(u64 *)((u8 *)DDS3_GBWK + ofs) &= ~((u64)1 << bit);
     } else {
-        *(u64 *)((u8 *)DDS3_GBWK + 0xFC58 + (room * 32 + index) * 8) &= ~((u64)1 << bit);
+        *(u64 *)((u8 *)DDS3_GBWK + FLD_AM_LOW_OFS + (room * 32 + index) * 8) &= ~((u64)1 << bit);
     }
 }
 
@@ -1990,14 +2007,14 @@ void fldAutoMapDraw(void) {
     if (fldAutoMapField - 10 > 0 && fldAutoMapField - 10 < 30) {
         for (i = 0; i < 32; i++) {
             sprintf(buf, BIT_ROW_FORMAT, i,
-                    *(u64 *)((u8 *)DDS3_GBWK + 0xFC58 +
+                    *(u64 *)((u8 *)DDS3_GBWK + FLD_AM_LOW_OFS +
                              ((fldAutoMapField - 10) * 32 + i) * 8));
             fldDbgPrint2D(0xC80, i * 96 - 640, buf);
         }
     } else {
         for (i = 0; i < 32; i++) {
             sprintf(buf, BIT_ROW_FORMAT, i,
-                    *(u64 *)((u8 *)DDS3_GBWK + 0x17F10 +
+                    *(u64 *)((u8 *)DDS3_GBWK + FLD_AM_HIGH_OFS +
                              ((fldAutoMapField - 10) * 32 + i) * 8));
             fldDbgPrint2D(0xC80, i * 96 - 640, buf);
         }
@@ -2013,14 +2030,14 @@ void fldAutoMapClear(void) {
     for (i = 0; i < 30; i++) {
         u64 *row = (u64 *)(EE_ADDR_AS(u8 *, (i * 256)) + EE_ADDR(gb));
 
-        row = (u64 *)((u8 *)row + 0xFC58);
+        row = (u64 *)((u8 *)row + FLD_AM_LOW_OFS);
         for (j = 0; j < 32; j++) {
             *row++ = 0;
         }
     }
     gb = (u8 *)DDS3_GBWK;
     for (i = 0; i < 8; i++) {
-        u64 *row = (u64 *)(gb + 0x19D10 + i * 256);
+        u64 *row = (u64 *)(gb + FLD_AM_SPARE_OFS + i * 256);
 
         for (j = 0; j < 32; j++) {
             *row++ = 0;

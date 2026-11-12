@@ -24,8 +24,8 @@ extern s32 datCopyDevilWorkEntry(datUnitWork_t *work, s32 level);
 extern void dds3PadVibrationSet(u32 motor, u8 level, s32 duration);
 
 extern void rstSetMaxHpMp(s8 Mode, datUnitWork_t *pStock);
-
 extern rstData_t *EventStart;
+
 
 extern datRaceEntry_t datRaceTable[];
 
@@ -399,7 +399,7 @@ extern s32 cmpModelSetup(s32 a, s32 b);
 
 s32 rstCalcSeqPlayerLevelUp(void)
 {
-    datUnitWork_t *unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54);
+    datUnitWork_t *unit = &DDS3_GBWK->party[0].unit;
 
     EventStart->unit = unit;
     if (rstSetLevelUpCount(unit) == 0) {
@@ -687,7 +687,7 @@ s32 rstChkEvoEvent(datUnitWork_t *stock, datUnitWork_t *evo, s32 index)
     } else {
         level = -1;
     }
-    diff = rstCalcEvoLevelDiff((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54),
+    diff = rstCalcEvoLevelDiff(&DDS3_GBWK->party[0].unit,
                                stock, evo, level);
     if (diff > 0)
         return diff < 3 ? 1 : 2;
@@ -1169,7 +1169,7 @@ s32 cmbChkGetHearts(s32 rawId)
     s8 id = rawId;
     s32 i;
 
-    for (i = 0; i < ((u8 *)DDS3_GBWK)[0x1D7B]; i++) {
+    for (i = 0; i < DDS3_GBWK->heartscnt; i++) {
         if (DDS3_GBWK->unk_01CFB[i] == id) {
             return 1;
         }
@@ -1306,16 +1306,16 @@ s8 datCountPlayerLND(void)
     s32 count = 0;
     s32 i = 0;
 
-    if (*EE_ADDR_AS(u8 *, (EE_ADDR_S(DDS3_GBWK) + 0x1D7B)) != 0)
+    if (DDS3_GBWK->heartscnt != 0)
     {
         do
         {
-            if (datDevilIsRegistered(*EE_ADDR_AS(u8 *, (i + EE_ADDR_S(DDS3_GBWK) + 0x1CFB))) != 0)
+            if (datDevilIsRegistered(DDS3_GBWK->hearts[i]) != 0)
             {
                 count++;
             }
             i++;
-        } while (i < *EE_ADDR_AS(u8 *, (EE_ADDR_S(DDS3_GBWK) + 0x1D7B)));
+        } while (i < DDS3_GBWK->heartscnt);
     }
     return count;
 }
@@ -1432,8 +1432,13 @@ void datAddHeartsSlot(s8 id, u16 value)
     s32 state = datGetDevilSlotState(id);
     u8 *gbwk = (u8 *)DDS3_GBWK;
 
+#ifdef VERSION_MNAX
+    ((dds3GlobalWork_t *)gbwk)->heartsSkills[id][state] = value;
+    ((dds3GlobalWork_t *)gbwk)->devilSlot[id]++;
+#else
     *(u16 *)(gbwk + (id * 12 + state) * 2 + 0x11AC0) = value;
     (*EE_ADDR_AS(u8 *, (id + EE_ADDR_S(gbwk) + 0x1D3B)))++;
+#endif
 }
 
 s32 datAddHeartsEntry(u8 id, datUnitWork_t *work)
@@ -2239,6 +2244,9 @@ extern frFontHandle_t *frGetHelpPos(s32 x, s32 y, s32 priority, s32 bank, s32 in
 extern void frSetFontColor(frFontHandle_t *request, u32 color);
 extern s32 frDrawFontOt(frFontHandle_t *request, s8 mode, u32 ot);
 extern s32 frDestroyFontRequestAfter(frFontHandle_t *request);
+#ifdef VERSION_MNAX
+extern frFontHandle_t *frwGetHelpFRQ(s32 x, s32 y, s32 priority, s8 bank, u16 index, s8 mode);
+#endif
 
 s32 rstDrawStatusPanel(s8 mode, s8 showHelp)
 {
@@ -2254,7 +2262,11 @@ s32 rstDrawStatusPanel(s8 mode, s8 showHelp)
         cmpDrawStatusBars(0x46, 0x22, 0);
         cmpDrawStatusBars(0x46, 0x22, 0);
         skill = rstSkillSlotIsFull(rstDrawWork->unk_16C, &rstDrawWork->skillSlot);
+#ifdef VERSION_MNAX
+        request = frwGetHelpFRQ(0x180, 0x9A0, 0xFFFFF, 0, skill, 2);
+#else
         request = frGetHelpPos(0x180, 0x9A0, 0xFFFFF, 0, skill);
+#endif
         frSetFontColor(request, 0x80C08080);
         frDrawFontOt(request, 1, 0x47);
         frDestroyFontRequestAfter(request);

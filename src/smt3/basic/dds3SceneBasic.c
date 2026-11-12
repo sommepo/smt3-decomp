@@ -317,6 +317,14 @@ s32 dds3SceneBasicLoadScriptFile(dds3Basic_t *scene, char *name)
         dds3SceneBasicReleaseScriptFile(scene);
     }
     handle = sdfDevLoadFileEx(name, &address, 0);
+#ifdef VERSION_MNAX
+    if (address == 0) {
+        return 0;
+    }
+    work->hScrFileHandle = handle;
+    work->pScrFileData = EE_ADDR_AS(void *, address);
+    return 1;
+#else
     resolved = address;
     if (resolved == 0) {
         return 0;
@@ -324,6 +332,7 @@ s32 dds3SceneBasicLoadScriptFile(dds3Basic_t *scene, char *name)
     work->hScrFileHandle = handle;
     work->pScrFileData = EE_ADDR_AS(void *, resolved);
     return 1;
+#endif
 }
 
 /* A null handle preserves the old script; replacement releases it first. */

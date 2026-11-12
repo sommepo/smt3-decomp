@@ -59,7 +59,13 @@ typedef struct
     /* 0x000C */ s32 y;
 } stfStaffRoll_t;
 
-extern stfStaffRoll_t stfStaffRollTable[0xB5];
+#ifdef VERSION_MNAX
+#define STF_ROLL_COUNT 0xA8
+#else
+#define STF_ROLL_COUNT 0xB5
+#endif
+#define STF_ROLL_LAST (STF_ROLL_COUNT - 1)
+extern stfStaffRoll_t stfStaffRollTable[STF_ROLL_COUNT];
 extern char stfTextFormat[];
 #include "sdk_libc.h"
 
@@ -79,10 +85,10 @@ s32 stfMain2(dds3ProcessID_t *id)
     s32 w;
     s32 state;
 
-    for (i = 0; i < 0xB5; i++) {
+    for (i = 0; i < STF_ROLL_COUNT; i++) {
         y = (s32)((u32)stfStaffRollTable[i].y
                   - (u32)(oStaff_UI->scrollY / 2) + 0x1C0u);
-        if (i == 0xB4) {
+        if (i == STF_ROLL_LAST) {
             if (y < 0xE0) {
                 y = 0xE0;
             }
@@ -143,7 +149,7 @@ scroll:
     oStaff_UI->scrollY = (s32)((u32)oStaff_UI->scrollY + SDF_FRAME_DUE(dds3GetKernelCount()));
     GetoStaffUI();
     if (oStaff_UI->scrollY ==
-        (s32)((u32)((s32)((u32)stfStaffRollTable[0xB4].y + 0xE0u) / 0x1E)
+        (s32)((u32)((s32)((u32)stfStaffRollTable[STF_ROLL_LAST].y + 0xE0u) / 0x1E)
               * 0x3Cu + 0x12Cu)) {
         dds3FadeOut(0, 0, 0, 0x28);
     }
@@ -153,7 +159,7 @@ scroll:
          * These local constraints reconstruct codegen, not original spelling. */
         FAKEMATCH_ASM_REG(s32, endRow, "$2");
         s32 scrollBlock;
-        endRow = (s32)((u32)stfStaffRollTable[0xB4].y + 0xE0u);
+        endRow = (s32)((u32)stfStaffRollTable[STF_ROLL_LAST].y + 0xE0u);
         scrollBlock = oStaff_UI->scrollY / 0x3C;
         endRow = endRow / 0x1E + 6;
         if (endRow < scrollBlock) {

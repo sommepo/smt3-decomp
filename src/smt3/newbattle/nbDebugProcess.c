@@ -947,7 +947,11 @@ void SetDvlChange(nbDebugProcessData_t *d)
     if (d->side == 1) {
         work = &d->data->enemyunit[d->stockno];
     } else {
+#ifdef VERSION_MNAX
+        work = (datUnitWork_t *)((u8 *)DDS3_GBWK + d->stockno * sizeof(datUnitWork_t) + 0xA50);
+#else
         work = (datUnitWork_t *)((u8 *)DDS3_GBWK + d->stockno * sizeof(datUnitWork_t) + 0xA54);
+#endif
     }
     datSetDevilWork(devilbase + devilcur, work);
     work->hp = work->maxhp = datDevilTable[devilbase + devilcur].maxhp;

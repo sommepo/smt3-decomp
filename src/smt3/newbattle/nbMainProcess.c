@@ -29,7 +29,12 @@ extern void nbInitEventProcess(nbMainProcessData_t *data);
 extern void nbDelUnEventKoukaPacket(void);
 
 /* The player party's unit records in the global work. */
+#ifdef VERSION_MNAX
+/* Maniax has no 4 byte word in front of the player unit table. */
+#define NB_PLAYERUNIT ((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA50))
+#else
 #define NB_PLAYERUNIT ((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54))
+#endif
 
 #include "encount.h"
 
@@ -286,7 +291,7 @@ datUnitWork_t *nbGetUnitWorkPointer(nbMainProcessData_t *data, nbParty_t *party)
     if (flag & 4) {
         return 0;
     }
-    return (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54) + party->statindex;
+    return NB_PLAYERUNIT + party->statindex;
 }
 
 nbParty_t *nbGetPartyFromFormindex(s32 formindex)

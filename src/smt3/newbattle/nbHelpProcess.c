@@ -248,7 +248,11 @@ extern s32 itfMesMngGetWidth(s32 id, s32 message, s32 page);
 
 extern frFontRequest_t *frwGetSmallFontFRQ(s32 X, s32 Y, s32 Pri, s32 Color, const char *pStr, frFontRequest_t *pFRQ);
 
+#ifdef VERSION_MNAX
+extern frFontHandle_t *frGetCNameFRQ(s8 no, s8 style, frFontHandle_t *chain);
+#else
 extern frFontHandle_t *frGetCNameFRQ(s8 no, s8 style, frFontHandle_t *chain, s32 tp);
+#endif
 
 extern u32 frGetStrWidth2(frFontHandle_t *pFRQ);
 
@@ -350,7 +354,11 @@ void nbDispText(char *text, char *text2, s32 type, s32 time, u32 color)
         frq = (frFontHandle_t *)frwGetSmallFontFRQ(0, 0, 0xFF0051, color, w->text1, 0);
         w->textwidth = frGetStrWidth2(frq);
         frDestroyFontRequestAfter(frq);
+#ifdef VERSION_MNAX
+        frq = frGetCNameFRQ(0, 1, 0);
+#else
         frq = frGetCNameFRQ(0, 1, 0, 0);
+#endif
         w->nextwidth = w->textwidth + 10;
         w->textwidth = w->textwidth + frGetStrWidth2(frq) + 10;
         frDestroyFontRequestAfter(frq);
@@ -420,8 +428,13 @@ void nbDispDevilName(s32 id)
     nbGetMainProcessData();
     if (id == 0) {
         lndtext = &datExplainTable[0x40];
+#ifdef VERSION_MNAX
+        nbDispText(lndtext[datGetPlayerLNDLevel((u8 *)DDS3_GBWK + 0xA50)], NULL, 2, 2,
+                   0xA09DC380);
+#else
         nbDispText(lndtext[datGetPlayerLNDLevel((u8 *)DDS3_GBWK + 0xA54)], NULL, 2, 2,
                    0xA09DC380);
+#endif
     } else {
         nbDispText(datExplainTable[datDevilTable[id].race], text2[id],
                    0, 2, 0xA09DC380);
@@ -537,7 +550,9 @@ s32 nbHelpProcess1(dds3ProcessID_t *id)
 
     w = dds3GetProcessData(id);
     if (w->text1 != NULL || (w->type == 1 && w->reqmsgid >= 0)) {
+#ifndef VERSION_MNAX
         cmpSetSkillListRows(20);
+#endif
         x = 256 - w->textwidth / 2;
         switch (w->type) {
         case 1:
@@ -551,7 +566,11 @@ s32 nbHelpProcess1(dds3ProcessID_t *id)
             frDestroyFontRequestAfter(w->textmax);
             w->textmax = NULL;
             x += w->nextwidth;
+#ifdef VERSION_MNAX
+            w->textmax = frGetCNameFRQ(0, 1, 0);
+#else
             w->textmax = frGetCNameFRQ(0, 1, 0, 0);
+#endif
             frSetDrawPosition(w->textmax, x << 4, 0x2A0);
             frSetFontColor(w->textmax, w->panelAlpha | 0x80808000);
             frDrawFontEx(w->textmax, 1);
@@ -577,7 +596,9 @@ s32 nbHelpProcess1(dds3ProcessID_t *id)
         if (w->type != 1) {
             nbDrawHelpPanel(w);
         }
+#ifndef VERSION_MNAX
         cmpSetSkillListRows(-1);
+#endif
         w->text3++;
         if (w->time > 0 && w->text3 > w->time) {
             nbHelpOff();

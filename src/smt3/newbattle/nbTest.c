@@ -451,11 +451,6 @@ void nbInitPlayer(void)
 void DrawTest(void) {
 }
 
-typedef struct {
-    u8 reserved0000[0x1928];
-    u8 quantity[0xA0];
-} testInventory_t;
-
 void *TestProcess5(void)
 {
     s32 i;
@@ -476,15 +471,15 @@ void *TestProcess5(void)
     evtBitOff(0xC12);
     nbSetBattleDummy(nbBattleDummyCount, test2_devilIds, test2_devilSkills, test2_dvllist, &test2_pdummy);
 
-    ((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54))[7].hp = 0;
+    (DDS3_GBWK->unitwork)[7].hp = 0;
     DDS3_GBWK->maka = 0x15F90;
-    ((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54))[7].badstatus = 0x800;
+    (DDS3_GBWK->unitwork)[7].badstatus = 0x800;
     for (i = 0; i < 0xA0; i++) {
-        ((testInventory_t *)DDS3_GBWK)->quantity[i] = 9;
+        DDS3_GBWK->stocklist[i + 4] = 9;
     }
 
     for (i = 0; i < 16; i++) {
-        datUnitWork_t *unit = (datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54) + i;
+        datUnitWork_t *unit = DDS3_GBWK->unitwork + i;
         if ((unit->flag & 1) != 0 && unit->badstatus != 0x800) {
             u16 maxHp = unit->maxhp;
             u16 maxMp = unit->maxmp;
@@ -494,7 +489,7 @@ void *TestProcess5(void)
         }
     }
 
-    *(s32 *)((u8 *)DDS3_GBWK + 0x11AB8) |= 0xC;
+    *(s32 *)(DDS3_GBWK->reserved11AA0 + 0x18) |= 0xC;
     return TestProcess1;
 }
 
@@ -516,7 +511,7 @@ void *TestProcess4(void)
     evtBitOff(0xC10);
     evtBitOff(0xC12);
     nbSetBattleDummy(nbBattleDummyCount, test2_devilIds, test2_devilSkills, test2_dvllist, &test2_pdummy);
-    ((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54))->exp = rstCalcExpFromLevel(0, 0x32);
+    (DDS3_GBWK->unitwork)->exp = rstCalcExpFromLevel(0, 0x32);
     DDS3_GBWK->maka = 0x15F90;
     DDS3_GBWK->akuma[7].badstatus = 0x800;
     DDS3_GBWK->akuma[7].hp = 0;
@@ -548,7 +543,7 @@ void *TestProcess8(void)
     evtBitOn(0xC0F);
     evtBitOn(0xC11);
     nbSetBattleDummy(nbBattleDummyCount, nbTest8DevilIds, nbTest8DevilSkills, nbTest8PassiveSkills, &nbTest8Dummy);
-    ((datUnitWork_t *)((u8 *)DDS3_GBWK + 0xA54))->exp = rstCalcExpFromLevel(0, 0x32);
+    (DDS3_GBWK->unitwork)->exp = rstCalcExpFromLevel(0, 0x32);
     ai = (u8 *)datDevilAIDataTable;
     f = 0xC;
     *(s16 *)(ai + 0x3C38) = 0;
@@ -641,7 +636,7 @@ void nbInitBattleTest(void)
     work = DDS3_GBWK;
     work->encountCount = 0;
     work->encountkyori = 0.0f;
-    *(s32 *)((u8 *)work + 0x11AB8) |= 0xC;
+    *(s32 *)(work->reserved11AA0 + 0x18) |= 0xC;
     dds3StartProcess(nbTestProcessName, 0x2B0C, 1, 1, TestProcess1, TestShutdown, NULL);
 }
 
