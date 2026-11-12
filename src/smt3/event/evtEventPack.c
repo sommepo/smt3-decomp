@@ -668,6 +668,20 @@ const char mnax_0053A188[16] = "\203\320\203\327\201\206\204\337\210\263";
 
 const char mnax_0053A198[16] = "\203\350\203\351\201\214\210\365\204\305";
 
+/* In Maniax the rodata of fclCombineChkEventStat, fclCombineLoadTextures,
+ * fclCombineTexFree and fclUpdateInit (facility/fclCombineInit) closes this
+ * unit's rodata, ahead of the 16-aligned jump tables that start
+ * fclCombineInit's at 0x53A240: those functions end this unit's object there. */
+const char mnax_0053A1A8[16] = "e800_main";
+
+const char mnax_0053A1B8[24] = "COMBINE : Tex load.\n";
+
+const char mnax_0053A1D0[24] = "COMBINE : Tex free.\n";
+
+const char fclCombineScriptPath[40] = "/facility/scr/combine/message.bf";
+
+const char fclCombineExplainPath[40] = "/facility/msg/combine/collect.bmd";
+
 #else
 const char D_0053C7B0[24] = "Demonic Compendium";
 

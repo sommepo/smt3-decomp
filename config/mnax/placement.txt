@@ -30,3 +30,7 @@ newbattle/nbActionProcess .sdata  0x0054F058  0x18
 facility/fclShopInit     .sdata   0x0054DDE0  0x30
 interface/frFont         .rodata  0x005331E0  0x128
 kernel/dds3GlobalWork    .sdata   0x0054CD00  0x38
+event/evtEventPack       .rodata  0x00539F38  0x300
+facility/fclCombineInit  .rodata  0x0053A240  0x6B0
+facility/fclCombineInit  .sdata   0x0054DDAC  0x34
+facility/fclCombineInit  .lit4    0x0054C6E4  0x28

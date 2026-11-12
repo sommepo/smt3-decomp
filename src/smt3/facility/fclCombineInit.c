@@ -409,11 +409,23 @@ void cmbEnableMenuEntry5(void)
     }
 }
 
+#ifdef VERSION_MNAX
+/* Maniax defines these strings at the end of event/evtEventPack's rodata,
+ * with fclCombineScriptPath and fclCombineExplainPath. */
+extern const char mnax_0053A1A8[];
+extern const char mnax_0053A1B8[];
+extern const char mnax_0053A1D0[];
+#endif
+
 s32 fclCombineChkEventStat(void)
 {
     s32 stat;
 
+#ifdef VERSION_MNAX
+    stat = dds3GetProcessStat(dds3SearchProcessName(mnax_0053A1A8));
+#else
     stat = dds3GetProcessStat(dds3SearchProcessName("e800_main"));
+#endif
     if ((u32)stat < 4U) {
         if (stat != 0) {
             return 1;
@@ -448,7 +460,11 @@ void fclCombineLoadTextures(void)
     fclSetPanelTex(CMB_GBWK->panel, 0, 0, 0x100, 0x80, CMB_GBWK->texHandle[5]);
     fclSetSprite(&CMB_GBWK->backgroundSprite, 0x200, 0x1C0, 0, 5, 5,
                  0x1FB, 0xFB, 0x80808080, CMB_GBWK->texHandle[6]);
+#ifdef VERSION_MNAX
+    printf(mnax_0053A1B8);
+#else
     printf("COMBINE : Tex load.\n");
+#endif
 }
 
 void fclCombineTexFree(void)
@@ -458,7 +474,11 @@ void fclCombineTexFree(void)
     for (i = 0; i < 7U; i++) {
         sdfTexFree(CMB_GBWK->texHandle[i]);
     }
+#ifdef VERSION_MNAX
+    printf(mnax_0053A1D0);
+#else
     printf("COMBINE : Tex free.\n");
+#endif
 }
 
 void fclCombineSetTable(void)
@@ -651,9 +671,12 @@ extern void evtEnableMoonDraw(void);
 extern s32 fclEncycWork(void);
 extern s32 cmbCalcSequence(void);
 
+#ifndef VERSION_MNAX
+/* Maniax: defined at the end of event/evtEventPack.c. */
 const char fclCombineScriptPath[40] = "/facility/scr/combine/message.bf";
 
 const char fclCombineExplainPath[40] = "/facility/msg/combine/collect.bmd";
+#endif
 
 s32 fclCombineCalc(void)
 {
@@ -5899,6 +5922,14 @@ const char cmbMovieProcessName[16] = "PolygonMovie";
 const char shpTmxPath02[32] = "/facility/tmx/shop/shop_02.tmx";
 
 const char shpTmxPath01[32] = "/facility/tmx/shop/shop_01.tmx";
+
+#ifdef VERSION_MNAX
+/* Maniax shpCommandTable (.data) points its last two entries at these, in
+ * reverse order; the USA table's are small-data strings. */
+const char mnax_0053A8D0[16] = "\204\265\201\211\204\323\201\251";
+
+const char mnax_0053A8E0[16] = "\206\243\201\260\205\253\200\355";
+#endif
 
 s8 gProcessStat_0 = 0;
 
