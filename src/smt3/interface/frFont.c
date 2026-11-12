@@ -312,9 +312,11 @@ void frInitTextHandle(frTextHandle_t *pText, s32 Code, s32 Style, s32 ColNo, s32
 
 extern s8 gFontBaseWidth[];
 
+#ifndef VERSION_MNAX
 u32 frGetDefaultFontWidth(u8 Style);
 
 u32 frGetDefaultFontHeight(u8 Style);
+#endif
 
 frFontHandle_t *frLinkUserImage(GsFont_t *pFont, frFontHandle_t *pFRQ);
 
@@ -351,6 +353,13 @@ GsFont_t *frTranslateFont2GS(frTextHandle_t *pText, s32 FontNo);
 u16 frGetFontWidth(s32 slotIndex);
 
 u16 frGetFontHeight(s32 slotIndex);
+
+#ifdef VERSION_MNAX
+/* Maniax has a single width and a single height getter; the default-size
+ * names are the same functions. */
+#define frGetDefaultFontWidth frGetFontWidth
+#define frGetDefaultFontHeight frGetFontHeight
+#endif
 
 extern u8 gModeFlag;
 
@@ -1000,9 +1009,38 @@ u32 frGetFontHandleNum(void) {
     return gFT.glyphCount;
 }
 
+#ifdef VERSION_MNAX
+extern s8 mnax_003252B8[];
+
+s32 frGetYShiftLev(s8 Style, s32 FontNo) {
+    s32 shifted = 0;
+
+    if (Style == 1) {
+        switch (FontNo) {
+        case 0x31:
+        case 0x47:
+        case 0x4A:
+        case 0x50:
+        case 0x51:
+        case 0x59:
+            shifted = 1;
+            break;
+        }
+    }
+    if (Style == 0) {
+        u32 index = FontNo - 0x154;
+
+        if (index < 0x72 && mnax_003252B8[index] != 0) {
+            shifted = 1;
+        }
+    }
+    return shifted ? 0x18 : 0;
+}
+#else
 s32 frGetYShiftLev(s8 Style, s32 FontNo) {
     return 0x18;
 }
+#endif
 
 extern u32 frSpaceAdvanceOffset;
 
@@ -2013,9 +2051,7 @@ u32 frPreCalcStrWidth(s8 *pStr, s32 Style, s32 Mode) {
 /* Slots 0/1 use the shared default size; later slots read their resource width.
  * Retain the nested signed check and the absence of upper-bound validation. */
 #ifdef VERSION_MNAX
-u32 frGetDefaultFontWidth(u8 Style) {
-    return gFT.entries[Style].resourceHeader->cellWidth;
-}
+/* frGetDefaultFontWidth is frGetFontWidth in Maniax. */
 #else
 u32 frGetDefaultFontWidth(u8 Style) {
     s32 entryIndex = Style;
@@ -2036,9 +2072,7 @@ u16 frGetFontWidth(s32 slotIndex) {
 /* Slots 0/1 use the shared default size; later slots read their resource height.
  * Retain the nested signed check and the absence of upper-bound validation. */
 #ifdef VERSION_MNAX
-u32 frGetDefaultFontHeight(u8 Style) {
-    return gFT.entries[Style].resourceHeader->cellHeight;
-}
+/* frGetDefaultFontHeight is frGetFontHeight in Maniax. */
 #else
 u32 frGetDefaultFontHeight(u8 Style) {
     s32 entryIndex = Style;

@@ -12,7 +12,7 @@ kernel/dds3TitleMain     .rodata  0x0         0x0
 kernel/dds3TitleMain     .sdata   0x0054DFC8  0x44
 code_0029B780            .sdata   0x0054F608  -
 interface/frFont         .sdata   0x0054D6F8  -
-interface/itfMesManager  .rodata  0x00533410  -
+interface/itfMesManager  .rodata  0x00533410  0xD0
 field/fldWap             .rodata  0x0052F7E0  -
 facility/fclRecoverUpdate .rodata 0x0053AE20  -
 facility/fclRagCalc      .rodata  0x0053ABA0  -
