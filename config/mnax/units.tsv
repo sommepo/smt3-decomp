@@ -165,7 +165,7 @@ kernel/dds3CreateData	C
 staff/stfMain	C
 movie/mviManager	C with fallbacks
 movie/MovieViewer	.sdata bounds unknown in Maniax
-code_0022C578	demoted: .sdata is 0xDA8 bytes where Maniax has room for 0xDA0
+code_0022C578	C with fallbacks
 newdata/datCalc	C with fallbacks
 newdata/datDebugUnit	C
 newbattle/nbInit	C

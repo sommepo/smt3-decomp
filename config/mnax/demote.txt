@@ -1,2 +1,1 @@
 result/rstupdate	.rodata must start 16-aligned; Maniax place 0x0053B5C8 is not
-code_0022C578	.sdata is 0xDA8 bytes where Maniax has room for 0xDA0
