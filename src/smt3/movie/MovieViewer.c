@@ -391,9 +391,12 @@ const char D_0053F468[16] = "Return to stock";
 const char cmpCampTmxPath[24] = "/camp/tmx/camp_01.tmx";
 #endif
 
+/* Maniax always plays movie 1 here, so it has no phase counter. */
+#ifndef VERSION_MNAX
 s32 movieViewerPhase = 0;
 
 SDATA_PAD(4);
+#endif
 
 char movieViewerFmtWord[8] = "%08X";
 

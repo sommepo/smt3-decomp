@@ -461,6 +461,16 @@ void mnax_00298268(s8 mode, u8 inputMode)
         }
     }
 }
+
+/* Maniax-only: tab cursor positions (x, y) for the four input modes, copied
+ * by the tab cursor function at 0x298DA8 (still assembly), which names this
+ * table. Its .rodata follows the tab table above. */
+const s32 mnax_00546A90[4][2] = {
+    { 0x29, 0xDA },
+    { 0x29, 0xDA },
+    { 0x29, 0xDA },
+    { 0x4B, 0xDA },
+};
 #endif
 
 void nmeDrawCharCell(s32 x, s32 y, u16 index, s8 row, frFontHandle_t *font)

@@ -189,7 +189,7 @@ def main() -> None:
             return i >= 0 and spans[i][0] < x < spans[i][1]
         extra[:] = [(s, after) for s, after in extra if not inside(s)]
         for s, after in sorted(extra):
-            fh.write(f"func_{s:08X}\t-\t0x{s:08X}\tmaniax only\t{usa[after][1]}\n")
+            fh.write(f"mnax_{s:08X}\t-\t0x{s:08X}\tmaniax only\t{usa[after][1]}\n")
     tally = Counter(h for _, _, _, h in rows)
     print(", ".join(f"{v} {k}" for k, v in tally.most_common()), f"; {len(extra)} Maniax-only starts")
 

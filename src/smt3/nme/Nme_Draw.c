@@ -177,7 +177,7 @@ extern void nmeDrawInputPanel(void);
 extern void nmeDrawCursor(void);
 #ifdef VERSION_MNAX
 extern void mnax_00298268(s8 mode, u8 inputMode);
-extern void func_00298DA8(void);
+extern void mnax_00298DA8(void);
 #endif
 extern void nmeDrawModeTabs(s8 mode);
 extern void nmeDrawInputUBar(s8 mode);
@@ -204,7 +204,7 @@ s32 nmeDraw(dds3ProcessID_t *id)
                        (u8)namelist_buttonAnim_end->modeCursor.unk_24),
                   namelist_buttonAnim_end->inputMode);
     nmeDrawInputPanel();
-    func_00298DA8();
+    mnax_00298DA8();
 #else
     nmeDrawInputPanel();
     nmeDrawCursor();

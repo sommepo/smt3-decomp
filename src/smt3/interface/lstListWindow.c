@@ -206,7 +206,11 @@ s32 datGetItemSlotIndex(u16 id)
 }
 
 #ifdef VERSION_MNAX
-const char D_0053D708[9] = "\203\353\203\307\211\227\204\270\207";
+/* Maniax: two encyclopedia titles (fclEncycReadTitleText, then
+ * fclEncycRegistTitleText) follow the table. */
+const char D_0053D708[13] = "\203\353\203\307\211\227\204\270\207\255\206\262";
+
+const char mnax_0053B0C8[13] = "\203\353\203\307\211\227\204\270\215\335\207\276";
 #else
 const char D_0053D708[9] = "Register";
 #endif

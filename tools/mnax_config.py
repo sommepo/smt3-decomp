@@ -469,7 +469,9 @@ def main() -> None:
     for unit in units:
         src = SRC / (unit + ".c")
         obj = ROOT / "build/probe" / (unit + ".o")
-        fallbacks = bool(re.search(r"^\s*INCLUDE_(ASM|RODATA|SDATA)\(", src.read_text(errors="replace"), re.M))
+        # SDATA_PAD counts too: the probe compile (-DSKIP_ASM) drops it, so a unit with
+        # a real small-data gap must go through the full-build path.
+        fallbacks = bool(re.search(r"^\s*(?:INCLUDE_(?:ASM|RODATA|SDATA)|SDATA_PAD)\(", src.read_text(errors="replace"), re.M))
         if unit in demoted:
             verdict[unit] = "demoted: " + demoted[unit]
             continue
