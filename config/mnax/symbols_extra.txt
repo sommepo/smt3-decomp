@@ -10,7 +10,7 @@ rcvCalcProcName = 0x0054DE70; // size:0x8
 rcvLeaveText = 0x0054DE78; // size:0x8
 rcvTalkText = 0x0054DE80; // size:0x8
 rcvReviveText = 0x0054DE88; // size:0x8
-func_002306A0 = 0x0022F808; // type:func
+func_002306A0 = 0x0022F808; // type:func size:0x1C0
 // dds3TitleMain's " " ends its small data in Maniax
 D_0054FD88 = 0x0054E008; // size:0x2
 // code_0029B780's Maniax BACK label
@@ -19,3 +19,7 @@ D_005516F0 = 0x0054F630; // size:0x5
 nmeProcessId = 0x0054F598; // size:0x4
 gProcessStat = 0x0054F59C; // size:0x1
 nmeEmptyName = 0x0054F5D0; // size:0x8
+// fclEncyc: strings the USA build keeps in asm and Maniax's C defines
+fclEncycStatusMissing = 0x0053B228; // size:0x10
+fclEncycStatusFound = 0x0053B238; // size:0x10
+fclEncycRowFmt = 0x0053B248; // size:0x10

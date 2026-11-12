@@ -919,6 +919,8 @@ def main() -> None:
     # Inside a C-built unit the automatic name only appears in its reference
     # disassembly, and a real name there would make include_rodata.py claim it.
     owned = sorted((m0, m0 + size) for u in good for m0, size, _ in good[u].values())
+    for l in out:   # names added after the carried ones (linked, extra) hold their address
+        seen_addr.setdefault(int(re.match(r"\w+ = (0x[0-9A-Fa-f]+);", l).group(1), 16), True)
     for x in sorted(clash):
         # (Inside a C-built unit's range too: include_rodata treats an mnax_ label in
         # the unit's rodata like an automatic one, and a piece that duplicates a C
