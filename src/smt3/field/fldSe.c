@@ -1069,10 +1069,6 @@ u32 gSlEndingMode = 0;
 
 s32 slChooseSaveIndex = 0;
 
-#ifdef VERSION_MNAX
-s32 D_0054D328 = 0;
-#endif
-
 s32 slQueryYesNoCursor = -1;
 
 u32 slQueryYesNoMsg = 0;

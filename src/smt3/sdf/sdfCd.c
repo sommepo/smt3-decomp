@@ -518,5 +518,7 @@ char sdfCdDirectPrefix[8] = "cdrom";
 
 s32 sdfCdTrayMode = 1;
 
+#ifndef VERSION_MNAX
 SDATA_PAD(4);
+#endif
 

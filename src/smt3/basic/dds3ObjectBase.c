@@ -1201,5 +1201,9 @@ u16 frMessageCode = 0x4247;
 u16 frMessageCode = 0;
 #endif
 
+#ifdef VERSION_MNAX
+SDATA_PAD(2);
+#else
 SDATA_PAD(6);
+#endif
 

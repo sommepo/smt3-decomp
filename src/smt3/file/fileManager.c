@@ -764,6 +764,17 @@ void fileSysInit(void) {
     p2sdSmgBuf = fileManager;
 }
 
+#ifdef VERSION_MNAX
+const char D_00544B80[24] = "/name/tmx/kyara_01.tmx";
+
+const char D_00544B98[24] = "/name/tmx/kyara_04.tmx";
+
+const char D_00544BB0[24] = "/name/tmx/kyara_03.tmx";
+
+const char D_00544BC8[24] = "/name/tmx/kyara_02.tmx";
+
+const char D_00544BE0[24] = "/name/tmx/kyara_05.tmx";
+#else
 const char nmeKyaraTmxPath01[24] = "/name/tmx/kyara_01.tmx";
 
 const char nmeKyaraTmxPath04[24] = "/name/tmx/kyara_04.tmx";
@@ -773,6 +784,7 @@ const char nmeKyaraTmxPath03[24] = "/name/tmx/kyara_03.tmx";
 const char nmeKyaraTmxPath02[24] = "/name/tmx/kyara_02.tmx";
 
 const char nmeKyaraTmxPath05[24] = "/name/tmx/kyara_05.tmx";
+#endif
 
 const u8 D_00546978[7048] = {
     0x80, 0xE0, 0x83, 0xD5, 0x83, 0xD6, 0x83, 0xD7, 0x83, 0xD8, 0x83, 0xD9, 0x83, 0xDA, 0x83, 0xDB,

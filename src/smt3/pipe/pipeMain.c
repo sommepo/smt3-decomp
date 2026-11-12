@@ -142,5 +142,9 @@ s32 SectionIndex = 0;
 
 u8 pipeInitDone = 0;
 
+#ifdef VERSION_MNAX
+SDATA_PAD(3);
+#else
 SDATA_PAD(7);
+#endif
 

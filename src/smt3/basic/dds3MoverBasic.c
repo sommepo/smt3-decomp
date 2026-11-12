@@ -209,5 +209,7 @@ u32 BasicTypeToItemType(u32 type)
 
 s32 dds3MoverCount = 0;
 
+#ifndef VERSION_MNAX
 SDATA_PAD(4);
+#endif
 

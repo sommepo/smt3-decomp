@@ -921,5 +921,7 @@ void nbInitAiScript(nbActionProcessData_t *a, s32 no)
 }
 s32 btl_ai_rot_cnt = 0;
 
+#ifndef VERSION_MNAX
 SDATA_PAD(4);
+#endif
 

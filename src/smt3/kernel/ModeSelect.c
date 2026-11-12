@@ -758,6 +758,401 @@ void mselStartGame(void)
     dds3AdminiCallSequence(7, &field, 4, 0);
 }
 
+#ifdef VERSION_MNAX
+const char D_0053B980[28] = "Presented by ATLUS CO.,LTD.";
+
+const char D_0053B9A0[11] = "Cozy Okada";
+
+const char D_0053B9B0[13] = "Naoya Harano";
+
+const char D_0053B9C0[19] = "Executive Producer";
+
+const char D_0053B9D8[18] = "Hideyuki Yokoyama";
+
+const char D_0053B9F0[11] = "Supervisor";
+
+const char D_0053BA00[15] = "Nobuyuki Okude";
+
+const char D_0053BA10[16] = "General Manager";
+
+const char D_0053BA20[23] = "R&D1 NEW Project Staff";
+
+const char D_0053BA38[17] = "Atsushi Watanabe";
+
+const char D_0053BA50[19] = "Aki Ooba (Pikuko) ";
+
+const char D_0053BA68[14] = "Yoko Nakamura";
+
+const char D_0053BA78[15] = "Special Thanks";
+
+const char D_0053BA88[11] = "AVANT INC.";
+
+const char D_0053BA98[15] = "SHIROGUMI INC.";
+
+const char D_0053BAA8[24] = "DIGITAL MEDIA LAB.,INC.";
+
+const char D_0053BAC0[14] = "Yuji Sakamoto";
+
+const char D_0053BAD0[17] = "Takuya Matsumoto";
+
+const char D_0053BAE8[15] = "Tatsuya Yabuta";
+
+const char D_0053BAF8[10] = "Corporate";
+
+const char D_0053BB08[14] = "Sound Creator";
+
+const char D_0053BB18[13] = "Kohei Magome";
+
+const char D_0053BB28[15] = "Akihiro Yokota";
+
+const char D_0053BB38[17] = "Yoshiko Miyahara";
+
+const char D_0053BB50[17] = "Mitsuru Sasamori";
+
+const char D_0053BB68[14] = "Takumi Mizuno";
+
+const char D_0053BB78[14] = "Katsumi Miura";
+
+const char D_0053BB88[11] = "Keiko Kato";
+
+const char D_0053BB98[20] = "Yoshinori Yoshimoto";
+
+const char D_0053BBB0[11] = "Yusuke Eto";
+
+const char D_0053BBC0[14] = "Shin Miyahara";
+
+const char D_0053BBD0[13] = "Daisuke Kuki";
+
+const char D_0053BBE0[14] = "Yukari Yokoro";
+
+const char D_0053BBF0[18] = "Shigenori Soejima";
+
+const char D_0053BC08[9] = "Designer";
+
+const char D_0053BC18[14] = "Yasuaki Nagai";
+
+const char D_0053BC28[14] = "Masaya Takano";
+
+const char D_0053BC38[20] = "Michishito Ishizuka";
+
+const char D_0053BC50[11] = "Programmer";
+
+const char D_0053BC60[16] = "Tomohiro Hosoya";
+
+const char D_0053BC70[11] = "Yosuke Uda";
+
+const char D_0053BC80[17] = "Tatsuya Watanabe";
+
+const char D_0053BC98[16] = "Shinya Korenaga";
+
+const char D_0053BCA8[9] = "Aki Ooba";
+
+const char D_0053BCB8[16] = "Yuichiro Tanaka";
+
+const char D_0053BCC8[11] = "Azusa Kido";
+
+const char D_0053BCD8[15] = "Daisuke Kanada";
+
+const char D_0053BCE8[24] = "(kimura nakaji office) ";
+
+const char D_0053BD00[14] = "Nakaji Kimura";
+
+const char D_0053BD10[16] = "Katsura Hashino";
+
+const char D_0053BD20[15] = "Original Staff";
+
+const char D_0053BD30[13] = "Kaori Takano";
+
+const char D_0053BD40[15] = "Takenobu Ishii";
+
+const char D_0053BD50[10] = "Yuji Goto";
+
+const char D_0053BD60[16] = "Ikuya Kobayashi";
+
+const char D_0053BD70[13] = "Makoto Nishi";
+
+const char D_0053BD80[13] = "Akio Koshiba";
+
+const char D_0053BD90[17] = "Daisuke Hasegawa";
+
+const char D_0053BDA8[15] = "Kouji Yamamoto";
+
+const char D_0053BDB8[16] = "Masashi Komatsu";
+
+const char D_0053BDC8[13] = "Noriko Tabei";
+
+const char D_0053BDD8[15] = "Rintaro Murata";
+
+const char D_0053BDE8[15] = "Kazuhiro Yamao";
+
+const char D_0053BDF8[16] = "Daizo Shimamura";
+
+const char D_0053BE08[10] = "Promotion";
+
+const char D_0053BE18[15] = "Kyoko Yasumura";
+
+const char D_0053BE28[16] = "Masato Ichimiya";
+
+const char D_0053BE38[14] = "Satoshi Koike";
+
+const char D_0053BE48[16] = "Eiichiro Iizuka";
+
+const char D_0053BE58[10] = "Marketing";
+
+const char D_0053BE68[13] = "Jun Yamamoto";
+
+const char D_0053BE78[20] = "CS Division Manager";
+
+const char D_0053BE90[16] = "Syunsuke Aikawa";
+
+const char D_0053BEA0[15] = "Humihito Ishii";
+
+const char D_0053BEB0[16] = "Masao Nagashima";
+
+const char D_0053BEC0[9] = "Art Work";
+
+const char D_0053BED0[19] = "Takafumi Fuchigami";
+
+const char D_0053BEE8[18] = "STUDIO BRACE INC.";
+
+const char D_0053BF00[17] = "Manual Corporate";
+
+const char D_0053BF18[17] = "Gensuke Fujisawa";
+
+const char D_0053BF30[18] = "Masayoshi Akasaka";
+
+const char D_0053BF48[16] = "Masaki Sakadume";
+
+const char D_0053BF58[18] = "Takahiro Kawabata";
+
+const char D_0053BF70[12] = "Kengo Honjo";
+
+const char D_0053BF80[23] = "DIGITAL HEARTS CO.,LTD";
+
+const char D_0053BF98[16] = "Debug Corporate";
+
+const char D_0053BFA8[16] = "Masaru Watanabe";
+
+const char D_0053BFB8[16] = "Masahide Takaya";
+
+const char D_0053BFC8[9] = "Debugger";
+
+const char D_0053BFD8[13] = "Kenichi Goto";
+
+const char D_0053BFE8[15] = "Chief Debugger";
+
+const char D_0053BFF8[14] = "Debug Manager";
+
+const char D_0053C008[16] = "Hirohito Shindo";
+
+const char D_0053C018[16] = "Shinjo Kanakogi";
+
+const char D_0053C028[14] = "Naoto Hiraoka";
+
+const char D_0053C038[19] = "Production Manager";
+
+const char D_0053C050[23] = "INTERNATIONAL LIMITED.";
+
+const char D_0053C068[16] = "FONTWORKS JAPAN";
+
+const char D_0053C078[22] = "Font Design Corporate";
+
+const char D_0053C090[16] = "Bingo Morihashi";
+
+const char D_0053C0A0[16] = "Hakuei Yamamoto";
+
+const char D_0053C0B0[14] = "Hiroyuki Nara";
+
+const char D_0053C0C0[12] = "Ikeno Daigo";
+
+const char D_0053C0D0[15] = "Hideaki Itsuno";
+
+const char D_0053C0E0[16] = "Tsuyoshi Tanaka";
+
+const char D_0053C0F0[9] = "Producer";
+
+const char D_0053C100[42] = "(C) CAPCOM CO., LTD. ALL RIGHTS RESERVED.";
+
+const char D_0053C130[14] = "R&D cooperate";
+
+const char D_0053C140[17] = "Kenichi Tsuchiya";
+
+const char D_0053C158[15] = "Toshiko Tasaki";
+
+const char D_0053C168[25] = "Compose & Sound Creation";
+
+const char D_0053C188[15] = "Masayoshi Suto";
+
+const char D_0053C198[19] = "Interface Designer";
+
+const char D_0053C1B0[17] = "Masakatsu Suzuki";
+
+const char D_0053C1C8[16] = "Effect Designer";
+
+const char D_0053C1D8[11] = "Akiko Koto";
+
+const char D_0053C1E8[25] = "Battle & Effect Designer";
+
+const char D_0053C208[17] = "Yasuhiro Shibuya";
+
+const char D_0053C220[13] = "Yuki Inagaki";
+
+const char D_0053C230[15] = "Shuji Fukasawa";
+
+const char D_0053C240[13] = "Aki Sonoyama";
+
+const char D_0053C250[15] = "Field Designer";
+
+const char D_0053C260[13] = "Masayuki Doi";
+
+const char D_0053C270[22] = "Field Design Director";
+
+const char D_0053C288[17] = "Megumi Shiraishi";
+
+const char D_0053C2A0[20] = "Devil CG Supervisor";
+
+const char D_0053C2B8[15] = "Yoichi Yoshida";
+
+const char D_0053C2C8[12] = "Taku Aoyagi";
+
+const char D_0053C2D8[12] = "Kaori Okita";
+
+const char D_0053C2E8[23] = "Devil Graphic Designer";
+
+const char D_0053C300[18] = "Devil CG Director";
+
+const char D_0053C318[18] = "Kokichi Takahashi";
+
+const char D_0053C330[12] = "Mumon Usuda";
+
+const char D_0053C340[12] = "Naoya Maeda";
+
+const char D_0053C350[14] = "Kazuhisa Wada";
+
+const char D_0053C360[15] = "Event Designer";
+
+const char D_0053C370[21] = "Event Scene Director";
+
+const char D_0053C388[14] = "Masayuki Higo";
+
+const char D_0053C398[15] = "Nobuyoshi Miwa";
+
+const char D_0053C3A8[19] = "Support Programmar";
+
+const char D_0053C3C0[14] = "Takaaki Ikeda";
+
+const char D_0053C3D0[21] = "Interface Programmer";
+
+const char D_0053C3E8[16] = "Toshiyuki Niida";
+
+const char D_0053C3F8[18] = "Effect Programmer";
+
+const char D_0053C410[16] = "Main Programmer";
+
+const char D_0053C420[17] = "Shuetsu Kadowaki";
+
+const char D_0053C438[10] = "Daiki Ito";
+
+const char D_0053C448[11] = "Sawao Kato";
+
+const char D_0053C458[14] = "Field Planner";
+
+const char D_0053C468[15] = "Mitsuru Hirata";
+
+const char D_0053C478[15] = "System Planner";
+
+const char D_0053C488[14] = "Event Planner";
+
+const char D_0053C498[13] = "Shoji Meguro";
+
+const char D_0053C4A8[14] = "Main Composer";
+
+const char D_0053C4B8[14] = "Makoto Kitano";
+
+const char D_0053C4C8[18] = "Design Supervisor";
+
+const char D_0053C4E0[12] = "Eiji Ishida";
+
+const char D_0053C4F0[15] = "Chief Designer";
+
+const char D_0053C500[15] = "Satoshi Ooyama";
+
+const char D_0053C510[17] = "Chief Programmer";
+
+const char D_0053C528[14] = "Shigeo Komori";
+
+const char D_0053C538[13] = "Shogo Isogai";
+
+const char D_0053C548[16] = "Scenario Writer";
+
+const char D_0053C558[15] = "Kazuyuki Yamai";
+
+const char D_0053C568[9] = "Director";
+
+const char D_0053C578[14] = "Kazuma Kaneko";
+
+const char D_0053C588[18] = "Creative Director";
+
+const char D_0053C5A0[21] = "/staff/stf_pic15.tmx";
+
+const char D_0053C5B8[21] = "/staff/stf_pic14.tmx";
+
+const char D_0053C5D0[21] = "/staff/stf_pic13.tmx";
+
+const char D_0053C5E8[21] = "/staff/stf_pic12.tmx";
+
+const char D_0053C600[21] = "/staff/stf_pic11.tmx";
+
+const char D_0053C618[21] = "/staff/stf_pic10.tmx";
+
+const char D_0053C630[21] = "/staff/stf_pic09.tmx";
+
+const char D_0053C648[21] = "/staff/stf_pic08.tmx";
+
+const char D_0053C660[21] = "/staff/stf_pic07.tmx";
+
+const char D_0053C678[21] = "/staff/stf_pic06.tmx";
+
+const char D_0053C690[21] = "/staff/stf_pic05.tmx";
+
+const char D_0053C6A8[21] = "/staff/stf_pic04.tmx";
+
+const char D_0053C6C0[21] = "/staff/stf_pic03.tmx";
+
+const char D_0053C6D8[21] = "/staff/stf_pic02.tmx";
+
+const char D_0053C6F0[21] = "/staff/stf_pic01.tmx";
+
+const char D_0053C708[22] = "/staff/stf_mpic15.tmx";
+
+const char D_0053C720[22] = "/staff/stf_mpic14.tmx";
+
+const char D_0053C738[22] = "/staff/stf_mpic13.tmx";
+
+const char D_0053C750[22] = "/staff/stf_mpic12.tmx";
+
+const char D_0053C768[22] = "/staff/stf_mpic11.tmx";
+
+const char D_0053C780[22] = "/staff/stf_mpic10.tmx";
+
+const char D_0053C798[22] = "/staff/stf_mpic09.tmx";
+
+const char D_0053C7B0[22] = "/staff/stf_mpic08.tmx";
+
+const char D_0053C7C8[22] = "/staff/stf_mpic07.tmx";
+
+const char D_0053C7E0[22] = "/staff/stf_mpic06.tmx";
+
+const char D_0053C7F8[22] = "/staff/stf_mpic05.tmx";
+
+const char D_0053C810[22] = "/staff/stf_mpic04.tmx";
+
+const char D_0053C828[22] = "/staff/stf_mpic03.tmx";
+
+const char D_0053C840[22] = "/staff/stf_mpic02.tmx";
+
+const char D_0053C858[22] = "/staff/stf_mpic01.tmx";
+#else
 const char D_0053DF90[19] = "Presented by Atlus";
 
 const char D_0053DFA8[14] = "Jesse Farrell";
@@ -1186,3 +1581,4 @@ const char D_0053EF88[22] = "/staff/stf_mpic02.tmx";
 
 const char D_0053EFA0[22] = "/staff/stf_mpic01.tmx";
 
+#endif

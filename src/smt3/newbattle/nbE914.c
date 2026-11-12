@@ -479,5 +479,7 @@ dds3Basic_t *nbE914TargetBasic = NULL;
 
 dds3Basic_t *nbE914Basic = NULL;
 
+#ifndef VERSION_MNAX
 SDATA_PAD(4);
+#endif
 
