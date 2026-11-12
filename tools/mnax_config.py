@@ -777,17 +777,6 @@ def main() -> None:
                 attrs = re.sub(r"\s*size:0x[0-9A-Fa-f]+", "", attrs)
         seen_addr[at] = name
         out.append(f"{name} = 0x{at:08X}; {attrs}".rstrip())
-    # A carried function size that runs into the next function (the Maniax function is
-    # shorter than the C compiled for it) would make splat swallow that function as a
-    # label: drop such sizes.
-    fstarts = sorted(int(re.match(r"\w+ = (0x[0-9A-Fa-f]+);", l).group(1), 16) for l in out if "type:func" in l)
-    for i, l in enumerate(out):
-        m = re.match(r"\w+ = (0x[0-9A-Fa-f]+);.*type:func.*size:(0x[0-9A-Fa-f]+)", l)
-        if m:
-            at, size = int(m.group(1), 16), int(m.group(2), 16)
-            k = bisect.bisect_right(fstarts, at)
-            if k < len(fstarts) and fstarts[k] < at + size:
-                out[i] = re.sub(r"\s*size:0x[0-9A-Fa-f]+", "", l)
     # Hand-curated Maniax names (config/mnax/symbols_extra.txt, kept in git) win over
     # carried ones at the same name or address: names the address map cannot carry.
     # Names of objects the C defines, at the addresses a byte-identical build linked
@@ -810,6 +799,17 @@ def main() -> None:
         out = [l for l in out if l.split(" = ")[0] not in names
                and int(re.match(r"\w+ = (0x[0-9A-Fa-f]+);", l).group(1), 16) not in addrs]
         out.extend(lines)
+    # A carried function size that runs into the next function (the Maniax function is
+    # shorter than the C compiled for it) would make splat swallow that function as a
+    # label: drop such sizes.
+    fstarts = sorted(int(re.match(r"\w+ = (0x[0-9A-Fa-f]+);", l).group(1), 16) for l in out if "type:func" in l)
+    for i, l in enumerate(out):
+        m = re.match(r"\w+ = (0x[0-9A-Fa-f]+);.*type:func.*size:(0x[0-9A-Fa-f]+)", l)
+        if m:
+            at, size = int(m.group(1), 16), int(m.group(2), 16)
+            k = bisect.bisect_right(fstarts, at)
+            if k < len(fstarts) and fstarts[k] < at + size:
+                out[i] = re.sub(r"\s*size:0x[0-9A-Fa-f]+", "", l)
     # Data objects the C-built units define get their size, so that splat writes a
     # word pointing inside one (event bytecode that looks like a pointer) as
     # name + offset instead of inventing a D_ label there, which a unit would then

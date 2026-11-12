@@ -23,3 +23,7 @@ nmeEmptyName = 0x0054F5D0; // size:0x8
 fclEncycStatusMissing = 0x0053B228; // size:0x10
 fclEncycStatusFound = 0x0053B238; // size:0x10
 fclEncycRowFmt = 0x0053B248; // size:0x10
+// dds3TitleMain staff-role labels (Maniax drops "QA" and "Artwork")
+D_0054FD68 = 0x0054DFF0; // size:0x8
+D_0054FD70 = 0x0054DFF8; // size:0x6
+D_0054FD80 = 0x0054E000; // size:0x6
