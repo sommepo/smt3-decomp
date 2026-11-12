@@ -1,5 +1,5 @@
 unit	state
-kernel/dds3KernelMain	demoted: .sdata is 0x50 bytes where Maniax has room for 0x4C
+kernel/dds3KernelMain	C
 kernel/dds3KernelCore	C with fallbacks
 sdf/sdfDefaultMain	C
 kernel/dds3KernelProcess	C with fallbacks
@@ -92,13 +92,13 @@ newbattle/nbCameraPress	C with fallbacks
 newbattle/nbCameraBoss	C with fallbacks
 code_001C55F8	C
 interface/fmGslCont	.sdata bounds unknown in Maniax
-interface/frFont	demoted: .text is 0x2B10 bytes where Maniax has room for 0x2B40
+interface/frFont	demoted: .rodata is 0x190 bytes where Maniax has room for 0xA8
 interface/frName	C
 interface/frWrap	C
 interface/frTestFont	C
 interface/itfMisc	C
 interface/itfPanel	C
-interface/itfMesManager	demoted: .rodata is 0xCB bytes where Maniax has room for 0xF0
+interface/itfMesManager	C with fallbacks
 interface/itfTestMesManager	C
 pb/pbCamera	C
 pb/pbModel	C with fallbacks
@@ -134,7 +134,7 @@ facility/fclCombineInit	demoted: Maniax has a TU boundary inside the unit (rodat
 facility/fclShopInit	.sdata bounds overlap facility/fclShopCalc (fclShopInit 0x54DDE0+0x40, fclShopCalc 0x54DE10)
 facility/fclShopCalc	C with fallbacks
 facility/fclShopUpdate	C
-facility/fclRagInit	C with fallbacks
+facility/fclRagInit	demoted: .sdata is 0x24 bytes where Maniax has room for 0x1C
 facility/fclRagCalc	C with fallbacks, 1 functions kept as Maniax assembly
 facility/fclRagDraw	C
 facility/fclRagUpdate	C
@@ -175,7 +175,7 @@ newbattle/nbAtoProcess	C
 newbattle/nbResultProcess	C with fallbacks
 newbattle/nbStageProcess	C
 newbattle/nbUnitProcess	C
-newbattle/nbActionProcess	demoted: .rodata is 0xA60 bytes where Maniax has room for 0xAE0
+newbattle/nbActionProcess	demoted: .sdata is 0x18 bytes where Maniax has room for 0x10
 newbattle/nbMisc	C with fallbacks
 newbattle/nbCommSelProcess	C with fallbacks
 newbattle/nbTarSelProcess	C with fallbacks

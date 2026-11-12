@@ -11,7 +11,6 @@ nme/Nme_Calc	.text is 0x1A18 bytes where Maniax has room for 0x1B10
 nme/Nme_Init	.sdata is 0x78 bytes where Maniax has room for 0x70
 nme/Nme_Draw	.text bytes differ from Maniax
 code_0022C578	.rodata is 0x4480 bytes where Maniax has room for 0x4520
-interface/frFont	.text is 0x2B10 bytes where Maniax has room for 0x2B40
-interface/itfMesManager	.rodata is 0xCB bytes where Maniax has room for 0xF0
-kernel/dds3KernelMain	.sdata is 0x50 bytes where Maniax has room for 0x4C
-newbattle/nbActionProcess	.rodata is 0xA60 bytes where Maniax has room for 0xAE0
+facility/fclRagInit	.sdata is 0x24 bytes where Maniax has room for 0x1C
+interface/frFont	.rodata is 0x190 bytes where Maniax has room for 0xA8
+newbattle/nbActionProcess	.sdata is 0x18 bytes where Maniax has room for 0x10
