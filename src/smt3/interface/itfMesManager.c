@@ -1435,6 +1435,7 @@ s32 itfMesMngDebugProc(void) {
     const char *menuItemFormat;
     const char *selectionMarker;
     const char *coordinateFormat;
+    const char *offsetFormat;
     sdfGrOt_t *packetOwner;
 
     if (itfMesDebug.pmesflow == NULL) {
@@ -1510,7 +1511,11 @@ s32 itfMesMngDebugProc(void) {
                                                      menuItemFormat, selectionMarker, itfMesDebugMenuLabels[menuItemIndex])));
     }
 
+#ifdef VERSION_MNAX
+    coordinateFormat = "( %3d,%3d )";
+#else
     coordinateFormat = "( %3d, %3d )";
+#endif
     panelSprite = panel->mes;
     bounds = &panelSprite->left;
     sdfDrawTagLink(packetList,
@@ -1525,9 +1530,14 @@ s32 itfMesMngDebugProc(void) {
                     EE_ADDR(sdfDevPrintf(0x7E00, 0x7B20, 0xFFFFF0, 0,
                                                  itfMesDebugFadeFormat, panel->fadeLimit)));
     bounds = itfMesDebug.pmesflow->state->window.mes_offset;
+#ifdef VERSION_MNAX
+    offsetFormat = "OFFSET : %3d,%3d - %3d,%3d";
+#else
+    offsetFormat = "OFFSET : %3d, %3d - %3d, %3d";
+#endif
     sdfDrawTagLink(packetList,
                     EE_ADDR(sdfDevPrintf(0x7180, 0x7C40, 0xFFFFF0, 0,
-                                                 "OFFSET : %3d, %3d - %3d, %3d",
+                                                 offsetFormat,
                                                  bounds[0] >> 4,
                                                  bounds[1] >> 3,
                                                  bounds[2] >> 4,

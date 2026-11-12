@@ -209,6 +209,20 @@ def near(amap, usa, same_region):
     return None
 
 
+def built_obj(unit: str) -> Path:
+    """The unit's object from the last full build, or a path that does not exist when
+    that object is older than the unit's source: a unit demoted in an earlier round
+    is not rebuilt, so its old object would describe code and data since changed."""
+    path = ROOT / "build/mnax/src/mnax" / (unit + ".o")
+    src = (ROOT / SRC if not SRC.is_absolute() else SRC) / (unit + ".c")
+    try:
+        if path.stat().st_mtime < src.stat().st_mtime:
+            return path.with_suffix(".o.stale")
+    except FileNotFoundError:
+        pass
+    return path
+
+
 def main() -> None:
     raw = (ROOT / "orig/mnax" / SERIAL).read_bytes()
     target = ELFFile((ROOT / "orig/mnax" / SERIAL).open("rb"))
@@ -276,7 +290,7 @@ def main() -> None:
 
     def named_place(unit, secname, clean):
         from collections import Counter
-        for path in (ROOT / "build/mnax/src/mnax" / (unit + ".o"), ROOT / "build/probe" / (unit + ".o")):
+        for path in (built_obj(unit), ROOT / "build/probe" / (unit + ".o")):
             if path.name and "probe" in str(path) and not clean:
                 continue
             if not path.exists() or path.read_bytes()[:4] != b"\x7fELF":
@@ -308,7 +322,7 @@ def main() -> None:
         it after one build in which it was admitted."""
         from collections import Counter
         full = True
-        path = ROOT / "build/mnax/src/mnax" / (unit + ".o")
+        path = built_obj(unit)
         if not path.exists() or path.read_bytes()[:4] != b"\x7fELF":
             # Only a full build object gives exact offsets; the probe object (no
             # assembly pieces) was tried as a fallback and lost units, so not used.
@@ -454,7 +468,7 @@ def main() -> None:
                     size = m1 - m0
                     # The object of the last build (even from a round where the unit was
                     # demoted) knows the unit's real Maniax size better than the anchors.
-                    built = ROOT / "build/mnax/src/mnax" / (unit + ".o")
+                    built = built_obj(unit)
                     if name != ".rodata" and built.exists() and built.read_bytes()[:4] == b"\x7fELF":
                         bsec = ELFFile(built.open("rb")).get_section_by_name(name)
                         if bsec is not None and bsec["sh_size"]:
@@ -467,7 +481,7 @@ def main() -> None:
                         # else the last non-zero byte, which a rebuild then corrects.
                         body = raw[m0 - DELTA:m0 - DELTA + size].rstrip(b"\0")
                         real = (len(body) + 8) & ~7
-                        built = ROOT / "build/mnax/src/mnax" / (unit + ".o")
+                        built = built_obj(unit)
                         if built.exists() and built.read_bytes()[:4] == b"\x7fELF":   # a failed compile leaves a stub
                             sec = ELFFile(built.open("rb")).get_section_by_name(".rodata")
                             if sec is not None and (sec["sh_size"] + 7) & ~7 >= len(body):
@@ -561,6 +575,15 @@ def main() -> None:
             good[unit] = starts
             verdict[unit] = "C"
 
+    def section_align(unit, name):
+        for path in (ROOT / "build/probe" / (unit + ".o"), built_obj(unit)):
+            if path.exists() and path.read_bytes()[:4] == b"\x7fELF":
+                sec = ELFFile(path.open("rb")).get_section_by_name(name)
+                if sec is not None:
+                    return max(sec["sh_addralign"], 16 if name == ".rodata" else 4)
+        return 16 if name == ".rodata" else 4
+
+    shifted = defaultdict(int)
     # Guessed bounds can collide. Drop the less certain unit of an overlapping pair.
     while True:
         clash = None
@@ -573,8 +596,18 @@ def main() -> None:
                     good[a][sec] = (s0, anchor_size.pop((a, sec)), good[a][sec][2])
                     clash = "retry"
                     break
+                # A start guessed from nearby anchors that falls inside the unit before it
+                # (in a byte or a stray anchor) moves to where that unit ends, aligned as
+                # the object's section is aligned; a wrong guess fails the byte check later.
+                if s1 < s0 + z0 and (b, sec) in guessed and shifted[(b, sec)] < 8:
+                    shifted[(b, sec)] += 1
+                    al = section_align(b, sec)
+                    good[b][sec] = ((s0 + z0 + al - 1) & ~(al - 1), z1, good[b][sec][2])
+                    clash = "retry"
+                    break
                 if s1 < s0 + z0:
-                    clash = (b if verdict[b] != "C" else a, a if verdict[b] != "C" else b, sec)
+                    clash = (b if verdict[b] != "C" else a, a if verdict[b] != "C" else b, sec,
+                             f"{a.rsplit('/', 1)[-1]} 0x{s0:X}+0x{z0:X}, {b.rsplit('/', 1)[-1]} 0x{s1:X}")
                     break
             if clash:
                 break
@@ -582,7 +615,7 @@ def main() -> None:
             break
         if clash == "retry":
             continue
-        verdict[clash[0]] = f"{clash[2]} bounds overlap {clash[1]}"
+        verdict[clash[0]] = f"{clash[2]} bounds overlap {clash[1]} ({clash[3]})"
         del good[clash[0]]
         sources.pop(clash[0], None)
 

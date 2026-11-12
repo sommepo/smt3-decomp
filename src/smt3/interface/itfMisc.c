@@ -571,6 +571,10 @@ void itfCampStartProcess(void) {
     if (dds3AdminiGetActiveSequence() != 6) {
         dds3AdminiExitSequence();
     }
+#ifdef VERSION_MNAX
+    printf("Camp process halted.\n");
+#else
     printf("Camp process halted. \n");
+#endif
 }
 

@@ -841,9 +841,19 @@ const char ragTmxPath02[32] = "/facility/tmx/rag/rag_02.tmx";
 
 const char ragTmxPath01[32] = "/facility/tmx/rag/rag_01.tmx";
 
+#ifdef VERSION_MNAX
+const char ragTradeMitamaText[16] = "\204\265\201\211\204\323\201\251";
+
+const char ragTradeText1[16] = "\206\243\201\260\205\253\200\355";
+
+const char ragTradeElementalsText[16] = "\204\337\210\263\201\206\206\245\211\212";
+
+const char ragTradeItemsText[16] = "\203\320\203\327\201\206\206\245\211\212";
+#else
 const char ragTradeMitamaText[24] = "Trade for Mitama";
 
 const char ragTradeElementalsText[24] = "Trade for Elementals";
 
 const char ragTradeItemsText[16] = "Trade for Items";
+#endif
 

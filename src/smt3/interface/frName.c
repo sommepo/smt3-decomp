@@ -109,7 +109,11 @@ void frSetNameData(s8 target, s8 type, s8 glyphCount, u8 *imageData)
         font->font_no = (u16)target;
     }
 
+#ifdef VERSION_MNAX
+    printf("NAME[%d] : Translate.\n", (s32)target);
+#else
     printf("NAME[%d] : Translate. \n", (s32)target);
+#endif
 }
 
 void frTransNameImage(s8 target, s8 type)
@@ -157,7 +161,11 @@ void frRestoreNameImage(s8 target)
                     fmRetFontMem(pFont[target][index]->font_mem);
                 }
             }
+#ifdef VERSION_MNAX
+            printf("NAME[%d] : Restore.\n", target);
+#else
             printf("NAME[%d] : Restore. \n", target);
+#endif
         }
     }
 }
@@ -329,6 +337,7 @@ frFontHandle_t *frGetCNameFRQ(s8 target, s8 style, frFontHandle_t *chain, s32 fi
 
 char frWrapEmptyString[4] = "";
 
+#ifndef VERSION_MNAX /* Maniax has no help-position feature */
 s32 frHelpLastIndex = -1;
 
 s32 frHelpPosX = 0;
@@ -336,6 +345,7 @@ s32 frHelpPosX = 0;
 s32 frHelpPosY = 0;
 
 s32 D_0054F458 = 0;
+#endif
 
 frFontHandle_t *frTestFontHandle = NULL;
 

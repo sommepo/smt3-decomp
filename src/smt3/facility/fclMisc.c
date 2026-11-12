@@ -629,6 +629,25 @@ s8 gSelMsgPos = 1;
 
 SDATA_PAD(3);
 
+#ifdef VERSION_MNAX
+char fclStrFee[8] = "\212\240\215\343\215\356";
+
+char D_0054FC68[8] = "\205\242";
+
+char fclStrOwn[8] = "\204\313\204\251\204\253";
+
+char D_0054FC78[8] = "\202\256";
+
+u32 D_0054FC80[2] = {0x0000BF8D, 0x00000000};
+
+char fclStrTotal[8] = "\211\232\215\304";
+
+char fclStrMoney[8] = "\204\313\204\251\204\246";
+
+char fclStrNo[8] = "\200\256\200\257";
+
+char fclStrYes[8] = "\200\271\200\245\200\263";
+#else
 char fclStrFee[4] = "Fee";
 
 u32 D_0054FC68[2] = {0x00000000, 0x00000000};
@@ -646,4 +665,4 @@ char fclStrMoney[6] = "Money";
 char fclStrNo[3] = "No";
 
 char fclStrYes[4] = "Yes";
-
+#endif
