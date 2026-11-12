@@ -12,4 +12,5 @@ nme/Nme_Init	.sdata is 0x78 bytes where Maniax has room for 0x70
 nme/Nme_Draw	.text bytes differ from Maniax
 facility/fclRagInit	.sdata is 0x24 bytes where Maniax has room for 0x1C
 interface/frFont	.rodata is 0x190 bytes where Maniax has room for 0xA8
-newbattle/nbActionProcess	.rodata is 0xA60 bytes where Maniax has room for 0xAE0
+kernel/ModeSelect	.text bytes differ from Maniax
+kernel/dds3TitleMain	.text bytes differ from Maniax

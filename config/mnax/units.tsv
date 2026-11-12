@@ -159,8 +159,8 @@ result/rstcalc	C with fallbacks
 result/rstdraw	C
 result/rstupdate	demoted: .rodata must start 16-aligned; Maniax place 0x0053B5C8 is not
 sound/sndManager	C
-kernel/dds3TitleMain	C with fallbacks
-kernel/ModeSelect	C
+kernel/dds3TitleMain	demoted: .text bytes differ from Maniax
+kernel/ModeSelect	demoted: .text bytes differ from Maniax
 kernel/dds3CreateData	C
 staff/stfMain	C
 movie/mviManager	demoted: no Maniax assembly for movieDebugRowFmt
@@ -175,7 +175,7 @@ newbattle/nbAtoProcess	C
 newbattle/nbResultProcess	C with fallbacks
 newbattle/nbStageProcess	C
 newbattle/nbUnitProcess	C
-newbattle/nbActionProcess	demoted: .rodata is 0xA60 bytes where Maniax has room for 0xAE0
+newbattle/nbActionProcess	C with fallbacks
 newbattle/nbMisc	C with fallbacks
 newbattle/nbCommSelProcess	C with fallbacks
 newbattle/nbTarSelProcess	C with fallbacks
