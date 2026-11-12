@@ -134,7 +134,7 @@ facility/fclCombineInit	demoted: Maniax has a TU boundary inside the unit (rodat
 facility/fclShopInit	.sdata bounds overlap facility/fclShopCalc (fclShopInit 0x54DDE0+0x40, fclShopCalc 0x54DE10)
 facility/fclShopCalc	C with fallbacks
 facility/fclShopUpdate	C
-facility/fclRagInit	demoted: .sdata must start 8-aligned; Maniax place 0x0054DE1C is not
+facility/fclRagInit	demoted: .sdata is 0x24 bytes where Maniax has room for 0x1C
 facility/fclRagCalc	C with fallbacks, 1 functions kept as Maniax assembly
 facility/fclRagDraw	C
 facility/fclRagUpdate	C
@@ -159,8 +159,8 @@ result/rstcalc	C with fallbacks
 result/rstdraw	C
 result/rstupdate	demoted: .rodata must start 16-aligned; Maniax place 0x0053B5C8 is not
 sound/sndManager	C
-kernel/dds3TitleMain	demoted: .sdata must start 8-aligned; Maniax place 0x0054DFC4 is not
-kernel/ModeSelect	C
+kernel/dds3TitleMain	demoted: .text bytes differ from Maniax
+kernel/ModeSelect	demoted: .text bytes differ from Maniax
 kernel/dds3CreateData	C
 staff/stfMain	C
 movie/mviManager	demoted: no Maniax assembly for movieDebugRowFmt

@@ -686,7 +686,10 @@ mselGlobalWork_t *gGlobal = NULL;
 
 s32 fldWmapEnabled = 0;
 
+/* Maniax: natural array alignment gives the gap. */
+#ifndef VERSION_MNAX
 SDATA_PAD(4);
+#endif
 
 char mselLevelLabel[3] = "Lv";
 

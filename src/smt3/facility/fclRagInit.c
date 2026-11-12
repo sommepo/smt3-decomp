@@ -746,7 +746,10 @@ u8 *GBWK_0 = 0;
 
 s8 gProcessStat_1 = 0;
 
+/* Maniax: natural array alignment gives the gap. */
+#ifndef VERSION_MNAX
 SDATA_PAD(3);
+#endif
 
 #ifndef VERSION_MNAX
 char ragMenuTextLeave[6] = "Leave";

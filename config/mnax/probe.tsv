@@ -404,6 +404,7 @@ code_0022C578	campDhFreeTexture	112	0x00232B40	unique	0x00231CA0
 code_0022C578	campDhFreeResources	84	0x00232BB0	unique	0x00231D10
 code_0022C578	func_00232C08	16	-	unique	0x00231D68
 code_0022C578	cmpSetHeartsSequenceRemove	176	0x00232C18	unique	0x00231D78
+code_0022C578	cmpInitHeartsIcon	456	0x00232CC8	unique	0x00231E28
 code_0022C578	cmpInitDHWindow	44	0x00232E90	unique	0x00231FF0
 code_0022C578	cmpinitDH	256	0x00232EC0	unique	0x00232020
 code_0022C578	camp_update_dh_Shutdown	76	0x00232FC0	unique	0x00232120
@@ -565,6 +566,7 @@ code_0022C578	campGetCursorColorAlt2	56	0x0023D478	unique	0x0023C4E0
 code_0022C578	campGetStockAlpha	52	0x0023D4B0	unique	0x0023C518
 code_0022C578	campCalcStockScale	96	0x0023D4E8	unique	0x0023C550
 code_0022C578	campDrawStockCell	92	0x0023D548	unique	0x0023C5B0
+code_0022C578	campDrawStockStatus	532	0x0023D5A8	unique	0x0023C610
 code_0022C578	campDrawStockLabel	200	0x0023D7C0	unique	0x0023C828
 code_0022C578	cmpStockHasRoom	84	0x0023DA58	unique	0x0023CAC0
 code_0022C578	campDrawStockIcon	88	0x0023DAB0	unique	0x0023CB18
@@ -6158,6 +6160,7 @@ newbattle/nbCameraBoss	nbCameraBoss_Cut1_Init	416	0x001C0758	unique	0x001C0528
 newbattle/nbCameraBoss	nbCameraBoss_Cut1_Run	476	0x001C08F8	unique	0x001C06C8
 newbattle/nbCameraBoss	nbCameraBoss_CheckRotate	80	0x001C10B0	unique	0x001C0E80
 newbattle/nbCameraBoss	nbCameraBoss_CheckFix	248	0x001C1100	unique	0x001C0ED0
+newbattle/nbCameraBoss	nbCameraBoss_Command_Init	460	0x001C11F8	unique	0x001C0FC8
 newbattle/nbCameraBoss	nbCameraBoss_BSARI1_Cut23_EX01_Set	232	0x001C13C8	multi	0x001C1198,0x001C1280,0x001C1660,0x001C2070
 newbattle/nbCameraBoss	nbCameraBoss_BSARI1_Cut23_EX02_Set	232	0x001C14B0	multi	0x001C1198,0x001C1280,0x001C1660,0x001C2070
 newbattle/nbCameraBoss	nbCameraBoss_BSARI1_Cut23_EX03_Set	348	0x001C1598	unique	0x001C1368
@@ -8744,6 +8747,7 @@ sdk/libc	atexit	160	0x002D3828	unique	0x002D2EB0
 sdk/libc	atoi	40	0x002D38C8	unique	0x002D2F50
 sdk/libc	malloc	84	0x002D38F0	unique	0x002D2F78
 sdk/libc	free	72	0x002D3948	unique	0x002D2FD0
+sdk/libc	malloc_extend_top	600	0x002D3990	unique	0x002D3018
 sdk/libc	__malloc_lock	124	0x002D4618	unique	0x002D3CA0
 sdk/libc	__malloc_unlock	76	0x002D4698	unique	0x002D3D20
 sdk/libc	_printf_r	92	0x002D46E8	unique	0x002D3D70
@@ -8814,6 +8818,7 @@ sdk/libc	__swrite	128	0x002DB6D8	unique	0x002DAD60
 sdk/libc	__sseek	100	0x002DB758	unique	0x002DADE0
 sdk/libc	__sclose	28	0x002DB7C0	unique	0x002DAE48
 sdk/libc	_write_r	96	0x002DB7E0	multi	0x002DAE68,0x002DB098
+sdk/libc	_calloc_r	180	0x002DB840	unique	0x002DAEC8
 sdk/libc	_close_r	88	0x002DB8F8	multi	0x002D48D8,0x002DAF80
 sdk/libc	_fstat_r	92	0x002DB950	multi	0x002D4C18,0x002DAFD8
 sdk/libc	_lseek_r	96	0x002DB9B0	unique	0x002DB038

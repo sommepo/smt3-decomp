@@ -9,7 +9,7 @@ code_0022C578            .sdata   0x0054E048  0xDA0
 code_0022C578            .lit4    0x0054C75C  0x1C
 facility/fclEncyc        .sdata   0x0054DF40  -
 kernel/dds3TitleMain     .rodata  0x0         0x0
-kernel/dds3TitleMain     .sdata   0x0054DFC4  0x48
+kernel/dds3TitleMain     .sdata   0x0054DFC8  0x44
 code_0029B780            .sdata   0x0054F608  -
 interface/frFont         .sdata   0x0054D6F8  -
 interface/itfMesManager  .rodata  0x00533410  -
@@ -20,6 +20,6 @@ nme/Nme_Init             .sdata   0x0054F598  0x70
 nme/Nme_Init             .rodata  0x005469D8  0x98
 nme/Nme_Calc             .rodata  0x00546A70  0x80
 facility/fclShopCalc     .sdata   0x0054DE10  0xC
-facility/fclRagInit      .sdata   0x0054DE1C  0x20
+facility/fclRagInit      .sdata   0x0054DE20  0x1C
 facility/fclRagCalc      .sdata   0x0054DE40  0x10
 facility/fclRecoverInit  .sdata   0x0054DE50  0x40

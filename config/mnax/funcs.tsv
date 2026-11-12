@@ -3738,7 +3738,7 @@ nbCameraBoss_Cut2_Init	0x001C0AD8	0x001C08A8	called
 nbCameraBoss_Cut2_Run	0x001C0E80	0x001C0C50	called	
 nbCameraBoss_CheckRotate	0x001C10B0	0x001C0E80	placed	
 nbCameraBoss_CheckFix	0x001C1100	0x001C0ED0	placed	
-nbCameraBoss_Command_Init	0x001C11F8	0x001C0FC8	called	
+nbCameraBoss_Command_Init	0x001C11F8	0x001C0FC8	placed	
 nbCameraBoss_BSARI1_Cut23_EX01_Set	0x001C13C8	0x001C1198	placed	
 nbCameraBoss_BSARI1_Cut23_EX02_Set	0x001C14B0	0x001C1280	placed	
 nbCameraBoss_BSARI1_Cut23_EX03_Set	0x001C1598	0x001C1368	placed	
@@ -6026,7 +6026,7 @@ campDhFreeTexture	0x00232B40	0x00231CA0	placed
 campDhFreeResources	0x00232BB0	0x00231D10	placed	
 func_00232C08	0x00232C08	0x00231D68	rigid	
 cmpSetHeartsSequenceRemove	0x00232C18	0x00231D78	placed	
-cmpInitHeartsIcon	0x00232CC8	0x00231E28	called	
+cmpInitHeartsIcon	0x00232CC8	0x00231E28	placed	
 cmpInitDHWindow	0x00232E90	0x00231FF0	placed	
 cmpinitDH	0x00232EC0	0x00232020	placed	
 camp_update_dh_Shutdown	0x00232FC0	0x00232120	placed	
@@ -6201,7 +6201,7 @@ camp_23CAF8	0x0023CAF8	0x0023BB60	placed
 campDrawInfoText	0x0023CBB0	0x0023BC18	placed	
 camp_23CC70	0x0023CC70	0x0023BCD8	placed	
 camp_23CDB8	0x0023CDB8	0x0023BE20	placed	
-campDrawStatusRow1	0x0023CEA8	0x0023BF10	rigid	
+campDrawStatusRow1	0x0023CEA8	0x0023BF10	called	
 cmpDrawStatusBadge	0x0023CFB0	0x0023C018	placed	
 campDrawStatusRow2	0x0023D0F8	0x0023C160	placed	
 campDrawStatusRow3	0x0023D230	0x0023C298	placed	
@@ -6211,7 +6211,7 @@ campGetCursorColorAlt2	0x0023D478	0x0023C4E0	placed
 campGetStockAlpha	0x0023D4B0	0x0023C518	placed	
 campCalcStockScale	0x0023D4E8	0x0023C550	placed	
 campDrawStockCell	0x0023D548	0x0023C5B0	placed	
-campDrawStockStatus	0x0023D5A8	0x0023C610	called	
+campDrawStockStatus	0x0023D5A8	0x0023C610	placed	
 campDrawStockLabel	0x0023D7C0	0x0023C828	placed	
 campDrawStockLabel2	0x0023D888	0x0023C8F0	rigid	
 cmpStockHasRoom	0x0023DA58	0x0023CAC0	placed	
@@ -9250,7 +9250,7 @@ atexit	0x002D3828	0x002D2EB0	placed
 atoi	0x002D38C8	0x002D2F50	placed	
 malloc	0x002D38F0	0x002D2F78	placed	
 free	0x002D3948	0x002D2FD0	placed	
-malloc_extend_top	0x002D3990	0x002D3018	rigid	
+malloc_extend_top	0x002D3990	0x002D3018	placed	
 _malloc_r	0x002D3BE8	0x002D3270	called	
 memcmp	0x002D4310	0x002D3998	called	
 memcpy	0x002D43A4	0x002D3A2C	called	
@@ -9340,7 +9340,7 @@ __swrite	0x002DB6D8	0x002DAD60	placed
 __sseek	0x002DB758	0x002DADE0	placed	
 __sclose	0x002DB7C0	0x002DAE48	placed	
 _write_r	0x002DB7E0	0x002DAE68	placed	
-_calloc_r	0x002DB840	0x002DAEC8	called	
+_calloc_r	0x002DB840	0x002DAEC8	placed	
 _close_r	0x002DB8F8	0x002DAF80	placed	
 _fstat_r	0x002DB950	0x002DAFD8	placed	
 _lseek_r	0x002DB9B0	0x002DB038	placed	
