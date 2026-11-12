@@ -197,3 +197,16 @@ gMessageStepY = 0x0054D70C; // type:u32 size:0x4
 gModeFlag = 0x0054D710; // type:u8 size:0x1
 gFontDrawOT = 0x0054D714; // type:u32 size:0x4
 frSetFontString_style = 0x0054D718; // type:u8 size:0x1
+// Nme_Init small data (wave 7 worker C)
+nmeDefaultNameChiaki = 0x0054F5A0; // size:0x8
+nmeDefaultNameTachibana = 0x0054F5A8; // size:0x8
+nmeDefaultNameIsamu = 0x0054F5B0; // size:0x8
+nmeDefaultNameNitta = 0x0054F5B8; // size:0x8
+nmeDefaultNameYuko = 0x0054F5C0; // size:0x8
+nmeDefaultNameTakao = 0x0054F5C8; // size:0x8
+nmeCalcProcessName = 0x0054F5D8; // size:0x8
+nmeNameTextTemplate = 0x0054F5E0; // size:0x8
+nmeConfirmYes = 0x0054F5E8; // size:0x8
+nmeConfirmNo = 0x0054F5F0; // size:0x8
+nmeCursorSkip = 0x0054F5F8; // size:0x8
+nmeMoveTextTemplate = 0x0054F600; // size:0x4
