@@ -822,7 +822,6 @@ segments:
       - [0x44E3E0, .sdata, effect/effBattleLight]
       - [0x44E4E8, .sdata, effect/effPCPMisc]
       - [0x44E4F0, .sdata, effect/effPCPBoss]
-      - [0x44E51C, sdata, sdata_0054D51C]
       - [0x44E520, .sdata, effect/effMagatuhi]
       - [0x44E560, .sdata, newbattle/nbCameraHelper]
       - [0x44E570, .sdata, effect/effDebug]
