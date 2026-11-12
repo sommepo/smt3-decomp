@@ -1,495 +1,236 @@
 unit	function	size	unit_state
-basic/dds3SceneBasic	dds3SceneBasicLoadScriptFile	140	C with fallbacks, 1 functions kept as Maniax assembly
-code_0022C578	cmpGetStockCount	12	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpCompactStockList	32	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	func_002426F0	32	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpGetSelectDstStock	60	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	campDrawSkillPanel	64	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	func_0023AD30	68	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpGetSelectSrcStock	72	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	dds3ClearStockTable	72	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	func_00242710	76	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	campDhDrawHeartsIcon	80	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	campDhEquipHearts	80	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	func_002429C0	84	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpHeartsIconIsVisible	88	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpRemoveStockDevilEntry	92	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpRemoveStockSlot	92	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpGetSelectSkillID	96	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpApplyStockRemove	120	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpDebugDumpCount	120	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpInitHeartsIconTable	120	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	campDhDrawHearts	148	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpApplyStockRecover	148	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpChkDoNotUseSkill	152	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpDrawSkillListHeader	152	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpGetStatusModelMotion	152	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	camp_draw_status_Process	156	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpDestroyItem	156	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpGetKugatatiMsg	160	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpGetItSkErrSelFlag	164	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpSetHeartsSequenceRemove	176	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpSetItSkMessageVar	176	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpCalcDestroyItem	192	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	campDrawStockLabel	200	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpSortStockList	200	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	campDhFindEntry	204	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpReturnParamDH	232	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	func_0022E168	240	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpDrawStatusValue	244	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpUpdateHeartsRemoveConfirm	260	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpInitStatus	268	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpUpdateHeartsAttachConfirm	272	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpUseItem	296	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpDrawListItemText	300	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	campDhDrawHelpText	344	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpRecover	356	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	camp_update_status_Process	364	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	campDrawText	368	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpSetStatusStartEff	372	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpUpdateRoot	372	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpUpdateSkillSelect	388	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpUpdateHeartsAttachStatus	396	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	fclDrawArrowCursor	404	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpCreateLocalItem	408	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	rstDrawNumber	420	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpBuildStockNameList	468	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	campDrawStockRow	512	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	campDhUpdateCursor	584	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	campDrawNumber	672	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpCalcParty	692	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpCalcSequence	700	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpDrawStatusComEx2	728	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	campDhDrawHeartsGauge	852	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	cmpCalcSkill	996	.sdata bounds overlap kernel/dds3CreateData
-code_0022C578	campDebugRegistAll	1084	.sdata bounds overlap kernel/dds3CreateData
-code_0029B780	dds3GetGlobalConfigFlag	36	demoted: .rodata is 0xF8 bytes where Maniax has room for 0x98
-code_0029B780	dds3ConfigRestoreBackup	52	demoted: .rodata is 0xF8 bytes where Maniax has room for 0x98
-code_0029B780	dds3ConfigSaveBackup	60	demoted: .rodata is 0xF8 bytes where Maniax has room for 0x98
-code_0029B780	dds3DrawConfigSlider	228	demoted: .rodata is 0xF8 bytes where Maniax has room for 0x98
-code_0029B780	dds3DrawConfigItem	304	demoted: .rodata is 0xF8 bytes where Maniax has room for 0x98
-code_0029B780	dds3DrawConfigPanel	600	demoted: .rodata is 0xF8 bytes where Maniax has room for 0x98
-event/EventBit	evtBitCheck	48	C with fallbacks, 4 functions kept as Maniax assembly
-event/EventBit	evtBitAllOff	52	C with fallbacks, 4 functions kept as Maniax assembly
-event/EventBit	evtBitOn	60	C with fallbacks, 4 functions kept as Maniax assembly
-event/EventBit	evtBitOff	64	C with fallbacks, 4 functions kept as Maniax assembly
-event/evtCommand	evt_1E91E8	56	C with fallbacks, 1 functions kept as Maniax assembly
-event/evtMoon	evtGetAgeOfMoon16	12	C with fallbacks, 12 functions kept as Maniax assembly
-event/evtMoon	evtDisableMoonCalc	20	C with fallbacks, 12 functions kept as Maniax assembly
-event/evtMoon	evtDisableMoonDraw2	20	C with fallbacks, 12 functions kept as Maniax assembly
-event/evtMoon	evtEnableMoonCalc	20	C with fallbacks, 12 functions kept as Maniax assembly
-event/evtMoon	evtEnableMoonDraw2	20	C with fallbacks, 12 functions kept as Maniax assembly
-event/evtMoon	evtDisableMoonDraw	24	C with fallbacks, 12 functions kept as Maniax assembly
-event/evtMoon	evtSetAgeOfMoon	24	C with fallbacks, 12 functions kept as Maniax assembly
-event/evtMoon	evtEnableMoonDraw	32	C with fallbacks, 12 functions kept as Maniax assembly
-event/evtMoon	evtGetAgeOfMoon	36	C with fallbacks, 12 functions kept as Maniax assembly
-event/evtMoon	evtInitMoonProcess	120	C with fallbacks, 12 functions kept as Maniax assembly
-event/evtMoon	evtMoonAddMove	440	C with fallbacks, 12 functions kept as Maniax assembly
-event/evtMoon	evtDeadMoonDraw	1016	C with fallbacks, 12 functions kept as Maniax assembly
-facility/fclCombineInit	cmbBirthDevilIsAvailable	20	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbFindStockEnd	32	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbStockIsLocked	44	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbChkGeneralStat	64	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbGetBirthDevilPanel	80	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbFindUnitScene	120	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbApplyEvoUnlock	124	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbFindSpecialEntry	132	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbGetBirthPhase	136	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	fclCombineCheckMoonPhase	140	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbSetAction	144	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbCreateLocalStock	204	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	shop_206948	224	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbDrawStatus	236	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbDrawDevilNameLevel	244	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbBuildDevilEntry	348	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbDrawBirthDevilMaskBG	352	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbAddBirthDevilToStock	416	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbDrawDevilStats	432	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbDrawUnitLevel	448	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbDrawResultIcon	520	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbDrawResultPanel	552	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbDrawBirthDevil	628	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbUpdateBirthDevil	952	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclCombineInit	cmbCalcBirthDevil	1076	demoted: .text is 0xBCE8 bytes where Maniax has room for 0xBCF8
-facility/fclDraw	shopDrawItemCount	376	C with fallbacks, 2 functions kept as Maniax assembly
-facility/fclDraw	fclDrawPriceText	420	C with fallbacks, 2 functions kept as Maniax assembly
-facility/fclEncyc	fclEncycGetNum	24	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	fclEncycInitRecord	36	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	fclEncycSearch	88	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	SetRecordToUnit	96	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	ChangeDevilObjectReadMain	104	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	ExecSummon	116	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	RegistAll	136	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	drawSummonCount	148	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	InitCameraForViewMode	156	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	cmpLevelOrder	192	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	cmpRaceOrder	192	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	DebugUpdateListwin	200	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	DebugRemoveRecord	212	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	CalcPhaseRegistConfirm	228	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	GetValidUnitIndex	232	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	SetBoundControl	264	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	fclEncycRegist	264	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	fclEncycRegist2	264	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	DrawPhaseReadView	336	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	ChangeDevilObjectRegistConfirm	340	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	CalcPhaseReadSummon	352	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	fclEncycDebugRegist	356	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	CreateFontExplain	392	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	DrawRegistListwinElem	396	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	DrawRegistAllHelp	440	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	DebugProcDispBound	516	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	drawRegistList	572	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	drawRegistSprites	620	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	PrepSummon	672	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	ControlModel	756	.sdata bounds overlap facility/fclDebug
-facility/fclEncyc	DrawReadListwinCaption	1576	.sdata bounds overlap facility/fclDebug
-facility/fclMisc	fclCreateItemList	84	demoted: .sdata is 0x88 bytes where Maniax has room for 0x58
-facility/fclMisc	fclCreateItemListEx	160	demoted: .sdata is 0x88 bytes where Maniax has room for 0x58
-facility/fclRagCalc	ragDrawHeartsRows	540	demoted: .rodata is 0x90 bytes where Maniax has room for 0x60
-facility/fclRagCalc	ragDrawFrameEdge	588	demoted: .rodata is 0x90 bytes where Maniax has room for 0x60
-facility/fclRagInit	ragFindItemSlot	76	demoted: .sdata is 0x44 bytes where Maniax has room for 0x30
-facility/fclRagUpdate	ragChkDevilLevelErr	132	demoted: .rodata is 0x1B0 bytes where Maniax has room for 0x100
-facility/fclRagUpdate	ragChkItemErr	136	demoted: .rodata is 0x1B0 bytes where Maniax has room for 0x100
-facility/fclRagUpdate	ragCheckItemUse	236	demoted: .rodata is 0x1B0 bytes where Maniax has room for 0x100
-facility/fclRagUpdate	ragUpdateSeqConfirm	520	demoted: .rodata is 0x1B0 bytes where Maniax has room for 0x100
-facility/fclRecoverCalc	rcvDrawPanelAt	428	C with fallbacks, 2 functions kept as Maniax assembly
-facility/fclRecoverCalc	rcvCreateLocalStock	604	C with fallbacks, 2 functions kept as Maniax assembly
-facility/fclRecoverInit	fclRecoverProcessStart	196	demoted: .rodata is 0xE0 bytes where Maniax has room for 0xB0
-facility/fclRecoverUpdate	rcvUpdateData	340	demoted: .rodata is 0x140 bytes where Maniax has room for 0xE0
-facility/fclRecoverUpdate	rcvUpdateCallSeq	512	demoted: .rodata is 0x140 bytes where Maniax has room for 0xE0
-facility/fclShopCalc	shpChkChoiceMax	232	demoted: .sdata is 0x20 bytes where Maniax has room for 0x10
-facility/fclShopCalc	shpCalcPayOfMoney	244	demoted: .sdata is 0x20 bytes where Maniax has room for 0x10
-facility/fclShopCalc	shopDrawRowText	328	demoted: .sdata is 0x20 bytes where Maniax has room for 0x10
-facility/fclShopCalc	shopDrawPrice	504	demoted: .sdata is 0x20 bytes where Maniax has room for 0x10
-facility/fclShopCalc	shopDrawBuyRow	524	demoted: .sdata is 0x20 bytes where Maniax has room for 0x10
-facility/fclShopUpdate	shpAddServiceTicket	40	demoted: .rodata is 0x150 bytes where Maniax has room for 0xD0
-facility/fclShopUpdate	shpUpdateSeqBuy	476	demoted: .rodata is 0x150 bytes where Maniax has room for 0xD0
-facility/fclShopUpdate	shpUpdateSeqSellNums	540	demoted: .rodata is 0x150 bytes where Maniax has room for 0xD0
-field/fldAutoMap	fldAutoMapChkOpen	156	C with fallbacks, 7 functions kept as Maniax assembly
-field/fldAutoMap	fldAutoMapClear	156	C with fallbacks, 7 functions kept as Maniax assembly
-field/fldAutoMap	fldAutoMapOpenBlock2	156	C with fallbacks, 7 functions kept as Maniax assembly
-field/fldAutoMap	fldAutoMapCloseBlock2	168	C with fallbacks, 7 functions kept as Maniax assembly
-field/fldAutoMap	fldAutoMapFontInit	336	C with fallbacks, 7 functions kept as Maniax assembly
-field/fldAutoMap	fldAutoMapDraw	348	C with fallbacks, 7 functions kept as Maniax assembly
-field/fldAutoMap	fldAutoMapOpenBlock	680	C with fallbacks, 7 functions kept as Maniax assembly
-field/fldEveHit	fldKaifukuTest	120	C with fallbacks, 2 functions kept as Maniax assembly
-field/fldEveHit	fldStatusSet	248	C with fallbacks, 2 functions kept as Maniax assembly
-field/fldGlobal	fldGetTakaraOpen	92	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldGlobal	fldSetTakaraOpen	188	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldGlobal	fldGbChkHit	200	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldGlobal	fldGbChkNpc	200	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldGlobal	fldGetAnimeFlag	200	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldGlobal	fldGetAnimeFlag2	200	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldGlobal	fldGetHojiFlag	200	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldGlobal	fldGetModelFlag	200	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldGlobal	fldGetModelFlag2	200	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldGlobal	fldGetAnimeId2	208	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldGlobal	fldSetAnimeId2	208	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldGlobal	fldAllTblLoad	248	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldGlobal	fldGbSetGimic	364	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldGlobal	fldSetAnimeFlag	364	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldGlobal	fldSetAnimeFlag2	364	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldGlobal	fldSetAtariFlag	364	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldGlobal	fldSetModelFlag	364	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldGlobal	fldSetModelFlag2	364	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldGlobal	fldSetNpcFlag	364	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldGlobal	fldGbInit_System	528	C with fallbacks, 20 functions kept as Maniax assembly
-field/fldMain	fldEsutoMaChk	20	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldMain	fldRiberaMaChk	20	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldMain	fldRifutoMaChk	20	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldMain	fldLightMaChk	40	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldMain	fldRifutoMaStart	44	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldMain	fldEsutoMaClear	48	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldMain	fldLightMaClear	48	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldMain	fldRiberaMaClear	48	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldMain	fldRifutoMaClear	48	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldMain	fldEsutoMaStart	52	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldMain	fldRiberaMaStart	52	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldMain	fldEsutoMaClearMsg	68	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldMain	fldLightMaClearMsg	68	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldMain	fldRiberaMaClearMsg	68	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldMain	fldRifutoMaClearMsg	68	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldMain	fldAnahoriSelectInit	124	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldMain	fldLightMaStart	132	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldMain	fldAnahoriSelectGet	156	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldMain	fldAnahoriSelectDel	200	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldMain	fldLightMaTask	200	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldMain	fldReadyScene	1428	C with fallbacks, 21 functions kept as Maniax assembly
-field/fldPanel	fldInputPanelProcess2	284	C with fallbacks, 1 functions kept as Maniax assembly
-field/fldTest	fldElvGetFloorDigits	280	C with fallbacks, 1 functions kept as Maniax assembly
-field/fldTitle	fldTitle_Process	3028	C with fallbacks, 1 functions kept as Maniax assembly
-field/fldWap	fldDoor_EveBtlExit	788	.rodata bounds overlap field/fldInf
-field/fldWap	fldDoor_WarpEx	1236	.rodata bounds overlap field/fldInf
-interface/frFont	frSetMessageDefStepY	12	.sdata bounds overlap effect/effSpline
-interface/frFont	frGetFontHeight	36	.sdata bounds overlap effect/effSpline
-interface/frFont	frGetFontWidth	36	.sdata bounds overlap effect/effSpline
-interface/frFont	frSetWhiteSpaceW	56	.sdata bounds overlap effect/effSpline
-interface/frFont	MessageRequestNS	60	.sdata bounds overlap effect/effSpline
-interface/frFont	frFlipPacketBuf	80	.sdata bounds overlap effect/effSpline
-interface/frFont	frDelStyleAll	92	.sdata bounds overlap effect/effSpline
-interface/frFont	frDestroyFontTable	92	.sdata bounds overlap effect/effSpline
-interface/frFont	frLinkFontString	104	.sdata bounds overlap effect/effSpline
-interface/frFont	frDelFontStyle	108	.sdata bounds overlap effect/effSpline
-interface/frFont	frFlushGsFontTable	120	.sdata bounds overlap effect/effSpline
-interface/frFont	frDecodeFontImage	124	.sdata bounds overlap effect/effSpline
-interface/frFont	frCombineFontRequestEx	148	.sdata bounds overlap effect/effSpline
-interface/frFont	frLoadFontData	152	.sdata bounds overlap effect/effSpline
-interface/frFont	frSetFontClut	192	.sdata bounds overlap effect/effSpline
-interface/frFont	frClearTexBuf	216	.sdata bounds overlap effect/effSpline
-interface/frFont	frTranslateUserData	224	.sdata bounds overlap effect/effSpline
-interface/frFont	frDestroyFontRequestNow	236	.sdata bounds overlap effect/effSpline
-interface/frFont	frTranslateFont2GS	244	.sdata bounds overlap effect/effSpline
-interface/frFont	frPreCalcStrWidth	248	.sdata bounds overlap effect/effSpline
-interface/frFont	frAddFontStyle	264	.sdata bounds overlap effect/effSpline
-interface/frFont	frSetUserImage	304	.sdata bounds overlap effect/effSpline
-interface/frFont	frDrawEffect	328	.sdata bounds overlap effect/effSpline
-interface/frFont	frSetFont	328	.sdata bounds overlap effect/effSpline
-interface/frFont	frCreateVariableRequest	404	.sdata bounds overlap effect/effSpline
-interface/frFont	frSetFontString	460	.sdata bounds overlap effect/effSpline
-interface/frFont	frGetXShiftLev	512	.sdata bounds overlap effect/effSpline
-interface/frFont	frInitFontTable	532	.sdata bounds overlap effect/effSpline
-interface/frFont	frDrawFontOt	640	.sdata bounds overlap effect/effSpline
-interface/frName	frGetNameFRQ	96	demoted: .sdata is 0x50 bytes where Maniax has room for 0x40
-interface/frName	frGetName1NFRQ	208	demoted: .sdata is 0x50 bytes where Maniax has room for 0x40
-interface/frName	frGetName2NFRQ	216	demoted: .sdata is 0x50 bytes where Maniax has room for 0x40
-interface/frName	frRestoreNameImage	216	demoted: .sdata is 0x50 bytes where Maniax has room for 0x40
-interface/frName	frTransNameImage	252	demoted: .sdata is 0x50 bytes where Maniax has room for 0x40
-interface/frName	frInitNameData	424	demoted: .sdata is 0x50 bytes where Maniax has room for 0x40
-interface/frName	frSetNameData	488	demoted: .sdata is 0x50 bytes where Maniax has room for 0x40
-interface/frWrap	frwGetSmallFontFRQ	64	C with fallbacks, 8 functions kept as Maniax assembly
-interface/frWrap	frwGetSmallFont1FRQ	184	C with fallbacks, 8 functions kept as Maniax assembly
-interface/frWrap	frwGetSmallCaptionFontFRQ	200	C with fallbacks, 8 functions kept as Maniax assembly
-interface/frWrap	frwGetNumFontFRQ	212	C with fallbacks, 8 functions kept as Maniax assembly
-interface/frWrap	frwGetSmallNumFontFRQ	212	C with fallbacks, 8 functions kept as Maniax assembly
-interface/frWrap	frwGetSmallFontFRQ2	372	C with fallbacks, 8 functions kept as Maniax assembly
-interface/frWrap	frwGetFontEx	392	C with fallbacks, 8 functions kept as Maniax assembly
-interface/itfMesManager	InitializeSpeaker	36	.rodata bounds overlap interface/frTestFont
-interface/itfMesManager	InitializeSelect	56	.rodata bounds overlap interface/frTestFont
-interface/itfMesManager	itfMesMngSetMesPosDefault	60	.rodata bounds overlap interface/frTestFont
-interface/itfMesManager	InitializeMessage	72	.rodata bounds overlap interface/frTestFont
-interface/itfMesManager	ConvertZenkakuNumber	132	.rodata bounds overlap interface/frTestFont
-interface/itfMesManager	OpenCheckSpeakerWindow	236	.rodata bounds overlap interface/frTestFont
-interface/itfMesManager	GetFontHandleUnit	240	.rodata bounds overlap interface/frTestFont
-interface/itfMesManager	itfMesMngRequestSelect	296	.rodata bounds overlap interface/frTestFont
-interface/itfMesManager	itfMesMngSetVar	496	.rodata bounds overlap interface/frTestFont
-interface/itfMesManager	itfMesMngRequestMessage	500	.rodata bounds overlap interface/frTestFont
-interface/itfMesManager	CalcSelect	596	.rodata bounds overlap interface/frTestFont
-interface/itfMisc	itfMiscLinkTake	100	.rodata bounds unknown in Maniax
-kernel/ModeSelect	Msel_TOverData_Clear	56	demoted: .rodata is 0x14DE bytes where Maniax has room for 0xFC0
-kernel/ModeSelect	mselLoadBackground	64	demoted: .rodata is 0x14DE bytes where Maniax has room for 0xFC0
-kernel/ModeSelect	mselCountSaves	84	demoted: .rodata is 0x14DE bytes where Maniax has room for 0xFC0
-kernel/ModeSelect	mselFreeResources	88	demoted: .rodata is 0x14DE bytes where Maniax has room for 0xFC0
-kernel/ModeSelect	mselFreeTextures	116	demoted: .rodata is 0x14DE bytes where Maniax has room for 0xFC0
-kernel/ModeSelect	mselStartDataSet	128	demoted: .rodata is 0x14DE bytes where Maniax has room for 0xFC0
-kernel/ModeSelect	mselShutDown	256	demoted: .rodata is 0x14DE bytes where Maniax has room for 0xFC0
-kernel/ModeSelect	mselDevilChoice	828	demoted: .rodata is 0x14DE bytes where Maniax has room for 0xFC0
-kernel/ModeSelect	mselMain	3452	demoted: .rodata is 0x14DE bytes where Maniax has room for 0xFC0
-kernel/dds3ConfigMain	dds3DestroyConfig	116	C with fallbacks, 2 functions kept as Maniax assembly
-kernel/dds3ConfigMain	dds3UpdateConfig	492	C with fallbacks, 2 functions kept as Maniax assembly
-kernel/dds3GlobalWork	dds3GlobalWorkMainProc	36	demoted: .sdata is 0x38 bytes where Maniax has room for 0x30
-kernel/dds3GlobalWork	dds3GlobalWorkDestroy	80	demoted: .sdata is 0x38 bytes where Maniax has room for 0x30
-kernel/dds3GlobalWork	func_00116C30	100	demoted: .sdata is 0x38 bytes where Maniax has room for 0x30
-kernel/dds3GlobalWork	dds3GlobalWorkInit	140	demoted: .sdata is 0x38 bytes where Maniax has room for 0x30
-kernel/dds3GlobalWork	dds3FontReqAddString	156	demoted: .sdata is 0x38 bytes where Maniax has room for 0x30
-kernel/dds3GlobalWork	dds3GlobalWorkUserInit2	220	demoted: .sdata is 0x38 bytes where Maniax has room for 0x30
-kernel/dds3GlobalWork	NewGame2Pop	1124	demoted: .sdata is 0x38 bytes where Maniax has room for 0x30
-kernel/dds3GlobalWork	NewGame2Push	1320	demoted: .sdata is 0x38 bytes where Maniax has room for 0x30
-kernel/dds3TitleMain	mselDrawBackground	144	demoted: .rodata is 0x160 bytes where Maniax has room for 0xF0
-kernel/dds3TitleMain	mselUpdateCursor	164	demoted: .rodata is 0x160 bytes where Maniax has room for 0xF0
-kernel/dds3TitleMain	mselDrawTitleAnim2	560	demoted: .rodata is 0x160 bytes where Maniax has room for 0xF0
-kernel/dds3TitleMain	mselDrawTitleAnim	880	demoted: .rodata is 0x160 bytes where Maniax has room for 0xF0
-mc/slMain	slSetTmnlID	36	C with fallbacks, 14 functions kept as Maniax assembly
-mc/slMain	slVersionConvert_GetSize	64	C with fallbacks, 14 functions kept as Maniax assembly
-mc/slMain	slVersionConvert_Step1	68	C with fallbacks, 14 functions kept as Maniax assembly
-mc/slMain	mcMakeFileName	72	C with fallbacks, 14 functions kept as Maniax assembly
-mc/slMain	slSaveWriteEnd_baseIcon	84	C with fallbacks, 14 functions kept as Maniax assembly
-mc/slMain	slHeadLoadProc_openFile	116	C with fallbacks, 14 functions kept as Maniax assembly
-mc/slMain	slKanjiDrawH	184	C with fallbacks, 14 functions kept as Maniax assembly
-mc/slMain	slHeadLoadProc_closeFile	308	C with fallbacks, 14 functions kept as Maniax assembly
-mc/slMain	slSaveData_writeFile	568	C with fallbacks, 14 functions kept as Maniax assembly
-mc/slMain	slVersionConvert_Step3	708	C with fallbacks, 14 functions kept as Maniax assembly
-mc/slMain	slDrawInfo	756	C with fallbacks, 14 functions kept as Maniax assembly
-mc/slMain	slDrawError	1196	C with fallbacks, 14 functions kept as Maniax assembly
-mc/slMain	slQueryYesNoDraw	2012	C with fallbacks, 14 functions kept as Maniax assembly
-movie/MovieViewer	MovieViewerProc	588	.sdata bounds unknown in Maniax
-newbattle/NbNegoFlowFullMoon	Flow2_4	96	C with fallbacks, 1 functions kept as Maniax assembly
-newbattle/NbNegoFlowOk	Flow9_15	132	C with fallbacks, 1 functions kept as Maniax assembly
-newbattle/NbNegoFlowOne	Flow1_16	120	C with fallbacks, 2 functions kept as Maniax assembly
-newbattle/NbNegoFlowOne	Flow1_12	232	C with fallbacks, 2 functions kept as Maniax assembly
-newbattle/NbNegoFlowQuestion	Flow7_3	168	C with fallbacks, 1 functions kept as Maniax assembly
-newbattle/nbActionProcess	SetMakaPacket	196	demoted: .rodata is 0xAE0 bytes where Maniax has room for 0x9B0
-newbattle/nbActionProcess	SetOngShadowPacket2	284	demoted: .rodata is 0xAE0 bytes where Maniax has room for 0x9B0
-newbattle/nbActionProcess	CheckSenseiNego	300	demoted: .rodata is 0xAE0 bytes where Maniax has room for 0x9B0
-newbattle/nbActionProcess	SetOngShadowPacket	384	demoted: .rodata is 0xAE0 bytes where Maniax has room for 0x9B0
-newbattle/nbActionProcess	SetPlayerSummonPacket	424	demoted: .rodata is 0xAE0 bytes where Maniax has room for 0x9B0
-newbattle/nbActionProcess	CheckMukanNego	492	demoted: .rodata is 0xAE0 bytes where Maniax has room for 0x9B0
-newbattle/nbActionProcess	CheckInotiNego	688	demoted: .rodata is 0xAE0 bytes where Maniax has room for 0x9B0
-newbattle/nbActionProcess	SetAction_READY	3540	demoted: .rodata is 0xAE0 bytes where Maniax has room for 0x9B0
-newbattle/nbAtoProcess	nbAtoStoneProcess	212	C with fallbacks, 1 functions kept as Maniax assembly
-newbattle/nbCalc	nbGetLvAvg2	228	C with fallbacks, 6 functions kept as Maniax assembly
-newbattle/nbCalc	nbGetParamAvg2	296	C with fallbacks, 6 functions kept as Maniax assembly
-newbattle/nbCalc	nbCheckBackAttack	376	C with fallbacks, 6 functions kept as Maniax assembly
-newbattle/nbCalc	nbCheckRenzokuEncount	380	C with fallbacks, 6 functions kept as Maniax assembly
-newbattle/nbCalc	nbGetMakaBaramaki	468	C with fallbacks, 6 functions kept as Maniax assembly
-newbattle/nbCalc	nbCheckSensei	580	C with fallbacks, 6 functions kept as Maniax assembly
-newbattle/nbCommSelProcess	DispComm1Talk	200	demoted: .sdata is 0xE bytes where Maniax has room for 0x8
-newbattle/nbCommSelProcess	DispComm1Item	232	demoted: .sdata is 0xE bytes where Maniax has room for 0x8
-newbattle/nbCommSelProcess	DispComm1Comm	552	demoted: .sdata is 0xE bytes where Maniax has room for 0x8
-newbattle/nbCommSelProcess	DispComm1Summon	596	demoted: .sdata is 0xE bytes where Maniax has room for 0x8
-newbattle/nbCommSelProcess	DispComm1PanelSummon	640	demoted: .sdata is 0xE bytes where Maniax has room for 0x8
-newbattle/nbCommSelProcess	DispHelp1	828	demoted: .sdata is 0xE bytes where Maniax has room for 0x8
-newbattle/nbCommSelProcess	SetCommList	1640	demoted: .sdata is 0xE bytes where Maniax has room for 0x8
-newbattle/nbDebugProcess	SetDvlChange	320	C with fallbacks, 1 functions kept as Maniax assembly
-newbattle/nbEncProcess	nbBadCurseStep4	256	C with fallbacks, 1 functions kept as Maniax assembly
-newbattle/nbEncount	nbGetEncountCnt	12	C with fallbacks, 3 functions kept as Maniax assembly
-newbattle/nbEncount	fclClearTerminalState	20	C with fallbacks, 3 functions kept as Maniax assembly
-newbattle/nbEncount	nbEncountCalc	568	C with fallbacks, 3 functions kept as Maniax assembly
-newbattle/nbEventProcess	nbFindStockSkillError	88	C with fallbacks, 1 functions kept as Maniax assembly
-newbattle/nbHelpProcess	nbDispDevilName	196	C with fallbacks, 3 functions kept as Maniax assembly
-newbattle/nbHelpProcess	nbDispText	496	C with fallbacks, 3 functions kept as Maniax assembly
-newbattle/nbHelpProcess	nbHelpProcess1	652	C with fallbacks, 3 functions kept as Maniax assembly
-newbattle/nbMainProcess	nbGetUnitWorkPointer	124	C with fallbacks, 5 functions kept as Maniax assembly
-newbattle/nbMainProcess	nbGetUnitWorkFromFormindex	172	C with fallbacks, 5 functions kept as Maniax assembly
-newbattle/nbMainProcess	nbSetEndPhase	228	C with fallbacks, 5 functions kept as Maniax assembly
-newbattle/nbMainProcess	nbSetAtoPhase	304	C with fallbacks, 5 functions kept as Maniax assembly
-newbattle/nbMainProcess	nbSetChkEndPhase	320	C with fallbacks, 5 functions kept as Maniax assembly
-newbattle/nbMakaProcess	nbAllocMakaWork	72	C with fallbacks, 2 functions kept as Maniax assembly
-newbattle/nbMakaProcess	nbMakaDispOn	84	C with fallbacks, 2 functions kept as Maniax assembly
-newbattle/nbMisc	nbGetRandamStock	180	C with fallbacks, 3 functions kept as Maniax assembly
-newbattle/nbMisc	nbGetNakama	228	C with fallbacks, 3 functions kept as Maniax assembly
-newbattle/nbMisc	nbSetPlayerStartData	292	C with fallbacks, 3 functions kept as Maniax assembly
-newbattle/nbNegoProcess	nbGetQuestionType	604	demoted: .rodata is 0x140 bytes where Maniax has room for 0x150
-newbattle/nbPanelProcess	nbPanelSmallNameStringDraw	360	C with fallbacks, 2 functions kept as Maniax assembly
-newbattle/nbPanelProcess	nbPanelStockSelect	2032	C with fallbacks, 2 functions kept as Maniax assembly
-newbattle/nbResultProcess	GetAddExp	112	C with fallbacks, 2 functions kept as Maniax assembly
-newbattle/nbResultProcess	nbResultAddExp	368	C with fallbacks, 2 functions kept as Maniax assembly
-newbattle/nbSkillError	cmpClearButtonGuide	532	demoted: .rodata is 0x710 bytes where Maniax has room for 0x720
-newbattle/nbTest	nbInitBattleTest	164	C with fallbacks, 4 functions kept as Maniax assembly
-newbattle/nbTest	TestProcess4	256	C with fallbacks, 4 functions kept as Maniax assembly
-newbattle/nbTest	TestProcess8	288	C with fallbacks, 4 functions kept as Maniax assembly
-newbattle/nbTest	TestProcess5	372	C with fallbacks, 4 functions kept as Maniax assembly
-newbattle/nbUnitProcess	nbAddUnitStock	880	demoted: .rodata range holds a jump table into code it does not own
-newdata/datCalc	datGetPlayerLevel	12	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datCheckMaka	20	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datCheckItem	24	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datCheckPlayerDead	24	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datAddMaka	44	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datGetNakamaNum	52	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datInitBossPress	52	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datAddKotowariPoint	60	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datCheckStockFull	60	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datGetNakamaParam	68	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datGetPlayerLND	68	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datAllClearCommMemory	80	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datAddPlayerParam	88	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datAddMakaPar	92	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datCheckItemFull	92	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datSearchUniqueDevilStock	96	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datSearchDevilStock	100	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datGetUniqueDevilId	104	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datRemoveHearts	104	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datAddUniqueDevil	108	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datFieldSkillKaifuku	128	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datEquipHearts	140	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datPartyKaifuku	140	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datCheckSkillInParty	148	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datAddHearts	180	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datDeadNakama	196	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datBossRashUpdRec	208	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datBossRashGetRec	264	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datPartyDamagePipe	276	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datAddItem	280	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datGetKotowariLank	280	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datCheckSkillTakaraSagasi	284	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datInitPlayer	300	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datAddDevil	352	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datExecSkill	512	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datPartyDamage	632	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datCalc	datPartyDamageFld	648	demoted: .text is 0x3628 bytes where Maniax has room for 0x3620
-newdata/datDebugUnit	DispList	408	demoted: .rodata is 0xD8 bytes where Maniax has room for 0xB8
-newdata/datDebugUnit	datDebugDrawSelectMenu	560	demoted: .rodata is 0xD8 bytes where Maniax has room for 0xB8
-newdata/datDebugUnit	DispUnit1	776	demoted: .rodata is 0xD8 bytes where Maniax has room for 0xB8
-nme/Nme_Calc	nmeDrawEditIcons	160	demoted: .rodata is 0x80 bytes where Maniax has room for 0x40
-nme/Nme_Calc	nmeDrawNamePanel	180	demoted: .rodata is 0x80 bytes where Maniax has room for 0x40
-nme/Nme_Calc	nmeDrawModeTabs	192	demoted: .rodata is 0x80 bytes where Maniax has room for 0x40
-nme/Nme_Calc	nmeDrawCharRow	196	demoted: .rodata is 0x80 bytes where Maniax has room for 0x40
-nme/Nme_Calc	nmeDrawTabSprite	196	demoted: .rodata is 0x80 bytes where Maniax has room for 0x40
-nme/Nme_Calc	nmeDrawCharCell	208	demoted: .rodata is 0x80 bytes where Maniax has room for 0x40
-nme/Nme_Calc	nmeDrawButtonGuide	276	demoted: .rodata is 0x80 bytes where Maniax has room for 0x40
-nme/Nme_Calc	nmeDrawColoredText	440	demoted: .rodata is 0x80 bytes where Maniax has room for 0x40
-nme/Nme_Calc	nmeDrawPanelSprites	512	demoted: .rodata is 0x80 bytes where Maniax has room for 0x40
-nme/Nme_Draw	nmeAdvanceAnim	36	demoted: nmeCheckInputMode: undefined reference to func_00299C78
-nme/Nme_Draw	nmeGetCursorPos	76	demoted: nmeCheckInputMode: undefined reference to func_00299C78
-nme/Nme_Draw	nmeDrawInputUBar	160	demoted: nmeCheckInputMode: undefined reference to func_00299C78
-nme/Nme_Draw	func_0029A108	168	demoted: nmeCheckInputMode: undefined reference to func_00299C78
-nme/Nme_Draw	nmeConfirmChar	276	demoted: nmeCheckInputMode: undefined reference to func_00299C78
-nme/Nme_Draw	nmeDraw	292	demoted: nmeCheckInputMode: undefined reference to func_00299C78
-nme/Nme_Draw	nmeDeleteChar	360	demoted: nmeCheckInputMode: undefined reference to func_00299C78
-nme/Nme_Draw	nmeUpdateInput	436	demoted: nmeCheckInputMode: undefined reference to func_00299C78
-nme/Nme_Draw	nmeDrawInputPanel	448	demoted: nmeCheckInputMode: undefined reference to func_00299C78
-nme/Nme_Draw	nmeDrawFuncIcon	660	demoted: nmeCheckInputMode: undefined reference to func_00299C78
-nme/Nme_Init	nmeGetInputMode	64	demoted: .text is 0xD0C bytes where Maniax has room for 0xD30
-nme/Nme_Init	nmeFreeNameTextures	72	demoted: .text is 0xD0C bytes where Maniax has room for 0xD30
-nme/Nme_Init	nmeTexLoad	156	demoted: .text is 0xD0C bytes where Maniax has room for 0xD30
-nme/Nme_Init	frAllocNameData	168	demoted: .text is 0xD0C bytes where Maniax has room for 0xD30
-nme/Nme_Init	nmeInitNameBuffer	228	demoted: .text is 0xD0C bytes where Maniax has room for 0xD30
-nme/Nme_Init	nmeLoadFont	240	demoted: .text is 0xD0C bytes where Maniax has room for 0xD30
-result/rstcalc	datGetDevilSlotState	24	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	datDevilIsRegistered	28	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	func_00222120	32	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	rstGetEquipHeartsAisyo	32	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	rstSetDevilRegistered	36	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	cmbChkGetHearts	88	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	rstCalcSeqEvoAt	92	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	rstChkSkillPowerUp1	92	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	datCountPlayerLND	108	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	cmbGetParamBase	112	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	datAddHeartsSlot	116	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	rstCalcSeqPlayerLevelUp	120	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	rstFindUnitScene	120	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	rstChkBeforeSkillOwner	128	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	rstChkPartyDevilSkillPowerUp	128	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	rstFindDevilSlot	128	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	rstChkHeartsSkill	152	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	rstChkEvoEvent	164	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	rstSetCurrentDevil	176	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	rstRollComment	200	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	rstFindRegisteredDevil	288	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	rstDrawStatusPanel	300	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	rstCalcEvo	464	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstcalc	rstCalc	1404	C with fallbacks, 24 functions kept as Maniax assembly
-result/rstinit	rstCalcExpFromLevel	56	C with fallbacks, 5 functions kept as Maniax assembly
-result/rstinit	rstSetTestParam	56	C with fallbacks, 5 functions kept as Maniax assembly
-result/rstinit	rstCalcLevelFromExp	92	C with fallbacks, 5 functions kept as Maniax assembly
-result/rstinit	rstChkResultEntry	96	C with fallbacks, 5 functions kept as Maniax assembly
-result/rstinit	rstCreateTargetList	296	C with fallbacks, 5 functions kept as Maniax assembly
-result/rstupdate	rstSetHeartsRecoverPlayer	40	demoted: .rodata is 0x248 bytes where Maniax has room for 0x1C8
-result/rstupdate	rstSetHeartsRecover	148	demoted: .rodata is 0x248 bytes where Maniax has room for 0x1C8
-result/rstupdate	rstSetHeartsEvent	240	demoted: .rodata is 0x248 bytes where Maniax has room for 0x1C8
-result/rstupdate	rstGetHeartsSkill	248	demoted: .rodata is 0x248 bytes where Maniax has room for 0x1C8
-result/rstupdate	rstUpdateSeqHeartsMaster	332	demoted: .rodata is 0x248 bytes where Maniax has room for 0x1C8
-result/rstupdate	rstStandbyHeartsEvent	440	demoted: .rodata is 0x248 bytes where Maniax has room for 0x1C8
-result/rstupdate	rstStandbyHeartsSkillPowerUp	464	demoted: .rodata is 0x248 bytes where Maniax has room for 0x1C8
-result/rstupdate	rstUpdate	512	demoted: .rodata is 0x248 bytes where Maniax has room for 0x1C8
-script/scrParameterCommand	prm_STOCK_PLUS	60	C with fallbacks, 7 functions kept as Maniax assembly
-script/scrParameterCommand	prm_UDV_LEAVE	88	C with fallbacks, 7 functions kept as Maniax assembly
-script/scrParameterCommand	prm_UDV_DELETE_NG	96	C with fallbacks, 7 functions kept as Maniax assembly
-script/scrParameterCommand	prm_UDV_DELETE_OK	100	C with fallbacks, 7 functions kept as Maniax assembly
-script/scrParameterCommand	prm_PIKUKO_GETID	108	C with fallbacks, 7 functions kept as Maniax assembly
-script/scrParameterCommand	prm_DV_COPY_PARAM	140	C with fallbacks, 7 functions kept as Maniax assembly
-script/scrParameterCommand	prm_NAKAMA_CHK_PIKUKO	168	C with fallbacks, 7 functions kept as Maniax assembly
-script/scrScriptProcess	dds3GlobalWorkClearFlags	52	C with fallbacks, 1 functions kept as Maniax assembly
-script/scrTraceCode	CodeFunc_PopFX	84	C with fallbacks, 9 functions kept as Maniax assembly
-script/scrTraceCode	CodeFunc_PopIX	88	C with fallbacks, 9 functions kept as Maniax assembly
-script/scrTraceCode	CodeFunc_PushFX	88	C with fallbacks, 9 functions kept as Maniax assembly
-script/scrTraceCode	CodeFunc_PushIX	88	C with fallbacks, 9 functions kept as Maniax assembly
-script/scrTraceCode	scrGetFloatPara	180	C with fallbacks, 9 functions kept as Maniax assembly
-script/scrTraceCode	scrGetIntPara	200	C with fallbacks, 9 functions kept as Maniax assembly
-script/scrTraceCode	PopInt	216	C with fallbacks, 9 functions kept as Maniax assembly
-script/scrTraceCode	CodeFunc_Minus	228	C with fallbacks, 9 functions kept as Maniax assembly
-script/scrTraceCode	PopFloat	228	C with fallbacks, 9 functions kept as Maniax assembly
-sound/sndManager	dds3TitleUpdateFade	632	demoted: .rodata is 0x43 bytes where Maniax has room for 0x30
-sound/sndManager	dds3TitleDrawFade	1272	demoted: .rodata is 0x43 bytes where Maniax has room for 0x30
-sound/sndManager	dds3TitleDrawMenu	2572	demoted: .rodata is 0x43 bytes where Maniax has room for 0x30
-staff/stfMain	stfMain2	724	C with fallbacks, 1 functions kept as Maniax assembly
+code_0022C578	campDrawSkillPanel	64	
+code_0022C578	cmpGetSelectSrcStock	72	
+code_0022C578	dds3ClearStockTable	72	
+code_0022C578	campDhDrawHeartsIcon	80	
+code_0022C578	campDhEquipHearts	80	
+code_0022C578	func_002429C0	84	
+code_0022C578	cmpHeartsIconIsVisible	88	
+code_0022C578	cmpApplyStockRecover	148	
+code_0022C578	cmpChkDoNotUseSkill	152	
+code_0022C578	cmpDrawSkillListHeader	152	
+code_0022C578	cmpGetStatusModelMotion	152	
+code_0022C578	camp_draw_status_Process	156	
+code_0022C578	cmpGetKugatatiMsg	160	
+code_0022C578	cmpGetItSkErrSelFlag	164	
+code_0022C578	cmpSetItSkMessageVar	176	
+code_0022C578	campDhFindEntry	204	
+code_0022C578	cmpUpdateHeartsRemoveConfirm	260	
+code_0022C578	cmpInitStatus	268	
+code_0022C578	cmpUseItem	296	
+code_0022C578	cmpDrawListItemText	300	
+code_0022C578	campDhDrawHelpText	344	
+code_0022C578	campDrawText	368	
+code_0022C578	cmpUpdateHeartsAttachStatus	396	
+code_0022C578	rstDrawNumber	420	
+code_0022C578	campDrawNumber	672	
+code_0022C578	cmpCalcSequence	700	
+code_0022C578	campDhDrawHeartsGauge	852	
+code_0022C578	campDebugRegistAll	1084	
+code_0029B780	dds3GetGlobalConfigFlag	36	
+code_0029B780	dds3ConfigRestoreBackup	52	
+code_0029B780	dds3ConfigSaveBackup	60	
+code_0029B780	dds3DrawConfigSlider	228	
+code_0029B780	dds3DrawConfigItem	304	
+code_0029B780	dds3DrawConfigPanel	600	
+facility/fclCombineInit	cmbCreateLocalStock	204	
+facility/fclCombineInit	cmbDrawDevilNameLevel	244	
+facility/fclCombineInit	cmbDrawDevilStats	432	
+facility/fclCombineInit	cmbDrawUnitLevel	448	
+facility/fclCombineInit	cmbDrawResultIcon	520	
+facility/fclEncyc	fclEncycSearch	88	
+facility/fclEncyc	SetRecordToUnit	96	
+facility/fclEncyc	ExecSummon	116	
+facility/fclEncyc	InitCameraForViewMode	156	
+facility/fclEncyc	cmpLevelOrder	192	
+facility/fclEncyc	cmpRaceOrder	192	
+facility/fclEncyc	DebugRemoveRecord	212	
+facility/fclEncyc	GetValidUnitIndex	232	
+facility/fclEncyc	SetBoundControl	264	
+facility/fclEncyc	fclEncycRegist	264	
+facility/fclEncyc	fclEncycRegist2	264	
+facility/fclEncyc	DrawPhaseReadView	336	
+facility/fclEncyc	CreateFontExplain	392	
+facility/fclEncyc	DrawRegistListwinElem	396	
+facility/fclEncyc	DrawRegistAllHelp	440	
+facility/fclEncyc	DebugProcDispBound	516	
+facility/fclEncyc	drawRegistList	572	
+facility/fclEncyc	drawRegistSprites	620	
+facility/fclEncyc	PrepSummon	672	
+facility/fclEncyc	ControlModel	756	
+facility/fclEncyc	DrawReadListwinCaption	1576	
+facility/fclMisc	fclCreateItemList	84	
+facility/fclMisc	fclCreateItemListEx	160	
+facility/fclRagCalc	ragDrawHeartsRows	540	
+facility/fclRagCalc	ragDrawFrameEdge	588	
+facility/fclRagInit	ragFindItemSlot	76	
+facility/fclRagUpdate	ragChkDevilLevelErr	132	
+facility/fclRagUpdate	ragChkItemErr	136	
+facility/fclRagUpdate	ragCheckItemUse	236	
+facility/fclRagUpdate	ragUpdateSeqConfirm	520	
+facility/fclRecoverCalc	rcvCreateLocalStock	600	
+facility/fclRecoverInit	fclRecoverProcessStart	196	
+facility/fclRecoverUpdate	rcvUpdateData	340	
+facility/fclShopCalc	shpChkChoiceMax	232	
+facility/fclShopCalc	shpCalcPayOfMoney	244	
+facility/fclShopCalc	shopDrawRowText	328	
+facility/fclShopCalc	shopDrawPrice	504	
+facility/fclShopUpdate	shpUpdateSeqBuy	476	
+field/fldEveHit	fldStatusSet	248	
+field/fldMain	fldAnahoriSelectDel	192	
+field/fldTest	fldElvGetFloorDigits	280	
+interface/frFont	frSetMessageDefStepY	12	
+interface/frFont	frGetFontHeight	36	
+interface/frFont	frGetFontWidth	36	
+interface/frFont	frSetWhiteSpaceW	56	
+interface/frFont	MessageRequestNS	60	
+interface/frFont	frFlipPacketBuf	80	
+interface/frFont	frDelStyleAll	92	
+interface/frFont	frDestroyFontTable	92	
+interface/frFont	frLinkFontString	104	
+interface/frFont	frDelFontStyle	108	
+interface/frFont	frFlushGsFontTable	120	
+interface/frFont	frDecodeFontImage	124	
+interface/frFont	frCombineFontRequestEx	148	
+interface/frFont	frLoadFontData	152	
+interface/frFont	frSetFontClut	192	
+interface/frFont	frClearTexBuf	216	
+interface/frFont	frTranslateUserData	224	
+interface/frFont	frDestroyFontRequestNow	236	
+interface/frFont	frTranslateFont2GS	244	
+interface/frFont	frPreCalcStrWidth	248	
+interface/frFont	frAddFontStyle	264	
+interface/frFont	frSetUserImage	304	
+interface/frFont	frDrawEffect	328	
+interface/frFont	frSetFont	328	
+interface/frFont	frCreateVariableRequest	404	
+interface/frFont	frSetFontString	460	
+interface/frFont	frGetXShiftLev	512	
+interface/frFont	frInitFontTable	532	
+interface/frFont	frDrawFontOt	640	
+interface/frName	frGetNameFRQ	96	
+interface/frName	frGetName1NFRQ	208	
+interface/frName	frGetName2NFRQ	216	
+interface/frName	frRestoreNameImage	216	
+interface/frName	frTransNameImage	252	
+interface/frName	frGetCNameFRQ	344	
+interface/frName	frInitNameData	424	
+interface/frName	frSetNameData	488	
+interface/frWrap	frwGetSmallFontFRQ2	372	
+interface/frWrap	frwGetFontEx	392	
+interface/itfMesManager	InitializeSpeaker	36	
+interface/itfMesManager	InitializeSelect	56	
+interface/itfMesManager	itfMesMngSetMesPosDefault	60	
+interface/itfMesManager	InitializeMessage	72	
+interface/itfMesManager	ConvertZenkakuNumber	132	
+interface/itfMesManager	OpenCheckSpeakerWindow	236	
+interface/itfMesManager	GetFontHandleUnit	240	
+interface/itfMesManager	itfMesMngRequestSelect	296	
+interface/itfMesManager	itfMesMngSetVar	496	
+interface/itfMesManager	itfMesMngRequestMessage	500	
+interface/itfMesManager	CalcSelect	596	
+interface/itfMisc	itfMiscLinkTake	100	
+kernel/ModeSelect	Msel_TOverData_Clear	56	
+kernel/ModeSelect	mselLoadBackground	64	
+kernel/ModeSelect	mselCountSaves	84	
+kernel/ModeSelect	mselFreeResources	88	
+kernel/ModeSelect	mselFreeTextures	116	
+kernel/ModeSelect	mselStartDataSet	128	
+kernel/ModeSelect	mselShutDown	256	
+kernel/ModeSelect	mselDevilChoice	828	
+kernel/ModeSelect	mselMain	3364	
+kernel/dds3GlobalWork	func_00116C30	100	
+kernel/dds3GlobalWork	dds3GlobalWorkInit	140	
+kernel/dds3GlobalWork	dds3FontReqAddString	156	
+kernel/dds3GlobalWork	dds3GlobalWorkUserInit2	220	
+kernel/dds3GlobalWork	NewGame2Pop	1124	
+kernel/dds3GlobalWork	NewGame2Push	1320	
+kernel/dds3TitleMain	mselDrawBackground	144	
+kernel/dds3TitleMain	mselUpdateCursor	164	
+kernel/dds3TitleMain	mselDrawTitleAnim2	560	
+kernel/dds3TitleMain	mselDrawTitleAnim	880	
+mc/slMain	slSaveData_writeFile	544	
+mc/slMain	slDrawError	1196	
+movie/MovieViewer	MovieViewerProc	588	
+newbattle/nbActionProcess	SetMakaPacket	196	
+newbattle/nbActionProcess	SetOngShadowPacket2	284	
+newbattle/nbActionProcess	CheckSenseiNego	300	
+newbattle/nbActionProcess	SetOngShadowPacket	384	
+newbattle/nbActionProcess	CheckMukanNego	492	
+newbattle/nbActionProcess	CheckInotiNego	688	
+newbattle/nbActionProcess	SetAction_READY	3540	
+newbattle/nbCommSelProcess	DispComm1Talk	200	
+newbattle/nbCommSelProcess	DispComm1Item	232	
+newbattle/nbCommSelProcess	DispComm1Comm	552	
+newbattle/nbCommSelProcess	DispComm1Summon	596	
+newbattle/nbCommSelProcess	DispHelp1	828	
+newbattle/nbCommSelProcess	SetCommList	1640	
+newbattle/nbMisc	nbGetNakama	228	
+newbattle/nbPanelProcess	nbPanelSmallNameStringDraw	360	
+newbattle/nbSkillError	cmpClearButtonGuide	532	
+newbattle/nbUnitProcess	nbAddUnitStock	880	
+newdata/datCalc	datGetPlayerLevel	12	
+newdata/datCalc	datCheckItem	24	
+newdata/datCalc	datCheckPlayerDead	24	
+newdata/datCalc	datGetNakamaNum	52	
+newdata/datCalc	datInitBossPress	52	
+newdata/datCalc	datAddKotowariPoint	60	
+newdata/datCalc	datCheckStockFull	60	
+newdata/datCalc	datGetNakamaParam	68	
+newdata/datCalc	datGetPlayerLND	68	
+newdata/datCalc	datAllClearCommMemory	80	
+newdata/datCalc	datAddPlayerParam	88	
+newdata/datCalc	datCheckItemFull	92	
+newdata/datCalc	datSearchUniqueDevilStock	96	
+newdata/datCalc	datSearchDevilStock	100	
+newdata/datCalc	datGetUniqueDevilId	104	
+newdata/datCalc	datRemoveHearts	104	
+newdata/datCalc	datAddUniqueDevil	108	
+newdata/datCalc	datFieldSkillKaifuku	128	
+newdata/datCalc	datEquipHearts	140	
+newdata/datCalc	datPartyKaifuku	140	
+newdata/datCalc	datCheckSkillInParty	148	
+newdata/datCalc	datAddHearts	180	
+newdata/datCalc	datDeadNakama	196	
+newdata/datCalc	datBossRashUpdRec	208	
+newdata/datCalc	datPartyDamagePipe	276	
+newdata/datCalc	datAddItem	280	
+newdata/datCalc	datCheckSkillTakaraSagasi	284	
+newdata/datCalc	datInitPlayer	300	
+newdata/datCalc	datAddDevil	352	
+newdata/datCalc	datPartyDamage	632	
+newdata/datCalc	datPartyDamageFld	648	
+newdata/datDebugUnit	DispList	408	
+newdata/datDebugUnit	DispUnit1	776	
+nme/Nme_Calc	nmeDrawEditIcons	160	
+nme/Nme_Calc	nmeDrawNamePanel	180	
+nme/Nme_Calc	nmeDrawModeTabs	192	
+nme/Nme_Calc	nmeDrawCharRow	196	
+nme/Nme_Calc	nmeDrawTabSprite	196	
+nme/Nme_Calc	nmeDrawCharCell	208	
+nme/Nme_Calc	nmeDrawButtonGuide	276	
+nme/Nme_Calc	nmeDrawColoredText	440	
+nme/Nme_Calc	nmeDrawPanelSprites	512	
+nme/Nme_Draw	nmeAdvanceAnim	36	
+nme/Nme_Draw	nmeGetCursorPos	76	
+nme/Nme_Draw	nmeDrawInputUBar	160	
+nme/Nme_Draw	func_0029A108	168	
+nme/Nme_Draw	nmeConfirmChar	276	
+nme/Nme_Draw	nmeDraw	292	
+nme/Nme_Draw	nmeDeleteChar	360	
+nme/Nme_Draw	nmeUpdateInput	436	
+nme/Nme_Draw	nmeDrawInputPanel	448	
+nme/Nme_Draw	nmeDrawFuncIcon	660	
+nme/Nme_Init	nmeGetInputMode	64	
+nme/Nme_Init	nmeFreeNameTextures	72	
+nme/Nme_Init	nmeTexLoad	156	
+nme/Nme_Init	frAllocNameData	168	
+nme/Nme_Init	nmeInitNameBuffer	228	
+nme/Nme_Init	nmeLoadFont	240	
+result/rstupdate	rstSetHeartsEvent	240	
+script/scrParameterCommand	prm_UDV_DELETE_NG	96	
+script/scrParameterCommand	prm_UDV_DELETE_OK	100	
+script/scrParameterCommand	prm_NAKAMA_CHK_PIKUKO	164	
+sound/sndManager	dds3TitleUpdateFade	632	
+sound/sndManager	dds3TitleDrawFade	1272	
+sound/sndManager	dds3TitleDrawMenu	2572	

@@ -51,8 +51,8 @@ the bytes from the assembly, not as UTF-8.
   same time.
 - **Never change what the USA build compiles.** Everything you add for Maniax is
   under `VERSION_MNAX`; the `#else` branch keeps the original text exactly.
-  After your edits, `tools/cc.sh -DSKIP_ASM src/smt3/<unit>.c -o build/check_<your worker number>.o`
-  must still compile.
+  Check it with `.venv/bin/python tools/mnax_land.py --us <unit>`: it must say
+  `USA build unchanged` for every unit you edited before you finish.
 - Follow `docs/CONTRIBUTING.md`: ordinary, readable C. No fakematches, no
   register pinning, no `asm` in C files, no dummy uses. A function you cannot
   match honestly stays as it is.
@@ -63,6 +63,25 @@ the bytes from the assembly, not as UTF-8.
   `VERSION_MNAX` with that name.
 - Time-box each function. If it still does not match after a few honest
   attempts, put it back exactly as you found it and move on.
+
+## What earlier workers found (use it)
+
+- `include/newdata.h` already has the Maniax layout of `dds3GlobalWork_t`
+  (`DDS3_GBWK`) under `VERSION_MNAX`: the header is 4 bytes shorter and the
+  name table 0x244C bytes shorter. Field accesses get Maniax offsets for free.
+  Never add per-unit offset compensation for those shifts.
+- Source that uses a raw byte offset into the global work (`(u8 *)DDS3_GBWK +
+  0xA54`) does not follow the header. Rewrite it as a field access, or as
+  `((u32)&((dds3GlobalWork_t *)0)->field)` (ee-gcc has no `offsetof`), when
+  that keeps the USA object unchanged; otherwise guard the literal.
+- Maniax `frSetFontString` takes 5 arguments and `frGetCNameFRQ` takes 3.
+  Declare and call them that way under `VERSION_MNAX`.
+- Many Japanese-only differences are screen coordinates, table sizes or row
+  strides (24-byte instead of 26-byte rows, a 0x30-byte save record): small
+  `#ifdef VERSION_MNAX` constants.
+- A function that is a different algorithm in Maniax (new code paths, much
+  longer or shorter) can be written as its own Maniax version from the
+  assembly and the m2c draft; give it a real try before giving up.
 
 ## Report
 

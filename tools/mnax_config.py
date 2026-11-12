@@ -29,6 +29,8 @@ from elftools.elf.elffile import ELFFile
 from elftools.elf.relocation import RelocationSection
 
 ROOT = Path(__file__).resolve().parent.parent
+# The USA sources to derive from; MNAX_SRC points at a snapshot while src/smt3 is being edited.
+SRC = Path(__import__("os").environ.get("MNAX_SRC", ROOT / "src/smt3"))
 DELTA = 0xFF000
 SERIAL = "SLPM_654.62"
 SECS = (".text", ".data", ".rodata", ".lit4", ".sdata")
@@ -264,7 +266,7 @@ def main() -> None:
     demoted = dict(line.split("\t", 1) for line in demote.read_text().splitlines() if "\t" in line) \
         if demote.exists() else {}
     for unit in units:
-        src = ROOT / "src/smt3" / (unit + ".c")
+        src = SRC / (unit + ".c")
         obj = ROOT / "build/probe" / (unit + ".o")
         fallbacks = bool(re.search(r"^\s*INCLUDE_(ASM|RODATA|SDATA)\(", src.read_text(errors="replace"), re.M))
         if unit in demoted:
@@ -510,7 +512,7 @@ def main() -> None:
                 auto.add(sym.name)
         # Fallback functions are not in the probe object; their names are in the source.
         auto.update(re.findall(r"INCLUDE_(?:ASM|RODATA|SDATA)\([^,]+,[^,]+,\s*((?:D|func|jtbl)_[0-9A-F]{8})\)",
-                               (ROOT / "src/smt3" / (unit + ".c")).read_text(errors="replace")))
+                               (SRC / (unit + ".c")).read_text(errors="replace")))
     have = {line.split(" = ")[0] for line in out}
     spans = sorted((u0, u0 + usa_extent[u][sec], m0) for u in good for sec, (m0, size, u0) in good[u].items())
     # USA functions with sizes, for code addresses inside one (labels, fragments).
@@ -605,9 +607,9 @@ def main() -> None:
     shutil.rmtree(dst, ignore_errors=True)
     for unit in good:
         (dst / unit).parent.mkdir(parents=True, exist_ok=True)
-        text = sources.get(unit) or (ROOT / "src/smt3" / (unit + ".c")).read_text(errors="replace")
+        text = sources.get(unit) or (SRC / (unit + ".c")).read_text(errors="replace")
         (dst / (unit + ".c")).write_text(text)
-    shutil.copytree(ROOT / "src/smt3/sdf/vu", dst / "sdf/vu", dirs_exist_ok=True)
+    shutil.copytree(SRC / "sdf/vu", dst / "sdf/vu", dirs_exist_ok=True)
 
     tally = defaultdict(int)
     for unit in units:

@@ -31,6 +31,18 @@ def sections(obj):
 
 
 def main() -> None:
+    if len(sys.argv) == 3 and sys.argv[1] == "--us":
+        # One unit, USA check only (for workers): python tools/mnax_land.py --us <unit>
+        unit = sys.argv[2]
+        base = ROOT / "build/usbase" / (unit.replace("/", "__") + ".o")
+        now = ROOT / "build" / f"land_us_{unit.replace('/', '__')}.o"
+        r = subprocess.run([str(ROOT / "tools/cc.sh"), "-DSKIP_ASM", f"src/smt3/{unit}.c", "-o", str(now)],
+                           cwd=ROOT, capture_output=True, text=True)
+        if r.returncode:
+            sys.exit(f"{unit}: does not compile as USA\n{r.stderr[-2000:]}")
+        same = sections(now) == sections(base)
+        print(f"{unit}: USA build {'unchanged' if same else 'CHANGED - fix it before finishing'}")
+        sys.exit(0 if same else 1)
     changed = subprocess.run(["git", "diff", "--name-only", "HEAD", "--", "src/smt3"], cwd=ROOT,
                              capture_output=True, text=True).stdout.split()
     units = [Path(p).relative_to("src/smt3").with_suffix("").as_posix() for p in changed if p.endswith(".c")]
