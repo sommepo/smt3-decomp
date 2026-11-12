@@ -185,7 +185,11 @@ typedef struct
         struct {
             u8 hearts[0x80];       /* 0x1CFB */
             u8 heartscnt;          /* 0x1D7B */
+#ifdef VERSION_MNAX
+            u8 nameData[0x23B4];   /* 0x1D74: Japanese names need 0x244C bytes less (Maniax allocates 0x180C0) */
+#else
             u8 nameData[0x4800];   /* 0x1D7C */
+#endif
         };
         struct { u8 heartsPrefix[0x40]; u8 devilSlot[0x100]; }; /* 0x1D3B */
         struct { u8 unk_01CFB[0x40]; u8 heartsskcnt[64]; };
@@ -211,7 +215,7 @@ typedef struct
     u8 reserved19D10[0x800];
 } dds3GlobalWork_t;
 #ifdef VERSION_MNAX
-SIZE_CHECK(dds3GlobalWorkSizeCheck, dds3GlobalWork_t, 0x1A50C);
+SIZE_CHECK(dds3GlobalWorkSizeCheck, dds3GlobalWork_t, 0x180C0);
 #else
 SIZE_CHECK(dds3GlobalWorkSizeCheck, dds3GlobalWork_t, 0x1A510);
 #endif
