@@ -27,3 +27,15 @@ fclEncycRowFmt = 0x0053B248; // size:0x10
 D_0054FD68 = 0x0054DFF0; // size:0x8
 D_0054FD70 = 0x0054DFF8; // size:0x6
 D_0054FD80 = 0x0054E000; // size:0x6
+// fclEncyc small data, 0x54DF40..0x54DF72 in Maniax (worker J)
+g_pinst = 0x0054DF40; // size:0x4
+g_pdebug = 0x0054DF44; // size:0x4
+fclEncycReadingName = 0x0054DF48; // size:0x8
+fclEncycNum3Fmt = 0x0054DF50; // size:0x4
+fclEncycBlank = 0x0054DF58; // size:0x2
+fclEncycNum6Fmt = 0x0054DF60; // size:0x4
+fclEncycNum7Fmt = 0x0054DF68; // size:0x4
+fclEncycMarkerOn = 0x0054DF70; // size:0x2
+// fclRagInit small data starts at 0x54DE20 (worker F)
+GBWK_0 = 0x0054DE20; // size:0x4
+gProcessStat_1 = 0x0054DE24; // size:0x1

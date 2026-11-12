@@ -13,7 +13,7 @@ field/fldWap	defines jtbl_0052F830, which the split also puts in a blob
 nme/Nme_Calc	.text is 0x1A18 bytes where Maniax has room for 0x1B10
 nme/Nme_Init	.sdata is 0x78 bytes where Maniax has room for 0x70
 nme/Nme_Draw	.text bytes differ from Maniax
-code_0022C578	.text is 0x161BC bytes where Maniax has room for 0x16380
+code_0022C578	.rodata is 0x4480 bytes where Maniax has room for 0x4520
 facility/fclEncyc	.sdata is 0x68 bytes where Maniax has room for 0x40
 facility/fclRagInit	.sdata is 0x24 bytes where Maniax has room for 0x1C
 interface/frFont	.text is 0x2B10 bytes where Maniax has room for 0x2B40

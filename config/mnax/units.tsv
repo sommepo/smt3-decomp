@@ -165,7 +165,7 @@ kernel/dds3CreateData	C
 staff/stfMain	C
 movie/mviManager	demoted: no Maniax assembly for movieDebugRowFmt
 movie/MovieViewer	.sdata bytes differ
-code_0022C578	demoted: .text is 0x161BC bytes where Maniax has room for 0x16380
+code_0022C578	demoted: .rodata is 0x4480 bytes where Maniax has room for 0x4520
 newdata/datCalc	C with fallbacks
 newdata/datDebugUnit	C
 newbattle/nbInit	C
