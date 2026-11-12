@@ -640,7 +640,7 @@ char slNewCycleMsg3[8] = "";
 
 char slCycleLabel[8] = "\205\300\203\352";
 
-char D_005516F0[8] = "\204\256\201\251";
+char D_005516F0[5] = "\204\256\201\251";
 #else
 char slYesLabel[8] = "Yes";
 

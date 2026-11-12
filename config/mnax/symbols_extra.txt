@@ -11,3 +11,8 @@ rcvLeaveText = 0x0054DE78; // size:0x8
 rcvTalkText = 0x0054DE80; // size:0x8
 rcvReviveText = 0x0054DE88; // size:0x8
 func_002306A0 = 0x0022F808; // type:func
+// fclRagInit's small data (worker F measured it at 0x54DE20)
+GBWK_0 = 0x0054DE20; // size:0x4
+gProcessStat_1 = 0x0054DE24; // size:0x1
+// dds3TitleMain's " " ends its small data in Maniax
+D_0054FD88 = 0x0054E008; // size:0x2
