@@ -952,7 +952,7 @@ fldEsutoMaChk	0x001238D8	0x001238F8	placed
 fldAnahoriSelectInit	0x001238F0	0x00123910	placed	
 fldAnahoriSelectGet	0x00123970	0x00123980	placed	
 fldAnahoriSelectNext	0x00123A10	0x00123A10	placed	
-fldAnahoriSelectDel	0x00123A30	0x00123A30	called	
+fldAnahoriSelectDel	0x00123A30	0x00123A30	placed	
 fldOtInit	0x00123AF8	0x00123AF0	placed	
 ProcRandomEncountCheck	0x00123C10	0x00123C08	called	
 fldProcKiretaChk	0x001241F0	0x001241E8	placed	
@@ -3826,8 +3826,8 @@ frDestroyFontRequestAfter	0x001C6FF8	0x001C6AB8	placed
 frGetGsFontNum	0x001C7050	0x001C6B10	placed	
 frGetTextHandleNum	0x001C7060	0x001C6B20	placed	
 frGetFontHandleNum	0x001C7070	0x001C6B30	placed	
-frGetYShiftLev	0x001C7080	0x001C6B40	gap	
-frGetXShiftLev	0x001C7088	0x001C6BB8	gap	
+frGetYShiftLev	0x001C7080	0x001C6B40	called	
+frGetXShiftLev	0x001C7088	0x001C6BB8	placed	
 frSetUserImage	0x001C7288	0x001C6D10	placed	
 frLinkUserImage	0x001C73B8	0x001C6E40	placed	
 frTranslateUserData	0x001C7408	0x001C6E90	placed	
@@ -3835,7 +3835,7 @@ frDecodeFontImage	0x001C74E8	0x001C6F70	placed
 frTranslateFont2GS	0x001C7568	0x001C6FE8	placed	
 frInitTextHandle	0x001C7660	0x001C70D8	placed	
 frInitFontHandle	0x001C76A8	0x001C7120	placed	
-frSetFont	0x001C76E0	0x001C7158	called	
+frSetFont	0x001C76E0	0x001C7158	placed	
 frLinkFontString	0x001C7828	0x001C72A0	placed	
 frSetFontString	0x001C7890	0x001C7308	placed	
 frSetDrawSpeed	0x001C7A60	0x001C7498	placed	
@@ -3861,10 +3861,10 @@ frDestroyExtDic	0x001C81D8	0x001C7B10	placed
 frStrLen	0x001C81F0	0x001C7B28	placed	
 frGetStrWidth	0x001C8230	0x001C7B68	placed	
 frGetStrWidth2	0x001C8268	0x001C7BA0	placed	
-frPreCalcStrWidth	0x001C82B8	0x001C7BF0	gap	
-frGetDefaultFontWidth	0x001C83B0	0x001C7CE0	called	
+frPreCalcStrWidth	0x001C82B8	0x001C7BF0	placed	
+frGetDefaultFontWidth	0x001C83B0	0x001C7CE0	placed	
 frGetFontWidth	0x001C83F0	0x001C7CE0	placed	
-frGetDefaultFontHeight	0x001C8418	0x001C7D00	called	
+frGetDefaultFontHeight	0x001C8418	0x001C7D00	placed	
 frGetFontHeight	0x001C8458	0x001C7D00	placed	
 frSetMessageDefStepY	0x001C8480	0x001C7D20	placed	
 frSetMessageStepY	0x001C8490	0x001C7D30	placed	
@@ -3889,7 +3889,7 @@ frInitNameData	0x001C9530	0x001C89A8	placed
 frSetNameData	0x001C96D8	0x001C8B48	placed	
 frTransNameImage	0x001C98C0	0x001C8D30	placed	
 frRestoreNameImage	0x001C99C0	0x001C8E30	placed	
-frCreateNameHandle	0x001C9A98	0x001C8F08	called	
+frCreateNameHandle	0x001C9A98	0x001C8F08	placed	
 frGetName1NFRQ	0x001C9B58	0x001C8FD8	placed	
 frGetName2NFRQ	0x001C9C28	0x001C9098	placed	
 frGetNameFRQ	0x001C9D00	0x001C9160	placed	
@@ -6049,7 +6049,7 @@ fclDrawArrowCursor	0x00234010	0x00233170	placed
 campDhDrawPanel	0x002341A8	0x00233308	placed	
 campDhDrawQuadGauge	0x00234390	0x002334F0	placed	
 campDhDrawHelpTextAlt	0x00234450	0x002335B0	placed	
-campDhDrawHelpText	0x00234550	0x002336B0	called	
+campDhDrawHelpText	0x00234550	0x002336B0	placed	
 campDhDrawHeartsGauge	0x002346A8	0x00233800	placed	
 campDhDrawHeartsIcon	0x00234A00	0x00233B58	placed	
 campDhDrawIcon	0x00234A50	0x00233BA8	placed	
@@ -6397,7 +6397,7 @@ datGetPlayerLND	0x002446B0	0x002436F8	placed
 datDeadNakama	0x002446F8	0x00243740	placed	
 datPartyDamage	0x002447C0	0x00243800	placed	
 datPartyDamageFld	0x00244A38	0x00243A78	placed	
-datPartyDamagePipe	0x00244CC0	0x00243CF8	called	
+datPartyDamagePipe	0x00244CC0	0x00243CF8	placed	
 datPartyKaifuku	0x00244DD8	0x00243E10	placed	
 datGet3Zokusei	0x00244E68	0x00243EA0	placed	
 datCheckStockFull	0x00244EB8	0x00243EF0	placed	
@@ -6634,7 +6634,7 @@ SetAction_TARSEL	0x00254178	0x00253208	placed
 CheckAction_TARSEL	0x00254190	0x00253220	placed	
 SetAction_STKSEL	0x00254360	0x002533F0	placed	
 CheckAction_STKSEL	0x002543A0	0x00253430	placed	
-SetAction_READY	0x00254488	0x00253518	rigid	
+SetAction_READY	0x00254488	0x00253518	placed	
 CheckAction_READY	0x00255260	0x002542F0	placed	
 SetAction_SKILL	0x00255650	0x002546E0	gap	
 CheckAction_SKILL	0x00256A78	0x00255B50	placed	
@@ -6684,7 +6684,7 @@ nbDrawPanelSprite	0x00258C78	0x00257D50	placed
 nbDrawKoukaSprite	0x00258CE0	0x00257DB8	placed	
 nbSetTargetSkill	0x00258DE8	0x00257EC0	called	
 nbSetNormalSkill0	0x00259018	0x002580F0	called	
-nbGetNakama	0x00259180	0x00258258	called	
+nbGetNakama	0x00259180	0x00258258	placed	
 nbSetDevilNameMes	0x00259268	0x00258338	placed	
 nbSetJyokyoMes	0x002592B0	0x00258380	placed	
 nbGetJyokyoMes	0x00259300	0x002583D0	placed	
@@ -6722,7 +6722,7 @@ AnimeCommandList	0x0025B408	0x0025A4C0	placed
 DispComm1Summon	0x0025B598	0x0025A650	placed	
 DispComm1Item	0x0025B7F0	0x0025A888	placed	
 DispComm1Talk	0x0025B8D8	0x0025A960	placed	
-DispComm1Comm	0x0025B9A0	0x0025AA08	called	
+DispComm1Comm	0x0025B9A0	0x0025AA08	placed	
 DispHelp1	0x0025BBC8	0x0025AC20	placed	
 DispCommandList2	0x0025BF08	0x0025AE38	placed	
 CheckSelectError	0x0025C190	0x0025B0C0	placed	
@@ -7367,7 +7367,7 @@ nbPanelSpriteScaleDraw	0x00279D30	0x00278C60	placed
 nbPanelSpriteScaleWHDraw	0x00279E20	0x00278D50	placed	
 nbPanelSpriteBlendDraw	0x00279F10	0x00278E40	placed	
 nbPanelSmallStringDraw	0x0027A040	0x00278F70	placed	
-nbPanelSmallNameStringDraw	0x0027A0D8	0x00279008	rigid	
+nbPanelSmallNameStringDraw	0x0027A0D8	0x00279008	placed	
 nbCenterText	0x0027A240	0x00279170	placed	
 nbPanelHPColor	0x0027A290	0x002791C0	placed	
 nbPanelMPColor	0x0027A318	0x00279248	placed	

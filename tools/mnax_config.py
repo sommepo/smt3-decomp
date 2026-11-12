@@ -384,6 +384,7 @@ def main() -> None:
     units = [name for rom, kind, name in usa_yaml if kind == "c"]
     good, verdict, sources = {}, {}, {}
     guessed = set()      # (unit, section) whose Maniax start came from nearby anchors only
+    anchor_size = {}     # (unit, section) -> size from the anchors, where an old object gave another
     # Maniax start of each USA .text entry: its first function that exists in Maniax.
     text_end_m = 0x100000 + msec[".text"][1]
     mregion_end = {".data": msec[".eh_frame"][0], ".rodata": msec[".lit4"][0], ".lit4": msec[".sdata"][0],
@@ -457,6 +458,8 @@ def main() -> None:
                     if name != ".rodata" and built.exists() and built.read_bytes()[:4] == b"\x7fELF":
                         bsec = ELFFile(built.open("rb")).get_section_by_name(name)
                         if bsec is not None and bsec["sh_size"]:
+                            if (bsec["sh_size"] + 3) & ~3 != size:
+                                anchor_size[(unit, name)] = size
                             size = (bsec["sh_size"] + 3) & ~3
                     if name == ".rodata":
                         # Real end of the object's .rodata (see the note below on blob
@@ -564,6 +567,12 @@ def main() -> None:
         for sec in SECS:
             entries = sorted((good[u][sec][0], good[u][sec][1], u) for u in good if sec in good[u])
             for (s0, z0, a), (s1, z1, b) in zip(entries, entries[1:]):
+                # A size taken from an object of an earlier build can be stale: when the
+                # anchors' size fits, use it (a wrong guess fails the byte check later).
+                if s1 < s0 + z0 and s0 + anchor_size.get((a, sec), z0) <= s1:
+                    good[a][sec] = (s0, anchor_size.pop((a, sec)), good[a][sec][2])
+                    clash = "retry"
+                    break
                 if s1 < s0 + z0:
                     clash = (b if verdict[b] != "C" else a, a if verdict[b] != "C" else b, sec)
                     break
@@ -571,6 +580,8 @@ def main() -> None:
                 break
         if not clash:
             break
+        if clash == "retry":
+            continue
         verdict[clash[0]] = f"{clash[2]} bounds overlap {clash[1]}"
         del good[clash[0]]
         sources.pop(clash[0], None)

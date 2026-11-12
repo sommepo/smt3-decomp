@@ -30,3 +30,5 @@ newbattle/nbE914	.sdata is 0xC bytes where Maniax has room for 0x8
 pipe/pipeCamera	.sdata is 0x10 bytes where Maniax has room for 0xC
 pipe/pipeMain	.sdata is 0x18 bytes where Maniax has room for 0x14
 sdf/sdfCd	.sdata is 0x10 bytes where Maniax has room for 0xC
+result/rstupdate	.rodata must start 16-aligned; Maniax place 0x0053B5C8 is not
+newbattle/nbActionProcess	.rodata range holds a jump table into code it does not own

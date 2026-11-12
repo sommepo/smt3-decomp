@@ -38,7 +38,7 @@ kernel/dds3GlobalWork	demoted: defines dds3FontReqBoxTable, which the split also
 kernel/dds3DebugStuff	C
 field/fldTest	C with fallbacks, 1 functions kept as Maniax assembly
 field/fldGlobal	C with fallbacks
-field/fldMain	C with fallbacks, 1 functions kept as Maniax assembly
+field/fldMain	C with fallbacks
 field/fldProcess	C with fallbacks
 field/fldFileResolver	C
 field/fldDraw	C with fallbacks
@@ -93,7 +93,7 @@ newbattle/nbCameraBoss	C with fallbacks
 code_001C55F8	C
 interface/fmGslCont	.sdata bounds unknown in Maniax
 interface/frFont	.sdata bounds overlap effect/effSpline
-interface/frName	.sdata bounds overlap effect/effSpline
+interface/frName	.sdata bytes differ
 interface/frWrap	demoted: .text is 0xD70 bytes where Maniax has room for 0xE90
 interface/frTestFont	demoted: .rodata is 0x51 bytes where Maniax has room for 0x58
 interface/itfMisc	.rodata bytes differ
@@ -157,7 +157,7 @@ facility/fclRibbon	C
 result/rstinit	C
 result/rstcalc	C with fallbacks
 result/rstdraw	C
-result/rstupdate	.rodata bounds overlap result/rstdraw
+result/rstupdate	demoted: .rodata must start 16-aligned; Maniax place 0x0053B5C8 is not
 sound/sndManager	C
 kernel/dds3TitleMain	.rodata bounds overlap sound/sndManager
 kernel/ModeSelect	.rodata bytes differ
@@ -175,9 +175,9 @@ newbattle/nbAtoProcess	C
 newbattle/nbResultProcess	C with fallbacks
 newbattle/nbStageProcess	C
 newbattle/nbUnitProcess	C
-newbattle/nbActionProcess	.sdata bounds overlap newbattle/nbKoukaProcess
-newbattle/nbMisc	C with fallbacks, 1 functions kept as Maniax assembly
-newbattle/nbCommSelProcess	.sdata bounds overlap newbattle/nbActionProcess
+newbattle/nbActionProcess	demoted: .rodata range holds a jump table into code it does not own
+newbattle/nbMisc	C with fallbacks
+newbattle/nbCommSelProcess	C with fallbacks
 newbattle/nbTarSelProcess	C with fallbacks
 newbattle/nbKoukaProcess	C
 newbattle/nbMakePacket	C with fallbacks
@@ -199,7 +199,7 @@ newbattle/NbNegoFlowMukan	C
 newbattle/NbNegoFlowSensei	C
 newbattle/NbNegoFlowInoti	C
 newbattle/NbNegoFlowKoketa	C
-newbattle/nbPanelProcess	C with fallbacks, 1 functions kept as Maniax assembly
+newbattle/nbPanelProcess	C with fallbacks
 newbattle/nbDebugProcess	C with fallbacks
 newbattle/nbAi	C with fallbacks
 newbattle/nbAiScript	demoted: .sdata is 0x8 bytes where Maniax has room for 0x4

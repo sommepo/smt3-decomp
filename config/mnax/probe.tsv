@@ -423,7 +423,7 @@ code_0022C578	fclDrawArrowCursor	404	0x00234010	unique	0x00233170
 code_0022C578	campDhDrawPanel	488	0x002341A8	unique	0x00233308
 code_0022C578	campDhDrawQuadGauge	188	0x00234390	unique	0x002334F0
 code_0022C578	campDhDrawHelpTextAlt	252	0x00234450	unique	0x002335B0
-code_0022C578	campDhDrawHelpText	344	0x00234550	miss	-
+code_0022C578	campDhDrawHelpText	332	0x00234550	unique	0x002336B0
 code_0022C578	campDhDrawHeartsGauge	852	0x002346A8	unique	0x00233800
 code_0022C578	campDhDrawHeartsIcon	80	0x00234A00	unique	0x00233B58
 code_0022C578	campDhDrawIcon	112	0x00234A50	unique	0x00233BA8
@@ -4175,7 +4175,7 @@ field/fldMain	fldEsutoMaChk	20	0x001238D8	unique	0x001238F8
 field/fldMain	fldAnahoriSelectInit	108	0x001238F0	unique	0x00123910
 field/fldMain	fldAnahoriSelectGet	140	0x00123970	unique	0x00123980
 field/fldMain	fldAnahoriSelectNext	28	0x00123A10	unique	0x00123A10
-field/fldMain	fldAnahoriSelectDel	192	0x00123A30	miss	-
+field/fldMain	fldAnahoriSelectDel	192	0x00123A30	unique	0x00123A30
 field/fldMain	fldOtInit	280	0x00123AF8	unique	0x00123AF0
 field/fldPanel	fldInputPanelProcess2	284	0x00144290	unique	0x00144288
 field/fldPanel	fldInputPanelProcess1	80	0x001443B0	unique	0x001443A8
@@ -4460,7 +4460,7 @@ interface/frFont	frGetGsFontNum	12	0x001C7050	multi	0x001275C8,0x00136650,0x0016
 interface/frFont	frGetTextHandleNum	12	0x001C7060	multi	0x001275C8,0x00136650,0x0016B7E8,0x0016B7F8,0x001C5B40,0x001C6B10,0x001C6B20,0x001C6B30,0x002A8648,0x002E64B0
 interface/frFont	frGetFontHandleNum	12	0x001C7070	multi	0x001275C8,0x00136650,0x0016B7E8,0x0016B7F8,0x001C5B40,0x001C6B10,0x001C6B20,0x001C6B30,0x002A8648,0x002E64B0
 interface/frFont	frGetYShiftLev	8	0x001C7080	multi	0x001998D8,0x002A9A58,0x002AA6D8
-interface/frFont	frGetXShiftLev	340	0x001C7088	miss	-
+interface/frFont	frGetXShiftLev	340	0x001C7088	unique	0x001C6BB8
 interface/frFont	frSetUserImage	304	0x001C7288	unique	0x001C6D10
 interface/frFont	frLinkUserImage	80	0x001C73B8	unique	0x001C6E40
 interface/frFont	frTranslateUserData	224	0x001C7408	unique	0x001C6E90
@@ -4468,7 +4468,7 @@ interface/frFont	frDecodeFontImage	116	0x001C74E8	unique	0x001C6F70
 interface/frFont	frTranslateFont2GS	236	0x001C7568	unique	0x001C6FE8
 interface/frFont	frInitTextHandle	72	0x001C7660	unique	0x001C70D8
 interface/frFont	frInitFontHandle	56	0x001C76A8	unique	0x001C7120
-interface/frFont	frSetFont	328	0x001C76E0	miss	-
+interface/frFont	frSetFont	328	0x001C76E0	unique	0x001C7158
 interface/frFont	frLinkFontString	104	0x001C7828	unique	0x001C72A0
 interface/frFont	frSetFontString	400	0x001C7890	unique	0x001C7308
 interface/frFont	frSetDrawSpeed	40	0x001C7A60	unique	0x001C7498
@@ -4494,10 +4494,10 @@ interface/frFont	frDestroyExtDic	24	0x001C81D8	unique	0x001C7B10
 interface/frFont	frStrLen	64	0x001C81F0	unique	0x001C7B28
 interface/frFont	frGetStrWidth	52	0x001C8230	unique	0x001C7B68
 interface/frFont	frGetStrWidth2	80	0x001C8268	unique	0x001C7BA0
-interface/frFont	frPreCalcStrWidth	240	0x001C82B8	miss	-
-interface/frFont	frGetDefaultFontWidth	52	0x001C83B0	miss	-
+interface/frFont	frPreCalcStrWidth	240	0x001C82B8	unique	0x001C7BF0
+interface/frFont	frGetDefaultFontWidth	28	0x001C83B0	unique	0x001C7CE0
 interface/frFont	frGetFontWidth	28	0x001C83F0	unique	0x001C7CE0
-interface/frFont	frGetDefaultFontHeight	52	0x001C8418	miss	-
+interface/frFont	frGetDefaultFontHeight	28	0x001C8418	unique	0x001C7D00
 interface/frFont	frGetFontHeight	28	0x001C8458	unique	0x001C7D00
 interface/frFont	frSetMessageDefStepY	12	0x001C8480	unique	0x001C7D20
 interface/frFont	frSetMessageStepY	8	0x001C8490	multi	0x00107B78,0x00128838,0x00128FC8,0x0012C148,0x00136630,0x00165A00,0x00165F08,0x00175100,0x001A9FC0,0x001B8330,0x001C7660,0x001C7D30,0x001F3858,0x001FC760,0x00234EC8,0x00239B00,0x002786E0,0x0027B180,0x0027F450,0x002A4258,0x002AAA04,0x002AC20C,0x002B91C0,0x002B96E8,0x002B96F0,0x002BBCFC
@@ -4519,7 +4519,7 @@ interface/frName	frInitNameData	416	0x001C9530	unique	0x001C89A8
 interface/frName	frSetNameData	488	0x001C96D8	unique	0x001C8B48
 interface/frName	frTransNameImage	252	0x001C98C0	unique	0x001C8D30
 interface/frName	frRestoreNameImage	216	0x001C99C0	unique	0x001C8E30
-interface/frName	frCreateNameHandle	208	0x001C9A98	miss	-
+interface/frName	frCreateNameHandle	208	0x001C9A98	unique	0x001C8F08
 interface/frName	frGetName1NFRQ	188	0x001C9B58	unique	0x001C8FD8
 interface/frName	frGetName2NFRQ	196	0x001C9C28	unique	0x001C9098
 interface/frName	frGetNameFRQ	80	0x001C9D00	unique	0x001C9160
@@ -5850,7 +5850,7 @@ newbattle/nbActionProcess	SetAction_TARSEL	20	0x00254178	multi	0x00108CA0,0x0010
 newbattle/nbActionProcess	CheckAction_TARSEL	460	0x00254190	unique	0x00253220
 newbattle/nbActionProcess	SetAction_STKSEL	60	0x00254360	unique	0x002533F0
 newbattle/nbActionProcess	CheckAction_STKSEL	232	0x002543A0	unique	0x00253430
-newbattle/nbActionProcess	SetAction_READY	3540	0x00254488	miss	-
+newbattle/nbActionProcess	SetAction_READY	3544	0x00254488	unique	0x00253518
 newbattle/nbActionProcess	CheckAction_READY	1004	0x00255260	unique	0x002542F0
 newbattle/nbActionProcess	CheckAction_SKILL	32	0x00256A78	multi	0x00255B50,0x00256170,0x002562E8,0x00256518,0x00256540
 newbattle/nbActionProcess	SetAction_NEGO	240	0x00256A98	unique	0x00255B70
@@ -6334,7 +6334,7 @@ newbattle/nbCommSelProcess	AnimeCommandList	396	0x0025B408	unique	0x0025A4C0
 newbattle/nbCommSelProcess	DispComm1Summon	568	0x0025B598	unique	0x0025A650
 newbattle/nbCommSelProcess	DispComm1Item	216	0x0025B7F0	unique	0x0025A888
 newbattle/nbCommSelProcess	DispComm1Talk	164	0x0025B8D8	unique	0x0025A960
-newbattle/nbCommSelProcess	DispComm1Comm	532	0x0025B9A0	miss	-
+newbattle/nbCommSelProcess	DispComm1Comm	536	0x0025B9A0	unique	0x0025AA08
 newbattle/nbCommSelProcess	DispHelp1	536	0x0025BBC8	unique	0x0025AC20
 newbattle/nbCommSelProcess	DispCommandList2	648	0x0025BF08	unique	0x0025AE38
 newbattle/nbCommSelProcess	CheckSelectError	72	0x0025C190	unique	0x0025B0C0
@@ -6771,7 +6771,7 @@ newbattle/nbMisc	nbDrawRotatedModel	508	0x00258A08	unique	0x00257AE0
 newbattle/nbMisc	nbGetUnitMarkPos	112	0x00258C08	unique	0x00257CE0
 newbattle/nbMisc	nbDrawPanelSprite	100	0x00258C78	unique	0x00257D50
 newbattle/nbMisc	nbDrawKoukaSprite	264	0x00258CE0	unique	0x00257DB8
-newbattle/nbMisc	nbGetNakama	228	0x00259180	miss	-
+newbattle/nbMisc	nbGetNakama	220	0x00259180	unique	0x00258258
 newbattle/nbMisc	nbSetDevilNameMes	68	0x00259268	unique	0x00258338
 newbattle/nbMisc	nbSetJyokyoMes	76	0x002592B0	unique	0x00258380
 newbattle/nbMisc	nbGetJyokyoMes	24	0x00259300	unique	0x002583D0
@@ -6850,7 +6850,7 @@ newbattle/nbPanelProcess	nbPanelSpriteScaleDraw	236	0x00279D30	unique	0x00278C60
 newbattle/nbPanelProcess	nbPanelSpriteScaleWHDraw	236	0x00279E20	unique	0x00278D50
 newbattle/nbPanelProcess	nbPanelSpriteBlendDraw	300	0x00279F10	unique	0x00278E40
 newbattle/nbPanelProcess	nbPanelSmallStringDraw	148	0x0027A040	unique	0x00278F70
-newbattle/nbPanelProcess	nbPanelSmallNameStringDraw	360	0x0027A0D8	miss	-
+newbattle/nbPanelProcess	nbPanelSmallNameStringDraw	360	0x0027A0D8	unique	0x00279008
 newbattle/nbPanelProcess	nbCenterText	80	0x0027A240	unique	0x00279170
 newbattle/nbPanelProcess	nbPanelHPColor	136	0x0027A290	unique	0x002791C0
 newbattle/nbPanelProcess	nbPanelMPColor	92	0x0027A318	unique	0x00279248
@@ -7089,7 +7089,7 @@ newdata/datCalc	datGetPlayerLND	68	0x002446B0	unique	0x002436F8
 newdata/datCalc	datDeadNakama	192	0x002446F8	unique	0x00243740
 newdata/datCalc	datPartyDamage	628	0x002447C0	unique	0x00243800
 newdata/datCalc	datPartyDamageFld	640	0x00244A38	unique	0x00243A78
-newdata/datCalc	datPartyDamagePipe	276	0x00244CC0	miss	-
+newdata/datCalc	datPartyDamagePipe	276	0x00244CC0	unique	0x00243CF8
 newdata/datCalc	datPartyKaifuku	140	0x00244DD8	unique	0x00243E10
 newdata/datCalc	datGet3Zokusei	76	0x00244E68	unique	0x00243EA0
 newdata/datCalc	datCheckStockFull	60	0x00244EB8	unique	0x00243EF0
