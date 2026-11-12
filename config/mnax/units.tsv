@@ -1,5 +1,5 @@
 unit	state
-kernel/dds3KernelMain	.sdata start ambiguous
+kernel/dds3KernelMain	demoted: .text bytes differ from Maniax
 kernel/dds3KernelCore	C with fallbacks
 sdf/sdfDefaultMain	C
 kernel/dds3KernelProcess	C with fallbacks
@@ -34,7 +34,7 @@ basic/dds3ModelRangeBasic	C
 basic/dds3EventBasic	C
 basic/dds3PathBasic	C
 basic/dds3PointBasic	C
-kernel/dds3GlobalWork	.sdata start ambiguous
+kernel/dds3GlobalWork	demoted: defines dds3FontReqBoxTable, which the split also puts in a blob
 kernel/dds3DebugStuff	C
 field/fldTest	C with fallbacks, 1 functions kept as Maniax assembly
 field/fldGlobal	C with fallbacks
@@ -93,7 +93,7 @@ newbattle/nbCameraBoss	C with fallbacks
 code_001C55F8	C
 interface/fmGslCont	.sdata bounds unknown in Maniax
 interface/frFont	.sdata bounds overlap effect/effSpline
-interface/frName	demoted: .sdata is 0x40 bytes where Maniax has room for 0x30
+interface/frName	.sdata bounds overlap effect/effSpline
 interface/frWrap	demoted: .text is 0xD70 bytes where Maniax has room for 0xE90
 interface/frTestFont	demoted: .rodata is 0x51 bytes where Maniax has room for 0x58
 interface/itfMisc	.rodata bytes differ
@@ -112,7 +112,7 @@ pb/pbHelp	C
 pb/pbKeyConv	C
 pb/pbMCard	C
 pb/pbErrorDraw	C
-pb/pbDebugMode	demoted: .rodata is 0x4071 bytes where Maniax has room for 0x4010
+pb/pbDebugMode	demoted: defines D_0053A0E0, which the split also puts in a blob
 model/mdlManager	C
 model/mdlEffect	C
 event/EventBit	C
@@ -157,9 +157,9 @@ facility/fclRibbon	C
 result/rstinit	C
 result/rstcalc	C with fallbacks
 result/rstdraw	C
-result/rstupdate	demoted: .rodata must start 16-aligned; Maniax place 0x0053B5C8 is not
-sound/sndManager	demoted: titleAllocWork: undefined reference to dds3Titlemain
-kernel/dds3TitleMain	demoted: .rodata is 0x160 bytes where Maniax has room for 0xF0
+result/rstupdate	.rodata bounds overlap result/rstdraw
+sound/sndManager	C
+kernel/dds3TitleMain	.rodata bounds overlap sound/sndManager
 kernel/ModeSelect	.rodata bytes differ
 kernel/dds3CreateData	C
 staff/stfMain	C
@@ -174,10 +174,10 @@ newbattle/nbMaeProcess	C
 newbattle/nbAtoProcess	C
 newbattle/nbResultProcess	C with fallbacks
 newbattle/nbStageProcess	C
-newbattle/nbUnitProcess	demoted: .rodata range holds a jump table into code it does not own
-newbattle/nbActionProcess	demoted: .rodata is 0xB30 bytes where Maniax has room for 0x9B0
+newbattle/nbUnitProcess	C
+newbattle/nbActionProcess	.sdata bounds overlap newbattle/nbKoukaProcess
 newbattle/nbMisc	C with fallbacks, 1 functions kept as Maniax assembly
-newbattle/nbCommSelProcess	demoted: DispCommandList2: undefined reference to DispComm1Comm
+newbattle/nbCommSelProcess	.sdata bounds overlap newbattle/nbActionProcess
 newbattle/nbTarSelProcess	C with fallbacks
 newbattle/nbKoukaProcess	C
 newbattle/nbMakePacket	C with fallbacks
@@ -234,7 +234,7 @@ nme/Nme_Calc	demoted: nmeCalc: undefined reference to nmeConfirmQuestion
 nme/Nme_Draw	demoted: nmeUpdateInput: undefined reference to func_00299C78
 nme/Nme_Update	C
 mc/mcManager	C
-code_0029B780	demoted: .rodata is 0xC8 bytes where Maniax has room for 0x98
+code_0029B780	.sdata bounds overlap kernel/dds3ConfigMain
 kernel/dds3ConfigMain	C
 pipe/pipeMain	demoted: .sdata is 0x18 bytes where Maniax has room for 0x14
 pipe/pipeSection	C with fallbacks

@@ -261,6 +261,43 @@ def main() -> None:
     func_keys = [a for a, _, _ in funcs]
     func_at = {name: at for _, name, at in funcs}
 
+    # ---- data placement by the unit's own named objects -----------------------------
+    # The previous round's symbol table holds Maniax addresses for named data. A unit's
+    # data section starts where its named objects say it does (majority vote), measured
+    # in its last full build object when there is one (which includes the assembly
+    # pieces), else in the probe object for units without fallbacks.
+    prev_syms = {}
+    prev = ROOT / "config/mnax/symbol_addrs.txt"
+    if prev.exists():
+        for line in prev.read_text().splitlines():
+            mm = re.match(r"(\w+) = (0x[0-9A-Fa-f]+);", line)
+            if mm:
+                prev_syms[mm.group(1)] = int(mm.group(2), 16)
+
+    def named_place(unit, secname, clean):
+        from collections import Counter
+        for path in (ROOT / "build/mnax/src/mnax" / (unit + ".o"), ROOT / "build/probe" / (unit + ".o")):
+            if path.name and "probe" in str(path) and not clean:
+                continue
+            if not path.exists() or path.read_bytes()[:4] != b"\x7fELF":
+                continue
+            e = ELFFile(path.open("rb"))
+            sec = e.get_section_by_name(secname)
+            if sec is None or not sec["sh_size"]:
+                return None
+            idx = e.get_section_index(secname)
+            votes = Counter(prev_syms[sy.name] - sy["st_value"] for sy in e.get_section_by_name(".symtab").iter_symbols()
+                            if sy["st_shndx"] == idx and sy.name in prev_syms
+                            and sy["st_info"]["type"] in ("STT_OBJECT", "STT_NOTYPE") and not sy.name.startswith("."))
+            if not votes:
+                return None
+            (base, n), = votes.most_common(1)
+            if n * 2 <= sum(votes.values()):
+                return None
+            size = (sec["sh_size"] + 7) & ~7 if secname == ".rodata" else (sec["sh_size"] + 3) & ~3
+            return base, size
+        return None
+
     # ---- which units build from C ------------------------------------------------
     usa_start = defaultdict(dict)
     for sec, rows in order.items():
@@ -329,6 +366,10 @@ def main() -> None:
                     if name == ".text":
                         continue
                     size = usa_extent[unit][name]
+                    placed_by_name = named_place(unit, name, clean=False)
+                    if placed_by_name is not None:
+                        starts[name] = (placed_by_name[0], placed_by_name[1], u0)
+                        continue
                     m0 = near(amap, u0, same)
                     m1 = mregion_end[name] if u0 + size == bounds[name][1] else near(amap, u0 + size, same)
                     if m0 is None or m1 is None or m1 <= m0:
@@ -409,6 +450,10 @@ def main() -> None:
                     guess = amap.get(u0, same)
                     if guess is not None:
                         votes.add(guess)
+            if len(votes) != 1 and sec.name != ".text":
+                byname = named_place(unit, sec.name, clean=True)
+                if byname is not None:
+                    votes = {byname[0]}
             if len(votes) != 1:
                 why = f"{sec.name} start {'unknown' if not votes else 'ambiguous'}"
                 break

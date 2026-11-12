@@ -1,12 +1,6 @@
 unit	function	size	unit_state
-code_0022C578	campDebugRegistAll	1084	
 code_0022C578	campDhDrawHelpText	344	
-code_0022C578	cmpInitStatus	268	
-code_0022C578	func_002429C0	84	
-facility/fclCombineInit	cmbCreateLocalStock	204	
 facility/fclRagCalc	ragDrawFrameEdge	588	
-facility/fclRagUpdate	ragUpdateSeqConfirm	520	
-facility/fclRecoverCalc	rcvCreateLocalStock	600	
 field/fldEveHit	fldStatusSet	248	
 field/fldMain	fldAnahoriSelectDel	192	
 field/fldTest	fldElvGetFloorDigits	280	
@@ -21,9 +15,4 @@ newbattle/nbActionProcess	SetAction_READY	3540
 newbattle/nbCommSelProcess	DispComm1Comm	532	
 newbattle/nbMisc	nbGetNakama	228	
 newbattle/nbPanelProcess	nbPanelSmallNameStringDraw	360	
-newbattle/nbUnitProcess	nbAddUnitStock	880	
 newdata/datCalc	datPartyDamagePipe	276	
-result/rstupdate	rstSetHeartsEvent	240	
-script/scrParameterCommand	prm_NAKAMA_CHK_PIKUKO	164	
-script/scrParameterCommand	prm_UDV_DELETE_NG	96	
-script/scrParameterCommand	prm_UDV_DELETE_OK	100	
