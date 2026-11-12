@@ -6,3 +6,8 @@ cmbTopTextSacrifice = 0x0053A490; // size:0x20
 cmbTopText2ndDemon = 0x0053A4B0; // size:0x18
 cmbTopText1stDemon = 0x0053A4C8; // size:0x18
 ragCountFormat = 0x0054DE48;
+// fclRecoverInit: Maniax drops rcvCmdHeal, so its later strings sit one slot earlier
+rcvCalcProcName = 0x0054DE70; // size:0x8
+rcvLeaveText = 0x0054DE78; // size:0x8
+rcvTalkText = 0x0054DE80; // size:0x8
+rcvReviveText = 0x0054DE88; // size:0x8
