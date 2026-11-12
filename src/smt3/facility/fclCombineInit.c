@@ -11,6 +11,9 @@
 #include "ps2asm.h"
 #include "event.h"
 #include "sdfFrame.h"
+#ifdef VERSION_MNAX
+#include "font.h"
+#endif
 
 typedef struct
 {
@@ -1716,7 +1719,15 @@ s32 cmbFindBirthEntry(u16 devilId)
     return 0;
 }
 
+#ifdef VERSION_MNAX
+/* Maniax view: read-only in this unit. Retail keeps the value read before a
+ * call live across it (cmbGetRaceCombineResult copies the register into the
+ * loop bound instead of reloading the global), which only a const object
+ * allows. */
+extern const s32 cmbRaceTable;
+#else
 extern s32 cmbRaceTable;
+#endif
 extern void cmbSetRaceResult(cmbRaceSortEntry_t *list, u16 count);
 extern s32 cmbEntryIsValid(u16 devilId);
 extern s32 cmbDevilIsSpecial(u16 devilId);
@@ -1880,7 +1891,46 @@ s32 cmbCalcResultLevel(cmbUnit_t *unitA, cmbUnit_t *unitB, cmbUnit_t *unitC, s8 
     return (a + b + c + 2) / 3;
 }
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+/* Maniax: the table size is read straight from the (const) global for both
+ * array bounds and the loop bound. */
+s32 cmbGetRaceCombineResult(s32 race, u8 level)
+{
+    u8 raceId = (u8)race;
+    cmbRaceSortEntry_t entries[cmbRaceTable];
+    u16 eligible[cmbRaceTable];
+    u16 eligibleCount = 0;
+    s32 seen = 0;
+    s32 i;
+
+    if (raceId == 0) {
+        return 0;
+    }
+    cmbSetRaceResult(entries, (u16)cmbRaceTable);
+    for (i = 0; i < cmbRaceTable; i++) {
+        if (entries[i].info->race == raceId &&
+            cmbEntryIsValid(entries[i].index) == 0 &&
+            cmbFindBirthEntry(entries[i].index) == 0 &&
+            cmbDevilIsUnlocked(entries[i].index) == 0 &&
+            cmbDevilIsSpecial(entries[i].index) == 0) {
+            eligible[eligibleCount++] = entries[i].index;
+        }
+    }
+    if (eligibleCount == 0) {
+        return 0;
+    }
+    for (i = 0; i < eligibleCount; i++) {
+        if (datDevilTable[eligible[i]].level < level) {
+            if (seen == 0) {
+                return eligible[0];
+            }
+            return eligible[i - 1];
+        }
+        seen = 1;
+    }
+    return eligible[eligibleCount - 1];
+}
+#elif defined(NON_MATCHING)
 s32 cmbGetRaceCombineResult(s32 race, u8 level)
 {
     u8 raceId = (u8)race;
@@ -3216,9 +3266,29 @@ void cmbDrawResultIcon(s8 mode, s32 z, s32 unused2, s32 unused3, s32 alpha, s32 
     }
 }
 
+#ifdef VERSION_MNAX
+/* Unprototyped, as in fclShare.c: retail passes some sprite ids as 64-bit
+ * (long) values, which a prototype would narrow to s32. */
+extern void fclDrawPanelSprite();
+#else
 extern void fclDrawPanelSprite(s32 id, s32 ot);
+#endif
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+/* Maniax: both sprite ids are 64-bit (long) arguments, as in cmbDrawTopText. */
+void cmbDrawResultHeader(s32 x, s32 y, s32 z, s32 width, s32 height,
+                         u32 color, u32 borderColor, s32 ot)
+{
+    fclDrawPanelSprite(0x33001L, 0x47);
+    fclDrawSpriteRes(0, 0, 0xFFFFF0, NULL, 0, 7, CMB_GBWK->texHandle,
+                     cmbSpriteTable, 0x47);
+    fclDrawSpriteRes(0, 0, 0xFFFFF0, NULL, 0, 8, CMB_GBWK->texHandle,
+                     cmbSpriteTable, 0x47);
+    fclDrawSpriteRes(0, 0, z << 4, NULL, 0, 0xD, CMB_GBWK->texHandle,
+                     cmbSpriteTable, ot);
+    fclDrawPanelSprite(0x5101BL, 0x47);
+}
+#elif defined(NON_MATCHING)
 void cmbDrawResultHeader(s32 x, s32 y, s32 z, s32 width, s32 height,
                          u32 color, u32 borderColor, s32 ot)
 {
@@ -3258,7 +3328,11 @@ s32 cmbDrawPhaseDefault(s32 active)
     cmpUpdateListSelection(&pos, (u8 *)CMB_GBWK + 0x1C, 0, mode, 0x100, 0x47);
 }
 
+#ifdef VERSION_MNAX
+extern void fclDrawPanelSprite();
+#else
 extern void fclDrawPanelSprite(s32 id, s32 arg);
+#endif
 
 void cmbDrawInfoSprite(s32 unusedX, s32 unusedY, s32 z, s32 unusedOt)
 {
@@ -3285,7 +3359,25 @@ void cmbDrawTopSprite(s32 unusedX, s32 unusedY, u32 unusedZ, s32 unusedOt)
 
 extern const char *cmbTopTextTable[];
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+/* Maniax centres the text on the request's advance width. The only caller,
+ * cmbDrawSequence, ignores the result at all three call sites (it reloads $v0
+ * before reading it), so the drawing helper has its actual void contract.
+ * Both sprite ids are passed as 64-bit (long) values, as in fclShare.c's
+ * fclDrawPhaseHeader: retail builds the second with one unsplit dli. */
+void cmbDrawTopText(s8 index)
+{
+    frFontHandle_t *request = frwGetSmallFontFRQ2(0, 0, 0xFFFFF, 0x8CA0FF80,
+                                                  cmbTopTextTable[index], NULL);
+
+    frSetDrawPosition(request, ((0xB0 - request->advance) / 2 + 0x1F) << 4, 0x90);
+    fclDrawPanelSprite(0x33001L, 0x47);
+    cmbDrawTopSprite(0, 0, 0xFFFFF0, 0x47);
+    fclDrawPanelSprite(0x5101BL, 0x47);
+    frDrawFontOt(request, 1, 0x47);
+    frDestroyFontRequestAfter(request);
+}
+#elif defined(NON_MATCHING)
 s32 cmbDrawTopText(s8 index)
 {
     void *request = frwGetSmallFontFRQ2(0, 0, 0xFFFFF, 0x8CA0FF80,
@@ -3668,7 +3760,101 @@ extern void fclDrawBG(fclSprite_t *sprite, s32 ot);
 extern void cmbUpdateCameraZoom(void);
 extern void cmbUpdateCameraPos(void);
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+s32 cmbDrawSequence(void)
+{
+    s32 phase = CMB_GBWK->unk_00001;
+
+    switch (phase) {
+    case 0: case 1: case 3: case 4: case 5: case 6:
+    case 8: case 13: case 14: case 16:
+        break;
+    default:
+        fclDrawBG(&CMB_GBWK->backgroundSprite, 7);
+        break;
+    }
+    if (CMB_GBWK->unk_00000 & 0x20) {
+        cmpUpdateTerminate((cmpInfoWindow_t *)CMB_GBWK);
+        return -1;
+    }
+    switch (CMB_GBWK->unk_00001) {
+    case 0:
+        cmbDrawPhaseDefault(1);
+        break;
+    case 3:
+        cmbDrawPhase3(1);
+        break;
+    case 4:
+        cmbDrawPhaseDefault(0);
+        break;
+    case 2:
+        func_00201FB0(0);
+        break;
+    case 5:
+        cmbDrawTopText(0);
+        if ((s8)CMB_GBWK->displayFlags[0] == 0) {
+            cmbDrawResultPanel(0);
+        }
+        cmbDrawStockPanel1();
+        break;
+    case 6:
+        cmbDrawTopText(1);
+        if ((s8)CMB_GBWK->displayFlags[0] == 0) {
+            cmbDrawResultPanel(1);
+        }
+        cmbDrawStockPanel2();
+        break;
+    case 9:
+        cmbDrawStatus();
+        break;
+    case 10:
+        cmbDrawBirthDevil(0);
+        break;
+    case 7:
+        cmpDrawStatusCom(&CMB_GBWK->birthUnit[0], 1, 0, 2);
+        break;
+    case 8:
+        cmbDrawTopText(2);
+        if ((s8)CMB_GBWK->displayFlags[0] == 0) {
+            cmbDrawResultPanel(2);
+        }
+        cmbDrawStockPanel3();
+        break;
+    case 13:
+        cmbUpdateCameraZoom();
+        break;
+    case 14:
+        if (CMB_GBWK->introductionFlag == 0) {
+            /* Retail still loads actionFrame and computes `< 120` before the
+             * call (slti in the jal delay slot) although both arms call the
+             * same function: the trace of a two-armed test whose branches
+             * were merged after dead-code removal. Behaviour is unchanged. */
+            if (CMB_GBWK->actionFrame < SDF_FRAMES(120)) {
+                cmbUpdateCameraPos();
+            } else {
+                cmbUpdateCameraPos();
+            }
+        }
+        break;
+    case 11:
+        cmbDrawBirthDevil(1);
+        break;
+    case 16:
+        cmbDrawPhasePanel();
+        break;
+    case 15:
+        if (CMB_GBWK->unk_00003 == 10) {
+            cmpDrawStatusCom(&CMB_GBWK->birthUnit[0], 1, 0, 2);
+            cmbDrawBirthDevilMaskBG();
+        }
+        break;
+    }
+    if ((s8)CMB_GBWK->displayFlags[0] != 0) {
+        cmbDrawInfoSprite(0, 0, 0xFFFFF, 0x47);
+    }
+    return 0;
+}
+#elif defined(NON_MATCHING)
 s32 cmbDrawSequence(void)
 {
     s32 phase = CMB_GBWK->unk_00001;
@@ -4495,7 +4681,14 @@ s32 cmbHandleDebugExit(void)
 
 extern void fclSetPanelAnimState(void *anim, u8 state);
 
+#ifdef VERSION_MNAX
+/* Maniax: cmbDrawSequence's jump table (C here) ends at 0x0053A5B4 and the
+ * message starts at 0x0053A5C0, after 12 zero bytes: the object is 16-aligned,
+ * like cmpTextWhatWillYouDiscard in code_0022C578.c. */
+const char fclCombineSeqChangeMsg[32] __attribute__((aligned(16))) = "Sequence change...\n";
+#else
 const char fclCombineSeqChangeMsg[32] = "Sequence change...\n";
+#endif
 
 s32 cmbUpdatePanelAnim(void)
 {
@@ -4836,7 +5029,88 @@ f32 cmbGetPanelScale(s32 mode)
 extern f32 sdfCos(f32 angle);
 extern f32 sdfSin(f32 angle);
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+/* Maniax: the radius is doubled in place, the step angle is a local, and the
+ * vertex and colour cursors are separate from the parameters. */
+void cmbRotateModelPanel(const f32 *center, s32 mode, u32 color,
+                         sdfVector4_t *vertices, u32 *colors, f32 radius, f32 height)
+{
+    f32 panelHeight = height * 2.5f;
+    f32 bottom = -radius * 2.5f - 40.0f;
+    f32 angle;
+    f32 deg;
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 firstOffset;
+    f32 secondOffset;
+    s32 i;
+    f32 step = 5.53846125f;
+    sdfVector4_t *v;
+    u32 *c;
+
+    radius += radius;
+    switch (mode) {
+    case 1:
+        bottom += panelHeight;
+        panelHeight = 40.0f;
+        break;
+    case 2:
+        bottom = bottom + panelHeight + 40.0f;
+        panelHeight = 40.0f;
+        break;
+    }
+    c = colors;
+    v = vertices;
+    for (i = 0; i < 64; i++) {
+        if ((i & 1) == 0) {
+            secondOffset = 0.0f;
+            firstOffset = cmbGetPanelScale(i);
+        } else {
+            firstOffset = 0.0f;
+            secondOffset = cmbGetPanelScale(i);
+        }
+        deg = (f32)i * step;
+        angle = deg * 3.141592503f;
+        angle /= 180.0f;
+        x = sdfCos(angle) * radius + center[0];
+        y = center[1] + bottom + firstOffset;
+        z = sdfSin(angle) * radius + center[2];
+        v[0].x = x;
+        v[0].y = y;
+        v[0].z = z;
+        c[0] = color;
+        v[1].x = x;
+        v[1].y = y + panelHeight;
+        v[1].z = z;
+        c[1] = color;
+        v[4].x = x;
+        v[4].y = y;
+        v[4].z = z;
+        c[4] = color;
+        deg = (f32)((i + 1) % 64) * step;
+        angle = deg * 3.141592503f;
+        angle /= 180.0f;
+        x = sdfCos(angle) * radius + center[0];
+        y = center[1] + bottom + secondOffset;
+        z = sdfSin(angle) * radius + center[2];
+        v[2].x = x;
+        v[2].y = y + panelHeight;
+        v[2].z = z;
+        c[2] = color;
+        v[3].x = x;
+        v[3].y = y;
+        v[3].z = z;
+        c[3] = color;
+        v[5].x = x;
+        v[5].y = y + panelHeight;
+        v[5].z = z;
+        c[5] = color;
+        v += 6;
+        c += 6;
+    }
+}
+#elif defined(NON_MATCHING)
 void cmbRotateModelPanel(const f32 *center, s32 mode, u32 color,
                          sdfVector4_t *vertices, u32 *colors, f32 radius, f32 height)
 {
@@ -5372,7 +5646,44 @@ const cmbPanelScale_t cmbPanelScaleTable = { { 36.0f, 10.0f, 16.0f, 12.0f } };
 
 const char fclCombineTargetModelName[16] = "target.PB";
 
-#ifdef NON_MATCHING
+#if defined(VERSION_MNAX)
+void cmbUpdateTimeTable(void)
+{
+    cmbTimeTable_t *table = &cmbTimeTable[cmbActionMode];
+    s32 index = CMB_GBWK->actionTargetIndex;
+    cmbTimeTableEntry_t *entry;
+    s32 interval;
+    void (*action)(void);
+
+    if (index < table->count - 1) {
+        entry = &table->entries[index];
+        if ((u32)CMB_GBWK->actionFrame >= entry[1].frame) {
+            printf("Updating time table : %d -> %d\n", index, index + 1);
+            CMB_GBWK->actionTargetIndex++;
+        }
+    }
+    entry = &cmbTimeTable[cmbActionMode].entries[CMB_GBWK->actionTargetIndex];
+    action = entry->action;
+    if (action != NULL) {
+        switch (entry->mode) {
+        case 0:
+            if (CMB_GBWK->actionFrame != entry->frame) {
+                break;
+            }
+            /* fallthrough */
+        case 1:
+            action();
+            break;
+        }
+    }
+    /* The divisor is a variable: retail keeps the divide-by-zero check. */
+    interval = 100;
+    if (CMB_GBWK->actionFrame % interval == 0) {
+        printf("ActCnt = %d\n", CMB_GBWK->actionFrame);
+    }
+    CMB_GBWK->actionFrame++;
+}
+#elif defined(NON_MATCHING)
 void cmbUpdateTimeTable(void)
 {
     s8 mode = cmbActionMode;
