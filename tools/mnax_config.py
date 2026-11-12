@@ -449,7 +449,7 @@ def main() -> None:
         for line in ov.read_text().splitlines():
             f = line.split("#", 1)[0].split()
             if len(f) == 4:
-                override[(f[0], f[1])] = (int(f[2], 16), int(f[3], 16))
+                override[(f[0], f[1])] = (int(f[2], 16), None if f[3] == "-" else int(f[3], 16))
     # Maniax start of each USA .text entry: its first function that exists in Maniax.
     text_end_m = 0x100000 + msec[".text"][1]
     mregion_end = {".data": msec[".eh_frame"][0], ".rodata": msec[".lit4"][0], ".lit4": msec[".sdata"][0],
@@ -504,13 +504,15 @@ def main() -> None:
                 for name, u0 in usa_start[unit].items():
                     if name == ".text":
                         continue
-                    if (unit, name) in override:
+                    if (unit, name) in override and override[(unit, name)][1] is not None:
                         m0, size = override[(unit, name)]
                         if size:
                             starts[name] = (m0, size, u0)
                         continue
                     size = usa_extent[unit][name]
                     placed_by_name = named_place(unit, name, clean=False)
+                    if (unit, name) in override:      # measured start, size as usual
+                        placed_by_name = (override[(unit, name)][0], None)
                     if placed_by_name is not None and placed_by_name[1] is not None:
                         starts[name] = (placed_by_name[0], placed_by_name[1], u0)
                         continue
@@ -634,10 +636,10 @@ def main() -> None:
             size = (sec["sh_size"] + 7) & ~7 if sec.name == ".rodata" else (sec["sh_size"] + 3) & ~3
             if sec.name == ".text":
                 size = sec["sh_size"]
-            if override.get((unit, sec.name), (0, 0))[1]:
+            if override.get((unit, sec.name), (0, 0))[1]:  # None (start only) is falsy
                 size = override[(unit, sec.name)][1]
             starts[sec.name] = (m0, size, u0)
-        absent = {name for (u, name), (_, z) in override.items() if u == unit and not z}
+        absent = {name for (u, name), (_, z) in override.items() if u == unit and z == 0}
         if why is None and set(usa_start[unit]) - set(starts) - absent:
             why = "USA config has " + ",".join(sorted(set(usa_start[unit]) - set(starts))) + " the object lacks"
         if why:
