@@ -26,3 +26,4 @@ facility/fclRecoverInit  .sdata   0x0054DE50  0x40
 facility/fclEncyc        .rodata  0x0053B0D8  0x1E8
 newbattle/nbActionProcess .rodata 0x005418D0  0xAE0
 sdk/libkernl             .rodata  0x00549DA0  0x298
+newbattle/nbActionProcess .sdata  0x0054F058  0x18
