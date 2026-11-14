@@ -37,7 +37,7 @@ basic/dds3PointBasic	C
 kernel/dds3GlobalWork	C with fallbacks
 kernel/dds3DebugStuff	C
 field/fldTest	C with fallbacks, 1 functions kept as Maniax assembly
-field/fldGlobal	C with fallbacks
+field/fldGlobal	C with fallbacks, 1 functions kept as Maniax assembly
 field/fldMain	C with fallbacks
 field/fldProcess	C with fallbacks
 field/fldFileResolver	C with fallbacks
@@ -201,7 +201,7 @@ newbattle/NbNegoFlowInoti	C
 newbattle/NbNegoFlowKoketa	C
 newbattle/nbPanelProcess	C with fallbacks
 newbattle/nbDebugProcess	C with fallbacks
-newbattle/nbAi	C with fallbacks
+newbattle/nbAi	C
 newbattle/nbAiScript	C with fallbacks
 newbattle/nbHelpProcess	C
 newbattle/nbAutoCommProcess	C
@@ -212,7 +212,7 @@ newbattle/nbSound	C with fallbacks
 newbattle/nbEncProcess	C with fallbacks
 newbattle/nbMakaProcess	C with fallbacks
 newbattle/nbEventProcess	C
-newbattle/nbSkillError	C with fallbacks
+newbattle/nbSkillError	C
 newbattle/nbE901	C
 newbattle/nbE902	C
 newbattle/nbE903	C
@@ -234,7 +234,7 @@ nme/Nme_Calc	C with fallbacks, 2 functions kept as Maniax assembly
 nme/Nme_Draw	C with fallbacks
 nme/Nme_Update	C
 mc/mcManager	C
-code_0029B780	C with fallbacks
+code_0029B780	C with fallbacks, 1 functions kept as Maniax assembly
 kernel/dds3ConfigMain	C
 pipe/pipeMain	C with fallbacks
 pipe/pipeSection	C with fallbacks
