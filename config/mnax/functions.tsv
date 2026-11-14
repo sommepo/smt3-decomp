@@ -827,7 +827,9 @@ field/fldTest	fldElvCheckEnd	120	0x001190B8	0x001190F8
 field/fldTest	drawSceneBasicList	256	0x001192E8	0x00119328
 field/fldTest	fldRunDanteClear	16	0x0011ADA0	0x0011ADE0
 field/fldTest	fldRunTamaInit	996	0x0011ADB0	0x0011ADF0
+field/fldTest	fldRunTamaFree	188	0x0011B198	0x0011B1D8
 field/fldTest	fldRunEffSet	300	0x0011B258	0x0011B298
+field/fldTest	fldRunEffTask	544	0x0011B388	0x0011B3C8
 field/fldTest	fldRunTamaSet	504	0x0011B5A8	0x0011B5E8
 field/fldTest	fldMakeFroFileName	164	0x0011BB68	0x0011BBA8
 field/fldTest	fldFreeRunMapData	60	0x0011BC10	0x0011BC50
@@ -845,17 +847,21 @@ field/fldTest	fldRunDanteMove	868	0x0011C938	0x0011C970
 field/fldTest	fldRunDantePwak	1048	0x0011CCA0	0x0011CCD8
 field/fldTest	fldRunDanteSoba	336	0x0011D0B8	0x0011D0F0
 field/fldTest	fldRunDantePatr	720	0x0011D208	0x0011D240
+field/fldTest	fldRunDanteGun1	1116	0x0011D4D8	0x0011D510
+field/fldTest	fldRunDanteGun2	1036	0x0011D938	0x0011D970
 field/fldTest	fldRunDanteAi	212	0x0011E350	0x0011E388
 field/fldTest	fldRunDanteLoadBgm	200	0x0011E428	0x0011E460
 field/fldTest	fldRunDanteSwapBgm	68	0x0011E4F0	0x0011E528
 field/fldTest	fldRunDanteInit	660	0x0011E538	0x0011E570
 field/fldTest	fldRunDanteShutdown	80	0x0011E7D0	0x0011E808
+field/fldTest	fldRunDanteDrawShadow	720	0x0011E820	0x0011E858
 field/fldTest	fldRunDanteFacePlayer	64	0x0011EAF0	0x0011EB28
 field/fldTest	fldRunDanteDistToTarget	168	0x0011F100	0x0011F138
 field/fldTest	fldRunDanteSe	700	0x0011F1A8	0x0011F1E0
 field/fldTest	fldRunView	168	0x0011F468	0x0011F4A0
 field/fldTest	fldRunEncountChk	96	0x0011F510	0x0011F548
 field/fldGlobal	fldAllTblLoad	248	0x0011FC58	0x0011FC90
+field/fldGlobal	fldGbFlagClear	284	0x0011FD50	miss
 field/fldGlobal	fldGbInit_System	528	0x0011FE78	0x0011FEA8
 field/fldGlobal	fldResetSequenceParams	148	0x00120088	0x001200B8
 field/fldGlobal	dds3EffectFldCharToType	136	0x00120120	0x00120150
@@ -1055,6 +1061,7 @@ field/fldCamera	fldCamCalcSlopeOffset	428	0x0012C580	0x0012C578
 field/fldCamera	fldCamSetLeng	96	0x0012C730	0x0012C728
 field/fldCamera	fldCamResetNpc	8	0x0012C790	0x0012C788
 field/fldCamera	fldCamCalcSaka	660	0x0012C798	0x0012C790
+field/fldCamera	resetCamNormal	884	0x0012CA30	0x0012CA28
 field/fldCamera	resetCamNormal2	864	0x0012CDA8	0x0012CDA0
 field/fldCamera	fldCamGetPhokanParam	380	0x0012D108	0x0012D100
 field/fldCamera	fldCamUpdateFollow	332	0x0012D288	0x0012D280
@@ -1148,6 +1155,7 @@ field/fldEveHit	fldClearEveRngTable	320	0x0013C860	0x0013C868
 field/fldEveHit	fldEveHit_End	296	0x0013C9A0	0x0013C9A8
 field/fldEveHit	fldEveHit_AddEveData	32	0x0013CAC8	0x0013CAD0
 field/fldEveHit	fldEveHit_ChkDir	648	0x0013E350	0x0013E358
+field/fldEveHit	fldEveHit_ChkDir2	612	0x0013E5D8	0x0013E5E0
 field/fldEveHit	fldEveHitTestRect	264	0x0013E840	0x0013E848
 field/fldEveHit	fldEveHitTestPlanes	176	0x0013E948	0x0013E950
 field/fldEveHit	fldEveHit_ScriptStart	156	0x0013E9F8	0x0013EA00
@@ -1281,6 +1289,7 @@ field/fld_Npc	fldFreeModelTable	320	0x0014C080	0x0014BFD0
 field/fld_Npc	fldItemBoxCalcTask	684	0x0014C1C0	0x0014C110
 field/fld_Npc	fldTDmgStart	116	0x0014C470	0x0014C3C0
 field/fld_Npc	fldDmgStart	208	0x0014C4E8	0x0014C438
+field/fld_Npc	fldSibukiStart	152	0x0014C5B8	0x0014C508
 field/fld_Npc	fldDrawAddressPanel	248	0x0014C990	0x0014C8E0
 field/fld_Npc	fldDrawInputPanel	320	0x0014CA88	0x0014C9D8
 field/fld_Npc	fldDrawInputCursor	196	0x0014CBC8	0x0014CB18
@@ -1289,6 +1298,7 @@ field/fld_Npc	fldVLDraw	1480	0x0014D5B8	0x0014D508
 field/fld_Npc	fldNpcModelStart	644	0x0014DB80	0x0014DAD0
 field/fld_Npc	fldDeleteNpcModel	76	0x0014DE08	0x0014DD58
 field/fld_Npc	fldFreeNpcModel	72	0x0014DE58	0x0014DDA8
+field/fld_Npc	fldNpcCalc	1968	0x0014DEA0	0x0014DDF0
 field/fld_Npc	fldNpcHojiRefresh	156	0x0014EF30	0x0014EE80
 field/fld_Npc	fldNpcLightLoad	188	0x0014EFD0	0x0014EF20
 field/fld_Npc	fldGetEAEntry	180	0x0014F090	0x0014EFE0
@@ -3013,6 +3023,7 @@ effect/effPCPBoss	effPCPBossONGYTexRenderEnd	84	0x00197E60	0x00197C30
 effect/effPCPBoss	effPCPBossONGYModelTexRenderCheck	40	0x001981D8	0x00197FA8
 effect/effPCPBoss	effPCPBossONGYCreate	148	0x00198200	0x00197FD0
 effect/effPCPBoss	effPCPBossONGYDelete	48	0x00198298	0x00198068
+effect/effPCPBoss	effPCPBossONGYDraw	1432	0x001982C8	0x00198098
 effect/effPCPBoss	effPCPBossONGYGetLength	8	0x00198860	0x00198630
 effect/effPCPBoss	effPCPBossONGY2Create	148	0x00198868	0x00198638
 effect/effPCPBoss	effPCPBossONGY2Delete	48	0x00198900	0x001986D0
@@ -3057,6 +3068,7 @@ effect/effPCPBoss	effPCPBossKAGUInvokeCreate	564	0x0019BE80	0x0019BC50
 effect/effPCPBoss	effPCPBossKAGUInvokeCreatePCF	32	0x0019C0B8	0x0019BE88
 effect/effPCPBoss	effPCPBossKAGUInvokeCopy	20	0x0019C0D8	0x0019BEA8
 effect/effPCPBoss	effPCPBossKAGUInvokeDelete	112	0x0019C0F0	0x0019BEC0
+effect/effPCPBoss	effPCPBossKAGUInvokeDraw	736	0x0019C160	0x0019BF30
 effect/effPCPBoss	effPCPBossKAGUInvokeSetColor	8	0x0019C440	0x0019C210
 effect/effPCPBoss	effPCPBossKAGUAttackCreate	676	0x0019C448	0x0019C218
 effect/effPCPBoss	effPCPBossKAGUAttackCreatePCF	72	0x0019C6F0	0x0019C4C0
@@ -3147,6 +3159,7 @@ effect/effPCPBoss	effPCPDANTE_ShowTime_AreYouReady_Draw	1276	0x001A02F8	0x001A00
 effect/effPCPBoss	effPCPDANTE_ShowTime_ShowTime_Draw	856	0x001A07F8	0x001A05C8
 effect/effPCPBoss	effPCPDANTE_ShowTime_Draw	300	0x001A0B50	0x001A0920
 effect/effPCPBoss	effPCPDANTE_ShowTime_SetPosition	16	0x001A0C80	0x001A0A50
+effect/effPCPBoss	effPCP_BED_Create	256	0x001A0C90	0x001A0A60
 effect/effPCPBoss	effPCP_BED_CreatePCF	72	0x001A0D90	0x001A0B60
 effect/effPCPBoss	effPCP_BED_Copy	156	0x001A0DD8	0x001A0BA8
 effect/effPCPBoss	effPCP_BED_Delete	68	0x001A0E78	0x001A0C48
@@ -3499,6 +3512,7 @@ newbattle/nbCameraStartEnd	nb_1B3490	28	0x001B3490	0x001B3260
 newbattle/nbCameraStartEnd	func_001B34B0	224	-	0x001B3280
 newbattle/nbCameraSkill	nbCameraShot_GroundCollision	276	0x001B3EF8	0x001B3CC8
 newbattle/nbCameraSkill	nbCameraShot_TargetParty_Set2	748	0x001B4010	0x001B3DE0
+newbattle/nbCameraSkill	nbCameraShot_InvokeTargetParty_Set2	1312	0x001B4300	0x001B40D0
 newbattle/nbCameraSkill	nbCameraShot_Invoke_Set2	388	0x001B4820	0x001B45F0
 newbattle/nbCameraSkill	nbCameraShot_Target_Set2	712	0x001B49A8	0x001B4778
 newbattle/nbCameraSkill	nbCameraShot_One_Init	644	0x001B4C70	0x001B4A40
@@ -3679,6 +3693,7 @@ newbattle/nbCameraBoss	nbCameraBoss_Cut2_Ptr_Run	8	0x001C41B8	0x001C3F88
 newbattle/nbCameraBoss	nbCameraHero_Cut1_Init	156	0x001C41C0	0x001C3F90
 newbattle/nbCameraBoss	nbCameraHero_Cut1_Run	220	0x001C4260	0x001C4030
 newbattle/nbCameraBoss	nbCameraHero_Cut2_Init	248	0x001C4340	0x001C4110
+newbattle/nbCameraBoss	nbCameraDANTE_Init	644	0x001C4EE0	0x001C4CB0
 newbattle/nbCameraBoss	nbCameraDANTE_Run	336	0x001C5168	0x001C4F38
 newbattle/nbCameraBoss	nbCameraDANTE_DCOMBO_Set	264	0x001C52B8	0x001C5088
 newbattle/nbCameraBoss	nbCameraDANTE_KAGIRI_Set	208	0x001C53C0	0x001C5190
@@ -3778,9 +3793,11 @@ interface/frFont	frCreateVariableRequest	368	0x001C8508	0x001C7DA8
 interface/frFont	frCreateNewHandle	144	0x001C86A0	0x001C7F18
 interface/frFont	frMessageReturnCode	36	0x001C8730	0x001C7FA8
 interface/frFont	frPushTagChar	108	0x001C8758	miss
+interface/frFont	frAnalyzeTag	968	0x001C87C8	0x001C7FD0
 interface/frFont	frGetTagArgCount	68	0x001C8CE0	miss
 interface/frFont	frCopyTagArgs	284	0x001C8D28	miss
 interface/frFont	frCalcStringHash	188	0x001C8E48	miss
+interface/frFont	frAnalyzeMessage	488	0x001C8F08	0x001C8398
 interface/frFont	MessageRequest	52	0x001C9108	0x001C8580
 interface/frFont	MessageRequestEx	68	0x001C9140	0x001C85B8
 interface/frFont	MessageRequestEx2	88	0x001C9188	0x001C8600
@@ -4118,6 +4135,7 @@ pb/pbGame	pbInitGame	656	0x001D7038	0x001D6378
 pb/pbGame	moveChar	196	0x001D72C8	0x001D6608
 pb/pbGame	deleteMoveChar	400	0x001D7390	0x001D66D0
 pb/pbGame	setMoveBlockData	224	0x001D7520	0x001D6860
+pb/pbGame	moveBlock	140	0x001D7600	0x001D6940
 pb/pbGame	rotXY	108	0x001D77D8	0x001D6B18
 pb/pbGame	setRoundBlockData	260	0x001D7848	0x001D6B88
 pb/pbGame	roundBlock	140	0x001D7950	0x001D6C90
@@ -4647,6 +4665,7 @@ event/evtEventViewer	EnterIntFloatChange	408	0x001EF398	0x001EE6D8
 event/evtEventViewer	EnterFilename2	168	0x001EF530	0x001EE870
 event/evtEventViewer	EnterBasicList	612	0x001EF5D8	0x001EE918
 event/evtEventViewer	EnterEventPos	64	0x001EF840	0x001EEB80
+event/evtEventViewer	EnterData	888	0x001EF880	0x001EEBC0
 event/evtEventViewer	evtEventViewerProcess4	640	0x001EFBF8	0x001EEF38
 event/evtEventViewer	evtEventViewerProcess3	364	0x001EFE78	0x001EF1B8
 event/evtEventViewer	evtEventViewerProcess2	72	0x001EFFE8	0x001EF328
@@ -4778,6 +4797,7 @@ event/evtEventViewerMenu	evtEventPosItem	352	0x001F76F0	0x001F6A30
 event/evtEventViewerMenu	evtEventPosMenu	248	0x001F7850	0x001F6B90
 event/evtEventViewerMenu	mfilter_Process	48	0x001F7948	0x001F6C88
 event/evtEventViewerMenu	evtViewerExit	48	0x001F7978	0x001F6CB8
+event/evtEventViewerMenu	evtPollEffectFrameControl	228	0x001F79A8	0x001F6CE8
 event/evtEventViewerMenu	evtViewerDispatch	80	0x001F7A90	0x001F6DD0
 event/evtEventViewerMenu	evtWriteRecord	20	0x001F7AE0	0x001F6E20
 event/evtEventViewerMenu	evtCountObjType10	100	0x001F7AF8	0x001F6E38
@@ -4885,6 +4905,7 @@ facility/fclCombineInit	cmbFindPairEntry	140	0x001FDD18	0x001FD050
 facility/fclCombineInit	cmbCountSkills	64	0x001FDDA8	0x001FD0E0
 facility/fclCombineInit	cmbLookupCombine	216	0x001FDDE8	0x001FD120
 facility/fclCombineInit	cmbCalcResultLevel	180	0x001FDEC0	0x001FD1F8
+facility/fclCombineInit	cmbGetRaceCombineResult	504	0x001FDF78	0x001FD2B0
 facility/fclCombineInit	cmbGetDevilIdAndRace	44	0x001FE170	0x001FD4A8
 facility/fclCombineInit	cmbCheckUnlockedPair	220	0x001FE1A0	0x001FD4D8
 facility/fclCombineInit	cmbEntryIsValid	72	0x001FE280	0x001FD5B8
@@ -4936,9 +4957,12 @@ facility/fclCombineInit	cmbDrawStockList	220	0x00200AD8	0x001FFE00
 facility/fclCombineInit	cmbDrawDevilStats	420	0x00200BB8	0x001FFEE0
 facility/fclCombineInit	cmbDrawDevilNameLevel	240	0x00200D68	0x00200088
 facility/fclCombineInit	cmbDrawResultIcon	520	0x00200E60	0x00200178
+facility/fclCombineInit	cmbDrawResultHeader	256	0x00201068	0x00200380
 facility/fclCombineInit	cmbDrawPhaseDefault	148	0x00201168	0x00200480
 facility/fclCombineInit	cmbDrawInfoSprite	284	0x00201200	0x00200518
 facility/fclCombineInit	cmbDrawTopSprite	84	0x00201320	0x00200638
+facility/fclCombineInit	cmbDrawTopText	204	0x00201378	0x00200690
+facility/fclCombineInit	cmbDrawStockRow	324	0x00201428	0x00200760
 facility/fclCombineInit	cmbDrawStockScrollBar	180	0x00201570	0x002008A8
 facility/fclCombineInit	cmbDrawResultFooter	116	0x00201628	0x00200960
 facility/fclCombineInit	cmbDrawResultPanel	552	0x002016A0	0x002009D8
@@ -4951,6 +4975,7 @@ facility/fclCombineInit	cmbDrawBirthDevil	628	0x00201D38	0x00201070
 facility/fclCombineInit	func_00201FB0	148	-	0x002012E8
 facility/fclCombineInit	cmbDrawPhase3	156	0x00202048	0x00201380
 facility/fclCombineInit	cmbDrawPhasePanel	84	0x002020E8	0x00201420
+facility/fclCombineInit	cmbDrawSequence	636	0x00202140	0x00201478
 facility/fclCombineInit	cmbExit	96	0x002023C0	0x002016F8
 facility/fclCombineInit	cmbUpdateRoot	500	0x00202420	0x00201758
 facility/fclCombineInit	cmbStockIsLocked	44	0x00202618	0x00201950
@@ -4996,6 +5021,7 @@ facility/fclCombineInit	cmbGetActionModelHandle	188	0x002042C8	0x00203600
 facility/fclCombineInit	cmbUpdateIntroduceModel	88	0x00204388	0x002036C0
 facility/fclCombineInit	func_002043E0	32	-	0x00203718
 facility/fclCombineInit	cmbGetPanelScale	68	0x00204400	0x00203738
+facility/fclCombineInit	cmbRotateModelPanel	636	0x00204448	0x00203780
 facility/fclCombineInit	cmbDrawModelPoly	284	0x002046C8	0x00203A00
 facility/fclCombineInit	cmbDrawModelAt	364	0x002047E8	0x00203B20
 facility/fclCombineInit	cmbFindCameraPoint	100	0x00204958	0x00203C90
@@ -5010,6 +5036,7 @@ facility/fclCombineInit	cmbFindUnitScene	120	0x00205238	0x00204570
 facility/fclCombineInit	cmbUpdateCameraPos	332	0x002052B0	0x002045E8
 facility/fclCombineInit	cmbUpdateCameraZoom	232	0x00205400	0x00204738
 facility/fclCombineInit	cmbGetBirthDevilPanel	80	0x002054E8	0x00204820
+facility/fclCombineInit	cmbUpdateTimeTable	392	0x00205538	0x00204870
 facility/fclCombineInit	cmbStartSmokeEffect	488	0x002056C0	0x002049F8
 facility/fclCombineInit	cmbSetActionWorkValues	284	0x002058A8	0x00204BE0
 facility/fclCombineInit	cmbRunActionSe	132	0x002059C8	0x00204D00
@@ -5054,6 +5081,7 @@ facility/fclShopInit	shpFindItemSlot	220	0x002072F8	0x00206630
 facility/fclShopInit	shpGetSellPrice	232	0x002073D8	0x00206710
 facility/fclShopCalc	shpCalcPayOfMoney	244	0x002074C0	0x002067F8
 facility/fclShopCalc	shpChkChoiceMax	232	0x002075B8	0x002068F0
+facility/fclShopCalc	shop_Process	256	0x002076A0	0x002069D8
 facility/fclShopCalc	shopDrawPanelRow	484	0x002077A0	0x00206AD8
 facility/fclShopCalc	shopDrawPrice	504	0x00207988	0x00206CC0
 facility/fclShopCalc	shopDrawRowBox	464	0x00207B80	0x00206EB8
@@ -5354,10 +5382,12 @@ facility/fclShare	func_00215188	8	-	0x00214480
 facility/fclShare	fcl_215190	8	0x00215190	0x00214488
 facility/fclShare	fclDrawPhaseValue	380	0x00215198	0x00214490
 facility/fclShare	fclDrawPanelBorder	524	0x00215318	0x00214610
+facility/fclShare	fclDrawPhaseHeader	144	0x00215528	0x00214820
 facility/fclPanel	fclDrawPanelTypeDef	92	0x002155B8	0x002148B0
 facility/fclPanel	fclUpdatePanelTypeDef	44	0x00215618	0x00214910
 facility/fclPanel	fclDrawPanelType0Grad	256	0x00215648	0x00214940
 facility/fclPanel	fclUpdatePanelType0	44	0x00215AE0	0x00214DD8
+facility/fclPanel	fclDrawPanelType1	436	0x00215B10	0x00214E08
 facility/fclPanel	fclUpdatePanelType1	40	0x00215CC8	0x00214FC0
 facility/fclPanel	fclDrawPanelType2	148	0x00215CF0	0x00214FE8
 facility/fclPanel	fclUpdatePanelType2	44	0x00215D88	0x00215080
@@ -5485,6 +5515,7 @@ facility/fclEncyc	DrawExplainBack	512	0x0021D330	0x0021C5F0
 facility/fclEncyc	DrawBackBlackBoard	168	0x0021D530	0x0021C7F0
 facility/fclEncyc	DrawRegistAllHelp	440	0x0021D5D8	0x0021C898
 facility/fclEncyc	DrawRegistKeyHelp	288	0x0021D790	0x0021CA50
+facility/fclEncyc	DrawReadMainHelp	1344	0x0021D8B0	0x0021CB70
 facility/fclEncyc	InitializeDebug_fclEncyc	72	0x0021DDF0	0x0021D0B0
 facility/fclEncyc	ReleaseDebug_fclEncyc	40	0x0021DE38	0x0021D0F8
 facility/fclEncyc	DebugProcMenu_fclEncyc	424	0x0021DE60	0x0021D120
@@ -5537,6 +5568,7 @@ result/rstcalc	rstChkParamLimitAll	112	0x00220288	0x0021F540
 result/rstcalc	rstSetLevelUpCount	212	0x002202F8	0x0021F5B0
 result/rstcalc	rstSetCurrentDevil	176	0x002203D0	0x0021F688
 result/rstcalc	rstInitWorkStock	132	0x00220480	0x0021F738
+result/rstcalc	rstCreateBeforeSkillList	544	0x00220508	0x0021F7C0
 result/rstcalc	rstChkBeforeSkillOwner	128	0x00220728	0x0021F9E0
 result/rstcalc	rstAutoAsignDevilParam	180	0x002207A8	0x0021FA60
 result/rstcalc	rstCalcEventInfo	260	0x00220860	0x0021FB18
@@ -5549,12 +5581,14 @@ result/rstcalc	rstChkSkillPowerUp2	168	0x00220CB0	0x0021FF68
 result/rstcalc	rstRndGetPowerUpSkill	272	0x00220D58	0x00220010
 result/rstcalc	rstChkDevilSkillPowerUp	16	0x00220E68	0x00220120
 result/rstcalc	rstChkPartyDevilSkillPowerUp	128	0x00220E78	0x00220130
+result/rstcalc	rstCalcSkillPowerUpCore	284	0x00220EF8	0x002201B0
 result/rstcalc	rstCalcSkillPowerUp	44	0x00221018	0x002202D0
 result/rstcalc	rstChkEvoEvent	164	0x00221048	0x00220300
 result/rstcalc	rstCalcEvo	464	0x002210F0	0x002203A8
 result/rstcalc	rstCalcSeqEvoAt	92	0x002212C0	0x00220578
 result/rstcalc	rstCalcSeqDestroySkill	44	0x00221320	0x002205D8
 result/rstcalc	rstChkHeartsSkill	152	0x00221350	0x00220608
+result/rstcalc	rstRecalcHeartsSkill	352	0x002213E8	0x002206A0
 result/rstcalc	rstLoadHeartsSkill	8	0x00221550	ambiguous
 result/rstcalc	rstStoreHeartsSkill	8	0x00221558	ambiguous
 result/rstcalc	rstInitSkillAct	84	0x00221560	0x00220810
@@ -5580,6 +5614,7 @@ result/rstcalc	rstGetHeartsSkillAt	64	0x00222210	0x002214C0
 result/rstcalc	func_00222250	64	-	0x00221500
 result/rstcalc	datGetDevilParam	44	0x00222290	0x00221540
 result/rstcalc	cmbGetHeartsParamByIndex	88	0x002222C0	0x00221570
+result/rstcalc	cmbGetHeartsParamEx	132	0x00222318	0x002215C8
 result/rstcalc	cmbGetHeartsParam	100	0x002223A0	0x00221650
 result/rstcalc	cmbAddHeartsParam	100	0x00222408	0x002216B8
 result/rstcalc	cmbSubHeartsParam	100	0x00222470	0x00221720
@@ -5593,6 +5628,7 @@ result/rstcalc	cmbCheckEvoUnlocked	76	0x002228D8	0x00221B88
 result/rstcalc	cmbCountEvoCandidates	72	0x00222928	0x00221BD8
 result/rstcalc	cmbChkEvoNeedFlag	120	0x00222970	0x00221C20
 result/rstcalc	func_002229E8	60	-	0x00221C98
+result/rstcalc	datFindKugatatiEntry	116	0x00222A28	0x00221CD8
 result/rstcalc	cmbCopyEvoStats	204	0x00222AA0	0x00221D50
 result/rstcalc	cmbCheckEvoPair	60	0x00222B70	0x00221E20
 result/rstcalc	cmbFindEvoEntry	64	0x00222BB0	0x00221E60
@@ -5636,6 +5672,7 @@ result/rstupdate	rstWaitConfirmButton	116	0x00224190	0x00223440
 result/rstupdate	rstResetAsignParam	36	0x00224208	0x002234B8
 result/rstupdate	func_00224230	56	-	0x002234E0
 result/rstupdate	rstAddAsignParam	28	0x00224268	0x00223518
+result/rstupdate	rstUpdateSeqAsignPlayerParam	644	0x00224288	0x00223538
 result/rstupdate	rstUpdateSeqPlayerLevelUpOnly	88	0x00224510	0x002237C0
 result/rstupdate	rstUpdateSeqDevilParam	348	0x00224568	0x00223818
 result/rstupdate	rstUpdateSeqGift	560	0x002246C8	0x00223978
@@ -5778,11 +5815,13 @@ code_0022C578	cmpStartSkillTokusyuMsg	252	0x0022D878	0x0022CA60
 code_0022C578	cmpStartItemTokusyuMsg	40	0x0022D978	0x0022CB60
 code_0022C578	cmpStartSkillMsg	160	0x0022D9A0	0x0022CB88
 code_0022C578	cmpGetKugatatiMsg	160	0x0022DA40	0x0022CC28
+code_0022C578	cmpStartItemMsg	280	0x0022DAE0	0x0022CCC8
 code_0022C578	cmpUseItem	296	0x0022DBF8	0x0022CDE0
 code_0022C578	cmpGetSelectSkillID	96	0x0022DD20	0x0022CF08
 code_0022C578	cmpUseSkill	272	0x0022DD80	0x0022CF68
 code_0022C578	cmpChkDoNotUseSkill	152	0x0022DE90	0x0022D078
 code_0022C578	cmpItemIsStockFull	64	0x0022DF28	0x0022D110
+code_0022C578	cmpItemIsUsable	140	0x0022DF68	0x0022D150
 code_0022C578	cmpApplyStockRecover	148	0x0022DFF8	0x0022D1E0
 code_0022C578	cmpApplyStockRemove	120	0x0022E090	0x0022D278
 code_0022C578	cmpRemoveStockDevilEntry	92	0x0022E108	0x0022D2F0
@@ -5850,6 +5889,7 @@ code_0022C578	camp_update_stock_Shutdown	40	0x00232450	0x002315B0
 code_0022C578	cmpStartProcessStock	184	0x00232478	0x002315D8
 code_0022C578	campHideStatusWindow	32	0x00232530	0x00231690
 code_0022C578	cmpSetStockVisible	56	0x00232550	0x002316B0
+code_0022C578	cmpClearStatusFlags	48	0x00232588	0x002316E8
 code_0022C578	camp_calc_stock_Process	68	0x002325B8	0x00231718
 code_0022C578	campDrawStockPanel	380	0x00232600	0x00231760
 code_0022C578	camp_draw_stock_Process	100	0x00232780	0x002318E0
@@ -6035,6 +6075,7 @@ code_0022C578	campDrawStockStatus	532	0x0023D5A8	0x0023C610
 code_0022C578	campDrawStockLabel	200	0x0023D7C0	0x0023C828
 code_0022C578	cmpStockHasRoom	84	0x0023DA58	0x0023CAC0
 code_0022C578	campDrawStockIcon	88	0x0023DAB0	0x0023CB18
+code_0022C578	campDrawStockRow2	608	0x0023DD58	0x0023CDC0
 code_0022C578	cmpFindFreeStockSlot	216	0x0023DFB8	0x0023D020
 code_0022C578	cmpScaleColorByPhase	176	0x0023E090	0x0023D0F8
 code_0022C578	campCheckStockFree	228	0x0023E340	0x0023D3A8
@@ -6048,6 +6089,7 @@ code_0022C578	func_0023EDB0	48	-	0x0023DE18
 code_0022C578	rstGetPanelEffState	44	0x0023EDE0	0x0023DE48
 code_0022C578	cmpAddQuePanelEff	184	0x0023EF30	0x0023DF98
 code_0022C578	cmpDrawPanelEffRing	376	0x0023F1F0	0x0023E258
+code_0022C578	cmpDrawPanelEffQuad	524	0x0023F368	0x0023E3D0
 code_0022C578	cmpFindPanelEffSlot	236	0x0023F578	0x0023E5E0
 code_0022C578	cmpUpdatePanelEffSlots	208	0x0023F668	0x0023E6D0
 code_0022C578	camp_update_paneleff_Process	52	0x0023F738	0x0023E7A0
@@ -6195,6 +6237,7 @@ newdata/datCalc	datCheckTalk	136	0x002444A8	0x00243500
 newdata/datCalc	datSearchDevilStock	84	0x00244530	0x00243588
 newdata/datCalc	datGetPlayerLevel	12	0x00244598	0x002435E0
 newdata/datCalc	datCheckPlayerDead	24	0x002445A8	0x002435F0
+newdata/datCalc	datGetPlayerParam	80	0x002445C0	0x00243608
 newdata/datCalc	datAddPlayerParam	88	0x00244610	0x00243658
 newdata/datCalc	datGetNakamaParam	68	0x00244668	0x002436B0
 newdata/datCalc	datGetPlayerLND	68	0x002446B0	0x002436F8
@@ -6505,8 +6548,10 @@ newbattle/nbCommSelProcess	DispComm1PanelItem	72	0x0025A590	0x00259648
 newbattle/nbCommSelProcess	DispHpPanel	268	0x0025A5D8	0x00259690
 newbattle/nbCommSelProcess	DispMpPanel	268	0x0025A6E8	0x002597A0
 newbattle/nbCommSelProcess	DispComm1PanelSummon	640	0x0025A7F8	0x002598B0
+newbattle/nbCommSelProcess	DispCommCursor	388	0x0025AA78	0x00259B30
 newbattle/nbCommSelProcess	DispComm1PanelCursor	100	0x0025AE78	0x00259F30
 newbattle/nbCommSelProcess	DispHelpPanel	488	0x0025AEE0	0x00259F98
+newbattle/nbCommSelProcess	DispCommandPanel	828	0x0025B0C8	0x0025A180
 newbattle/nbCommSelProcess	AnimeCommandList	396	0x0025B408	0x0025A4C0
 newbattle/nbCommSelProcess	DispComm1Summon	568	0x0025B598	0x0025A650
 newbattle/nbCommSelProcess	DispComm1Item	216	0x0025B7F0	0x0025A888
@@ -7173,6 +7218,7 @@ newbattle/nbPanelProcess	nbPanelStockInit	40	0x0027FA48	0x0027E968
 newbattle/nbPanelProcess	nbPanelStockCheckRun	8	0x0027FA70	0x0027E990
 newbattle/nbPanelProcess	nbPanelStockEnd	12	0x0027FA78	0x0027E998
 newbattle/nbPanelProcess	nbPanelStockFadeOUT	12	0x0027FA88	0x0027E9A8
+newbattle/nbPanelProcess	nbPanelStockSelectInit	256	0x0027FA98	0x0027E9B8
 newbattle/nbPanelProcess	nbPanelStockSelectCtrl	372	0x0027FBA0	0x0027EAB8
 newbattle/nbPanelProcess	nbPanelStockSelect	2032	0x0027FD18	0x0027EC30
 newbattle/nbPanelProcess	nbPanelAnalyzeInit	16	0x00280508	0x0027F420
@@ -7253,6 +7299,7 @@ newbattle/nbAi	Sel_DARK	176	0x00287338	0x00286218
 newbattle/nbAi	Sel_PLAYER	144	0x002873E8	0x002862C8
 newbattle/nbAi	Sel_JOKEN	76	0x00287478	0x00286358
 newbattle/nbAi	Sel_RND	60	0x002874C8	0x002863A8
+newbattle/nbAi	SetSingleTarget2	620	0x00287508	0x002863E8
 newbattle/nbAi	SetGroupTarget2	232	0x00287778	0x00286658
 newbattle/nbAi	ChkCost	200	0x00287860	0x00286740
 newbattle/nbAi	ChkClose	196	0x00287928	0x00286808
@@ -7449,6 +7496,7 @@ newbattle/nbEncProcess	nbBadCurseStep6	152	0x0028EB80	0x0028DA48
 newbattle/nbEncProcess	nbBadCurseStep0	120	0x0028EC18	0x0028DAE0
 newbattle/nbEncProcess	nbBadCurseStep7	56	0x0028EC90	0x0028DB58
 newbattle/nbEncProcess	nbGetBadCurseStep	204	0x0028ECC8	0x0028DB90
+newbattle/nbEncProcess	nbSetBadCurseTimer	44	0x0028ED98	0x0028DC60
 newbattle/nbEncProcess	nbInitBadCurseState	724	0x0028EDC8	0x0028DC90
 newbattle/nbMakaProcess	GetMakaProcessData	60	0x0028F218	0x0028E0E0
 newbattle/nbMakaProcess	nbMakaDispOn	84	0x0028F258	0x0028E120
@@ -7486,6 +7534,7 @@ newbattle/nbEventProcess	cmpButtonGuideHideDone	76	0x00290138	0x0028EFF8
 newbattle/nbEventProcess	cmpFindButtonGuideByFlag	68	0x00290188	0x0028F048
 newbattle/nbSkillError	CheckHojo	704	0x002901D0	0x0028F090
 newbattle/nbSkillError	nbDispSkillErrorMessage	144	0x00290490	0x0028F350
+newbattle/nbSkillError	nbCheckBattleSkillError1	72	0x00290520	0x0028F3E0
 newbattle/nbSkillError	nbCheckBattleSkillError2	532	0x00290568	0x0028F428
 newbattle/nbSkillError	nbCheckBattleSkillError3	388	0x00290780	0x0028F640
 newbattle/nbSkillError	cmpClearButtonGuide	532	0x00290908	0x0028F7C8
@@ -7643,6 +7692,8 @@ nme/Nme_Init	nme_298698	172	0x00298698	0x00297468
 nme/Nme_Calc	nmeCalc	80	0x00298748	0x00297518
 nme/Nme_Calc	nmeDrawCharRow	196	0x00298798	0x00297568
 nme/Nme_Calc	nmeDrawSymbolRow	196	0x00298860	miss
+nme/Nme_Calc	nmeDrawNameText	932	0x00298928	0x00297630
+nme/Nme_Calc	nmeDrawNameString	468	0x00298D10	0x002979D8
 nme/Nme_Calc	nmeDrawEditIcons	160	0x00298EF8	0x00297BB0
 nme/Nme_Calc	nmeDrawTextBox	64	0x00298F98	0x00297C50
 nme/Nme_Calc	nmeDrawColoredText	392	0x00298FD8	0x00297C90
@@ -7726,8 +7777,9 @@ code_0029B780	dds3DrawConfigCursor	716	0x0029BC00	0x0029B290
 code_0029B780	dds3DrawConfigItem	304	0x0029BED0	0x0029B560
 code_0029B780	dds3DrawConfigSlider	228	0x0029C000	0x0029B690
 code_0029B780	dds3DrawConfigValue	388	0x0029C2B0	0x0029B940
+code_0029B780	dds3DrawConfigText	580	0x0029C438	0x0029BAC8
 code_0029B780	dds3DrawConfigBackground	128	0x0029C680	0x0029BD10
-code_0029B780	dds3DrawConfigPanel	596	0x0029C700	0x0029BD90
+code_0029B780	dds3DrawConfigPanel	596	0x0029C700	miss
 code_0029B780	cfgTexLoad	28	0x0029C958	0x0029BFE8
 code_0029B780	dds3FreeConfigTexture	36	0x0029C978	0x0029C008
 code_0029B780	dds3AllocConfigWork	212	0x0029C9A0	0x0029C030
@@ -8823,6 +8875,8 @@ sdk/libpad	scePadSetWarningLevel	104	0x002CB2C0	0x002CA948
 sdk/libcdvd	gcc2_compiled__6	36	0x002CB328	0x002CA9B0
 sdk/libcdvd	sceCdDelayThread	104	0x002CB350	0x002CA9D8
 sdk/libcdvd	sceCdCallback	92	0x002CB3B8	0x002CAA40
+sdk/libcdvd	_sceCd_cd_callback	160	0x002CB418	0x002CAAA0
+sdk/libcdvd	_Cdvd_cbLoop	188	0x002CB4B8	0x002CAB40
 sdk/libcdvd	sceCdInitEeCB	212	0x002CB578	0x002CAC00
 sdk/libcdvd	_sceCd_cd_read_intr	160	0x002CB650	0x002CACD8
 sdk/libcdvd	cmd_sem_init	148	0x002CB6F0	0x002CAD78
@@ -8880,6 +8934,7 @@ sdk/libmc	sceMcRead	284	0x002CE3C0	0x002CDA48
 sdk/libmc	sceMcWrite	380	0x002CE4E0	0x002CDB68
 sdk/libmc	mcHearAlarm	36	0x002CE660	0x002CDCE8
 sdk/libmc	mcDelayThread	68	0x002CE688	0x002CDD10
+sdk/libmc	sceMcSync	224	0x002CE6D0	0x002CDD58
 sdk/libmc	mceGetInfoApdx	84	0x002CE7B0	0x002CDE38
 sdk/libmc	sceMcGetInfo	388	0x002CE808	0x002CDE90
 sdk/libmc	sceMcUdCheckNewCard	108	0x002CE990	0x002CE018
@@ -8901,6 +8956,7 @@ sdk/libm	atan2f	20	0x002CF748	0x002CEDD0
 sdk/libm	__ieee754_acosf	1060	0x002CF760	0x002CEDE8
 sdk/libm	__ieee754_atan2f	480	0x002CFB88	0x002CF210
 sdk/libm	__ieee754_rem_pio2f	944	0x002CFD68	0x002CF3F0
+sdk/libm	__ieee754_sqrtf	204	0x002D0118	0x002CF7A0
 sdk/libm	__kernel_cosf	336	0x002D01E8	0x002CF870
 sdk/libm	__kernel_rem_pio2f	2148	0x002D0338	0x002CF9C0
 sdk/libm	__kernel_sinf	260	0x002D0BA0	0x002D0228
@@ -8922,10 +8978,12 @@ sdk/libgcc	dpcmp	76	0x002D1B38	0x002D11C0
 sdk/libgcc	litodp	184	0x002D1B88	0x002D1210
 sdk/libgcc	dptoli	156	0x002D1C40	0x002D12C8
 sdk/libgcc	__make_dp	44	0x002D1CE0	0x002D1368
+sdk/libgcc	dptofp	84	0x002D1D10	0x002D1398
 sdk/libgcc	dptoul	160	0x002D1D68	0x002D13F0
 sdk/libgcc	libc_2D1E08	68	0x002D1E08	0x002D1490
 sdk/libgcc	libc_2D1E50	88	0x002D1E50	0x002D14D8
 sdk/libgcc	libc_2D1EA8	248	0x002D1EA8	0x002D1530
+sdk/libgcc	libc_2D1FA0	1400	0x002D1FA0	0x002D1628
 sdk/libgcc	__register_frame_info	104	0x002D2518	0x002D1BA0
 sdk/libgcc	__register_frame	48	0x002D2580	0x002D1C08
 sdk/libgcc	__register_frame_info_table	104	0x002D25B0	0x002D1C38
@@ -8941,6 +8999,7 @@ sdk/libgcc	libc_2D2B60	272	0x002D2B60	0x002D21E8
 sdk/libgcc	libc_2D2C70	288	0x002D2C70	0x002D22F8
 sdk/libgcc	libc_2D2D90	1100	0x002D2D90	0x002D2418
 sdk/libgcc	libc_2D31E0	440	0x002D31E0	0x002D2868
+sdk/libgcc	__muldi3	116	0x002D3398	0x002D2A20
 sdk/libgcc	sdfUnpackFloat	92	0x002D3410	0x002D2A98
 sdk/libgcc	sdfPackQuad	44	0x002D3470	0x002D2AF8
 sdk/libgcc	__pack_df	216	0x002D34A0	0x002D2B28
@@ -8981,11 +9040,14 @@ sdk/libc	strtol	44	0x002D64D0	0x002D5B58
 sdk/libc	__sprint	72	0x002D6500	0x002D5B88
 sdk/libc	__sbprintf	180	0x002D6548	0x002D5BD0
 sdk/libc	vfprintf	116	0x002D6600	0x002D5C88
+sdk/libc	_vfprintf_r	5744	0x002D6678	0x002D5D00
 sdk/libc	cvt	448	0x002D7CE8	0x002D7370
 sdk/libc	exponent	220	0x002D7EA8	0x002D7530
 sdk/libc	vsprintf	84	0x002D7F88	0x002D7610
 sdk/libc	vsprintf_r	84	0x002D7FE0	0x002D7668
 sdk/libc	__swsetup	268	0x002D8038	0x002D76C0
+sdk/libc	quorem	556	0x002D8148	0x002D77D0
+sdk/libc	_dtoa_r	4708	0x002D8378	0x002D7A00
 sdk/libc	fflush	276	0x002D95E0	0x002D8C68
 sdk/libc	std	92	0x002D96F8	0x002D8D80
 sdk/libc	__sfmoreglue	120	0x002D9758	0x002D8DE0
@@ -9009,6 +9071,7 @@ sdk/libc	_s2b	304	0x002DA7B0	0x002D9E38
 sdk/libc	_hi0bits	128	0x002DA8E0	0x002D9F68
 sdk/libc	_lo0bits	188	0x002DA960	0x002D9FE8
 sdk/libc	_i2b	56	0x002DAA20	0x002DA0A8
+sdk/libc	_multiply	524	0x002DAA58	0x002DA0E0
 sdk/libc	_pow5mult	252	0x002DAC68	0x002DA2F0
 sdk/libc	_lshift	344	0x002DAD68	0x002DA3F0
 sdk/libc	__mcmp	104	0x002DAEC0	0x002DA548
@@ -9018,6 +9081,8 @@ sdk/libc	_b2d	408	0x002DB188	0x002DA810
 sdk/libc	_d2b	388	0x002DB320	0x002DA9A8
 sdk/libc	_ratio	204	0x002DB4A8	0x002DAB30
 sdk/libc	_mprec_log10	112	0x002DB578	0x002DAC00
+sdk/libc	isinf	72	0x002DB5E8	0x002DAC70
+sdk/libc	isnan	60	0x002DB630	0x002DACB8
 sdk/libc	__sread	100	0x002DB670	0x002DACF8
 sdk/libc	__swrite	128	0x002DB6D8	0x002DAD60
 sdk/libc	__sseek	100	0x002DB758	0x002DADE0
@@ -9083,7 +9148,11 @@ sdk/libkernl	_request_end_0	180	0x002DE808	0x002DDE88
 sdk/libkernl	_request_rdata	96	0x002DE8C0	0x002DDF40
 sdk/libkernl	sceSifGetOtherData	344	0x002DE920	0x002DDFA0
 sdk/libkernl	_search_svdata	76	0x002DEA78	0x002DE0F8
+sdk/libkernl	_request_bind	176	0x002DEAC8	0x002DE148
 sdk/libkernl	sceSifBindRpc	320	0x002DEB78	0x002DE1F8
+sdk/libkernl	_request_call	140	0x002DECB8	0x002DE338
+sdk/libkernl	sceSifCallRpc	492	0x002DED48	0x002DE3C8
+sdk/libkernl	sceSifCheckStatRpc	60	0x002DEF38	0x002DE5B8
 sdk/libkernl	sceSifSetRpcQueue	148	0x002DEF78	0x002DE5F8
 sdk/libkernl	sceSifRegisterRpc	208	0x002DF010	0x002DE690
 sdk/libkernl	sceSifRemoveRpc	148	0x002DF0E0	0x002DE760
@@ -9102,6 +9171,7 @@ sdk/libkernl	_sceFs_Poff_Intr	44	0x002DFAA8	0x002DF128
 sdk/libkernl	sceFsInit	464	0x002DFAD8	0x002DF158
 sdk/libkernl	_fs_version	140	0x002DFCA8	0x002DF328
 sdk/libkernl	sceFsReset	52	0x002DFD38	0x002DF3B8
+sdk/libkernl	sceOpen	644	0x002DFD70	0x002DF3F0
 sdk/libkernl	sceClose	380	0x002DFFF8	0x002DF678
 sdk/libkernl	sceIoctl2	476	0x002E0C30	0x002E02B0
 sdk/libkernl	_sceCallCode	420	0x002E0E10	0x002E0490
@@ -9189,6 +9259,10 @@ sdk/libkernl	SetDebugHandler	132	0x002E4AD8	0x002E4158
 sdk/libkernl	kCopy_3	56	0x002E4B70	ambiguous
 sdk/libkernl	InitTLBFunctions	196	0x002E4BC8	0x002E4248
 sdk/libkernl	iPutTLBEntry	48	0x002E4CC0	0x002E4340
+sdk/libgcc_longlong	__divdi3	1684	0x002E5320	0x002E49A0
+sdk/libgcc_longlong	__moddi3	1680	0x002E59B8	0x002E5038
+sdk/libgcc_longlong	__udivdi3	1404	0x002E6048	0x002E56C8
+sdk/libgcc_longlong	__umoddi3	1384	0x002E65C8	0x002E5C48
 sdk/libgcc_fixunsdfdi	__fixunsdfdi	280	0x002E6B30	0x002E61B0
 sdk/libgcc_dpdiv	dpdiv	320	0x002E6C48	0x002E62C8
 sdk/libgcc_floatdidf	__floatdidf	168	0x002E6D88	0x002E6408
