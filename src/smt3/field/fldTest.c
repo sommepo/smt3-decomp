@@ -3039,6 +3039,8 @@ void fldRunDanteCollision(void)
 INCLUDE_ASM(const s32, "field/fldTest", fldRunDanteCollision);
 #endif
 
+#ifndef VERSION_MNAX
+/* Maniax has only the copies the gun functions' local initializers emit. */
 const f32 fldRunDanteGun1Frames[4] = {2.0f, 10.0f, 19.0f, 28.0f};
 
 const s32 fldRunDanteGun1Marks[4] = {20, 21, 20, 21};
@@ -3046,6 +3048,7 @@ const s32 fldRunDanteGun1Marks[4] = {20, 21, 20, 21};
 const f32 fldRunDanteGun2Frames[6] = {31.0f, 37.0f, 44.0f, 51.0f, 59.0f, 65.0f};
 
 const s32 fldRunDanteGun2Marks[8] = { 0x14, 0x15, 0x14, 0x15, 0x14, 0x15, 0, 0 };
+#endif
 
 void fldRunDanteAi(void)
 {
