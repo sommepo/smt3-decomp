@@ -2471,9 +2471,9 @@ void fldRunDantePatr(void)
              * order. The empty asm emits no instruction; this is a
              * target-specific reconstruction aid (upstream 18809150 used the
              * same form), not evidence of the original source spelling. */
-            register f32 speed __asm__("$f1") = fldRun_Dante.speed;
+            FAKEMATCH_ASM_REG(f32, speed, "$f1") = fldRun_Dante.speed;
             f32 frames;
-            __asm__ volatile ("" : "+f" (speed));
+            FAKEMATCH_ASM_LIVE_F32_VOLATILE(speed);
             frames = distance / speed;
 #else
             f32 frames = distance / fldRun_Dante.speed;
