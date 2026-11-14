@@ -9,6 +9,17 @@
 [smt3-functions]: https://img.shields.io/endpoint?url=https%3A%2F%2Fmegami-decomps.github.io%2Fsmt3-decomp%2Fbadges%2Ffunctions.json
 [smt3-progress]: https://megami-decomps.github.io/smt3-decomp/
 
+> [!NOTE]
+> **This fork adds the Japanese release, *Shin Megami Tensei III: Nocturne
+> Maniax* (`SLPM_654.62`), as a second byte-identical build target.** It is
+> built on the upstream project,
+> [Megami-Decomps/smt3-decomp](https://github.com/Megami-Decomps/smt3-decomp),
+> whose USA decompilation, names, types, build system and matching
+> documentation are the foundation of everything here, and through it on
+> [dds-decomp](https://github.com/Megami-Decomps/dds-decomp). All credit for
+> that work belongs to its authors. This fork is not affiliated with them, and
+> its Maniax-specific changes are its own. See [Maniax build](#maniax-build-this-fork).
+
 A work-in-progress **matching decompilation** of *Shin Megami Tensei III:
 Nocturne* for PlayStation 2. The goal is to understand and document how the
 game works by reconstructing readable source code from its retail binary.
@@ -87,6 +98,45 @@ See [Building](docs/building.md) for build targets, generated files and
 checksum troubleshooting. The [toolchain notes](docs/toolchain.md) explain the
 original compiler, assembler and pinned 32-bit runtime.
 
+## Maniax build (this fork)
+
+| Version | Game | Serial | ELF SHA-1 |
+|---|---|---|---|
+| `mnax` | Shin Megami Tensei III: Nocturne Maniax (Japan) | `SLPM_654.62` | `a2dee659dcf6111f4e4ff82b6c5b3ebe086d9c13` |
+
+The `mnax` target rebuilds the Maniax executable byte for byte. It is a port,
+not a separate decompilation. The shared C lives in `src/smt3`, and the places
+where Maniax differs are under `#ifdef VERSION_MNAX`. Upstream's `smt3`
+build is meant to stay exactly as upstream has it.
+
+- **Finding the shared code:** `tools/mnax_probe.py` compiles every C function
+  from the USA source and searches the Maniax `.text` for it. `mnax_map.py` and
+  `mnax_funcs.py` then derive address anchors and the function map from what
+  it finds.
+- **Generating the config:** `tools/mnax_config.py` writes the splat config,
+  symbols and the generated `src/mnax` tree into `config/mnax`, using the
+  hand-measured inputs `placement.txt`, `symbols_extra.txt` and
+  `no_sdata_pad.txt`.
+- **Matching past the US decompilation:** `#if defined(VERSION_MNAX)` blocks
+  also hold C for functions upstream still has only as assembly, matched
+  directly against the Maniax bytes.
+
+State: the image is byte-identical. About 86.7% of Maniax `.text` bytes (SDK
+code included) build from C. That is this fork's own measure of functions
+built without `INCLUDE_ASM`, not upstream's progress report.
+
+```sh
+# After the upstream Quickstart setup, put your own Maniax executable at
+# orig/mnax/SLPM_654.62, then:
+python tools/mnax_settle.py   # regenerates config/mnax, configures and builds, holds back any unit that does not match
+# or, step by step:
+python tools/mnax_config.py && python configure.py mnax && ninja mnax
+```
+
+Notes for continuing the port: [docs/mnax-worker.md](docs/mnax-worker.md),
+[docs/mnax-data-worker.md](docs/mnax-data-worker.md) and
+[docs/maniax-build.md](docs/maniax-build.md).
+
 ## Documentation and contributing
 
 Start with the [contribution guide](docs/CONTRIBUTING.md). Pick an
@@ -102,6 +152,10 @@ code until this repo has its own.
 
 ## Acknowledgements
 
+- **This fork:** the Maniax target is built entirely on
+  [Megami-Decomps/smt3-decomp](https://github.com/Megami-Decomps/smt3-decomp)
+  and its contributors' USA decompilation, which it merges regularly. The
+  acknowledgements below are upstream's own and apply equally here.
 - [dds-decomp](https://github.com/Megami-Decomps/dds-decomp) and its author
   **redthing1**. This repository vendors dds-decomp's machinery (the splat
   configuration flow, `configure.py`, the tooling under `tools/` and the
