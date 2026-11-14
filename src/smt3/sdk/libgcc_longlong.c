@@ -371,8 +371,6 @@ __divdi3 (DItype u, DItype v)
 
   return w;
 }
-#else
-INCLUDE_ASM(const s32, "sdk/libgcc_longlong", __divdi3);
 #endif
 
 #ifdef NON_MATCHING
@@ -560,6 +558,43 @@ static inline u64 DivideWithRemainder(u64 numerator, u64 denominator, u64 *remai
     return result.value;
 }
 
+#endif
+
+#if defined(VERSION_MNAX)
+/* __divdi3 is C above for Maniax. */
+#elif defined(NON_MATCHING)
+/* The signed quotient uses the same normalized word division as the remainder
+ * wrappers, with its own native bit-length table and no remainder output. */
+extern const u8 libgccDivdiBitLengths[256];
+s64 __divdi3(s64 numerator, s64 denominator)
+{
+    runtimeWide_t n, d, quotient;
+    s32 negative = 0;
+
+    n.value = (u64)numerator;
+    d.value = (u64)denominator;
+    if (n.words.high < 0) {
+        u32 negatedHigh = 0U - (u32)n.words.high;
+        n.words.low = 0U - (u32)n.words.low;
+        n.words.high = negatedHigh - ((u32)n.words.low != 0);
+        negative = -1;
+    }
+    if (d.words.high < 0) {
+        u32 negatedHigh = 0U - (u32)d.words.high;
+        d.words.low = 0U - (u32)d.words.low;
+        d.words.high = negatedHigh - ((u32)d.words.low != 0);
+        negative = ~negative;
+    }
+    quotient.value = DivideWithRemainder(n.value, d.value, NULL, libgccDivdiBitLengths);
+    if (negative != 0) {
+        u32 negatedHigh = 0U - (u32)quotient.words.high;
+        quotient.words.low = 0U - (u32)quotient.words.low;
+        quotient.words.high = negatedHigh - ((u32)quotient.words.low != 0);
+    }
+    return (s64)quotient.value;
+}
+#else
+INCLUDE_ASM(const s32, "sdk/libgcc_longlong", __divdi3);
 #endif
 
 #if defined(VERSION_MNAX)

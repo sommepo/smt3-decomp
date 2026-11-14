@@ -305,3 +305,101 @@ agrees in both production and SKIP_ASM contexts; guarded production output is
 byte-identical to baseline. Independent review and one million changed-block finite-float fixtures per
 configuration pass at O0, O2 and with undefined-behavior sanitization. This tests
 the changed arithmetic/copy block, not an emulator of the whole function.
+
+### SeqStart live-zero allocation control (pass143)
+
+The guarded draft now matches 172/195 words at the native 780-byte extent,
+up from 165/195. This is **not an exact match** and retains its assembly fallback.
+The positive-zero scalar is locally bound to `$f1` and constrained immediately
+before its three real Y stores (field identifier, map position and target).
+Retail materializes positive zero in `$f1` before those stores. No memory access,
+float expression, callback, or additional consumer was introduced; the scalar
+is initialized after the final callback and consumed before the vector copies.
+
+Deletion controls at the same extent: binding without the live constraint stays
+165/195; live constraint without binding reaches 166/195. Binding all three live
+coordinates reaches 170/195 and is not retained. Ordinary scalar reuse of px/pz
+adds four bytes; splitting the X addition reaches 161/195. Moving zero's assignment
+and naming shared camera scalars do not improve the baseline. These controls do
+not justify changing access types or inventing dependencies.
+
+Residual differences now begin at +0x1F4: global-address registers, coordinate
+arithmetic allocation and store scheduling still differ, as do the later light
+constant registers. This is measured emitted-output progress, not proof of the
+historical source or a finished decompilation.
+
+### SeqStart field-ID address materialization (pass144)
+
+The guarded draft advances from 172 to 175/195 words at the native 780 bytes by
+materializing the real `fldAutoMapFieldId` address in a local, truthfully typed
+pointer bound to `$3`. It supplies only the existing three field stores and
+is never live across a call. This is a localized register-allocation aid, not
+historical-source evidence. The same unbound pointer remains 172/195; an added
+empty live constraint gives 174 and is omitted. Moving the assignment earlier
+within the same closing block does not improve 175. All 36 matched peers remain
+unchanged, and plain/dump-enabled assembly and object output agree in all three
+compilation modes. The assembly fallback remains; this is not an exact match.
+
+### SeqStart light-store ordering (pass145)
+
+Writing the real light scale before its far field in the guarded draft advances
+175 to 180/195 matching words at the native 780-byte extent. These are distinct
+nonvolatile fields (+8 and +4), with no intervening callback or observer; retail
+also stores scale before far. The ordinary source reorder removes all five
+late-light register/store differences without adding a constraint or changing any
+value, access width or consumer. The remaining 15 words concern the closing
+coordinate/vector block. The assembly fallback remains and no exact credit is
+claimed. Independent semantic review and randomized whole-storage fixtures pass.
+
+A local `$f2` binding of the actual 200.0f Z offset then advances to 184/195.
+The initialized constant has its sole real consumer in the existing Z addition,
+with no intervening call; this is a localized reconstruction aid, not original
+source evidence. The unbound scalar stays 180; adding an empty live constraint
+regresses to 173, so none is added. Independent review confirms the native
+0x43480000 constant and add.s lifetime. All 36 matched peers remain unchanged;
+plain/dump assembly and object outputs agree in production, SKIP_ASM and
+NON_MATCHING+SKIP_ASM modes. Eleven vector-block scheduling differences remain.
+
+The following bounded pass reaches 186/195 through an ordinary reorder of the
+map-position and field-ID three-store blocks. The distinct vectors retain the
+same x/y/z accesses and values, with no intervening observer. The qualified
+scheduler dump already put map-position stores ahead of field-ID stores; swapping
+the source groups repairs two emitted store positions without new constraints.
+Full owner checks preserve all 36 exact peers and three-mode assembly/object
+parity passes. Nine scheduling words remain, starting at +0x234.
+
+A subsequent local destination-operand constraint reaches 187/195, still at
+780 bytes. A truthful `sdfVector4_t *eye` is initialized to `&fldAutoMapEye`
+and constrained with an empty `+r` operand immediately before its existing
+VU-copy consumer. No fixed register binding is needed and no value crosses a
+call. This target-specific reconstruction aid leaves the native vector accesses,
+including untouched W lanes, unchanged; it is not evidence of original source
+spelling. The final target-Y and camera-X store positions now agree, while eight
+address/zero/store scheduling words remain from +0x228 through +0x248. The
+assembly fallback and matching credit remain unchanged. All 36 exact peers are
+preserved, and production, SKIP_ASM and NON_MATCHING+SKIP_ASM each have identical
+assembly and objects with and without compiler dumps. Ordinary pointer naming
+alone stays at 186/195; fixed binding adds no benefit over the immediate operand.
+
+### SeqStart ordinary field-ID pointer and dependency control (pass148)
+
+With the current guarded draft, the ordinary `sdfVector4_t *fieldId` local now
+produces exactly the same complete-owner assembly and object as the prior `$3`
+binding. The binding is therefore removed. This supersedes the pass144 control
+only for the current source: that older 172-word baseline did need the binding
+for its measured gain. SeqStart remains 187/195 words at 780 bytes; it is not an
+exact match. Production, guarded `SKIP_ASM`, and active
+`NON_MATCHING`+`SKIP_ASM` outputs are individually unchanged, and each source/mode
+pair has equal plain and dump-enabled assembly and objects.
+
+The paired postreload dependency dumps also resolve the proposed alias-edge
+control. The bound and ordinary-pointer variants have identical predecessor and
+successor lists across all 164 instructions and 853 dependency edges. In
+particular, each of the two field X/Z stores still has nine output-dependence
+successors plus the anti-dependence to the first VU copy; camera address
+materialization still has just that copy as its successor. The sole RTL-record
+change is the field-address low instruction's `REG_EQUAL` note becoming
+`REG_EQUIV`. Thus the dense store graph cannot be attributed to the explicit
+register binding in this source context. These are parity-qualified dependency
+dumps, not a fresh runtime priority/rank observation. Direct global field writes
+instead of the pointer score 186/195 and are not adopted.

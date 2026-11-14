@@ -1,4 +1,5 @@
 #include "interface.h"
+#include "newdata.h"
 #include "itfMesManager.h"
 #include "kernel.h"
 #include "sdfFrame.h"
@@ -1111,26 +1112,40 @@ u8 *itfMesMngGetVar(s32 id, s32 index) {
     return EE_ADDR_AS(u8 *, pinst[id].mes->variable.pptr[index]);
 }
 
-extern u8 *DDS3_GBWK;
 
 /* Localised name text, 0x40 bytes after the manager. */
 extern char itfMesMngVarText[];
 
-/* NON_MATCHING: 152 bytes against 172. Separate lead and tail variables give retail's three inductions; retail also re-copies the global pointer each iteration. */
+/* Target-specific live-value constraints retain native pretest saved-work
+ * and output availability, plus separate tail induction registers. Count $6
+ * is consumed into loopCount before tailB takes $6; no binding crosses a call.
+ * These emit no instructions or memory barrier, and do not imply original
+ * source spelling. The saved pointer supplies each iteration's work refresh. */
 #ifdef NON_MATCHING
 void itfMesMngGetVarLocalize(s32 id)
 {
+    FAKEMATCH_ASM_REG(u8 *, work, "$9") = DDS3_GBWK;
     char *out = itfMesMngVarText;
-    s32 lead = id * 20 + 0x6600;
-    s32 tailA = id * 20 + 0x6601;
-    s32 tailB = id * 20 + 0x6601;
-    s32 count = id + 0x6650;
+    FAKEMATCH_ASM_REG(u8 *, saved, "$14") = work;
+    s32 lead;
+    FAKEMATCH_ASM_REG(s32, tailA, "$10");
+    FAKEMATCH_ASM_REG(s32, tailB, "$6");
+    FAKEMATCH_ASM_REG(s32, count, "$6") = id + 0x6650;
+    FAKEMATCH_ASM_REG(s32, loopCount, "$13");
     s32 k = 0;
 
-    if (((u8 *)DDS3_GBWK + 4)[count] != 0) {
+    FAKEMATCH_ASM_LIVE(out);
+    FAKEMATCH_ASM_LIVE(count);
+    FAKEMATCH_ASM_LIVE(saved);
+    if ((work + 4)[count] != 0) {
+        loopCount = count;
+        lead = id * 20 + 0x6600;
+        tailB = id * 20 + 0x6601;
+        tailA = id * 20 + 0x6601;
         do {
-            u8 *gb = (u8 *)DDS3_GBWK + 4;
+            u8 *gb = work + 4;
             u8 code = gb[lead];
+            work = saved;
 
             if (code & 0x80) {
                 *out = code;
@@ -1144,7 +1159,7 @@ void itfMesMngGetVarLocalize(s32 id)
             tailA += 2;
             tailB += 2;
             k++;
-        } while (k < ((u8 *)DDS3_GBWK + 4)[count]);
+        } while (k < (work + 4)[loopCount]);
     }
     *out = 0;
 }

@@ -130,6 +130,7 @@ GetViewModeKey	facility/fclEncyc	0x1D4	117 of 117 words match	docs/matching/faci
 CalcPhaseReadTop	facility/fclEncyc	0x144	81 of 81 words match	docs/matching/facility/fclEncyc.md	245
 InitPhaseReadStatus	facility/fclEncyc	0x334	205 of 205 words match	docs/matching/facility/fclEncyc.md	272
 DrawReadStatusMoney	facility/fclEncyc	0x178	94 of 94 words match	docs/matching/facility/fclEncyc.md	372
+DrawReadMainHelp	facility/fclEncyc	0x540	336 of 336 words	docs/matching/facility/fclEncyc.md	469
 fclDrawPanel	fclPanel	0x54	21 of 21 words match	docs/matching/facility/fclPanel.md	3
 fclDrawPanelType0Grad	facility/fclPanel	0x100	64 of 64 words match	docs/matching/facility/fclPanel.md	34
 fclDrawPanelType0	facility/fclPanel	0x394	174 of 229 words match	docs/matching/facility/fclPanel.md	75
@@ -243,8 +244,8 @@ CheckAction_ESCAPE	newbattle/nbActionProcess	0xE4	57 of 57 words match	docs/matc
 CheckKoketaNego	newbattle/nbActionProcess	0x1CC	115 of 115 words match	docs/matching/newbattle/nbActionProcess.md	295
 CheckInotiNego	newbattle/nbActionProcess	0x2B0	172 of 172 words match	docs/matching/newbattle/nbActionProcess.md	354
 SetKoudou	newbattle/nbAi	0x1C8	110 of 114 words match	docs/matching/newbattle/nbAi.md	3
-SetSingleTarget2	newbattle/nbAi	0x26C	143 of 155 words match	docs/matching/newbattle/nbAi.md	29
-Sel_AI	newbattle/nbAi	0x358	214 of 214 words match	docs/matching/newbattle/nbAi.md	43
+SetSingleTarget2	newbattle/nbAi	0x26C	155 of 155 words match	docs/matching/newbattle/nbAi.md	29
+Sel_AI	newbattle/nbAi	0x358	214 of 214 words match	docs/matching/newbattle/nbAi.md	50
 nbGetVirtualAisyo	newbattle/nbCalc	0xAC	43 of 43 words match	docs/matching/newbattle/nbCalc.md	3
 nbCheckBackAttack	newbattle/nbCalc	0x178	94 of 94 words match	docs/matching/newbattle/nbCalc.md	28
 nbGetKoukaType	newbattle/nbCalc	0x774	477 of 477 words match	docs/matching/newbattle/nbCalc.md	61
@@ -274,9 +275,9 @@ bCameraShot_AttackInvokeTargetPartyNear_Set	newbattle/nbCameraSkill	0x308	194 of
 DispComm1PanelComm	newbattle/nbCommSelProcess	0xE0	56 of 56 words match	docs/matching/newbattle/nbCommSelProcess.md	3
 DispCommCursor	newbattle/nbCommSelProcess	0x184	29 of 97 words differ	docs/matching/newbattle/nbCommSelProcess.md	33
 AnimeCommandList	newbattle/nbCommSelProcess	0x18C	99 of 99 words match	docs/matching/newbattle/nbCommSelProcess.md	58
-DispCommandPanel (0x33C)				docs/matching/newbattle/nbCommSelProcess.md	91
-SetCommCursor2	newbattle/nbCommSelProcess	0x21C	135 of 135 words match	docs/matching/newbattle/nbCommSelProcess.md	135
-DispHelpPanel	newbattle/nbCommSelProcess	0x1E8	122 of 122 words match	docs/matching/newbattle/nbCommSelProcess.md	177
+DispCommandPanel	newbattle/nbCommSelProcess	0x33C	207 of 207 words match	docs/matching/newbattle/nbCommSelProcess.md	91
+SetCommCursor2	newbattle/nbCommSelProcess	0x21C	135 of 135 words match	docs/matching/newbattle/nbCommSelProcess.md	156
+DispHelpPanel	newbattle/nbCommSelProcess	0x1E8	122 of 122 words match	docs/matching/newbattle/nbCommSelProcess.md	198
 nbDebugProcess1	newbattle/nbDebugProcess	0x2A8	170 of 170 words match	docs/matching/newbattle/nbDebugProcess.md	3
 SelectDevil	newbattle/nbDebugProcess	0x218	79 of 134 words match	docs/matching/newbattle/nbDebugProcess.md	43
 SelectMotData	newbattle/nbDebugProcess	0x434	269 of 269 words match	docs/matching/newbattle/nbDebugProcess.md	74
@@ -327,6 +328,7 @@ nbPanelCursorDraw (0x168)				docs/matching/newbattle/nbPanelProcess.md	286
 nbFindTobiwarpLabel	newbattle/nbResultProcess	0xE78	788 of 926 words match	docs/matching/newbattle/nbResultProcess.md	3
 nbResultLoadTextures	newbattle/nbResultProcess	0x1F4	18 of 125 words match	docs/matching/newbattle/nbResultProcess.md	40
 nbCheckBattleSkillError3	newbattle/nbSkillError	0x184	97 of 97 words match	docs/matching/newbattle/nbSkillError.md	3
+nbCheckBattleSkillError1	newbattle/nbSkillError	0x48	18 of 18 words match	docs/matching/newbattle/nbSkillError.md	46
 nbLoadMotionByIndex	newbattle/nbSound	0x78		docs/matching/newbattle/nbSound.md	3
 nbSetNextOrder	newbattle/nbStageProcess	0xAC	10 of 44 words match	docs/matching/newbattle/nbStageProcess.md	3
 CheckSenseiNego	newbattle/nbStageProcess	0x130	57 of 74 words differ	docs/matching/newbattle/nbStageProcess.md	18
@@ -468,26 +470,29 @@ sceIpuSync				docs/matching/sdk/libipu.md	43
 sceIpuRestartDMA			80 of 84 words	docs/matching/sdk/libipu.md	59
 sceIpuInit	sdk/libipu	0x238		docs/matching/sdk/libipu.md	84
 _request_end_0	sdk/libkernl	180 bytes	45 of 45 words match	docs/matching/sdk/libkernl.md	3
-sceSifAddCmdHandler	sdk/libkernl	0x2C	11 of 11 words match	docs/matching/sdk/libkernl.md	52
-sceSifRemoveCmdHandler	sdk/libkernl	0x28	10 of 10 words match	docs/matching/sdk/libkernl.md	80
-sceSifCheckStatRpc				docs/matching/sdk/libkernl.md	104
-sceSifSetRpcQueue				docs/matching/sdk/libkernl.md	123
-sceSifRegisterRpc				docs/matching/sdk/libkernl.md	144
-sceSifInitIopHeap			34 of 34 words match	docs/matching/sdk/libkernl.md	175
-sceSifSetIopAddr	sdk/libkernl	220 bytes	55 of 55 words match	docs/matching/sdk/libkernl.md	228
-sceClose				docs/matching/sdk/libkernl.md	265
-sceIoctl			165 of 211 words matching	docs/matching/sdk/libkernl.md	287
-supplement_crt0	sdk/libkernl	0x48	18 of 18 words match	docs/matching/sdk/libkernl.md	313
-sceSifInitRpc			95 of 103 words matching	docs/matching/sdk/libkernl.md	351
-sceOpen				docs/matching/sdk/libkernl.md	382
-_sceFs_Rcv_Intr				docs/matching/sdk/libkernl.md	410
-sceDclose				docs/matching/sdk/libkernl.md	439
-kputchar				docs/matching/sdk/libkernl.md	462
-sceTtyInit				docs/matching/sdk/libkernl.md	489
-sceTtyWrite				docs/matching/sdk/libkernl.md	535
-iPutTLBEntry				docs/matching/sdk/libkernl.md	585
-iSyncDCache and iInvalidDCache				docs/matching/sdk/libkernl.md	628
-LoadExecPS2	72 bytes	ordinary void API		docs/matching/sdk/libkernl.md	679
+_request_bind	sdk/libkernl	176 bytes	44 of 44 words match	docs/matching/sdk/libkernl.md	52
+sceSifCallRpc	sdk/libkernl	492 bytes	123 of 123 words match	docs/matching/sdk/libkernl.md	97
+sceSifAddCmdHandler	sdk/libkernl	0x2C	11 of 11 words match	docs/matching/sdk/libkernl.md	148
+sceSifRemoveCmdHandler	sdk/libkernl	0x28	10 of 10 words match	docs/matching/sdk/libkernl.md	176
+sceSifCheckStatRpc	sdk/libkernl	60 bytes	15 of 15 words match	docs/matching/sdk/libkernl.md	200
+sceSifSetRpcQueue				docs/matching/sdk/libkernl.md	231
+sceSifRegisterRpc				docs/matching/sdk/libkernl.md	252
+sceSifInitIopHeap			34 of 34 words match	docs/matching/sdk/libkernl.md	283
+sceSifSetIopAddr	sdk/libkernl	220 bytes	55 of 55 words match	docs/matching/sdk/libkernl.md	336
+sceClose				docs/matching/sdk/libkernl.md	373
+sceIoctl			165 of 211 words matching	docs/matching/sdk/libkernl.md	395
+supplement_crt0	sdk/libkernl	0x48	18 of 18 words match	docs/matching/sdk/libkernl.md	421
+sceSifInitRpc			95 of 103 words matching	docs/matching/sdk/libkernl.md	459
+sceOpen				docs/matching/sdk/libkernl.md	490
+_sceFs_Rcv_Intr				docs/matching/sdk/libkernl.md	557
+sceDclose				docs/matching/sdk/libkernl.md	586
+kputchar				docs/matching/sdk/libkernl.md	609
+sceTtyInit				docs/matching/sdk/libkernl.md	636
+sceTtyWrite				docs/matching/sdk/libkernl.md	682
+iPutTLBEntry				docs/matching/sdk/libkernl.md	732
+iSyncDCache and iInvalidDCache				docs/matching/sdk/libkernl.md	775
+LoadExecPS2	72 bytes	ordinary void API		docs/matching/sdk/libkernl.md	826
+_request_call	sdk/libkernl	140 bytes		docs/matching/sdk/libkernl.md	943
 __ieee754_sqrtf				docs/matching/sdk/libm.md	3
 sceMcWrite			95 of 95 words match	docs/matching/sdk/libmc.md	30
 sceMcSync				docs/matching/sdk/libmc.md	79

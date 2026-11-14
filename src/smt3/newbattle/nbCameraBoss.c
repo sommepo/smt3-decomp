@@ -464,8 +464,17 @@ extern sdfVector4_t nbCameraForuE913DirectionEnd;
 
 void nbCameraBoss_Foru_E913_Run(void)
 {
-    u32 frame = Foru_E913_Frame;
-    f32 rate = (s32)frame / 190.0f;
+    nbCamera_t *camera = &pNbCamera;
+    /* Local capture/store constraint: raw is consumed by the frame copy,
+     * then reused only for the final modulo-32 increment. No value remains
+     * live in $3 across the VU address loads. This reconstructs allocation,
+     * not historical source spelling. */
+    FAKEMATCH_ASM_REG(u32, raw, "3") = Foru_E913_Frame;
+    u32 frame;
+    f32 rate;
+    FAKEMATCH_ASM_LIVE(raw);
+    frame = raw;
+    rate = (s32)frame / 190.0f;
 
     if (rate > 1.0f) {
         rate = 1.0f;
@@ -473,14 +482,16 @@ void nbCameraBoss_Foru_E913_Run(void)
     SDF_VU0_LOADVECTOR(&nbCameraForuE913TargetStart);
     SDF_VU0_LOADVECTOR_B(&nbCameraForuE913TargetEnd);
     VU0_LERP_VF10_VF11(rate);
-    SDF_VU0_STOREVECTOR(&pNbCamera.target);
+    SDF_VU0_STOREVECTOR(&camera->target);
     SDF_VU0_LOADVECTOR(&nbCameraForuE913DirectionStart);
     SDF_VU0_LOADVECTOR_B(&nbCameraForuE913DirectionEnd);
     VU0_LERP_VF10_VF11(rate);
-    SDF_VU0_STOREVECTOR(&pNbCamera.direction);
-    pNbCamera.distance = 1.0f;
-    pNbCamera.fovy = 0.6981316209f;
-    Foru_E913_Frame = frame + 1;
+    SDF_VU0_STOREVECTOR(&camera->direction);
+    camera->distance = 1.0f;
+    camera->fovy = 0.6981316209f;
+    raw = frame + 1;
+    FAKEMATCH_ASM_LIVE(raw);
+    Foru_E913_Frame = raw;
 }
 #else
 INCLUDE_ASM(const s32, "newbattle/nbCameraBoss", nbCameraBoss_Foru_E913_Run);
@@ -1953,9 +1964,8 @@ extern void nbCameraShot_All_Set3(nbCamera_t *pNbCamera, sdfVector4_t *pTarget);
 
 extern s32 nbCameraBoss_BSKAGU_Command_Set(nbCamera_t *pNbCamera);
 
-/* NON_MATCHING: 44 of 180 words differ; 720 emitted against retail 724. Retail
- * copies the frame counter into a second register before the int-to-float
- * conversion; the draft converts the loaded register directly. */
+/* NON_MATCHING: 172/181 words match at native 724 bytes.  The shared-tail
+ * capture preserves the native copy; nine scheduling differences remain. */
 #ifdef NON_MATCHING
 void nbCameraBoss_Kagu_E909_Run(void)
 {
@@ -2012,7 +2022,13 @@ void nbCameraBoss_Kagu_E909_Run(void)
         nbCameraKaguFrame = 0;
         break;
     }
-    frame = nbCameraKaguFrame;
+    /* Real frame capture ends before VU scratch overwrites $2.  This local
+     * compiler constraint reconstructs the native copy, not source spelling. */
+    {
+        FAKEMATCH_ASM_REG(s32, raw, "2") = nbCameraKaguFrame;
+        FAKEMATCH_ASM_LIVE(raw);
+        frame = raw;
+    }
     rate = (f32)frame / (f32)nbCameraKaguDuration;
     if (rate > 1.0f) {
         rate = 1.0f;
@@ -2027,7 +2043,7 @@ void nbCameraBoss_Kagu_E909_Run(void)
     SDF_VU0_STOREVECTOR(&pCamera->direction);
     pCamera->fovy = 0.69813163f;
     pCamera->distance = nbCameraKaguStartDistance + (nbCameraKaguEndDistance - nbCameraKaguStartDistance) * rate;
-    nbCameraKaguFrame = frame + 1;
+    nbCameraKaguFrame = (s32)((u32)frame + 1u);
 }
 #else
 INCLUDE_ASM(const s32, "newbattle/nbCameraBoss", nbCameraBoss_Kagu_E909_Run);
@@ -6094,14 +6110,22 @@ s32 nbCameraDANTE_Init(void)
     u32 state;
     s32 id;
     f32 distance;
-    f32 offset;
 
     id = effBTLModelGetID(invoke);
-    if (id != 0xC0 && (id < 0x153 || id > 0x155)) {
+    switch ((u32)id) {
+    case 0xC0:
+    case 0x153:
+    case 0x154:
+    case 0x155:
+        break;
+    default:
         return 0;
     }
     state = effBTLSkillGetState();
-    if ((effBTLModelGetBadStatus(invoke) & 0x40) != 0 || (state & 0xC) != 0) {
+    if (effBTLModelGetBadStatus(invoke) & 0x40) {
+        return 0;
+    }
+    if (state & 0xC) {
         return 0;
     }
     switch (effBTLSkillGetID()) {
@@ -6134,16 +6158,21 @@ s32 nbCameraDANTE_Init(void)
         effBTLModelSetPosition(invoke, &invokePos);
         effBTLModelLook(invoke, &targetPos);
         return 1;
+    case 0x106:
+    case 0x108:
+    case 0x109:
+    case 0x10A:
+    case 0x10C:
+        return 0;
     case 0x10B:
         effBTLModelTargetPartyShow();
         effBTLModelInvokeGroupHide();
         effBTLGetGroupPos(invoke, &invokePos);
         if (invoke->stat & 0x100) {
-            offset = -300.0f;
+            invokePos.z += -300.0f;
         } else {
-            offset = 300.0f;
+            invokePos.z += 300.0f;
         }
-        invokePos.z += offset;
         effBTLModelSetPosition(invoke, &invokePos);
         return 1;
     case 0x10D:

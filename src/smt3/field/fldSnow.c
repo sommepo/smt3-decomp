@@ -373,12 +373,14 @@ extern volatile sdfVector4_t fldCamTarget;
 
 void fldSnowTask(void)
 {
-    Sprite3D_t sprite;
     volatile sdfVector4_t direction;
+    Sprite3D_t sprite;
     fldSeedWork_t *seed;
     s32 i;
     s32 mode;
     f32 speed;
+    f32 radius;
+    f32 drift;
     f32 cameraX;
     f32 cameraZ;
     f32 eyeX;
@@ -402,10 +404,12 @@ void fldSnowTask(void)
         for (i = 0; i < 12 * SDF_FRAME_DUE(); i++) {
             if ((dds3GetRandA(NULL) & 3) == 0) {
                 u32 random = dds3GetRandA(NULL) & 0xFF;
-                f32 x = fldGlobalBase.x + gFldSnowX + (f32)random * gFldSnowW;
+                f32 x = fldGlobalBase.x + gFldSnowX;
                 f32 z;
+                x += (f32)random * gFldSnowW;
                 random = dds3GetRandA(NULL) & 0xFF;
-                z = fldGlobalBase.z + gFldSnowZ + (f32)random * gFldSnowW;
+                z = fldGlobalBase.z + gFldSnowZ;
+                z += (f32)random * gFldSnowW;
                 fldInitSnowSeed(x, gFldSnowY, z);
             }
         }
@@ -413,6 +417,7 @@ void fldSnowTask(void)
     rsetOtOfs(0x2C);
     rsetTest(1, 0, 0x80, 3, 0, 0, 1, 2);
     rsetAlpha(1);
+    radius = 12.0f;
     cameraZ = fldCamTarget.z;
     cameraX = fldCamTarget.x;
     eyeZ = fldCamEye.z;
@@ -429,23 +434,24 @@ void fldSnowTask(void)
     sprite.uv[2].v = 0x100;
     sprite.uv[3].u = 0;
     sprite.uv[3].v = 0x100;
-    sprite.vt[0].x = -12.0f;
-    sprite.vt[0].y = -12.0f;
-    sprite.vt[1].x = 12.0f;
-    sprite.vt[1].y = -12.0f;
-    sprite.vt[2].x = 12.0f;
-    sprite.vt[2].y = 12.0f;
-    sprite.vt[3].x = -12.0f;
-    sprite.vt[3].y = 12.0f;
+    sprite.vt[0].x = -radius;
+    sprite.vt[0].y = -radius;
+    sprite.vt[1].x = radius;
+    sprite.vt[1].y = -radius;
+    sprite.vt[2].x = radius;
+    sprite.vt[2].y = radius;
+    sprite.vt[3].x = -radius;
+    sprite.vt[3].y = radius;
     sprite.rot = 0.0f;
     mode = gFldSnowMode;
     if (mode == 0) {
+        drift = 0.125f;
         speed = gFldSnowSpd;
         seed = gFldSeedBuff;
         for (i = 0; i < 700; i++, seed++) {
             if (seed->flg & 1) {
                 seed->life -= SDF_FRAME_DUE();
-                seed->y += SDF_FRAME_STEP(speed + (f32)seed->spdx * 0.125f);
+                seed->y += SDF_FRAME_STEP(speed + (f32)seed->spdx * drift);
                 if (seed->life < 0x40) {
                     seed->alp -= 2 * SDF_FRAME_DUE();
                 }
@@ -456,7 +462,7 @@ void fldSnowTask(void)
         }
         fldSnowSpriteTex(fldSnowBlurHandle);
         for (i = 0; i < 700; i++) {
-            volatile fldSeedWork_t *item = &gFldSeedBuff[i];
+            fldSeedWork_t *item = &gFldSeedBuff[i];
             if ((item->flg & 1) && item->y < gFldSnowYD) {
                 s32 color;
                 s32 alpha;
@@ -464,7 +470,7 @@ void fldSnowTask(void)
                 color = 0x80 - item->spdy;
                 alpha = item->alp;
                 sprite.pos.y = item->y;
-                sprite.col = ((u32)alpha << 24) | (u32)color | ((u32)color << 8) | ((u32)color << 16);
+                sprite.col = (((u32)alpha << 24) | (u32)color) | (((u32)color << 8) | ((u32)color << 16));
                 sprite.pos.z = item->z;
                 fldSnowSprite3D(&sprite);
             }
@@ -472,12 +478,13 @@ void fldSnowTask(void)
         mode = gFldSnowMode;
     }
     if (mode == 1) {
+        drift = 0.125f;
         speed = gFldSnowSpd;
         seed = gFldSeedBuff;
         for (i = 0; i < 700; i++, seed++) {
             if (seed->flg & 1) {
                 seed->life -= SDF_FRAME_DUE();
-                seed->y += SDF_FRAME_STEP(speed - (f32)seed->spdx * 0.125f);
+                seed->y += SDF_FRAME_STEP(speed - (f32)seed->spdx * drift);
                 if (seed->life < 0x40) {
                     seed->alp -= 2 * SDF_FRAME_DUE();
                 }
@@ -488,7 +495,7 @@ void fldSnowTask(void)
         }
         fldSnowSpriteTex(fldSnowBlurHandle);
         for (i = 0; i < 700; i++) {
-            volatile fldSeedWork_t *item = &gFldSeedBuff[i];
+            fldSeedWork_t *item = &gFldSeedBuff[i];
             if ((item->flg & 1) && item->y < gFldSnowYD) {
                 s32 color;
                 s32 alpha;
@@ -496,7 +503,7 @@ void fldSnowTask(void)
                 color = 0x80 - item->spdy;
                 alpha = item->alp;
                 sprite.pos.y = item->y;
-                sprite.col = ((u32)alpha << 24) | (u32)color | ((u32)color << 8) | ((u32)color << 16);
+                sprite.col = (((u32)alpha << 24) | (u32)color) | (((u32)color << 8) | ((u32)color << 16));
                 sprite.pos.z = item->z;
                 fldSnowSprite3D(&sprite);
             }

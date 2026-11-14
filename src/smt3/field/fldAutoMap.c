@@ -578,8 +578,9 @@ void fldAutoMapDrawMdl1(sdfModelRootNode_t *emitter, f32 x, f32 y, f32 z) {
     sdfModelLinkOt(&sdfModelOtTable[9], emitter);
 }
 
-/* NON_MATCHING: 10 of 146 words, exact size; the two saved fp registers hold x
- * and y the other way round, which rotates all three arms. */
+/* NON_MATCHING: 584 emitted bytes versus 580 native bytes; 10 native-prefix
+ * words match. The saved fp registers hold x and y the other way round, and
+ * the native default arm rematerializes the row and reloads its geometry. */
 #ifdef NON_MATCHING
 void fldAutoMapDrawIconOfsR(s32 index, s32 mode, f32 x, f32 y) {
     sdfDrawTag_t *tag;
@@ -1380,21 +1381,24 @@ void fldAutoMapDrawWindow(void) {
     rsetAlpha(0);
 }
 
-/* NON_MATCHING: 165 of 195 words, exact size; the closing vector block is
- * scheduled differently and holds the two coordinates in other fp registers. */
+/* NON_MATCHING: 186 of 195 words, exact size; the closing vector block is
+ * scheduled differently. */
 #ifdef NON_MATCHING
 void fldAutoMapSeqStart(void) {
     sdfVector4_t target;
     sdfVector4_t camera;
     sdfVector4_t up;
+    sdfVector4_t *eye;
     f32 px;
     f32 pz;
     fldAmLightParam_t *light;
     fldAmAreaData_t *rec;
     s32 i;
+    sdfVector4_t *fieldId;
+    FAKEMATCH_ASM_REG(f32, zOffset, "$f2");
     f32 wx;
     f32 wz;
-    f32 zero;
+    FAKEMATCH_ASM_REG(f32, zero, "$f1");
 
     if (fldAutoMapSeqTestFlag(1) == 1) {
         return;
@@ -1436,27 +1440,36 @@ void fldAutoMapSeqStart(void) {
     zero = 0.0f;
     wz = fldGlobalBase.z + pz;
     up = fldAutoMapSeqUp;
-    wz += 200.0f;
+    /* Local binding of the real Z offset reproduces native allocation. */
+    zOffset = 200.0f;
+    wz += zOffset;
     wx = fldGlobalBase.x + px;
-    fldAutoMapFieldId.x = wx;
-    fldAutoMapFieldId.y = zero;
-    fldAutoMapFieldId.z = wz;
+    /* Keep the native positive-zero scalar live for the three real Y stores. */
+    FAKEMATCH_ASM_LIVE_F32(zero);
+    /* Materialize the real field-ID base for its three component stores. */
+    fieldId = &fldAutoMapFieldId;
     fldAutoMapPosX.x = wx;
     fldAutoMapPosX.y = zero;
     fldAutoMapPosX.z = wz;
+    fieldId->x = wx;
+    fieldId->y = zero;
+    fieldId->z = wz;
     target.x = (f32)fldAutoMapCamX;
     target.y = zero;
     target.z = (f32)fldAutoMapCamZ;
     camera.x = (f32)fldAutoMapCamX;
     camera.y = -24000.0f;
     camera.z = (f32)fldAutoMapCamZ;
-    SDF_VU0_COPYVECTOR(&fldAutoMapEye, &camera);
+    /* Constrain the real destination only at its immediate VU-copy consumer. */
+    eye = &fldAutoMapEye;
+    FAKEMATCH_ASM_LIVE(eye);
+    SDF_VU0_COPYVECTOR(eye, &camera);
     SDF_VU0_COPYVECTOR(&fldAutoMapRect, &target);
     SDF_VU0_COPYVECTOR(&fldAutoMapUp, &up);
     light = (fldAmLightParam_t *)&dds3LightParam2[0x20];
     light->near = 255.0f;
-    light->far = 255.0f;
     light->scale = 1000.0f;
+    light->far = 255.0f;
     light->bias = 20000.0f;
     light->mode = 0x108010;
     dds3ScreenParam2[4] = 2048.0f;

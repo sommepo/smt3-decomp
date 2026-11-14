@@ -12,7 +12,7 @@ both native and emitted sizes when they differ.
 | Entries | Unit | Page |
 |---|---|---|
 | 43 | code_0022C578 | [code_0022C578.md](code_0022C578.md) |
-| 21 | sdk/libkernl | [sdk/libkernl.md](sdk/libkernl.md) |
+| 24 | sdk/libkernl | [sdk/libkernl.md](sdk/libkernl.md) |
 | 19 | newbattle/NbNegoFlowOne | [newbattle/nbMakePacket.md](newbattle/nbMakePacket.md) |
 | 17 | sdfVu1 | [sdf/sdfVu1.md](sdf/sdfVu1.md) |
 | 17 | rstcalc | [result/rstcalc.md](result/rstcalc.md) |
@@ -20,8 +20,8 @@ both native and emitted sizes when they differ.
 | 14 | effect/effPCPBoss | [effect/effPCPBoss.md](effect/effPCPBoss.md) |
 | 10 |  | [sdk/libc.md](sdk/libc.md) |
 | 10 | newbattle/nbCameraBoss | [newbattle/nbCameraBoss.md](newbattle/nbCameraBoss.md) |
+| 10 | facility/fclEncyc | [facility/fclEncyc.md](facility/fclEncyc.md) |
 | 9 | newbattle/nbActionProcess | [newbattle/nbActionProcess.md](newbattle/nbActionProcess.md) |
-| 9 | facility/fclEncyc | [facility/fclEncyc.md](facility/fclEncyc.md) |
 | 8 | pb/pbGame | [pb/pbGame.md](pb/pbGame.md) |
 | 8 | newbattle/nbStageProcess | [newbattle/nbStageProcess.md](newbattle/nbStageProcess.md) |
 | 8 | newbattle/nbCalc | [newbattle/nbCalc.md](newbattle/nbCalc.md) |
@@ -80,6 +80,7 @@ both native and emitted sizes when they differ.
 | 2 | pipe/mnMyLink | [pipe/mnMyLink.md](pipe/mnMyLink.md) |
 | 2 | pb/pbRecord | [pb/pbRecord.md](pb/pbRecord.md) |
 | 2 | pb/pbMain | [pb/pbMain.md](pb/pbMain.md) |
+| 2 | newbattle/nbSkillError | [newbattle/nbSkillError.md](newbattle/nbSkillError.md) |
 | 2 | newbattle/nbResultProcess | [newbattle/nbResultProcess.md](newbattle/nbResultProcess.md) |
 | 2 | newbattle/nbKoukaProcess | [newbattle/nbKoukaProcess.md](newbattle/nbKoukaProcess.md) |
 | 2 | newbattle/nbCameraProcess | [newbattle/nbCameraProcess.md](newbattle/nbCameraProcess.md) |
@@ -115,7 +116,6 @@ both native and emitted sizes when they differ.
 | 1 | nme/Nme_Draw | [nme/Nme_Draw.md](nme/Nme_Draw.md) |
 | 1 | newbattle/nbTest | [newbattle/nbTest.md](newbattle/nbTest.md) |
 | 1 | newbattle/nbSound | [newbattle/nbSound.md](newbattle/nbSound.md) |
-| 1 | newbattle/nbSkillError | [newbattle/nbSkillError.md](newbattle/nbSkillError.md) |
 | 1 | newbattle/nbMakaProcess | [newbattle/nbMakaProcess.md](newbattle/nbMakaProcess.md) |
 | 1 | newbattle/nbMainProcess | [newbattle/nbMainProcess.md](newbattle/nbMainProcess.md) |
 | 1 | newbattle/nbInit | [newbattle/nbInit.md](newbattle/nbInit.md) |

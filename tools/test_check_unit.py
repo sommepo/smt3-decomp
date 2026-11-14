@@ -44,10 +44,237 @@ from check_unit import (
 )
 
 
+class FullContextLiteralTests(unittest.TestCase):
+    def check(self, *, mine=0xC780C000, want=0xC7800000,
+              value=0x3F800000, native=0x3F800000, kind="R_MIPS_LITERAL",
+              pool=None, retail=None, segs=None, offset=0, size=4, symbol=".lit4"):
+        return check_unit.full_context_literal_diffs(
+            struct.pack("<I", mine), offset, size, struct.pack("<I", want),
+            {0: (kind, symbol)}, struct.pack("<I", value) if pool is None else pool,
+            0x4000, struct.pack("<I", native) if retail is None else retail,
+            [(0x1000, 0, 4)] if segs is None else segs, 0x1000)
+
+    def test_same_bit_pattern_and_supported_relocations(self):
+        for kind in ("R_MIPS_LITERAL", "R_MIPS_GPREL16"):
+            for value in (0, 0x80000000, 0x7FC00001, 0x7F800000, 0x3F800000):
+                self.assertFalse(self.check(value=value, native=value, kind=kind))
+
+    def test_actual_pool_value_not_opcode_or_pool_offset(self):
+        self.assertEqual(len(self.check(value=0x3F800001)), 1)
+        self.assertEqual(len(self.check(value=0x80000000, native=0)), 1)
+        self.assertEqual(len(self.check(value=0x7FC00001, native=0x7FC00002)), 1)
+
+    def test_negative_object_offset_and_overrun_fail_closed(self):
+        for word in (0xC780BFFC, 0xC780C004):
+            self.assertEqual(len(self.check(mine=word)), 1)
+        self.assertEqual(len(self.check(pool=b"abc")), 1)
+
+    def test_retail_mapping_and_alignment_fail_closed(self):
+        self.assertEqual(len(self.check(want=0xC7800004)), 1)
+        self.assertEqual(len(self.check(want=0xC7800001)), 1)
+        self.assertEqual(len(self.check(mine=0xC780C001)), 1)
+        self.assertEqual(len(self.check(segs=[])), 1)
+        self.assertEqual(len(self.check(segs=[(0x1000, 0, 3)])), 1)
+        self.assertEqual(len(self.check(segs=[(0x1000, 0, 4)] * 2)), 1)
+
+    def test_opcode_and_unsupported_relocation_fail_closed(self):
+        self.assertEqual(len(self.check(mine=0xC781C000)), 1)
+        self.assertEqual(len(self.check(kind="R_MIPS_HI16")), 1)
+
+    def test_only_referenced_function_pool_values_are_selected(self):
+        self.assertFalse(self.check(offset=4))
+        self.assertFalse(self.check(size=0))
+        self.assertFalse(self.check(symbol=".rodata"))
+
+    def test_truncated_instruction_fails_closed(self):
+        problems = check_unit.full_context_literal_diffs(
+            b"abc", 0, 4, b"abcd", {0: ("R_MIPS_LITERAL", ".lit4")},
+            b"abcd", 0x4000, b"abcd", [(0x1000, 0, 4)], 0x1000)
+        self.assertEqual(len(problems), 1)
+
+
+class FullContextRelocationTests(unittest.TestCase):
+    def check(self, words, wants, relocs, syms=None, funcs=None, offset=0, size=None):
+        return check_unit.full_context_relocation_diffs(
+            struct.pack("<" + "I" * len(words), *words), offset,
+            len(wants) * 4 if size is None else size,
+            struct.pack("<" + "I" * len(wants), *wants), relocs,
+            funcs or [], syms or {}, GP)
+
+    def test_local_address_interior_and_native_carry(self):
+        rels = {0: ("R_MIPS_HI16", ".text"), 4: ("R_MIPS_LO16", ".text")}
+        words, wants = [0x3C020000, 0x24420024], [0x3C020021, 0x24428000]
+        self.assertFalse(self.check(words, wants, rels, {"provider": 0x207FFC}, [(32, 16, "provider")]))
+        self.assertTrue(self.check(words, wants, rels, {"provider": 0x208000}, [(32, 16, "provider")]))
+
+    def test_local_address_multiple_hi_one_lo(self):
+        rels = {0: ("R_MIPS_HI16", ".text"), 4: ("R_MIPS_HI16", ".text"),
+                8: ("R_MIPS_LO16", ".text")}
+        self.assertFalse(self.check([0x3C020000, 0x3C030000, 0x24420024],
+            [0x3C020020, 0x3C030020, 0x24421234], rels,
+            {"provider": 0x201230}, [(32, 16, "provider")]))
+
+    def test_local_address_relocation_order_not_instruction_order(self):
+        rels = {4: ("R_MIPS_HI16", ".text"), 0: ("R_MIPS_LO16", ".text")}
+        self.assertFalse(self.check([0x24428004, 0x3C020001], [0x24421234, 0x3C020020],
+            rels, {"provider": 0x201230}, [(0x8000, 16, "provider")]))
+
+    def test_local_address_missing_pair_owner_or_symbol_fails_closed(self):
+        words = [0x3C020000, 0x24420024]
+        rels = {0: ("R_MIPS_HI16", ".text"), 4: ("R_MIPS_LO16", ".text")}
+        for funcs, syms in [([], {}), ([(32, 4, "provider")], {"provider": 0x2000}),
+                            ([(32, 16, "provider")], {})]:
+            with self.subTest(funcs=funcs, syms=syms):
+                self.assertEqual(len(self.check(words, words, rels, syms, funcs)), 2)
+        for rel in [{0: rels[0]}]:
+            self.assertEqual(len(self.check(words, words, rel, {"provider": 0x2000},
+                                           [(32, 16, "provider")])), 1)
+
+    def test_local_address_overlapping_owners_must_agree(self):
+        rels = {0: ("R_MIPS_HI16", ".text"), 4: ("R_MIPS_LO16", ".text")}
+        for second, expected in ((0x2000, False), (0x3000, True)):
+            result = self.check([0x3C020000, 0x24420024], [0x3C020000, 0x24422004],
+                rels, {"one": 0x2000, "two": second}, [(32, 16, "one"), (32, 16, "two")])
+            self.assertEqual(bool(result), expected)
+
+    def test_local_address_shared_high_multiple_lows(self):
+        rels = {0: ("R_MIPS_HI16", ".text"), 4: ("R_MIPS_LO16", ".text"),
+                8: ("R_MIPS_LO16", ".text")}
+        self.assertFalse(self.check([0x3C020000, 0x24420024, 0x24420028],
+            [0x3C020020, 0x24421234, 0x24421238], rels,
+            {"provider": 0x201230}, [(32, 16, "provider")]))
+        rels = {0: ("R_MIPS_LO16", ".text")}
+        self.assertTrue(self.check([0x24420024], [0x24421234], rels,
+            {"one": 0x201230, "two": 0x301234}, [(32, 16, "one"), (0x10020, 16, "two")]))
+
+    def test_local_address_incompatible_shared_low_fails_closed(self):
+        rels = {0: ("R_MIPS_HI16", ".text"), 4: ("R_MIPS_HI16", ".text"),
+                8: ("R_MIPS_LO16", ".text")}
+        result = self.check([0x3C020000, 0x3C030001, 0x24420024],
+            [0x3C020020, 0x3C030030, 0x24421234], rels,
+            {"one": 0x201230, "two": 0x301234}, [(32, 16, "one"), (0x10020, 16, "two")])
+        self.assertTrue(any("unresolved" in x[3] for x in result))
+
+    def test_named_hi_lo_addend_and_carry(self):
+        words = [0x3C020001, 0x24428000]
+        relocs = {0: ("R_MIPS_HI16", "data"), 4: ("R_MIPS_LO16", "data")}
+        wants = [0x3C020031, 0x24428000]
+        self.assertFalse(self.check(words, wants, relocs, {"data": 0x300000}))
+        self.assertEqual(len(self.check(words, wants, relocs, {"data": 0x310004})), 2)
+
+    def test_named_gprel_uses_actual_provider(self):
+        relocs = {0: ("R_MIPS_GPREL16", "data")}
+        self.assertFalse(self.check([0x8F820004], [0x8F820014], relocs, {"data": GP + 16}))
+        self.assertEqual(len(self.check([0x8F820004], [0x8F820014], relocs, {"data": GP + 20})), 1)
+
+    def test_local_call_resolves_full_object_offsets(self):
+        relocs = {0: ("R_MIPS_26", ".text")}
+        funcs = [(0x20, 16, "provider")]
+        self.assertFalse(self.check([0x0C000009], [0x0C000801], relocs, {"provider": 0x2000}, funcs))
+        self.assertEqual(len(self.check([0x0C000009], [0x0C000801], relocs, {"provider": 0x3000}, funcs)), 1)
+
+    def test_slice_does_not_check_neighbor_or_unresolved_data_section(self):
+        self.assertFalse(self.check([0x08000000, 0x3C020000], [0x3C020020],
+            {0: ("R_MIPS_26", "bad"), 4: ("R_MIPS_HI16", ".rodata")},
+            {"bad": 0x3000}, offset=4))
+
+    def test_unresolved_named_and_local_calls_fail_closed(self):
+        for symbol in ("missing_provider", ".text"):
+            result = self.check([0x08000000], [0x08000800],
+                                {0: ("R_MIPS_26", symbol)})
+            self.assertEqual(len(result), 1)
+            self.assertIn("unresolved", result[0][3])
+
+    def test_full_owned_small_data_uses_object_gp_bias(self):
+        words = struct.pack("<I", 0x8F82C004)
+        expected = struct.pack("<I", 0x8F820014)
+        args = (words, 0, 4, expected, {0: ("R_MIPS_GPREL16", ".sdata+0x4000")}, [], {}, GP)
+        self.assertFalse(check_unit.full_context_relocation_diffs(
+            *args, section_bases={".sdata": GP + 16}, object_gp=0x4000))
+        self.assertEqual(len(check_unit.full_context_relocation_diffs(
+            *args, section_bases={".sdata": GP + 20}, object_gp=0x4000)), 1)
+
+    def test_full_owned_rodata_resolves_actual_origin_and_offset(self):
+        words = struct.pack("<II", 0x3C020000, 0x24420028)
+        relocs = {0: ("R_MIPS_HI16", ".rodata"), 4: ("R_MIPS_LO16", ".rodata")}
+        args = (words, 0, 8, struct.pack("<II", 0x3C020053, 0x2442DF78), relocs, [], {}, GP)
+        self.assertFalse(check_unit.full_context_relocation_diffs(
+            *args, section_bases={".rodata": 0x52DF50}))
+        self.assertEqual(len(check_unit.full_context_relocation_diffs(
+            *args, section_bases={".rodata": 0x52DF54})), 1)
+
+    def test_wrong_instruction_shape_is_not_masked(self):
+        self.assertEqual(len(self.check([0x08000000], [0x0C000800],
+            {0: ("R_MIPS_26", "provider")}, {"provider": 0x2000})), 1)
+
+
+class FullRodataRelocationTests(unittest.TestCase):
+    def check(self, value, want, symbol=".text", kind="R_MIPS_32", **kwargs):
+        return check_unit.full_rodata_relocation_problems(
+            struct.pack("<I", value), {0: (kind, symbol)},
+            [(0x20, 16, "target")], {"target": 0x2000, "data": 0x3000},
+            kwargs.get("bases", {}), struct.pack("<I", want))
+
+    def test_full_function_offset_and_interior(self):
+        self.assertFalse(self.check(0x24, 0x2004))
+        self.assertTrue(self.check(0x28, 0x2004))
+
+    def test_named_provider_and_addend(self):
+        self.assertFalse(self.check(4, 0x3004, "data"))
+        self.assertTrue(self.check(8, 0x3004, "data"))
+
+    def test_owned_section_pointer(self):
+        self.assertFalse(self.check(4, 0x3004, ".rodata", bases={".rodata": 0x3000}))
+        self.assertTrue(self.check(8, 0x3004, ".rodata", bases={".rodata": 0x3000}))
+
+    def test_unknown_targets_fail_closed(self):
+        for symbol in ("unknown", ".unknown", ".text"):
+            self.assertTrue(self.check(0, 0x2000, symbol))
+
+    def test_unsupported_relocation_fails_closed(self):
+        self.assertTrue(self.check(0, 0x3000, "data", "R_MIPS_16"))
+
+    def test_outside_emitted_and_owned_span_fail_closed(self):
+        for off, data, retail in ((-4, b"1234", b"1234"),
+                                  (4, b"1234", b"12345678"),
+                                  (4, b"12345678", b"1234")):
+            problems = check_unit.full_rodata_relocation_problems(
+                data, {off: ("R_MIPS_32", "data")}, [], {}, {}, retail)
+            self.assertIn("outside owned", problems[0])
+
+
+class GeneratedRodataInputTests(unittest.TestCase):
+    def test_absent_optional_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertEqual(check_unit.generated_rodata_text(Path(tmp) / "missing", None), "")
+
+    def test_missing_required_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaisesRegex(ValueError, "finish configure.py"):
+                check_unit.generated_rodata_text(Path(tmp) / "missing", (0x10, 0x20))
+
+    def test_empty_required_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "unit.rodata.s"
+            for text in ("", " \n\t"):
+                path.write_text(text)
+                with self.subTest(text=text), self.assertRaisesRegex(ValueError, "missing or empty"):
+                    check_unit.generated_rodata_text(path, (0x10, 0x20))
+
+    def test_existing_file_preserved(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "unit.rodata.s"
+            text = ".section .rodata\ndlabel D_00100010\n.word 0\n"
+            path.write_text(text)
+            for extent in (None, (0x10, 0x20)):
+                self.assertEqual(check_unit.generated_rodata_text(path, extent), text)
+
+
 class FocusedFunctionTests(unittest.TestCase):
     def run_checker(self, requested, emitted="target", full_emitted=None, *,
                     code=None, retail_code=None, text_relocs=None, extra_symbols="",
-                    source_text="void target(void) {}\n", candidate=None, assembly=None):
+                    source_text="void target(void) {}\n", candidate=None, assembly=None,
+                    native_inventory=None, full_nm=None, full_relocs=None, full_rodata=None, full_rodata_owned=True):
         """Exercise the CLI with synthetic objects, without invoking a compiler."""
         if code is None:
             code = struct.pack("<II", 0x03E00008, 0)
@@ -72,6 +299,10 @@ class FocusedFunctionTests(unittest.TestCase):
                 alternate = root / "candidate.c"
                 alternate.write_text(candidate)
                 argv.extend(["--source", str(alternate)])
+            if native_inventory is not None:
+                native = root / "asm/smt3/main/unit.s"
+                native.parent.mkdir(parents=True)
+                native.write_text(native_inventory)
             stack.enter_context(patch.object(check_unit, "ROOT", root))
             stack.enter_context(patch.dict(check_unit.RETAIL, {VERSION: RETAIL_PATH}, clear=True))
             stack.enter_context(patch.dict(
@@ -81,13 +312,25 @@ class FocusedFunctionTests(unittest.TestCase):
             stack.enter_context(patch.object(check_unit, "load_segments", return_value=[]))
             stack.enter_context(patch.object(check_unit, "va_to_off", side_effect=lambda segments, addr: addr - 0x1000))
             stack.enter_context(patch.object(check_unit, "text_section", return_value=code))
-            stack.enter_context(patch.object(check_unit, "sections", return_value=(b"", {})))
-            stack.enter_context(patch.object(check_unit, "relocations", return_value={
-                ".text": text_relocs or {}, ".rodata": {}, ".sdata": {}}))
+            stack.enter_context(patch.object(check_unit, "sections", side_effect=lambda obj:
+                (full_rodata[0], {".rodata": (0, len(full_rodata[0]))})
+                if full_rodata is not None and obj.name == "full.o" else (b"", {})))
+            if full_rodata is not None:
+                stack.enter_context(patch.object(check_unit, "owned_rom_range", side_effect=
+                    lambda yaml, unit, section: (len(code), len(code) + 4)
+                    if section == ".rodata" and full_rodata_owned else None))
+                stack.enter_context(patch.object(check_unit, "generated_rodata_text", return_value=""))
+            stack.enter_context(patch.object(check_unit, "relocations", side_effect=lambda obj: {
+                ".text": (full_relocs if obj.name == "full.o" and full_relocs is not None
+                          else text_relocs or {}), ".rodata":
+                    full_rodata[1] if full_rodata is not None and obj.name == "full.o" else {},
+                    ".sdata": {}}))
 
             def object_output(*args):
                 if "-S" not in args:
                     return ""
+                if str(args[-1]).endswith("full.o") and full_nm is not None:
+                    return full_nm
                 names = full_emitted if str(args[-1]).endswith("full.o") and full_emitted is not None else emitted
                 return "".join(f"0 {len(code):x} T {name}\n" for name in names.split())
 
@@ -104,6 +347,74 @@ class FocusedFunctionTests(unittest.TestCase):
                 check_unit.main()
             return stopped.exception.code, output.getvalue()
 
+    def test_full_literal_requires_actual_pool_value(self):
+        status, report = self.run_checker(
+            "target", code=struct.pack("<I", 0xC7800000),
+            full_relocs={0: ("R_MIPS_LITERAL", ".lit4")})
+        self.assertEqual(status, 1, report)
+        self.assertIn("CONTEXT RELOC target", report)
+        self.assertIn("unmapped or unaligned .lit4 value", report)
+
+    def test_empty_candidate_cannot_pass_whole_owner_audit(self):
+        status, report = self.run_checker(
+            None, emitted="", candidate="", native_inventory="glabel target\n")
+        self.assertEqual(status, 1, report)
+        self.assertIn("MISSING target: neither C nor INCLUDE_ASM", report)
+        self.assertIn("0 match, 1 differ", report)
+
+    def test_candidate_guarded_asm_fallback_retains_owner(self):
+        candidate = ('#ifdef NON_MATCHING\nvoid target(void) {}\n#else\n'
+                     'INCLUDE_ASM(s32, "smt3/main/unit", target);\n#endif\n')
+        status, report = self.run_checker(
+            None, emitted="", full_emitted="target", candidate=candidate, native_inventory="glabel target\n")
+        self.assertEqual(status, 0, report)
+
+    def test_inactive_source_definition_cannot_supply_native_owner(self):
+        for candidate in (
+            "/*\nvoid target(void) {}\n*/\n",
+            "#if 0\nvoid target(void) {}\n#endif\n",
+            "#ifdef NON_MATCHING\nvoid target(void) {}\n#endif\n",
+        ):
+            with self.subTest(candidate=candidate):
+                status, report = self.run_checker(
+                    None, emitted="", candidate=candidate,
+                    native_inventory="glabel target\n")
+                self.assertEqual(status, 1, report)
+                self.assertIn("MISSING target: not emitted by the full-unit compile", report)
+
+    def test_full_owner_emission_checked_even_if_skip_context_has_function(self):
+        status, report = self.run_checker(
+            None, emitted="target", full_emitted="",
+            native_inventory="glabel target\n")
+        self.assertEqual(status, 1, report)
+        self.assertIn("MISSING target: not emitted by the full-unit compile", report)
+
+    def test_full_owner_definition_retained(self):
+        status, report = self.run_checker(
+            None, emitted="target", native_inventory="glabel target\n")
+        self.assertEqual(status, 0, report)
+
+    def test_zero_size_assembly_entry_is_present_in_full_owner(self):
+        status, report = self.run_checker(
+            None, emitted="", full_nm="00000000 T target\n",
+            candidate='INCLUDE_ASM(s32, "smt3/main/unit", target);\n',
+            native_inventory="glabel target\n")
+        self.assertEqual(status, 0, report)
+
+    def test_nontext_symbol_cannot_supply_function_owner(self):
+        for symbol in ("00000000 D target\n", "00000000 00000008 D target\n"):
+            with self.subTest(symbol=symbol):
+                status, report = self.run_checker(
+                    None, emitted="", full_nm=symbol,
+                    native_inventory="glabel target\n")
+                self.assertEqual(status, 1, report)
+                self.assertIn("not emitted by the full-unit compile", report)
+
+    def test_focused_check_requires_full_context_emission(self):
+        status, report = self.run_checker("target", full_emitted="")
+        self.assertEqual(status, 1, report)
+        self.assertIn("requested function not emitted by the full-unit compile", report)
+
     def test_missing_requested_name_fails_even_at_an_emitted_address(self):
         for requested in ("typo", "func_00001000", "alias"):
             with self.subTest(requested=requested):
@@ -116,6 +427,58 @@ class FocusedFunctionTests(unittest.TestCase):
         status, report = self.run_checker("target", emitted="")
         self.assertEqual(status, 1)
         self.assertIn("MISSING target", report)
+
+    def test_wrong_full_context_call_is_not_hidden_by_matching_skip_call(self):
+        for requested in (None, "target"):
+            with self.subTest(requested=requested):
+                status, report = self.run_checker(
+                    requested, code=struct.pack("<II", 0x08000000, 0),
+                    retail_code=struct.pack("<II", 0x08000800, 0),
+                    text_relocs={0: ("R_MIPS_26", "right")},
+                    full_relocs={0: ("R_MIPS_26", "wrong")},
+                    extra_symbols="right = 0x2000;\nwrong = 0x3000;\n")
+                self.assertEqual(status, 1)
+                self.assertIn("CONTEXT RELOC target", report)
+                self.assertIn("1 match, 1 differ", report)
+
+    def test_full_context_local_pointer_is_not_hidden_by_masking(self):
+        for native_target, expected_status in ((0x1000, 0), (0x2000, 1)):
+            status, report = self.run_checker(None,
+                code=struct.pack("<II", 0x3C020000, 0x24420000),
+                retail_code=struct.pack("<II", 0x3C020000, 0x24420000 | native_target),
+                text_relocs={0: ("R_MIPS_HI16", "right"), 4: ("R_MIPS_LO16", "right")},
+                full_relocs={0: ("R_MIPS_HI16", ".text"), 4: ("R_MIPS_LO16", ".text")},
+                extra_symbols=f"right = 0x{native_target:X};\n")
+            self.assertEqual(status, expected_status, report)
+            if expected_status:
+                self.assertIn("CONTEXT RELOC target", report)
+
+    def test_full_context_switch_relocation_is_not_hidden_by_masking(self):
+        code = struct.pack("<II", 0x03E00008, 0)
+        for addend, expected_status in ((0, 0), (4, 1)):
+            status, report = self.run_checker(None, code=code,
+                retail_code=code + struct.pack("<I", 0x1000),
+                full_rodata=(struct.pack("<I", addend), {0: ("R_MIPS_32", ".text")}))
+            self.assertEqual(status, expected_status, report)
+            if expected_status:
+                self.assertIn("DATA CONTEXT full unit's .rodata R_MIPS_32 .text", report)
+
+    def test_relocated_full_rodata_requires_owned_range(self):
+        status, report = self.run_checker(None,
+            full_rodata=(bytes(4), {0: ("R_MIPS_32", ".text")}),
+            full_rodata_owned=False)
+        self.assertEqual(status, 1, report)
+        self.assertIn("relocated .rodata has no unambiguous YAML-owned range", report)
+
+    def test_full_context_call_can_use_equivalent_symbol_alias(self):
+        status, report = self.run_checker(
+            None, code=struct.pack("<II", 0x08000000, 0),
+            retail_code=struct.pack("<II", 0x08000800, 0),
+            text_relocs={0: ("R_MIPS_26", "right")},
+            full_relocs={0: ("R_MIPS_26", "equivalent")},
+            extra_symbols="right = 0x2000;\nequivalent = 0x2000;\n")
+        self.assertEqual(status, 0)
+        self.assertNotIn("CONTEXT RELOC", report)
 
     def test_asm_only_function_does_not_count_as_emitted_c(self):
         status, report = self.run_checker("target", emitted="", full_emitted="target")
@@ -201,7 +564,7 @@ class FocusedFunctionTests(unittest.TestCase):
             extra_symbols="drawBank = 0x002F6A80;\n")
         self.assertEqual(status, 1)
         self.assertIn("DIFF target", report)
-        self.assertIn("0 match, 1 differ", report)
+        self.assertIn("0 match, 2 differ", report)
 
 
 class SourceReviewDiagnosticsTests(unittest.TestCase):
@@ -356,15 +719,106 @@ class TextResidualTests(unittest.TestCase):
 
 
 class LinkerSymbolTests(unittest.TestCase):
-    def symbols(self, rows):
+    def symbols(self, rows, auto=None, config=None):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / f"config/{VERSION}").mkdir(parents=True)
             (root / f"config/{VERSION}/symbol_addrs.txt").write_text(rows)
+            if auto is not None:
+                (root / f"config/{VERSION}/undefined_syms_auto.txt").write_text(auto)
+            if config is not None:
+                (root / f"config/{VERSION}/{SERIAL}.yaml").write_text(config)
             with patch.object(check_unit, "ROOT", root), \
                     patch.dict(check_unit.VERSIONS,
                                {VERSION: {"serial": SERIAL, "gp": hex(GP)}}, clear=True):
                 return symbols(VERSION)
+
+    CONFIG = "options:\n  undefined_syms_auto_path: config/smt3/undefined_syms_auto.txt\n"
+
+    def test_explicit_configured_numeric_absolute_resolves_scalar(self):
+        result = self.symbols("", "D_FFFFF = 0xFFFFF; // delay counter\n", self.CONFIG)
+        self.assertEqual(address("D_FFFFF", result), 0xFFFFF)
+        rels = {0: ("R_MIPS_HI16", "D_FFFFF"), 4: ("R_MIPS_LO16", "D_FFFFF")}
+        self.assertFalse(FullContextRelocationTests().check(
+            [0x3C020000, 0x24420000], [0x3C020010, 0x2442FFFF], rels, result))
+
+    def test_numeric_label_requires_configured_definition(self):
+        for config in (None, "", "options: {}", "options:\n  undefined_syms_auto_path: other.txt\n"):
+            self.assertIsNone(address("D_FFFFF", self.symbols("", "D_FFFFF = 0xFFFFF;", config)))
+        self.assertIsNone(address("D_FFFFF", self.symbols("", None, self.CONFIG)))
+
+    def test_absolute_loader_ignores_arbitrary_named_providers(self):
+        result = self.symbols("", "other = 0xFFFFF;\nfunc_FFFFF = 0xFFFFF;\n", self.CONFIG)
+        self.assertNotIn("other", result)
+        self.assertIsNone(address("func_FFFFF", result))
+
+    def test_absolute_loader_rejects_malformed_or_mislabeled_values(self):
+        for auto in ("D_FFFFF;", "D_FFFFF+=0xFFFFF;", "D_000FFFFF;", "D_FFFFF = 0xFFFFF", "D_FFFFF = bogus;", "D_FFFFF = 0x100000;",
+                     "D_FFFFF = 0xFFFFF; extra", "D_FFFFF = 0xFFFFFFFFF;"):
+            with self.subTest(auto=auto), self.assertRaises(ValueError):
+                self.symbols("", auto, self.CONFIG)
+
+    def test_absolute_loader_rejects_duplicates_and_canonical_conflicts(self):
+        with self.assertRaisesRegex(ValueError, "duplicate"):
+            self.symbols("", "D_FFFFF = 0xFFFFF;\nD_FFFFF = 0xFFFFF;", self.CONFIG)
+        with self.assertRaisesRegex(ValueError, "conflicts"):
+            self.symbols("D_FFFFF = 0xFFFFE;", "D_FFFFF = 0xFFFFF;", self.CONFIG)
+        self.assertEqual(self.symbols("D_FFFFF = 0xFFFFF;", "D_FFFFF = 0xFFFFF;",
+                                      self.CONFIG)["D_FFFFF"], 0xFFFFF)
+
+    def test_absolute_loader_rejects_ambiguous_or_malformed_config(self):
+        for config in (self.CONFIG + "  undefined_syms_auto_path: other.txt\n", "options: ["):
+            with self.assertRaises(ValueError):
+                self.symbols("", "D_FFFFF = 0xFFFFF;", config)
+
+    def test_absolute_loader_failure_has_clear_cli_diagnostic(self):
+        with patch.object(check_unit, "symbols", side_effect=ValueError("invalid absolute definition")):
+            status, report = FocusedFunctionTests().run_checker(None)
+        self.assertEqual(status, "infrastructure error: invalid absolute definition")
+
+    def test_safe_loader_selection_and_extension_free_fallback(self):
+        real = check_unit.yaml
+        for accelerated in (False, True):
+            loader = object()
+            api = SimpleNamespace(SafeLoader=loader, YAMLError=real.YAMLError,
+                                  safe_load=real.safe_load)
+            if accelerated:
+                api.CSafeLoader = object()
+                loader = api.CSafeLoader
+            calls = []
+            def load(text, *, Loader):
+                calls.append(Loader)
+                return real.safe_load(text)
+            api.load = load
+            with patch.object(check_unit, "yaml", api):
+                result = self.symbols("", "D_FFFFF = 0xFFFFF;", self.CONFIG)
+            self.assertEqual(result["D_FFFFF"], 0xFFFFF)
+            self.assertEqual(calls, [loader])
+
+    def test_safe_loader_linker_contract_parity(self):
+        real = check_unit.yaml
+        configs = [
+            self.CONFIG, "", "null", "[]", "options: []", "options: {}",
+            "options: {undefined_syms_auto_path: config/smt3/undefined_syms_auto.txt}",
+            "defaults: &d {undefined_syms_auto_path: config/smt3/undefined_syms_auto.txt}\noptions: *d",
+            "defaults: &d {undefined_syms_auto_path: config/smt3/undefined_syms_auto.txt}\noptions: {<<: *d}",
+            self.CONFIG + "  undefined_syms_auto_path: other.txt\n",
+            "options: [", "options: *missing", "options: !!python/object:builtins.object {}",
+            "!!python/object/apply:builtins.print [must-not-run]",
+        ]
+        for config in configs:
+            results = []
+            for loader in (real.SafeLoader, getattr(real, "CSafeLoader", real.SafeLoader)):
+                api = SimpleNamespace(SafeLoader=loader, load=real.load, YAMLError=real.YAMLError)
+                with patch.object(check_unit, "yaml", api):
+                    try:
+                        results.append(self.symbols("", "D_FFFFF = 0xFFFFF;", config))
+                    except ValueError as exc:
+                        results.append(str(exc))
+            with self.subTest(config=config):
+                self.assertEqual(results[0], results[1])
+            if "!!python" in config:
+                self.assertEqual(results[0], SERIAL + ".yaml: malformed linker configuration")
 
     def test_linker_gp_resolves_to_the_retail_address(self):
         self.assertEqual(address("_gp", self.symbols("target = 0x1000;\n")), GP)
@@ -453,6 +907,8 @@ class FocusedRodataTests(unittest.TestCase):
                                0x3C020000, 0x24420000 + neighbor_offset,
                                0x03E00008, 0)
         full_text = bytearray(compiled)
+        struct.pack_into("<I", full_text, 20, 0x24420020)
+        full_rodata = rodata[:16] + struct.pack("<4I", *([0x12345678] * 4)) + rodata[neighbor_offset:]
         if neighbor_as_built:
             struct.pack_into("<I", full_text, 28, 0x24020001)
         retail = bytearray(0x1040)
@@ -481,14 +937,14 @@ class FocusedRodataTests(unittest.TestCase):
             config.mkdir(parents=True)
             (config / "symbol_addrs.txt").write_text(
                 "target = 0x1000; // type:func\nneighbor = 0x1040; // type:func\n")
-            (config / "SLUS_209.11.yaml").write_text("")
+            (config / "SLUS_209.11.yaml").write_text("      - [0x1000, .rodata, main/unit]\n      - [0x1030, .rodata, main/next]\n")
             original = root / RETAIL_PATH
             original.parent.mkdir(parents=True)
             original.write_bytes(retail)
-            assembly = root / "asm/smt3/data/game/unit.rodata.s"
+            assembly = root / "asm/smt3/data/main/unit.rodata.s"
             assembly.parent.mkdir(parents=True)
             assembly.write_text("dlabel jtbl_00002000\ndlabel jtbl_00002010\n"
-                                "dlabel jtbl_00002020\n")
+                                "dlabel jtbl_00002020\ndlabel jtbl_00002030\n")
             argv = ["check_unit.py", str(unit)]
             if func:
                 argv.extend(["--func", func])
@@ -501,8 +957,8 @@ class FocusedRodataTests(unittest.TestCase):
             stack.enter_context(patch.object(check_unit, "load_segments", return_value=[]))
             stack.enter_context(patch.object(check_unit, "va_to_off", side_effect=lambda segments, addr: addr - 0x1000))
             stack.enter_context(patch.object(check_unit, "text_section", side_effect=lambda obj: full_text if obj.name == "full.o" else compiled))
-            stack.enter_context(patch.object(check_unit, "sections", return_value=(rodata, {".rodata": (0, len(rodata))})))
-            stack.enter_context(patch.object(check_unit, "relocations", return_value=relocs))
+            stack.enter_context(patch.object(check_unit, "sections", side_effect=lambda obj: (full_rodata, {".rodata": (0, len(full_rodata))}) if obj.name == "full.o" else (rodata, {".rodata": (0, len(rodata))})))
+            stack.enter_context(patch.object(check_unit, "relocations", side_effect=lambda obj: {**relocs, ".rodata": {off: ("R_MIPS_32", ".text") for off in list(range(0,16,4))+list(range(32,48,4))}} if obj.name == "full.o" else relocs))
             stack.enter_context(patch.object(check_unit, "owns_rodata", return_value=True))
             stack.enter_context(patch.object(check_unit, "run", side_effect=lambda *args: "0 10 T target\n10 10 T neighbor\n" if "-S" in args else ""))
             stack.enter_context(patch.object(check_unit.subprocess, "run", return_value=SimpleNamespace(returncode=0, stderr="")))
@@ -1149,7 +1605,7 @@ class NestedFunctionCheckerTests(unittest.TestCase):
                     full_helper_word=None, retail_call=0x0C000400,
                     metadata_flags="l F", full_name="helper.0",
                     full_flags="l F", extra_full=(), extra_skip=(),
-                    explicit_address=None):
+                    explicit_address=None, candidate_source=None, native_inventory=None):
         """Run the complete checker with fake objects; never invoke cc.sh."""
         compiled = struct.pack("<IIII", helper_word, 0, 0x0C000000, 0)
         full_code = struct.pack("<IIII", helper_word if full_helper_word is None
@@ -1173,6 +1629,14 @@ class NestedFunctionCheckerTests(unittest.TestCase):
             original.parent.mkdir(parents=True)
             original.write_bytes(retail)
             argv = ["check_unit.py", str(unit)]
+            if candidate_source is not None:
+                candidate = root / "candidate.c"
+                candidate.write_text(candidate_source)
+                argv.extend(["--source", str(candidate)])
+            if native_inventory is not None:
+                assembly = root / "asm/smt3/main/unit.s"
+                assembly.parent.mkdir(parents=True)
+                assembly.write_text(native_inventory)
             if requested is not None:
                 argv.extend(["--func", requested])
             stack.enter_context(patch.object(check_unit, "ROOT", root))
@@ -1213,6 +1677,35 @@ class NestedFunctionCheckerTests(unittest.TestCase):
         self.assertIn("OK   helper.0 @ 0x00001000", report)
         self.assertIn("OK   caller @ 0x00001008", report)
         self.assertIn("2 match, 0 differ", report)
+
+    def test_qualified_local_alias_supplies_full_native_inventory(self):
+        status, report = self.run_checker(native_inventory="glabel helper\nglabel caller\n")
+        self.assertEqual(status, 0, report)
+        self.assertIn("2 match, 0 differ", report)
+
+    def test_source_override_missing_owner_is_not_hidden_by_canonical_source(self):
+        status, report = self.run_checker(
+            candidate_source="", native_inventory="glabel caller\n")
+        self.assertEqual(status, 1, report)
+        self.assertIn("MISSING caller: neither C nor INCLUDE_ASM", report)
+
+    def test_source_override_audits_candidate_order(self):
+        status, report = self.run_checker(candidate_source=(
+            "void caller(void)\n{\n}\nvoid helper(void)\n{\n}\n"))
+        self.assertEqual(status, 1, report)
+        self.assertIn("ORDER helper", report)
+
+    def test_source_override_audits_candidate_stale_names(self):
+        status, report = self.run_checker(candidate_source=(
+            "void caller(void) {}\n/* func_00001000 */\n"))
+        self.assertEqual(status, 1, report)
+        self.assertIn("STALE func_00001000", report)
+
+    def test_focused_candidate_need_not_retain_unselected_owner(self):
+        status, report = self.run_checker(
+            "caller", candidate_source="void caller(void) {}\n",
+            native_inventory="glabel helper\nglabel caller\n")
+        self.assertEqual(status, 0, report)
 
     def test_focused_selection_still_requires_exact_emitted_name(self):
         status, report = self.run_checker("helper.0")
@@ -1262,7 +1755,13 @@ class NestedFunctionCheckerTests(unittest.TestCase):
                     self.assertEqual(status, 1, report)
                     self.assertIn("helper.0: no address", report)
                     self.assertIn("DIFF caller", report)
-                    self.assertIn("0 match, 2 differ", report)
+                    self.assertIn("CONTEXT RELOC caller", report)
+                    # This synthetic owner has no native inventory. An extra
+                    # full-only function now also fails the ownership check.
+                    extra = context == "extra_full"
+                    self.assertIn(f"0 match, {4 if extra else 3} differ", report)
+                    if extra:
+                        self.assertIn("unexpected emitted function", report)
 
     def test_explicit_symbol_mapping_is_not_overridden_by_stem(self):
         status, report = self.run_checker(explicit_address=0x1008)
@@ -1353,6 +1852,7 @@ class OwnedRodataBoundaryTests(unittest.TestCase):
             stack.enter_context(patch('eeas_compat.lit4_range', return_value=(0, 0)))
             stack.enter_context(patch.object(check_unit, 'load_segments', return_value=[]))
             stack.enter_context(patch.object(check_unit, 'va_to_off', side_effect=lambda segs, addr: addr-0xFF000))
+            stack.enter_context(patch.object(check_unit, 'off_to_va', side_effect=lambda segs, off: off+0xFF000))
             stack.enter_context(patch.object(check_unit, 'text_section', return_value=compiled))
             stack.enter_context(patch.object(check_unit, 'sections', return_value=(data, {'.rodata': (0,len(data))})))
             stack.enter_context(patch.object(check_unit, 'relocations', return_value=relocs))
@@ -1433,6 +1933,7 @@ class InteriorOwnedContextTests(unittest.TestCase):
             stack.enter_context(patch('eeas_compat.lit4_range', return_value=(0, 0)))
             stack.enter_context(patch.object(check_unit, 'load_segments', return_value=[]))
             stack.enter_context(patch.object(check_unit, 'va_to_off', side_effect=lambda segs, addr: addr-0xFF000))
+            stack.enter_context(patch.object(check_unit, 'off_to_va', side_effect=lambda segs, off: off+0xFF000))
             stack.enter_context(patch.object(check_unit, 'text_section', return_value=compiled))
             stack.enter_context(patch.object(check_unit, 'sections', return_value=(data, {'.rodata': (0,len(data))})))
             if full_data_size is not None:
@@ -1443,7 +1944,7 @@ class InteriorOwnedContextTests(unittest.TestCase):
             def object_relocs(obj):
                 if full_relocation and str(obj).endswith('full.o'):
                     offset, kind = full_relocation
-                    return {**relocs, '.rodata': {**relocs['.rodata'], offset: (kind, 'unknown')}}
+                    return {**relocs, '.rodata': {**relocs['.rodata'], offset: (kind, 'target')}}
                 if full_relocated and str(obj).endswith('full.o'):
                     return {**relocs, '.rodata': {**relocs['.rodata'], 24: ('R_MIPS_32', 'unknown')}}
                 return relocs
@@ -1664,6 +2165,7 @@ class SharedNamedRodataContextTests(unittest.TestCase):
                  yaml='      - [0x1100, .rodata, main/unit]\n      - [0x1128, .rodata, main/next]\n',
                  skip_relocs={}, full_relocs={}, failed_full=False)
         f.update(changes)
+        self.inspections = []
         compiled = struct.pack('<4I',0x3C020000,0x24420008,0x03E00008,0)
         full_code = struct.pack('<4I',0x3C020000,0x24420018,0x03E00008,0)
         retail = bytearray(0x1200)
@@ -1681,10 +2183,13 @@ class SharedNamedRodataContextTests(unittest.TestCase):
             consumer=root/'asm/smt3/nonmatchings/main/unit/consumer.s'; consumer.parent.mkdir(parents=True)
             consumer.write_text('lui $2,%hi(named)\naddiu $2,$2,%lo(named)\n')
             def run(*args):
+                if "-t" in args:
+                    self.inspections.append(("symbols", Path(args[-1]).name))
                 if '-S' in args: return '0 10 T target\n'
                 if '-t' in args: return f['full_raw' if str(args[-1]).endswith('full.o') else 'skip_raw']
                 return ''
             def relocations(obj):
+                self.inspections.append(("relocations", obj.name))
                 return {'.text':{0:('R_MIPS_HI16','.rodata'),4:('R_MIPS_LO16','.rodata')},
                         '.rodata':f['full_relocs' if obj.name=='full.o' else 'skip_relocs'],'.data':{},'.sdata':{}}
             def sections(obj):
@@ -1733,6 +2238,24 @@ class SharedNamedRodataContextTests(unittest.TestCase):
             with self.subTest(changes=changes):
                 code,report=self.check_shared(**changes)
                 self.assertEqual(code,1,report)
+
+
+    def test_full_object_inspected_once_and_refreshed_for_each_compile(self):
+        for changes, expected in (
+                ({}, 0),
+                ({'full_relocs': {20: ('R_MIPS_64', 'unknown')}}, 1),
+                ({}, 0)):
+            with self.subTest(changes=changes):
+                code, report = self.check_shared(**changes)
+                self.assertEqual(code, expected, report)
+                self.assertEqual(self.inspections.count(('relocations', 'full.o')), 1)
+                self.assertEqual(self.inspections.count(('symbols', 'full.o')), 1)
+
+    def test_failed_full_compile_is_not_inspected(self):
+        code, report = self.check_shared(failed_full=True)
+        self.assertEqual(code, 1, report)
+        self.assertNotIn(('relocations', 'full.o'), self.inspections)
+        self.assertNotIn(('symbols', 'full.o'), self.inspections)
 
 
 class InteriorRelocationFootprintTests(unittest.TestCase):
@@ -1789,6 +2312,428 @@ class NativeObjectMappingTests(unittest.TestCase):
         for args in ((-1,1,8),(0,0,8),(0,-1,8),(0,1,-1),(False,1,8),(0,True,8),(0,1,8.0)):
             with self.subTest(args=args):
                 self.assertIsNone(check_unit.native_object_offset([(0,0,8)],*args))
+
+
+
+class FullContextStorageTests(unittest.TestCase):
+    def fixture(self, section='.sdata', payload=b'\x2a\0\0\0', owned=False,
+                native=b'\x2a\0\0\0', nm_extra='', metadata='', relocation_records=None):
+        code = struct.pack('<2I', 0x03e00008, 0)
+        retail = bytearray(0x1200)
+        retail[0x1000:0x1008] = code
+        retail[0x1100:0x1100+len(native)] = native
+        with tempfile.TemporaryDirectory() as tmp, contextlib.ExitStack() as stack:
+            root = Path(tmp); unit = root/'src/smt3/main/unit.c'
+            unit.parent.mkdir(parents=True); unit.write_text('void target(void) {}\n')
+            cfg = root/'config/smt3'; cfg.mkdir(parents=True)
+            (cfg/'symbol_addrs.txt').write_text('target = 0x100000; // type:func size:8\nitem = 0x100100; // size:4\n')
+            yaml = (f'      - [0x1100, {section}, main/unit]\n'
+                    f'      - [0x1104, {section}, main/next]\n') if owned else ''
+            (cfg/'SLUS_209.11.yaml').write_text(yaml)
+            original = root/RETAIL_PATH; original.parent.mkdir(parents=True); original.write_bytes(retail)
+            def run(*args):
+                full = str(args[-1]).endswith('full.o')
+                if '-r' in args and relocation_records is not None:
+                    return relocation_records.get('full.o' if full else 'unit.o', '')
+                if '-S' in args: return '0 8 T target\n' + (nm_extra if full else '')
+                if '-t' in args: return metadata if full else ''
+                return ''
+            def sections(obj):
+                return (payload, {section: (0, len(payload))}) if obj.name == 'full.o' else (b'', {})
+            stack.enter_context(patch.object(check_unit, 'ROOT', root))
+            stack.enter_context(patch.dict(check_unit.RETAIL, {VERSION:RETAIL_PATH}, clear=True))
+            stack.enter_context(patch.dict(check_unit.VERSIONS, {VERSION:{'serial':SERIAL,'gp':hex(GP)}}, clear=True))
+            stack.enter_context(patch.object(check_unit.sys, 'argv', ['check_unit.py', str(unit)]))
+            stack.enter_context(patch('eeas_compat.lit4_range', return_value=(0,0)))
+            stack.enter_context(patch.object(check_unit, 'load_segments', return_value=[(0x100000,0x1000,0x200)]))
+            stack.enter_context(patch.object(check_unit, 'text_section', return_value=code))
+            stack.enter_context(patch.object(check_unit, 'sections', side_effect=sections))
+            if relocation_records is None:
+                stack.enter_context(patch.object(check_unit, 'relocations', return_value={'.text':{},'.rodata':{},'.sdata':{},'.data':{}}))
+            stack.enter_context(patch.object(check_unit, 'run', side_effect=run))
+            stack.enter_context(patch.object(check_unit.subprocess, 'run', return_value=SimpleNamespace(returncode=0,stderr='')))
+            output = stack.enter_context(contextlib.redirect_stdout(io.StringIO()))
+            with self.assertRaises(SystemExit) as stopped: check_unit.main()
+            return stopped.exception.code, output.getvalue()
+
+    def test_duplicate_relocations_fail_closed_in_both_compile_contexts(self):
+        records = ("RELOCATION RECORDS FOR [.data]:\n"
+                   "00000000 R_MIPS_32 foo\n"
+                   "00000000 R_MIPS_32 bar\n")
+        for context in ('unit.o', 'full.o'):
+            with self.subTest(context=context):
+                code, report = self.fixture(relocation_records={context: records})
+                self.assertIsInstance(code, str)
+                self.assertIn('infrastructure error:', code)
+                self.assertIn(context, code)
+                self.assertIn('multiple relocations at .data+0x0', code)
+                self.assertNotIn('match,', report)
+
+    def test_full_only_unowned_writable_sections_rejected(self):
+        for section in ('.sdata','.data','.sbss','.bss'):
+            with self.subTest(section=section):
+                status, report = self.fixture(section=section)
+                self.assertNotEqual(status,0,report)
+                self.assertIn('DATA CONTEXT',report)
+
+    def test_full_only_common_rejected(self):
+        for kind in ('C','c'):
+            status,report = self.fixture(payload=b'',nm_extra=f'4 4 {kind} item\n')
+            self.assertNotEqual(status,0,report)
+            self.assertIn('COMMON item',report)
+
+    def test_full_only_owned_sdata_payload_checked_without_skip_symbols(self):
+        status,report = self.fixture(owned=True)
+        self.assertEqual(status,0,report)
+        status,report = self.fixture(owned=True,payload=b'\x2b\0\0\0')
+        self.assertNotEqual(status,0,report)
+        self.assertIn('.sdata bytes/relocations differ',report)
+
+    def test_full_only_owned_sdata_oversize_and_missing_nonzero_tail(self):
+        for payload in (b'\x2a\0\0\0'+bytes(4), b''):
+            status,report = self.fixture(owned=True,payload=payload)
+            self.assertNotEqual(status,0,report)
+            self.assertIn('DATA CONTEXT',report)
+
+    def test_full_only_data_inventory_is_checked(self):
+        status,report = self.fixture(section='.data',owned=True,metadata='0 g O .data 4 item\n')
+        self.assertNotEqual(status,0,report)
+        self.assertIn('DATA CONTEXT',report)
+
+    def test_missing_owned_data_in_both_contexts_is_rejected(self):
+        status, report = self.fixture(section='.data', owned=True, payload=b'')
+        self.assertNotEqual(status, 0, report)
+        self.assertIn('.data has no STT_OBJECT definitions in both contexts', report)
+
+    def test_zero_filled_owned_data_still_needs_definitions(self):
+        status, report = self.fixture(section='.data', owned=True,
+                                      payload=b'', native=bytes(4))
+        self.assertNotEqual(status, 0, report)
+        self.assertIn('.data has no STT_OBJECT definitions in both contexts', report)
+
+    def test_missing_unowned_data_is_not_an_ownership_obligation(self):
+        status, report = self.fixture(section='.data', owned=False, payload=b'')
+        self.assertEqual(status, 0, report)
+
+    def test_zero_sections_are_not_unowned_storage(self):
+        status,report = self.fixture(payload=b'')
+        self.assertEqual(status,0,report)
+
+    def test_full_nobits_exact_inventory_and_overflow(self):
+        yaml = ('  - {type: .bss, name: main/unit, vram: 0x2000}\n'
+                '  - {type: .bss, name: next, vram: 0x2004}\n')
+        args = [yaml,'main/unit',{'.bss':(0,4)},'0 g O .bss 4 item\n','',{'item':0x2000}]
+        self.assertFalse(check_unit.full_context_storage_problems(*args))
+        args[2] = {'.bss':(0,0)}
+        self.assertTrue(check_unit.full_context_storage_problems(*args))
+        args[2] = {'.bss':(0,8)}
+        self.assertTrue(check_unit.full_context_storage_problems(*args))
+        args[2] = {'.bss':(0,4)}; args[3]=''
+        self.assertTrue(check_unit.full_context_storage_problems(*args))
+
+    def test_bounded_storage_helper_keeps_payload_checks_separate(self):
+        yaml='  - [0x100, .data, main/unit]\n  - [0x104, .data, next]\n'
+        self.assertFalse(check_unit.full_context_storage_problems(yaml,'main/unit',{'.data':(0,4)},'','',{}))
+        self.assertTrue(check_unit.full_context_storage_problems(yaml,'main/unit',{'.data':(0,8)},'','',{}))
+
+class FullContextFunctionInventoryTests(unittest.TestCase):
+    def row(self, name, size="00000010", flags="g     F", section=".text"):
+        return f"00000000 {flags} {section} {size} {name}\n"
+
+    def check(self, text, names=("entry",), aliases=None):
+        return check_unit.full_context_function_inventory_problems(text, names, aliases)
+
+    def test_known_entry(self):
+        self.assertEqual(self.check(self.row("entry")), [])
+
+    def test_extra_full_only_function(self):
+        self.assertIn("unexpected", self.check(self.row("unexpected"))[0])
+
+    def test_other_owner_name_not_allowed(self):
+        self.assertTrue(self.check(self.row("other_owner_function")))
+
+    def test_verified_numeric_alias(self):
+        self.assertFalse(self.check(self.row("entry.7", flags="l     F"), aliases={"entry.7": 0x1234}))
+
+    def test_unverified_numeric_suffix(self):
+        self.assertTrue(self.check(self.row("entry.7", flags="l     F")))
+
+    def test_zero_size_function_still_rejected(self):
+        self.assertTrue(self.check(self.row("unexpected", size="00000000")))
+
+    def test_section_and_assembly_labels_ignored(self):
+        self.assertFalse(self.check(self.row(".text", flags="l     d") +
+                                    self.row("assembly_label", flags="g      ")))
+
+    def test_nontext_function_ignored(self):
+        self.assertFalse(self.check(self.row("not_text", section=".debug")))
+
+
+class NativeFunctionInventoryTests(unittest.TestCase):
+    def test_inner_entries_and_half_open_owner_bounds(self):
+        syms = {"first": 0x1010, "inner": 0x1018, "next": 0x1020,
+                "previous": 0x100C, "data": 0x101C}
+        names = check_unit.native_function_inventory(
+            "glabel assembly_entry\n  alabel split_entry\ndlabel data_label\n",
+            (0x10, 0x20), set(syms) - {"data"}, syms, [(0x1000, 0, 0x100)])
+        self.assertEqual(names, {"assembly_entry", "split_entry", "first", "inner"})
+
+    def test_unmapped_or_undefined_function_not_inferred(self):
+        names = check_unit.native_function_inventory("", (0x10, 0x20),
+            {"unknown", "missing"}, {"unknown": 0x1000}, [])
+        self.assertEqual(names, set())
+
+
+class FullTextSpanTests(unittest.TestCase):
+    def check(self, words=(0x03E00008, 0), native=None, **kwargs):
+        text = struct.pack("<%dI" % len(words), *words)
+        native = text if native is None else struct.pack("<%dI" % len(native), *native)
+        return check_unit.full_context_text_problems(
+            text, native, kwargs.get("origin", 0x1000), kwargs.get("relocs", {}),
+            kwargs.get("syms", {}), GP, kwargs.get("bases", {}),
+            kwargs.get("lit4", b""), 0, kwargs.get("retail", native),
+            kwargs.get("segs", [(0x1000, 0, len(native))]))
+
+    def test_identical(self):
+        self.assertFalse(self.check())
+
+    def test_instruction_change(self):
+        self.assertTrue(self.check(native=(0x03E00008, 1)))
+
+    def test_missing_nonzero_tail(self):
+        self.assertTrue(self.check(native=(0x03E00008, 0, 1)))
+
+    def test_zero_alignment_tail(self):
+        self.assertFalse(self.check(native=(0x03E00008, 0, 0)))
+
+    def test_excess_code(self):
+        self.assertTrue(self.check(native=(0x03E00008,)))
+
+    def test_missing_origin(self):
+        self.assertTrue(self.check(origin=None))
+
+    def test_local_jump_uses_owner_origin(self):
+        self.assertFalse(self.check((0x08000001, 0), native=(0x08000401, 0),
+            relocs={0: ("R_MIPS_26", ".text")}))
+        self.assertTrue(self.check((0x08000001, 0), native=(0x08000400, 0),
+            relocs={0: ("R_MIPS_26", ".text")}))
+
+    def test_named_jump_and_wrong_provider(self):
+        self.assertFalse(self.check((0x0C000000, 0), native=(0x0C000800, 0),
+            relocs={0: ("R_MIPS_26", "provider")}, syms={"provider": 0x2000}))
+        self.assertTrue(self.check((0x0C000000, 0), native=(0x0C000800, 0),
+            relocs={0: ("R_MIPS_26", "provider")}, syms={"provider": 0x2004}))
+
+    def test_unknown_provider_rejected(self):
+        self.assertTrue(self.check((0x0C000000, 0), relocs={0: ("R_MIPS_26", "unknown")}))
+
+    def test_unknown_sections_and_relocation_kinds(self):
+        for kind, symbol in (("R_MIPS_LO16", ".unknown"), ("R_MIPS_32", ".text"),
+                             ("R_MIPS_GPREL16", ".text")):
+            self.assertTrue(self.check((0x24020000, 0), native=(0x24021234, 0),
+                relocs={0: (kind, symbol)}))
+
+    def test_malformed_relocation_offsets(self):
+        for offset in (-4, 1, 8):
+            self.assertTrue(self.check(relocs={offset: ("R_MIPS_26", "target")}))
+
+    def test_unmapped_section_base(self):
+        self.assertTrue(self.check((0x24020000, 0), native=(0x24021234, 0),
+            relocs={0: ("R_MIPS_LO16", ".data")}, bases={".data": None}))
+
+    def test_unpaired_section_high_relocation(self):
+        self.assertTrue(self.check((0x3C020000, 0), native=(0x3C021234, 0),
+            relocs={0: ("R_MIPS_HI16", ".data")}, bases={".data": 0x301000}))
+
+    def test_literal_pool_required(self):
+        self.assertTrue(self.check((0xC7800000, 0), relocs={0: ("R_MIPS_LITERAL", ".lit4")}))
+
+class FullContextEntryPlacementTests(unittest.TestCase):
+
+    def check(self, text, names=("entry",), syms=None, origin=0x1000, aliases=None):
+        return check_unit.full_context_entry_placement_problems(
+            text, names, {"entry": 0x1008} if syms is None else syms, origin, aliases)
+
+    def test_c_entry_correct(self):
+        self.assertFalse(self.check("00000008 g F .text 00000010 entry"))
+
+    def test_c_entry_moved(self):
+        self.assertTrue(self.check("0000000c g F .text 00000010 entry"))
+
+    def test_zero_size_asm_entry_moved(self):
+        self.assertTrue(self.check("0000000c g .text 00000000 entry"))
+
+    def test_zero_size_asm_entry_correct(self):
+        self.assertFalse(self.check("00000008 g .text 00000000 entry"))
+
+    def test_unknown_symbol_not_inferred(self):
+        self.assertFalse(self.check("00000008 g .text 00000000 other"))
+
+    def test_known_entry_missing_address(self):
+        self.assertTrue(self.check("00000008 g .text 00000000 entry", syms={}))
+
+    def test_missing_origin(self):
+        self.assertTrue(self.check("00000008 g .text 00000000 entry", origin=None))
+
+    def test_verified_alias(self):
+        self.assertFalse(self.check("00000008 l F .text 00000010 entry.3", aliases={"entry.3": 0x1008}))
+
+    def test_moved_verified_alias(self):
+        self.assertTrue(self.check("0000000c l F .text 00000010 entry.3", aliases={"entry.3": 0x1008}))
+
+    def test_data_not_text(self):
+        self.assertFalse(self.check("00000008 g .data 00000010 entry"))
+
+    def test_invalid_offset(self):
+        self.assertTrue(self.check("invalid g .text 00000010 entry"))
+
+
+    def test_auto_address(self):
+        self.assertFalse(self.check("00000008 g .text 00000000 func_00001008", names=("func_00001008",), syms={}))
+
+    def test_canonical_address_precedes_alias(self):
+        self.assertFalse(self.check("00000008 g F .text 00000010 entry", aliases={"entry": 0xDEAD}))
+
+
+    def test_verified_alias_precedes_auto_fallback(self):
+        self.assertFalse(self.check("00000008 l F .text 00000010 func_00003000.12",names=(), syms={},aliases={"func_00003000.12": 0x1008}))
+
+class FullContextDataPlacementTests(unittest.TestCase):
+    def check(self, row, syms=None, bases=None):
+        return check_unit.full_context_data_placement_problems(
+            row, {"table": 0x1000} if syms is None else syms,
+            {".rodata": 0x1000} if bases is None else bases)
+
+    def test_full_only_object_shift_rejected(self):
+        self.assertTrue(self.check("00000004 g O .rodata 00000010 table"))
+
+    def test_full_only_zero_sized_asm_label_shift_rejected(self):
+        self.assertTrue(self.check("00000004 g .rodata 00000000 table"))
+
+    def test_correct_object_and_asm_labels_pass(self):
+        for kind in ("g O", "g", "l O"):
+            self.assertEqual(self.check(f"00000000 {kind} .rodata 00000010 table"), [])
+
+    def test_all_initialized_sections_checked(self):
+        for section in (".rodata", ".sdata", ".data"):
+            self.assertTrue(self.check(f"00000004 g O {section} 00000010 table",
+                                       bases={section: 0x1000}))
+
+    def test_missing_origin_and_bad_offset_fail_closed(self):
+        self.assertTrue(self.check("00000000 g O .rodata 00000010 table", bases={}))
+        self.assertTrue(self.check("invalid g O .rodata 00000010 table"))
+
+    def test_numeric_label_uses_address_resolver(self):
+        self.assertTrue(self.check("00000004 g .rodata 00000000 D_00001000", syms={}))
+
+    def test_configured_address_wins_numeric_name(self):
+        self.assertEqual(self.check("00000000 g .rodata 00000000 D_00002000",
+                                   syms={"D_00002000": 0x1000}), [])
+
+    def test_unknown_local_and_section_markers_ignored(self):
+        self.assertEqual(self.check("00000004 l O .rodata 00000010 unknown"), [])
+        self.assertEqual(self.check("00000000 l d .rodata 00000000 .rodata",
+                                   syms={".rodata": 0x9999}), [])
+
+    def test_known_aliases_and_end_labels_keep_independent_addresses(self):
+        rows = ("00000000 g .rodata 00000000 table\n"
+                "00000000 g .rodata 00000000 alias\n"
+                "00000010 g .rodata 00000000 end")
+        self.assertEqual(self.check(rows, syms={"table": 0x1000,
+                                             "alias": 0x1000, "end": 0x1010}), [])
+        self.assertTrue(self.check(rows, syms={"table": 0x1000,
+                                            "alias": 0x1004, "end": 0x1010}))
+
+    def test_unrelated_sections_ignored(self):
+        self.assertEqual(self.check("00000004 g F .text 00000010 table"), [])
+        self.assertEqual(self.check("00000004 g O .bss 00000010 table"), [])
+
+
+class SymbolSizePrecedenceTests(unittest.TestCase):
+    def read_sizes(self, rows):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            directory = root / "config" / VERSION
+            directory.mkdir(parents=True)
+            (directory / "symbol_addrs.txt").write_text(rows)
+            with patch.object(check_unit, "ROOT", root):
+                return check_unit.symbol_sizes(VERSION)
+
+    def test_first_definition_size_wins(self):
+        self.assertEqual(self.read_sizes(
+            "table = 0x1000; // size:0xC\n"
+            "table = 0x1000; // size:0x10\n"), {"table": 12})
+
+    def test_shadowed_address_cannot_supply_size(self):
+        self.assertEqual(self.read_sizes(
+            "table = 0x1000;\n"
+            "table = 0x2000; // size:0x20\n"), {})
+
+    def test_unsized_override_suppresses_generated_size(self):
+        self.assertEqual(self.read_sizes(
+            "table = 0x1000;\n"
+            "table = 0x1000; // size:0x20\n"), {})
+
+    def test_shadowed_malformed_size_is_ignored(self):
+        self.assertEqual(self.read_sizes(
+            "table = 0x1000; // size:0xC\n"
+            "table = 0x1000; // size:invalid\n"), {"table": 12})
+
+    def test_first_malformed_size_still_fails(self):
+        with self.assertRaises(ValueError):
+            self.read_sizes("table = 0x1000; // size:invalid\n")
+
+    def test_independent_alias_sizes_are_preserved(self):
+        self.assertEqual(self.read_sizes(
+            "table = 0x1000; // size:0xC\n"
+            "alias = 0x1000; // size:0x10\n"), {"table": 12, "alias": 16})
+
+
+class RelocationInventoryTests(unittest.TestCase):
+    def read(self, records):
+        with patch.object(check_unit, "run", return_value=records):
+            return check_unit.relocations(Path("fixture.o"))
+
+    def test_composed_relocations_rejected_in_every_verified_section(self):
+        for section in (".text", ".rodata", ".data", ".sdata"):
+            with self.subTest(section=section):
+                records = (f"RELOCATION RECORDS FOR [{section}]:\n"
+                           "00000000 R_MIPS_32 foo\n"
+                           "00000000 R_MIPS_32 bar\n")
+                with self.assertRaisesRegex(ValueError, "multiple relocations"):
+                    self.read(records)
+
+    def test_identical_repeated_relocation_is_not_redundant(self):
+        records = ("RELOCATION RECORDS FOR [.data]:\n"
+                   "00000000 R_MIPS_32 foo\n"
+                   "00000000 R_MIPS_32 foo\n")
+        with self.assertRaisesRegex(ValueError, "composed relocations"):
+            self.read(records)
+
+    def test_distinct_offsets_retain_elf_order_for_hi_lo_pairing(self):
+        records = ("RELOCATION RECORDS FOR [.text]:\n"
+                   "00000008 R_MIPS_HI16 foo\n"
+                   "00000000 R_MIPS_LO16 foo\n")
+        self.assertEqual(list(self.read(records)[".text"].items()),
+                         [(8, ("R_MIPS_HI16", "foo")),
+                          (0, ("R_MIPS_LO16", "foo"))])
+
+    def test_same_offset_in_independent_sections_is_valid(self):
+        records = ("RELOCATION RECORDS FOR [.data]:\n"
+                   "00000000 R_MIPS_32 foo\n"
+                   "RELOCATION RECORDS FOR [.sdata]:\n"
+                   "00000000 R_MIPS_32 bar\n")
+        result = self.read(records)
+        self.assertEqual(result[".data"], {0: ("R_MIPS_32", "foo")})
+        self.assertEqual(result[".sdata"], {0: ("R_MIPS_32", "bar")})
+
+    def test_repeated_section_header_does_not_hide_composition(self):
+        records = ("RELOCATION RECORDS FOR [.data]:\n"
+                   "00000000 R_MIPS_32 foo\n"
+                   "RELOCATION RECORDS FOR [.data]:\n"
+                   "00000000 R_MIPS_32 bar\n")
+        with self.assertRaisesRegex(ValueError, "multiple relocations"):
+            self.read(records)
 
 
 if __name__ == "__main__":

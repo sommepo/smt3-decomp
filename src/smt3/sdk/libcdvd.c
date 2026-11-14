@@ -190,10 +190,64 @@ void _Cdvd_cbLoop(void)
     }
 }
 #else
-INCLUDE_ASM(const s32, "sdk/libcdvd", _sceCd_cd_callback);
+extern s32 cdvdScmdSema __attribute__((section(".data")));
+/* The native 8-byte object holds pending reason at +0 and saved reason at +4.
+ * _Cdvd_cbLoop tests pending and passes saved to the registered callback. */
+SYMBOL_AT(volatile s32, cdvdCallbackSavedReason, cdvdCallbackReason, 4);
 
+void _sceCd_cd_callback(s32 *reason)
+{
+    /* Interrupt-published state is accessed at each native read/write.
+     * Qualify only these accesses; ordinary callers retain their own contract. */
+    (*(volatile s32 *)&cdvdCallbackReason) = *reason;
+    cdvdCallbackSavedReason = (*(volatile s32 *)&cdvdCallbackReason);
+    if ((*(volatile s32 *)&cdvdCallbackReason) == 11) {
+        (*(volatile s32 *)&cdvdCallbackReason) = 0;
+        (*(volatile s32 *)&cdvdNcmdState) = 0;
+        return;
+    }
+    iSignalSema((*(volatile s32 *)&cdvdNcmdSema));
+    if (cdvdCallbackThreadId != 0 && cdvdCallback != NULL) {
+        iSignalSema((*(volatile s32 *)&cdvdScmdSema));
+    } else {
+        (*(volatile s32 *)&cdvdNcmdState) = 0;
+    }
+    (*(volatile s32 *)&cdvdCallbackReason) = 0;
+}
+
+/* Four-byte native cleanup word; no additional role is established. */
+extern s32 D_00598C4C;
+extern void ExitDeleteThread(void);
+
+#ifdef NON_MATCHING
+void _Cdvd_cbLoop(void)
+{
+    /* Preserve the interrupt-shared reason and thread-state accesses. The
+     * saved reason is tested, then reloaded for the callback argument. */
+    for (;;) {
+        WaitSema(cdvdScmdSema);
+        if ((*(volatile s32 *)&cdvdCallbackReason) == -1) {
+            (*(volatile s32 *)&cdvdNcmdState) = 0;
+            (*(volatile s32 *)&cdvdCallbackReason) = 0;
+            (*(volatile s32 *)&cdvdCallbackThreadId) = 0;
+            D_00598C4C = 0;
+            ExitDeleteThread();
+        }
+        if (cdvdDebugLevel > 0) {
+            scePrintf("sceCdCbfunc= %d sceCdCbfunc_num= %d\n", cdvdCallback,
+                      cdvdCallbackSavedReason);
+        }
+        if (cdvdCallback != NULL && cdvdCallbackSavedReason != 0) {
+            cdvdCallback(cdvdCallbackSavedReason);
+        }
+        (*(volatile s32 *)&cdvdNcmdState) = 0;
+    }
+}
+
+#else
 INCLUDE_ASM(const s32, "sdk/libcdvd", _Cdvd_cbLoop);
 #endif
+#endif /* VERSION_MNAX */
 
 s32 sceCdInitEeCB(s32 priority, void *stack, s32 stackSize)
 {
@@ -333,7 +387,108 @@ s32 PowerOffCB(void)
     return 1;
 }
 
+/* The native transaction copies 36 bytes with unaligned load/store pairs. */
+typedef struct __attribute__((packed)) {
+    u32 lsn;
+    u32 size;
+    char name[16];
+    u8 tail[12];
+} cdvdSearchFileReply_t;
+typedef struct {
+    cdvdSearchFileReply_t file;
+    char name[256];
+    addr_t replyAddress;
+    s32 layer;
+} cdvdSearchRequest_t;
+extern cdvdSearchRequest_t D_00598CC0;
+extern s32 D_00598E00;
+extern cdvdRpcClient_t D_00598E40;
+extern s32 PollSema(s32 sema);
+extern void sceSifInitRpc(s32 mode);
+extern s32 sceSifBindRpc(void *client, u32 service, s32 mode);
+extern s32 cdvdNcmdLastCommand __attribute__((section(".data")));
+SYMBOL_AT(s32, cdvdSearchInitialized, cdvdScmdState, 4);
+
+#ifdef NON_MATCHING
+s32 sceCdLayerSearchFile(addr_t destination, const char *name, s32 layer)
+{
+    s32 status;
+    s32 delay;
+    s32 i;
+    cdvdSearchFileReply_t *file = EE_ADDR_AS(cdvdSearchFileReply_t *, destination);
+
+    cmd_sem_init();
+    status = PollSema(cdvdNcmdSema);
+    if (cdvdNcmdSema != status) {
+        return 0;
+    }
+    cdvdNcmdLastCommand = 1;
+    ReferThreadStatus(cdvdOwnerThreadId, cdvdThreadStatus);
+    if (sceCdSync(1) != 0) {
+        SignalSema(cdvdNcmdSema);
+        return 0;
+    }
+    sceSifInitRpc(0);
+    if (cdvdSearchInitialized < 0) {
+        for (;;) {
+            cdvdRpcClient_t *client = &D_00598E40;
+            if (sceSifBindRpc(client, 0x80000597, 0) < 0) {
+                if (cdvdDebugLevel > 0) {
+                    scePrintf("Libcdvd bind err CdSearchFile\n");
+                }
+                for (delay = 0x100000; delay != -1; --delay) {
+                }
+                continue;
+            }
+            if (client->server != NULL) {
+                break;
+            }
+            for (delay = 0x100000; delay != -1; --delay) {
+            }
+        }
+        cdvdSearchInitialized = 0;
+    }
+    for (i = 0; i < 256; ++i) {
+        D_00598CC0.name[i] = name[i];
+        if (D_00598CC0.name[i] == 0) {
+            break;
+        }
+    }
+    if (i == 256) {
+        D_00598CC0.name[255] = 0;
+    }
+    if (cdvdDebugLevel > 0) {
+        scePrintf("ee call cmd search %s\n", D_00598CC0.name);
+    }
+    D_00598CC0.layer = layer;
+    D_00598CC0.replyAddress = EE_ADDR(&D_00598CC0);
+    sceSifWriteBackDCache(&D_00598CC0, 300);
+    if (sceSifCallRpc(&D_00598E40, 0, 0, &D_00598CC0, 300,
+                     &D_00598E00, 4, 0, 0) < 0) {
+        SignalSema(cdvdNcmdSema);
+        return 0;
+    }
+    *file = *(cdvdSearchFileReply_t *)(EE_ADDR(&D_00598CC0) | 0x20000000);
+    if (cdvdDebugLevel > 0) {
+        scePrintf("search name %s\n", file->name);
+        if (cdvdDebugLevel > 0) {
+            /* Only numeric diagnostics require native aligned word reads.
+             * Keep the copy/name paths packed; these addresses retain the
+             * fields' actual u32 type, with no alternate aggregate alias. */
+            scePrintf("search size %d\n", (s32)*(u32 *)&file->size);
+            if (cdvdDebugLevel > 0) {
+                scePrintf("search loc lbn %d\n", (s32)*(u32 *)&file->lsn);
+            }
+        }
+    }
+    status = UNCACHED(&D_00598E00)[0];
+    SignalSema(cdvdNcmdSema);
+    return status;
+}
+
+#else
 INCLUDE_ASM(const s32, "sdk/libcdvd", sceCdLayerSearchFile);
+#endif
 
 s32 sceCdSearchFile(sceCdlFILE *file, const char *name)
 {
@@ -514,9 +669,165 @@ s32 _sceCd_scmd_prechk(s32 command)
     return 1;
 }
 
+/* NON_MATCHING: complete initialization transaction; allocation and scheduling remain. */
+#ifdef NON_MATCHING
+SYMBOL_AT(s32, cdvdInitPower, cdvdScmdState, 0);
+SYMBOL_AT(s32, cdvdInitUnk, cdvdScmdState, 4);
+SYMBOL_AT(s32, cdvdInitDisk, cdvdScmdState, 8);
+SYMBOL_AT(s32, cdvdInitScmd, cdvdScmdState, 12);
+SYMBOL_AT(s32, cdvdInitStatus, cdvdScmdState, 16);
+SYMBOL_AT(s32, cdvdInitCount, cdvdScmdState, 20);
+extern cdvdRpcClient_t D_00598E68;
+extern s32 D_00598EC0;
+SYMBOL_AT(s32, cdvdNcmdCommand, cdvdNcmdState, 4);
+s32 sceCdInit(s32 mode)
+{
+    s32 thread;
+    s32 bound;
+    s32 delay;
+    s32 result;
+    s32 status;
+    s32 firstVersion;
+    s32 secondVersion;
+    if (sceCdSyncS(1) != 0) return 0;
+    sceSifInitRpc(0);
+    thread = GetThreadId();
+    cdvdPowerOffActive = 1;
+    cdvdOwnerThreadId = thread;
+    cdvdInitPower = -1;
+    cdvdInitUnk = -1;
+    cdvdNcmdInit = -1;
+    cdvdInitScmd = -1;
+    cdvdInitDisk = -1;
+    cdvdNcmdCommand = 0;
+    cdvdInitCount = (u32)cdvdInitCount + 1;
+    cdvdInitStatus = -1;
+    for (;;) {
+        bound = sceSifBindRpc(&D_00598E68, 0x80000592, 0);
+        if (bound < 0) {
+            if (cdvdDebugLevel > 0)
+                scePrintf("Libcdvd bind err %d CD_Init %d\n", bound, cdvdInitCount);
+            for (delay = 0x100000; delay != -1; delay--) { }
+        } else if (D_00598E68.server != NULL) {
+            break;
+        } else {
+            for (delay = 0x100000; delay != -1; delay--) { }
+        }
+    }
+    D_00598EC0 = mode;
+    cdvdInitStatus = 0;
+    sceSifWriteBackDCache(&D_00598EC0, 4);
+    if (sceSifCallRpc(&D_00598E68, 0, 0, &D_00598EC0, 4,
+                      cdvdScmdReply, 16, NULL, NULL) < 0) {
+        cdvdPowerOffActive = 0;
+        return 0;
+    }
+    status = *UNCACHED(&cdvdScmdReply[3]);
+    firstVersion = *UNCACHED(&cdvdScmdReply[1]);
+    secondVersion = *UNCACHED(&cdvdScmdReply[2]);
+    result = 1;
+    if (status != 0xFF) {
+        if (status == 0xFE) cdvdDebugLevel = 1;
+        else if (firstVersion / 256 < 2 || secondVersion / 256 < 2) result = 2;
+    }
+    cdvdPowerOffActive = 0;
+    switch (mode) {
+    case 0:
+    case 1:
+        break;
+    case 5:
+        if (cdvdDebugLevel > 0) scePrintf("Libcdvd Exit\n");
+        cdvd_exit();
+        cdvdNcmdSema = -1;
+        cdvdScmdLockSema = -1;
+        cdvdScmdSema = -1;
+        return result;
+    default:
+        break;
+    }
+    cmd_sem_init();
+    PowerOffCB();
+    return result;
+}
+#else
 INCLUDE_ASM(const s32, "sdk/libcdvd", sceCdInit);
+#endif
 
+/* NON_MATCHING: native 504-byte shape, saved-register allocation differs. */
+#ifdef NON_MATCHING
+extern cdvdRpcClient_t D_00598E90;
+extern s32 D_00598ED0;
+SYMBOL_AT(s32, cdvdDiskReadyInit, cdvdScmdState, 8);
+
+/* The failure-return branch and RPC mode retain native scheduling; the
+ * pending nonmatch is the allocation of the long-lived saved values. The
+ * two semaphore constraints keep actual freshly loaded call arguments out
+ * of the native empty call delay slots, as in the matched precheck siblings. */
+s32 sceCdDiskReady(s32 mode)
+{
+    s32 status;
+    s32 delay;
+    s32 ret;
+    if (cdvdDebugLevel > 0) {
+        scePrintf("DiskReady 0\n");
+    }
+    cmd_sem_init();
+    {
+        s32 sema = cdvdScmdLockSema;
+        FAKEMATCH_ASM_LIVE(sema);
+        status = PollSema(sema);
+    }
+    if (cdvdScmdLockSema != status) {
+        return 6;
+    }
+    status = sceCdSyncS(1);
+    {
+        FAKEMATCH_ASM_REG(s32, rpcMode, "$4") = 0;
+        if (status != 0) goto fail;
+        sceSifInitRpc(rpcMode);
+    }
+    if (cdvdDiskReadyInit < 0) {
+        for (;;) {
+            cdvdRpcClient_t *client = &D_00598E90;
+            if (sceSifBindRpc(client, 0x8000059A, 0) < 0) {
+                if (cdvdDebugLevel > 0) {
+                    scePrintf("Libcdvd bind err CdDiskReady\n");
+                }
+                for (delay = 0x100000; delay != -1; --delay) {
+                }
+                continue;
+            }
+            if (client->server != NULL) {
+                break;
+            }
+            for (delay = 0x100000; delay != -1; --delay) {
+            }
+        }
+        cdvdDiskReadyInit = 0;
+    }
+    D_00598ED0 = mode;
+    sceSifWriteBackDCache(&D_00598ED0, 4);
+    if (sceSifCallRpc(&D_00598E90, 0, 0, &D_00598ED0, 4, cdvdScmdReply, 4, 0, 0) < 0) {
+fail:
+        {
+            s32 sema = cdvdScmdLockSema;
+            FAKEMATCH_ASM_LIVE(sema);
+            SignalSema(sema);
+        }
+        if (mode == 8) return -1;
+        return 6;
+    }
+    if (cdvdDebugLevel > 0) {
+        scePrintf("DiskReady ended\n");
+    }
+    ret = UNCACHED(cdvdScmdReply)[0];
+    SignalSema(cdvdScmdLockSema);
+    return ret;
+}
+
+#else
 INCLUDE_ASM(const s32, "sdk/libcdvd", sceCdDiskReady);
+#endif
 
 s32 sceCdMmode(s32 media)
 {
@@ -661,6 +972,8 @@ s32 sceCdStStop(void)
 #ifdef NON_MATCHING
 s32 sceCdStRead(u32 sectors, u32 *buffer, u32 mode, u32 *status)
 {
+    /* Native sll/addu use the low 32 bits, including wraparound.
+     * Keep the accumulator signed for its existing return/diagnostic ABI. */
     s32 error;
     s32 completed;
     s32 read;
@@ -679,10 +992,10 @@ s32 sceCdStRead(u32 sectors, u32 *buffer, u32 mode, u32 *status)
     if (mode != 0) {
         do {
             reply = sceCdStream(0, sectors - completed,
-                               (u8 *)buffer + (completed << 11), 2, cdvdDefaultStreamMode);
+                               (u8 *)buffer + ((u32)completed << 11), 2, cdvdDefaultStreamMode);
             read = reply & 0xFFFF;
             currentError = reply >> 16;
-            completed += read;
+            completed = (s32)((u32)completed + (u32)read);
             if (currentError != 0) {
                 error = currentError;
                 if (cdvdDebugLevel > 0) {

@@ -659,3 +659,78 @@ signed domains, frame boundaries, floating representations and callback
 mutation. Leak detection is disabled in the sanitizer fixture; it uses no
 heap allocations. Strict production/SKIP declaration failures and the pointer
 warning are identical inherited debt; retained strict checks pass.
+
+
+**Birth-step dispatch reconstruction.** The guarded `cmbRunBirthDevilStep`
+draft now uses the actual cases 5, 6 and 8 rather than an equality chain.
+Only when signed byte +4 equals 1, it reads signed byte +3 and calls
+`cmbSetupBirthPanel` with 0, 1 or 2 respectively; every path then returns
+`cmbGetBirthPhase`. No callback, access width, return contract or order changes.
+The ordinary switch recovers the native selector tree and all three call blocks:
+140 emitted bytes and 33/35 words, versus the old 116-byte draft's 8 matching
+words in its 29-word prefix. It remains guarded and earns no matching credit.
+
+The residual is precisely the return-address restore occupying the case-5
+conditional branch delay slot at +0x3C rather than the following unconditional
+branch delay slot at +0x44. Normal and diagnostic complete-owner assembly and
+raw object output are identical. The real compiler's delay-slot dump clones
+the common epilogue restore into that conditional branch; this is not an
+argument allocation, selector lowering or extra runtime operation problem.
+Six real-case source orders, per-arm returns, explicit default break, early
+return, nested comparisons, one-pass control and a real selector read operand
+were bounded diagnostics: none matched. No constraints are retained. All
+199 other functions and owned data check exact; exhaustive 65,536 signed-byte
+state pairs preserve the original and native selection and argument behavior.
+
+### Guarded stock-row arithmetic and blink lifetime
+
+The `cmbDrawStockRow` draft now retains the actual full-width blink callback
+result through a local empty operand constraint before converting its low byte.
+That byte is represented in `u32` for the native unsigned multiply/right-shift
+sequence. This target-specific compiler aid has a real initialized value and
+consumer, emits no instruction itself, and is not evidence of original spelling.
+No new fixed-register binding is used. The x-coordinate addition and z increment
+are expressed modulo 32 bits, avoiding signed C overflow while preserving the
+retail `addu`/`addiu` behavior.
+
+The guarded draft improves from 35 matching native words at 316 bytes to 67 of
+81 words matching at the exact 324-byte native size. It remains assembly-backed. The
+remaining differences include mask placement across the first box call and
+late instruction scheduling, so no exact-match credit is claimed. A plain u32
+control reaches only 36 words at 320 bytes; additional live/volatile controls
+and a redundant fixed-register binding did not improve the retained candidate.
+
+All 199 existing exact C peers remain unchanged. Normal, SKIP_ASM and retained-C
+plain/stock-dump compile pairs agree in entire assembly and object output. The
+extracted candidate agrees with an independent native-width call-argument oracle
+on 200,000 random/boundary cases, including mutated box color buffers, in optimized
+and ASan/UBSan builds. Leak checking is disabled for that sanitizer run because
+LeakSanitizer cannot operate under the executor's tracing environment. The guarded
+production owner and full integration checks remain required for publication.
+
+### Stock-row post-reload priority frontier
+
+A fresh output-qualified trace of the retained guarded stock-row owner places
+its low-byte mask across the first box call in post-reload scheduling, not in
+initial expression lowering or allocation. The mask is already ready at cycle
+21. The real comparator chooses the final stack color store instead: its
+critical-path priority is 17 versus the mask's 12, and the comparator returns
+-5 at the priority tier. No register-weight, dependence-class, successor-count
+or final-order tie-breaker decides this comparison.
+
+That store discharges the call's remaining dependency. The scheduler selects
+the first box call within the same cycle while the mask remains in the ready
+list; the mask is not selected until cycle 26. There is no direct mask-to-call
+dependency requiring this order, and the trace does not show a separate sorted
+comparison of the mask against the newly released call. Consequently, changing
+only declaration order or a final tie breaker does not address this observed
+frontier. A future source change needs a real computation/use or control-flow
+reason to change the critical path; an artificial color dependency or general
+memory barrier is not justified.
+
+The pinned compiler observer captured 4,824 events with all six baseline and
+observed artifacts byte-identical and 853 frozen inputs verified before and
+after. Same-path direct replay also agrees with the ordinary wrapper, and
+fresh plain/stock-dump complete-owner assembly and objects agree. This is
+compiler-property evidence, not a new exact match or historical source claim;
+the guarded candidate remains 67/81 words at 324 bytes.

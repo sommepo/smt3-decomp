@@ -118,3 +118,63 @@ or compiler flag change is justified by this negative control.
 ### itfMesMngGetVarLocalize, three inductions (2026-11-04)
 
 Separate `lead`, `tailA` and `tailB` variables for the two arms, each stepped by two, with the global read at every use, give retail's three inductions and a 152-byte function against 172 (the earlier draft was 136). Still missing: the per-iteration `daddu $9, $14, $0` copy of the global, and the count address (`$13`, constant) added to it inside the loop. A local `work` pointer, a per-iteration `w = work` copy, and `(work + count)[4]` as the bound each emitted 148 to 160 bytes and moved the inductions back together. The output buffer is now `itfMesMngVarText`.
+
+### Localized-name native loop and allocation recovery (2026-11-14)
+
+The guarded draft now emits the full native 172 bytes, with 39 of 43
+positional instruction words matching, up from the preceding 19/43 draft.
+It remains `NON_MATCHING`: the first count-address calculation, output-base
+construction and count-byte load still differ in ordering/register assignment.
+The loop and exit from offset `0x1c` onward match retail.
+
+The real saved work pointer is initialized from the working pointer and
+consumed by each iteration's refresh. Local empty constraints retain that
+pointer and the genuine output pointer before the first count test. They
+emit no instructions and introduce no memory barrier or access. The native
+saved-global copy is not a dummy consumer: it supplies the next iteration's
+base. Separate tail offsets occupy `$10` and `$6`; initial count `$6` is
+copied to the loop count before the tail offset is initialized, so those
+lifetimes do not overlap. Initializing the independent tail offsets in native
+order retains the native copy. These are target-specific reconstruction aids,
+not evidence of original source spelling. No function call crosses a binding.
+Pointer expressions, access widths, glyph branches and count reloads remain
+unchanged; no bounds or volatile accesses were introduced.
+
+The full guarded owner retains 119 exact C functions and owned data. A
+target-only active check differs only in this function and its relocation/
+full-context checks. Plain versus diagnostic complete assembly and raw object
+parity passed in normal, `SKIP_ASM`, and `NON_MATCHING` plus `SKIP_ASM` modes.
+One million randomized modeled four-row cases with counts zero through ten
+also preserved all 64 output bytes, including untouched guards, under ASan
+and UBSan. That bounded comparison is not an exhaustive input-domain proof.
+
+Controls: binding the output directly to `$7` regressed to 164 bytes; explicit
+initial count-address binding retained 39/43 and did not solve the scheduling
+frontier. Further work should explain the four entry differences rather than
+repeat those controls or change the correctly emitted loop.
+
+### Localization entry scheduler priorities (2026-11-14)
+
+The retained 39/43-word, 172-byte draft's four entry differences are not merely
+source-order or register-allocation ties. A qualified observation of the pinned
+2.96 compiler in the complete `NON_MATCHING` + `SKIP_ASM` owner records the first
+scheduler comparing the output-symbol HIGH (UID 13, priority 3) against the
+count-address addition (UID 34, priority 4). The addition wins at the priority
+tier, then the HIGH issues in the other slot at clock 2. At clock 3 the count-byte
+load (UID 40, priority 3) similarly outranks output-symbol LOW (UID 14, priority
+2). Neither deciding comparison reaches the dependent-count or final-order tier.
+
+The qualified dependency dump gives HIGH → LOW → real output-live operand,
+while count-address → byte load → zero-count branch carries the longer load
+path. The byte load has measured cost 2; the branch has priority 1. These facts
+explain why declaration shuffles and direct count-address allocation did not
+repair the two exchanges. They do not prove which source spelling produced the
+retail order, nor justify adding a fictitious dependency or binding a synthesized
+symbol high half. Local allocation's reversed temporary assignment remains a
+consequence to test after an independently justified scheduling change.
+
+Qualification: ordinary wrapper/direct command equality, direct plain/dump
+whole-owner assembly and object equality, observer/unobserved equality for six
+artifacts, and unchanged hashes for the 856-file input closure. The 866-event
+observation is scoped to this frozen source and retained compile context, not a
+blanket claim of observer neutrality. No matching credit or source change.

@@ -49,6 +49,102 @@ Production provenance verifies the unique compiler-owned 180-byte span at
 generated-source, regression, guarded-source and report gates pass. Exactly
 one SDK function and 180 bytes are added; game-code coverage is unchanged.
 
+## _request_bind (sdk/libkernl, 176 bytes)
+
+44 of 44 words match in ordinary C. The command handler allocates a forward
+response, snapshots the incoming packet and client routing words, and searches
+the registered servers by service ID. A missing server produces three zero
+payload words; a found server supplies its address, buffer and callback buffer.
+The handler sends the existing 64-byte response with no additional data.
+
+The request is the command dispatcher's copied stack scratch, not an overlay
+on an outgoing pool object. Its two routing words remain opaque 32-bit values.
+They are captured after response allocation and before publication; the service
+ID is read at the native search phase. The generic void two-pointer callback
+ABI, loads, stores and provider calls are unchanged.
+
+The general request pool and the two response pools retain their distinct
+native 32-record allocations. Each response is still 64 bytes: a nine-word
+common header, a three-word bind payload and four untouched tail words.
+Only the bind payload is a union of wire words and actual pointer fields.
+All consumers use these real subobjects; no full-array cast, fabricated
+overlap, new initialization or stronger alignment is introduced.
+
+This distinction matters to the emitted code. A whole-packet union restores
+the bind payload's native store/read ordering but perturbs existing header
+writers. Separating the common header from the overlapping payload preserves
+those peers in ordinary C. Populating the two routing fields in wire-offset
+source order also emits their native load/store sequence. These paired
+observations establish useful source properties, not the original spelling
+or an unobserved internal optimizer decision. No register binding, operand
+constraint, volatile RAM or instruction replay remains.
+
+Independent semantic and native review accepts the final representation for
+the pinned EE compiler and ABI. Fresh owner checking reports 163 match,
+0 differ. All 363 production, 162 SKIP_ASM and 166 retained-C peer contracts
+and owned data are preserved, with changed local code references resolved to
+their actual function and interior offset. Production retains all 664 rodata
+bytes. The three distinct pools each retain their native 0x800-byte BSS extent.
+
+Strict production, SKIP_ASM and retained-C plain/dump pairs agree across the
+complete assembly and object after only the exact randomized source filename
+is normalized. Corresponding canonical baselines are reused only after binding
+their source, headers, configuration and compiler/runtime identities. Fresh
+generated-source and stale controls, guarded EE and IRX checks, regressions,
+full retail checksum and literal byte comparison pass; the next build is a
+no-op. This adds one SDK function and 176 code bytes, with no game-code credit.
+
+## sceSifCallRpc (sdk/libkernl, 492 bytes)
+
+123 of 123 words match in ordinary C. The client allocates and populates a
+request, performs the selected cache writebacks, and sends it either
+asynchronously or through the native semaphore wait/delete path. Allocation,
+semaphore-creation and send failures retain their distinct return values and
+cleanup order. The two asynchronous response-mode stores and common success
+exit preserve the native control-flow shape without a compiler constraint.
+
+The request pool retains its 64-byte records. Its common 32-byte header has
+actual packet/client address fields, unsigned flags and sequence, followed by
+the overlapping command payload. Every header consumer uses the same native
+offsets and operations. Incoming routing addresses remain opaque values that
+are echoed, not newly dereferenced. The response pools and incoming bind
+prefix are unchanged. Capturing the client's server value before publishing
+the client address preserves the native acquisition order.
+
+The word-array draft emitted 484 bytes; a common raw header and typed payload
+emitted 480. Explicit response stores and cleanup/success joins restored the
+492-byte extent but left two adjacent stores reversed. Qualified stock SDK
+compiler dumps first show that reversal in the initial scheduling pass. A
+verbose observation preserves complete output and shows equal instruction
+priorities, with extra store dependencies involving routing fields represented
+as integer words; it does not prove a particular scheduler tie-break. Truthful
+pointer fields fix that pair, and the short server snapshot fixes the resulting
+load/store pair. No register binding, empty operand, volatile RAM, instruction
+replay or changed production compiler flag remains.
+
+Independent source/native review accepts the final representation under the
+pinned EE32 ABI and valid live RPC objects. The native semaphore descriptor
+initializes only its initial and maximum counts. This reconstruction preserves
+that inherited syscall-contract uncertainty without inventing initialization
+of the other fields or claiming wider kernel validity. Exact output does not
+establish the original Sony source spelling.
+
+Fresh owner checking reports 164 match, 0 differ. All 363 production,
+163 SKIP_ASM and 167 retained-C peer contracts and owned data are preserved.
+Changed local references resolve to their actual function and interior offset;
+the eleven remaining low-address fields are independently paired with their
+actual high-register definitions, including repeated-low cases. All six fresh
+target objects resolve to the literal 492 retail bytes.
+
+Strict production, SKIP_ASM and retained-C plain/dump pairs agree across
+complete assembly and object bytes after only the exact generated source
+filename is normalized. The current canonical baselines are reused only with
+verified source, header, configuration, generated-fallback and compiler/runtime
+closure. Fresh generated-source/stale controls, strict guarded EE and seven
+IRX checks, regressions, literal full retail comparison, checksums and a
+subsequent no-op build pass. This adds one SDK function and 492 code bytes,
+excluding four alignment bytes; game-code coverage is unchanged.
+
 ## sceSifAddCmdHandler (sdk/libkernl, 0x2C)
 
 11 of 11 words match, 44 bytes. The command's sign selects the existing
@@ -101,24 +197,36 @@ checksum, affected-owner/data and regression qualification accompany the
 landing. Exactly two SDK functions and 84 SDK bytes are added; game-code
 coverage is unchanged.
 
-## sceSifCheckStatRpc
+## sceSifCheckStatRpc (sdk/libkernl, 60 bytes)
 
-44 of 60 native bytes, with 5 of 11 compared words matching and 16 bytes
-uncovered. The native routine separately branches on the active bit and
-returns literal zero or one. The ordinary C compiles the same condition to a
-direct masked-bit return, with fewer branches and a shared return.
+15 of 15 words match in ordinary C. A null packet, a sequence mismatch
+against packet offset 0x18, or a clear active bit at packet offset 0x10
+returns zero; otherwise the function returns one. The existing client prefix
+and actual 64-byte packet record are unchanged. Loads retain their native
+widths and short-circuit order, with no stores, calls or added volatility.
 
-The client is the shared packet-address/sequence prefix. A null packet,
-a sequence mismatch against packet offset 0x18, or a clear active bit at
-packet offset 0x10 returns zero; otherwise it returns one. Packet storage is
-the actual 64-byte protocol record already used by allocation and release.
-No field volatility or callback return changes are justified by this gap.
-The assembly fallback remains active.
+The forward success exit keeps the shared zero return before the initialized
+successful result. Qualified configured SDK 2.9 output retains those two
+blocks and puts the literal one in the success return's delay slot. This
+establishes the emitted control-flow shape, not a particular optimizer pass
+or original source spelling. No register binding or compiler constraint is
+needed. The earlier nested-return draft emits 44 bytes and returns the masked
+bit directly; a boolean-result local was inert. An intermediate forward-exit
+operand control reached 13 of 15 words matching, but removing that operand
+produced the exact ordinary form. A separate one-pass guard emits 64 bytes
+and does not match.
 
-The boolean-result local that matches `sceSifIsAliveIop` does not recover this
-routine's native branches: it still emits 44 bytes, with 5 of 11 compared
-words matching and 16 bytes uncovered. The preferred direct-return draft is
-unchanged; do not repeat that local-result control without a new premise.
+Independent semantic and native review approves the final source. The full
+owner reports 162 match, 0 differ, versus 161 match, 0 differ before promotion.
+All 363 production peers and 664 rodata bytes are unchanged. The 161 SKIP_ASM
+and 165 retained-C peer contracts and owned data are also preserved, resolving
+changed relocation addends to their actual function and interior offset.
+Six strict baseline/final plain-versus-dump pairs cover all three contexts;
+complete assembly and object bytes agree after only the exact randomized
+scratch filename is normalized. Full retail checksum, generated-source
+positive and stale negative controls, regression, guarded EE and IRX checks
+accompany the promotion. This adds one SDK function and 60 code bytes,
+excluding four alignment bytes; game-code coverage is unchanged.
 
 ## sceSifSetRpcQueue
 
@@ -381,18 +489,46 @@ qualified allocator hook, so a pass-level explanation remains open.
 
 ## sceOpen
 
-640 emitted bytes against 644 native bytes; 111 of 160 emitted words match,
-49 differ and four native bytes remain uncovered. Most differences exchange
-the saved registers holding the path/request and semaphore/reply across phases.
-The native successful tail also copies the slot index into a return scratch
-before waiting on the slot semaphore; ordinary source retains the slot directly.
+Matched all 644 native instruction bytes (161/161 words) as ordinary C.
+The successful completion tail preserves the real slot return value across
+`WaitSema`, then acquires the returned descriptor from the completion result
+before publishing it to the reserved entry. No register binding, memory
+constraint, volatility or provider ABI change was added.
 
-The variadic interface saves six remaining argument registers in eight-byte
-slots. As in the matched kernel formatters, the configured 2.9 compiler's
-`__builtin_next_arg` points after that save area; subtracting six `sizeof(long)`
-slots reads the first optional mode word. Native reads it unconditionally,
-including for two-argument callers. The graph caller declaration agrees with
-this interface; its calls are unchanged.
+The reused `accepted` scalar has two disjoint real roles: first the uncached
+acceptance word through its rejection test, then the successful slot return
+value. Qualified final expansion RTL uses pseudo 95 for the first definition
+(UID 339) and predicate (349), then overwrites it from the slot (443) before
+the table-lock wait (457) and returns it (489). Allocation maps that pseudo
+to `$17`; there is no read of its former value after replacement. This is
+actual shared-pseudo/lifetime evidence, not a register-number coincidence.
+
+The descriptor snapshot is taken after the table-lock wait. The final C source
+publishes that snapshot before updating `entry->active`, changing the real
+entry-pointer last-use/death relationship. The emitted instructions retain
+the native active load, completion load, OR and active store, with descriptor
+publication in the `SignalSema` delay slot. Earlier qualified scheduling
+selected descriptor publication before the active store. Scheduler rank
+weights can explain that ordering when priorities tie; numeric priorities
+and the deciding tie were not observed, so source order or ordinal rank alone
+is not claimed as a complete causal proof.
+
+The variadic interface is a nonportable reconstruction of the pinned EE 2.9
+ABI, not an ISO `va_arg` safety claim. The compiler explicitly saves incoming
+`$6` in its argument-save area before the first call. The native and C paths
+unconditionally read that slot's low 32 bits, including unspecified incoming
+register residue for two-argument callers. This is not a guaranteed supplied
+argument, zero value, or a claim that every receiver ignores it. The configured
+`__builtin_next_arg` base minus six `sizeof(long)` slots identifies this actual
+save location; no optional argument or initialization was invented. The exact-release
+compiler allocates and populates this register-save object (`MEM:BLK`), and its
+public EABI header uses the backward-address capture idiom. This establishes
+the narrow raw low-32-bit register snapshot contract, not a nonexistent
+optional argument. An earlier qualification hold based only on physical
+initialization was resolved by this general compiler-object evidence. The
+[2.9-ee-991111-01 source release](https://github.com/GirianSeed/ee-gcc/releases/download/src-2.9-ee-991111-01/ee-gcc-2.0.zip)
+corroborates this in `function.c`, `config/mips/mips.{c,h}` and
+`ginclude/va-mips.h`; it is not a claim that the compiler binary was rebuilt.
 
 The 0x418-byte request contains masked flags, mode, a bounded 0x400-byte path
 and the reserved slot index. Only an exhausted path copy forces the last byte
@@ -401,11 +537,22 @@ rejected reply leave the reservation intact. A negative completion releases
 the slot under its semaphore; success stores the native descriptor, ORs the
 original flags into the active word and returns the slot index. The uncached
 acceptance word is captured before releasing the filesystem semaphore.
+The completion handler copies the result before signaling, while the caller's
+result remains live through the wait. This preserves the native valid-resource
+and IOP completion/rejection protocol, including no late write after a rejected
+request. It does not establish universal safety for unchecked semaphore
+creation/wait failures or a misbehaving asynchronous peer.
 
-A condition-first bounded copy restores native loop peeling and most setup
-scheduling compared with the initial combined assignment/increment condition.
-Reading the mode after the copy worsens allocation. No synthetic scratch move
-or dependency was added for the final slot-return difference.
+The earlier 640-byte retained draft and the subsequent 644-byte two-word
+frontier were nonmatching checkpoints. The final ordinary descriptor-acquisition
+phase resolves those remaining words without adding a fictitious effect.
+Fresh final owner checking is 165 match, 0 differ (canonical 164/0). Production,
+`SKIP_ASM`, and retained modes each pass complete plain/`-da` assembly and ELF
+parity. All peer code/data contracts are preserved; the four shifted low-address
+references in `GetSystemCallTableEntry` were checked against their actual
+register-specific high-address producers and unchanged function targets.
+The full retail image is byte-identical. Generated-source/stale controls,
+draft/IRX checks and regression gates are recorded with the qualification.
 
 ## _sceFs_Rcv_Intr
 
@@ -792,3 +939,32 @@ source-credit change. The actual SDK report-category delta is 72 code bytes and 
 measured independently from fresh current-parent reports rather than inferred
 from source promotion. The complete game report remains unchanged at
 1,518,560 matched code bytes and 8,686 matched functions.
+
+## _request_call (sdk/libkernl, 140 bytes)
+
+The request handler uses the existing typed RPC packet, server and queue records.
+It appends the server through the empty/nonempty queue paths, publishes the tail,
+then copies the incoming request metadata and conditionally wakes the queue thread.
+The existing packet/server overlap and access order are retained; no noalias
+assumption or wider callback ABI is introduced.
+
+An input-only constraint consumes the actual initialized `queue->end` pointer
+immediately after its store. That tail is subsequently read by the next enqueue.
+The operand is a four-byte `MEM:SI` on queue+0x10, not a general memory barrier.
+Without it, the ordinary typed body sinks publication past two metadata pointer
+loads/stores. With it, all 140 instruction bytes resolve to retail. This is an
+observed output difference, not a claim about the original source spelling or an
+unobserved scheduler rule.
+
+The print RPC endpoint now uses the same canonical queue/server types as the
+registration API. Its aligned queue wrapper preserves the native stack layout;
+the callback accepts the existing three-word API signature and converts only its
+buffer argument locally. All five print functions, allocated data and relocations
+are unchanged. This compatibility repair earns no additional matching credit.
+
+Qualification covers complete libkernl and print owners, production/SKIP/retained
+ordinary-versus-dump compiler output, finite peer address attribution, guarded
+drafts, regression controls and literal full-retail equality. The handler's
+resolved SHA-256 is d47ecf298080c119dab99aecc868a9cdcc575c9d94f7f1f68da19fe650627d42.
+The shared-type repair and handler belong together; byte equality alone did not
+justify the former incompatible print overlay. Exact-commit CI follows publication.

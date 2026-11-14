@@ -57,15 +57,15 @@ The recovered setter and callback slot use that function-pointer type instead
 of an integer placeholder, preserving the setter's 92 bytes and all 22
 matching functions in the owner.
 
-The completion-producer draft emits 140 of 160 bytes. Native reloads status
-after storing it, twice before any call. A module-wide volatile declaration
-only reaches 148 bytes and makes the retained teardown draft grow from 148 to
-152 bytes, so it is not an established access contract. The thread consumer
-emits 184 of 188 bytes: its final callback uses the reason-test register for
-the argument, while native reloads the argument in the call delay slot and
-keeps the callback in another register. Naming a typed callback snapshot does
-not change that result. Changing its return type to steer those registers
-would contradict the interface. Both bodies remain assembly-backed.
+The completion producer `_sceCd_cd_callback` now reproduces its native 160 bytes.
+Local volatile lvalues preserve the interrupt-published pending word's two
+reloads and semaphore/state accesses without changing other callers' contracts.
+The saved signed reason is the second word of the native eight-byte object,
+consumed by `_Cdvd_cbLoop`; the scalar alias does not change its extent.
+All 31 owner functions and owned data match; ordinary and `-da` full-owner
+assembly and objects agree. Broad global qualification changed peers and was
+rejected. The consumer remains assembly-backed at 184 of 188 bytes: its final
+saved-reason reload is unresolved; changing the callback return type is invalid.
 
 ## sceCdStRead
 
@@ -304,3 +304,144 @@ sibling, the current production reconciler only processes game units. The
 unique compiler-owned linked target is nevertheless all 368 retail bytes,
 and the complete native owner and full image are exact. This separates verified
 SDK source credit from raw report matched totals; reporting tools are unchanged.
+
+**Retained `sceCdDiskReady` reconstruction.**
+
+The guarded draft reconstructs the 504-byte command transaction without changing
+its assembly fallback. It acquires and rechecks the S-command semaphore, preserves
+the mode-dependent failure result (mode 8 returns -1, other modes return 6), binds
+service `0x8000059A` only while the initialization word is negative, and transfers
+the real four-byte request and uncached reply. Negative binds ignore the server
+field; successful binds with no server retry. Both native countdowns run from
+`0x100000` through zero. Semaphore globals are reloaded after callbacks, and the
+reply is saved before releasing the semaphore.
+
+`D_00598E90` has a native 0x30-byte extent; the existing 0x28-byte client prefix
+models only its accessed server field at +0x24. `D_00598ED0` has eight bytes, of
+which this transaction uses four. The initialization word is at +8 within the
+24-byte `cdvdScmdState` object, distinct from the S precheck's word at +12.
+The narrow semaphore operand constraints and post-sync zero-mode binding use
+the same native argument boundaries as the matched prechecks, not extra accesses
+or barriers. No fixed value spans a call that clobbers its assigned register.
+
+The draft emits the native 504-byte extent and 101/126 matching words. All 25
+remaining differences are saved-register permutations; it is not promoted and
+adds no matching credit. The 31 compiled peer functions and owned data remain
+exact. Plain and `-da` complete-owner assembly and raw objects agree. Extracted
+host fixtures pass 3,584 scenarios in optimized and ASan/UBSan runs, covering
+acquisition, callback-mutated semaphores, sync failure, bind retries, RPC failure,
+mode extremes and reply capture before release. These fixtures establish the
+modeled control/data contract, not hardware, concurrency or EE ABI behavior.
+
+**Retained `sceCdInit` reconstruction.**
+
+The guarded draft reconstructs the complete 736-byte initialization transaction.
+It returns immediately when S-command synchronization is busy, initializes RPC,
+records the current thread, resets the native command-state words and increments
+its invocation counter with unsigned wraparound. The bind retry ignores the
+server field after a negative result, and waits again after a successful bind
+with a null server. Both empty countdowns retain the established SDK sibling
+source shape. The request uses four bytes of the 16-byte object at `D_00598EC0`;
+the client at `D_00598E68` has a native 40-byte extent, including its server field
+at offset 36. The three N-command state words occupy 12 bytes and the six
+S-command state words occupy 24 bytes; explicit field views stay inside those
+objects without changing providers or symbol definitions.
+
+The transaction receives 16 bytes and reads uncached reply words in native order:
+status, first version, second version. Status 255 bypasses version checks;
+status 254 enables debug output. Other statuses use signed division by 256,
+not unsigned shifts, to select the return code. Mode 5 exits and resets all three
+semaphore IDs; all other modes initialize semaphores and the power callback.
+RPC failure clears the active flag and skips both completion paths.
+
+The target emits 708 of 736 native bytes and remains assembly-backed, with no
+matching credit. All 31 compiled peers and owned data remain exact. Extracted
+host fixtures pass 19,440 cases in optimized and ASan/UBSan runs, covering signed
+mode/version extremes, special statuses, sync/RPC failure, negative and null-server
+bind retries, counter wraparound, state writes and teardown. These are modeled
+control/data checks, not hardware, EE ABI, concurrency or delay-timing evidence.
+A shared full-client/request-pointer control emitted 700 bytes and was rejected;
+the unresolved work is frame, allocation and scheduling, not a promoted match.
+
+
+**Retained callback-worker reconstruction.**
+
+`_Cdvd_cbLoop` now has guarded C for its complete semaphore-driven worker loop.
+The pending reason -1 clears native command/thread state and the four-byte
+cleanup word before `ExitDeleteThread`. The C preserves the observed continuation
+if that call returns. Positive debug levels print the callback and saved reason;
+the callback is reloaded afterward, since printing may call external code.
+The saved reason is tested and separately reloaded as the callback argument.
+Each iteration clears N-command state before waiting again.
+
+Access-local volatile lvalues preserve the interrupt-shared pending/saved reason,
+N-command state and published callback-thread ID accesses. The unnamed cleanup
+word remains ordinary storage: no independent reader is established. Qualifying
+that word too produced an exact diagnostic, but was rejected because an exact
+store order does not independently establish a volatile contract. The retained
+candidate has the native 188-byte extent and 45/47 matching words; its cleanup
+word and callback-thread-ID stores occupy the opposite instruction positions.
+It remains assembly-backed and adds no matching credit. The earlier 184-byte
+consumer investigation predated the producer's explicit volatile saved-reason
+alias; that alias now preserves the final argument reload without changing the
+callback return type.
+
+All 31 matching peers and owned data remain exact. Normal, SKIP_ASM and retained
+whole-owner assembly/object outputs agree with diagnostic-dump builds after
+normalizing only their randomized temporary source filename. An extracted host
+fixture passes 1,350 scenarios under optimization and ASan/UBSan, including
+returning/nonreturning shutdown mocks, callback replacement during debug output,
+null callbacks, signed reason extremes and three worker iterations. These tests
+model control/data behavior, not EE hardware scheduling or concurrent execution.
+
+**Retained layered-file search.**
+
+The guarded `sceCdLayerSearchFile` reconstructs the native 788-byte semaphore/RPC
+transaction. The consumed request view contains a 36-byte file-result prefix,
+256-byte name, 32-bit reply address and signed layer, totaling 300 bytes. Its native
+storage spans the adjacent labels at `D_00598CC0` and `D_00598CE4`, ending before
+`D_00598E00`; no ownership or symbol boundary is changed. The 40-byte RPC client
+uses its server field at +36. The result view is packed because native copies
+36 bytes using unaligned doubleword and word pairs; unknown trailing fields remain
+bytes rather than invented scalar types.
+
+The filename copy stops after its first zero or 256 bytes, overwriting the last
+byte with zero when truncated. Poll acquisition compares against the reloaded
+semaphore global. Sync and RPC failure release it and return zero. Negative bind
+results ignore the server field; a nonnegative result with a null server retries.
+The copy, cache flush, 300-byte request and 4-byte reply preserve native order.
+Debug output rechecks its global level after each call. The uncached reply is
+captured before semaphore release, and only a successful RPC copies the file.
+
+The draft emits 796 bytes and 108/197 matching native words. It remains guarded and
+earns no exact-match credit; all 31 compiled peers and owned data remain exact.
+Applying the matched precheck's localized argument constraints to this distinct
+transaction worsened output to 816 bytes, so the retained source uses none.
+Extracted host fixtures pass 1,440 optimized and ASan/UBSan cases, covering empty,
+254/255/256/300-byte names, high-bit bytes, layer extremes, failure branches,
+negative/non-null and nonnegative/null bind retries, callback-mutated semaphore
+and debug state, result-copy extent and reply capture before release. Host fixture
+address adapters model the uncached alias and destination, not EE cache behavior,
+ABI or concurrency.
+
+Independent native/source review also extends the fixture to 216,720 ASan/UBSan
+scenarios, covering every name length from zero through 300 and debug-state
+changes at each diagnostic. That expanded fixture shortens empty countdowns
+only for test runtime; it does not claim timing equivalence.
+
+### Search reply debug-width recovery
+
+The retained `sceCdLayerSearchFile` draft now emits the native 788-byte extent
+(133/197 instruction words, versus 796 bytes and 108/197). It is still guarded,
+not an exact match. The retail reply copy uses unaligned doubleword pairs, while
+its numeric debug reads at reply offsets +4 and +0 use aligned `lw`. Field-derived pointers to the members' exact declared `u32` type spell
+these aligned reads only inside the numeric debug branches. No alternate
+aggregate or union alias is introduced. The packed copy and name-only paths keep
+accepting unaligned storage, including a name-print callback that disables later
+numeric diagnostics. No qualifier or register constraint is added.
+
+All 31 exact owner peers remain exact. Extracted-body optimized and sanitized
+scenario tests pass; normal, SKIP_ASM and retained whole-owner assembly/object
+output is identical with and without compiler dumps after normalizing only the
+randomized source filename. Remaining differences are allocation, destination
+spill/reload, and branch scheduling; no matching credit is claimed.

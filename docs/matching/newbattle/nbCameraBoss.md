@@ -362,3 +362,146 @@ before publication.
 Independent review adds 300,000 native-control and effectful-callback cases
 at O0, O2 and ASan/UBSan, with three deliberately incorrect variants rejected.
 No private trace or fixture binary is included in this source change.
+
+### Foru E913 guarded interpolation reconstruction (2026-11-14)
+
+The retained `nbCameraBoss_Foru_E913_Run` draft now emits the native 196 bytes
+and matches 43/49 native words, versus 200 bytes and 6/49 for the earlier draft.
+It remains guarded and earns no exact-match credit. A single ordinary camera
+pointer supplies both vector destinations and the distance/fovy fields. A
+localized unsigned frame-capture binding and empty operand constraint preserve
+the native load/copy distinction; the copied frame has real signed conversion
+and final increment consumers. The capture variable is reused for the final
+unsigned increment only after interpolation, with a fresh constraint for its
+store. Its two disjoint live ranges do not cross the VU macros' address loads.
+This is a target-specific allocation aid, not original-source evidence.
+
+The signed low-word-to-float conversion, division by 190, upper clamp at one,
+two four-lane interpolation sequences, scalar camera stores and modulo-32 frame
+increment are unchanged. Existing VU macros and literal values are unchanged.
+All six residual words are in entry scheduling; the interpolation and completion
+sequence matches. The ordinary pointer-only version emits 192 bytes; unsigned
+capture without the binding also loses the native copy. Volatile constraints
+worsen the result. Do not infer a compiler scheduling cause from these scores
+without a separately qualified trace.
+
+
+### Foru E913 entry scheduler priorities (2026-11-14)
+
+A qualified complete-owner replay now identifies the deciding comparator tier
+for the guarded candidate's remaining entry ordering. The camera-address HIGH
+has priority 1; the division literal has priority 14, the frame copy 17, the
+signed conversion 16 and the clamp literal 6. The first scheduler directly
+compares camera HIGH against the division literal with result -13, selecting
+by priority. It compares clamp literal against conversion with result -10,
+also by priority. This is not a final ready-list tie or declaration-order
+choice. The camera HIGH is already ready at cycle zero but issues at cycle
+three, after the frame copy and conversion chain. Camera LOW follows at cycle
+four and later moves into the branch delay slot.
+
+The original compiler and instrumented replay produce identical complete
+assembly, object and diagnostic artifacts; direct/wrapper and plain/dump
+assembly/object parity also pass. The source remains guarded at 43/49 words
+and 196 bytes. This explains the retained candidate's compiler behavior, not
+historical source spelling. Adding an artificial dependency merely to inflate
+the camera-address priority would not be justified. Further source work needs
+a real camera consumer or matched source-family evidence that changes the
+relevant block shape, rather than another pointer-declaration permutation.
+
+### Kagu E909 shared-tail capture qualification (2026-11-14)
+
+The guarded E909 draft now emits the native 724 bytes, with 172/181 words
+matching (nine scheduling differences remain), versus 136/180 at 720 bytes.
+A short signed frame capture in register 2 restores the native copy to the
+ordinary frame value consumed by both conversion and increment. Its lifetime
+starts after all switch-arm calls and ends before the VU scratch operations
+clobber register 2. This localized constraint is a reconstruction aid, not
+original-source evidence. Both switch arms and the signed floating-point
+conversion remain unchanged.
+
+Separately, spelling the increment as `(s32)((u32)frame + 1u)` defines the
+native low-32-bit wrap at `INT_MAX`; the wrap-only control emits identical
+output, as do capture-only and capture-plus-wrap. The first seven residual
+words are shared-tail scheduling around duration conversion, the clamp literal
+and the frame copy; the final two exchange the end-distance load and increment.
+The assembly fallback remains in production; no exact-match credit is claimed.
+
+### Kagu E909 qualified ready-list comparisons
+
+A qualified observation of the retained 172/181-word candidate identifies the
+first two shared-tail choices as critical-path priority decisions: the real
+frame copy has priority 18 versus duration conversion's 17, and frame conversion
+has 17 versus the clamp literal's 7. Neither comparison reaches a tie-breaker.
+A bounded control retaining the signed duration conversion in a local float
+with an empty float operand constraint regresses to 171/181 words at 724 bytes;
+it is not retained.
+
+The final increment/load exchange is different. The end-distance load has
+priority 16 and wins its comparison against the increment's 3. Nevertheless,
+after the start-distance load issues at cycle 6, the increment issues in that
+cycle and the end-distance load waits until cycle 7. Thus the final order cannot
+be explained by the increment winning the observed priority comparison. The
+observation does not identify the intervening issue-eligibility decision; that
+is the next diagnostic, not another declaration-order permutation.
+
+The observer preserves all six output artifacts; direct replay agrees with the
+ordinary wrapper. Complete-owner assembly and objects are byte-equal in plain
+and dump builds for production, SKIP_ASM, and active-draft modes. This is compiler
+evidence, not a new match or evidence of historical source spelling.
+
+
+### Kagu E909 qualified issue-eligibility decision
+
+A fresh read-only observation of the retained 172/181-word candidate resolves
+that intervening decision. In the compiler's pre-reload scheduler, the
+start-distance load issues at cycle 6 on modeled unit 0. The end-distance load
+then receives hazard cost 1 on that same unit and is queued for the next cycle;
+the clamp literal is deferred the same way. The increment uses modeled unit 6,
+receives cost 0, and can issue at cycle 6 despite its lower priority. At cycle 7
+the end-distance load receives cost 0 and issues; the literal then receives cost
+1 again and waits until cycle 8.
+
+The positive-unit hazard calculation is inlined in the scheduling block, so
+observing only the out-of-line hazard function misses these decisions. The
+qualified observation checks the inline decision and queue insertion as well as
+the helper's entry and exit. All six observed output artifacts remain identical
+to the unobserved replay, which also agrees with the ordinary wrapper. Fresh
+complete-owner assembly and object comparisons pass plain/dump parity in
+production, SKIP_ASM, and active-draft modes.
+
+This establishes modeled resource eligibility, not a priority reversal, for the
+final increment/load exchange. It does not establish actual PS2 timing, identify
+a valid C-level remedy, or improve the match. A further control needs evidence
+that it changes this eligibility without artificial dependencies; repeating
+priority-only or declaration-order controls is not justified by this result.
+
+**DANTE Init ordinary control-flow pass (2026-11-14).** The guarded draft now
+uses the native unsigned invocation-ID switch and explicit failed skill cases,
+separate bad-status/state exits, and the native per-arm addition of +/-300 to
+the Z position. This preserves the accepted ID/skill sets, getter and callback
+order, repeated target acquisition, VU operations and asymmetric radius formula.
+No constraint, type, provider or unit-boundary change is introduced. It improves
+from 41/155 words at 620 bytes to 96/161 at native 644 bytes, but remains guarded
+and nonmatching. The first residual divergence is the special-target branch:
+the compiler shares its final Look call with the other case, unlike retail.
+A target-ID switch was tested and rejected (48 words, 668 bytes).
+
+**DANTE Init qualified cross-jump observation (2026-11-14).** A repaired,
+read-only observer now follows the final jump pass with shallow RTL kind/UID
+reads and hooks gated to this function. Its 103 events include 45 paired
+cross-jump searches and four applications. In particular, the search between
+jump UIDs 218 and 410 with minimum 2 returns call UIDs 213 and 405; the next
+application consumes that pair. The ordinary sched2 dump identifies both calls
+as `effBTLModelLook`; jump2 replaces the first path with a jump to a new label
+immediately before the retained second call. This directly qualifies the
+previously localized tail-sharing decision rather than merely inferring it
+from the final assembly.
+
+All six observed artifacts equal the unobserved replay, and its assembly and
+object equal the ordinary active-draft wrapper outputs. Fresh complete-owner
+plain/dump assembly and object parity also passes in production, SKIP_ASM and
+active-draft modes. The source is unchanged; no match improvement or C-level
+remedy is claimed. The next useful control must address why these two call
+tails are equivalent to this compiler while retail retains them separately,
+without changing callback semantics or introducing dummy dependencies. The
+failed rich-decoder observation is superseded only for this qualified replay.

@@ -1,5 +1,6 @@
 #include "fpu.h"
 #include "common.h"
+#include "newdata.h"
 #include "facility.h"
 #include "ps2asm.h"
 #include "basic.h"
@@ -60,7 +61,6 @@ extern s8 slLoadKillFlag;
 
 extern u8 *GBWK;
 
-extern u8 *DDS3_GBWK;
 #ifdef VERSION_MNAX
 #define CFG_ITEM_BAR_Y0 0x778
 #define CFG_ITEM_BAR_Y1 0x7D8
@@ -93,9 +93,10 @@ extern u8 *DDS3_GBWK;
 #define CFG_PANEL_ITEM_Y 0x1D8
 #endif
 #ifdef VERSION_MNAX
-#define DDS3_CONFIG_FLAGS_OFFSET 0xF668
+/* Maniax GBWK layout differs; the config flag word is at 0xF668. */
+#define DDS3_CONFIG_FLAGS (*(s32 *)((u8 *)DDS3_GBWK + 0xF668))
 #else
-#define DDS3_CONFIG_FLAGS_OFFSET 0x11AB8
+#define DDS3_CONFIG_FLAGS DDS3_GBWK->configFlags
 #endif
 
 extern s32 fclGetPanelAnimPhase(void *p);
@@ -155,13 +156,13 @@ s32 dds3ConfigChanged(void)
 void dds3ConfigSaveBackup(void)
 {
     printf(dds3ConfigSaveBackupMsg);
-    dds3ConfigValue[0] = dds3ConfigValue[1] = *(s32 *)(DDS3_GBWK + DDS3_CONFIG_FLAGS_OFFSET);
+    dds3ConfigValue[0] = dds3ConfigValue[1] = DDS3_CONFIG_FLAGS;
 }
 
 void dds3ConfigRestoreBackup(void)
 {
     printf(dds3ConfigRestoreBackupMsg);
-    *(s32 *)(DDS3_GBWK + DDS3_CONFIG_FLAGS_OFFSET) = dds3ConfigValue[1];
+    DDS3_CONFIG_FLAGS = dds3ConfigValue[1];
 }
 
 void dds3InitConfigItems(u8 *gbwk)
@@ -247,7 +248,7 @@ s32 dds3GetConfigFlag(u32 index, s32 *table)
 
 s32 dds3GetGlobalConfigFlag(s32 index)
 {
-    return dds3GetConfigFlag(index, (s32 *)(DDS3_GBWK + DDS3_CONFIG_FLAGS_OFFSET));
+    return dds3GetConfigFlag(index, &DDS3_CONFIG_FLAGS);
 }
 
 typedef struct frTextBank_t frTextBank_t;
@@ -593,14 +594,14 @@ void dds3DrawConfigPanel(s32 ot)
     if (((dds3ConfigWork_t *)GBWK)->textureHandle != NULL) {
         dds3DrawConfigBackground(ot);
     }
-    dds3DrawConfigSlider(0, CFG_PANEL_SLIDER_Y, 0, ot);
-    dds3DrawConfigText(0, CFG_PANEL_Y0, 0, CFG_PANEL_N0, 0,
-                        dds3GetConfigFlag(0, (s32 *)(DDS3_GBWK + DDS3_CONFIG_FLAGS_OFFSET)), ot);
-    dds3DrawConfigText(0, CFG_PANEL_Y1, 0, CFG_PANEL_N1, 1,
-                        dds3GetConfigFlag(1, (s32 *)(DDS3_GBWK + DDS3_CONFIG_FLAGS_OFFSET)), ot);
-    dds3DrawConfigText(0, CFG_PANEL_Y2, 0, CFG_PANEL_N2, 2,
-                        dds3GetConfigFlag(2, (s32 *)(DDS3_GBWK + DDS3_CONFIG_FLAGS_OFFSET)), ot);
-    dds3DrawConfigText(0, CFG_PANEL_Y3, 0, 1, 3, -1, ot);
+    dds3DrawConfigSlider(0, -0x48, 0, ot);
+    dds3DrawConfigText(0, 0x268, 0, 2, 0,
+                        dds3GetConfigFlag(0, &DDS3_CONFIG_FLAGS), ot);
+    dds3DrawConfigText(0, 0x4B0, 0, 3, 1,
+                        dds3GetConfigFlag(1, &DDS3_CONFIG_FLAGS), ot);
+    dds3DrawConfigText(0, 0x7A8, 0, 3, 2,
+                        dds3GetConfigFlag(2, &DDS3_CONFIG_FLAGS), ot);
+    dds3DrawConfigText(0, 0xAB0, 0, 1, 3, -1, ot);
     color = dds3GetConfigFadeAlpha() | 0x80808000;
     colors[0] = color;
     colors[1] = color;

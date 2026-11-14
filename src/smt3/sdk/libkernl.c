@@ -1163,9 +1163,48 @@ INCLUDE_ASM(const s32, "sdk/libkernl", sceSifWriteBackDCache);
 
 INCLUDE_ASM(const s32, "sdk/libkernl", func_002DE504);
 
+/* Request pool: common 32-byte header followed by its command payload. */
+typedef struct rpcRequestHeader {
+    u32 commandHeader[4];
+    u32 flags;
+    void *packetAddress;
+    u32 sequence;
+    void *clientAddress;
+} rpcRequestHeader;
+SIZE_CHECK(rpcRequestHeader_size, rpcRequestHeader, 32);
+SIZE_CHECK(rpcRequestHeader_pointer_size, void *, 4);
+SIZE_CHECK(rpcRequestHeader_word_size, u32, 4);
 typedef struct rpcPacket {
-    u32 w[16];
+    rpcRequestHeader header;
+    union {
+        u32 words[8];
+        struct {
+            s32 function;
+            s32 sendBytes;
+            void *receive;
+            s32 receiveBytes;
+            u32 responseMode;
+            void *server;
+            u32 tail[2];
+        } call;
+    } payload;
 } rpcPacket;
+SIZE_CHECK(rpcPacket_payload_size, rpcPacket, 64);
+
+/* Response pools retain a common nine-word header and a bind payload. */
+typedef struct rpcResponsePacket {
+    u32 header[9];
+    union {
+        u32 words[3];
+        struct {
+            sifRpcServerData_t *server;
+            void *buffer;
+            void *callbackBuffer;
+        } bind;
+    } payload;
+    u32 tail[4];
+} rpcResponsePacket;
+SIZE_CHECK(rpcResponsePacket_size, rpcResponsePacket, 0x40);
 
 typedef struct rpcQueue {
     u32 seq;
@@ -1173,9 +1212,9 @@ typedef struct rpcQueue {
     s32 count;
     u32 unk_C; /* Cleared by sceSifInitRpc. */
     u32 unk_10; /* Cleared by sceSifInitRpc. */
-    rpcPacket *forwardBase;
+    rpcResponsePacket *forwardBase;
     s32 forwardCount;
-    rpcPacket *indexedBase;
+    rpcResponsePacket *indexedBase;
     s32 indexedCount;
     s32 forwardIndex;
     sifRpcDataQueue_t *queues;
@@ -1184,8 +1223,8 @@ typedef struct rpcQueue {
 extern rpcQueue sifRpcQueue;
 
 extern rpcPacket rpcPackets[32];
-extern rpcPacket rpcForwardPackets[32];
-extern rpcPacket rpcIndexedPackets[32];
+extern rpcResponsePacket rpcForwardPackets[32];
+extern rpcResponsePacket rpcIndexedPackets[32];
 extern s32 sifRpcInitialized;
 extern void sceSifInitCmd(void);
 extern u32 sceSifGetReg(u32 registerId);
@@ -1220,8 +1259,8 @@ void sceSifInitRpc(s32 mode)
     queue->base = EE_ADDR_AS(rpcPacket *, (EE_ADDR(packets) | 0x20000000));
     queue->unk_C = 0;
     queue->unk_10 = 0;
-    queue->forwardBase = (rpcPacket *)(EE_ADDR(rpcForwardPackets) | 0x20000000);
-    queue->indexedBase = (rpcPacket *)(EE_ADDR(rpcIndexedPackets) | 0x20000000);
+    queue->forwardBase = (rpcResponsePacket *)(EE_ADDR(rpcForwardPackets) | 0x20000000);
+    queue->indexedBase = (rpcResponsePacket *)(EE_ADDR(rpcIndexedPackets) | 0x20000000);
     queue->forwardIndex = 0;
     sceSifAddCmdHandler(0x80000008, _request_end_0, queue);
     sceSifAddCmdHandler(0x80000009, _request_bind, queue);
@@ -1231,7 +1270,7 @@ void sceSifInitRpc(s32 mode)
     if (sceSifGetReg(0x80000002) != 0)
         return;
     packet = packets + 1;
-    packet->w[3] = 1;
+    packet->header.commandHeader[3] = 1;
     sceSifSendCmd(0x80000002, packet, 16, 0, 0, 0);
     while (sceSifGetSreg(0) == 0) {
     }
@@ -1262,10 +1301,10 @@ rpcPacket *_sceRpcGetPacket_0(rpcQueue *queue)
     count = queue->count;
     packet = queue->base;
     for (i = 0; i < count; i++, packet++) {
-        if ((packet->w[4] & 1) == 0) {
+        if ((packet->header.flags & 1) == 0) {
             u32 seq;
 
-            packet->w[4] = (i << 16) | 5;
+            packet->header.flags = (i << 16) | 5;
             queue->seq++;
             /* Capture this packet's sequence before advancing the queue again. */
             if (queue->seq == 1) {
@@ -1273,8 +1312,8 @@ rpcPacket *_sceRpcGetPacket_0(rpcQueue *queue)
             } else {
                 seq = queue->seq;
             }
-            packet->w[5] = EE_ADDR(packet);
-            packet->w[6] = seq;
+            packet->header.packetAddress = packet;
+            packet->header.sequence = seq;
             EIntr();
             return packet;
         }
@@ -1285,22 +1324,22 @@ rpcPacket *_sceRpcGetPacket_0(rpcQueue *queue)
 
 void _sceRpcFreePacket_0(rpcPacket *packet)
 {
-    u32 flags = packet->w[4];
+    u32 flags = packet->header.flags;
 
-    packet->w[6] = 0;
-    packet->w[4] = flags & ~1;
+    packet->header.sequence = 0;
+    packet->header.flags = flags & ~1;
 }
 
-rpcPacket *_sceRpcGetFPacket(rpcQueue *queue)
+rpcResponsePacket *_sceRpcGetFPacket(rpcQueue *queue)
 {
     s32 index = queue->forwardIndex % queue->forwardCount;
-    rpcPacket *packet = &queue->forwardBase[index];
+    rpcResponsePacket *packet = &queue->forwardBase[index];
 
     queue->forwardIndex = index + 1;
     return packet;
 }
 
-rpcPacket *_sceRpcGetFPacket2(rpcQueue *queue, s32 index)
+rpcResponsePacket *_sceRpcGetFPacket2(rpcQueue *queue, s32 index)
 {
     if (index < 0 || index >= queue->indexedCount) {
         return _sceRpcGetFPacket(queue);
@@ -1377,16 +1416,16 @@ void _request_end_0(void *packet, void *queue)
 
 void _request_rdata(rpcPacket *request, rpcQueue *queue)
 {
-    rpcPacket *packet = _sceRpcGetFPacket(queue);
+    rpcResponsePacket *packet = _sceRpcGetFPacket(queue);
 
-    u32 packetAddress = request->w[5];
-    u32 client = request->w[7];
+    void *packetAddress = request->header.packetAddress;
+    void *client = request->header.clientAddress;
 
-    packet->w[5] = packetAddress;
-    packet->w[7] = client;
-    packet->w[8] = 0x8000000C;
-    isceSifSendCmd(0x80000008, packet, 0x40, EE_ADDR_AS(void *, request->w[8]),
-                   EE_ADDR_AS(void *, request->w[9]), request->w[10]);
+    packet->header[5] = EE_ADDR(packetAddress);
+    packet->header[7] = EE_ADDR(client);
+    packet->header[8] = 0x8000000C;
+    isceSifSendCmd(0x80000008, packet, 0x40, EE_ADDR_AS(void *, request->payload.words[0]),
+                   EE_ADDR_AS(void *, request->payload.words[1]), request->payload.words[2]);
 }
 
 extern s32 WaitSema(s32 sema);
@@ -1402,12 +1441,12 @@ s32 sceSifGetOtherData(rpcTransactionPrefix *client, void *source, void *destina
         return -1;
     }
     client->packet = packet;
-    client->sequence = packet->w[6];
-    packet->w[8] = EE_ADDR(source);
-    packet->w[9] = EE_ADDR(destination);
-    packet->w[10] = size;
-    packet->w[5] = EE_ADDR(packet);
-    packet->w[7] = EE_ADDR(client);
+    client->sequence = packet->header.sequence;
+    packet->payload.words[0] = EE_ADDR(source);
+    packet->payload.words[1] = EE_ADDR(destination);
+    packet->payload.words[2] = size;
+    packet->header.packetAddress = packet;
+    packet->header.clientAddress = client;
     if ((mode & 1) == 0) {
         param.maxCount = 1;
         param.initCount = 0;
@@ -1448,7 +1487,40 @@ sifRpcServerData_t *_search_svdata(s32 serviceId, rpcQueue *queue)
     return NULL;
 }
 
-INCLUDE_ASM(const s32, "sdk/libkernl", _request_bind);
+/* Incoming ISR scratch command, not an overlay on the outgoing packet pool. */
+typedef struct rpcBindRequest {
+    u32 commandHeader[4];
+    u32 flags;
+    u32 packetAddress;
+    u32 sequence;
+    u32 client;
+    s32 serviceId;
+} rpcBindRequest;
+SIZE_CHECK(rpcBindRequest_size, rpcBindRequest, 0x24);
+void _request_bind(void *incoming, void *queueArg)
+{
+    rpcBindRequest *request = incoming;
+    rpcQueue *queue = queueArg;
+    rpcResponsePacket *reply = _sceRpcGetFPacket(queue);
+    u32 packetAddress = request->packetAddress;
+    u32 client = request->client;
+    sifRpcServerData_t *server;
+
+    reply->header[5] = packetAddress;
+    reply->header[7] = client;
+    reply->header[8] = 0x80000009;
+    server = _search_svdata(request->serviceId, queue);
+    if (server == NULL) {
+        reply->payload.bind.server = NULL;
+        reply->payload.bind.buffer = NULL;
+        reply->payload.bind.callbackBuffer = NULL;
+    } else {
+        reply->payload.bind.server = server;
+        reply->payload.bind.buffer = server->buffer;
+        reply->payload.bind.callbackBuffer = server->callbackBuffer;
+    }
+    isceSifSendCmd(0x80000008, reply, 0x40, NULL, NULL, 0);
+}
 
 s32 sceSifBindRpc(rpcClient *client, u32 serverId, s32 mode)
 {
@@ -1462,10 +1534,10 @@ s32 sceSifBindRpc(rpcClient *client, u32 serverId, s32 mode)
         return -1;
     }
     client->transaction.packet = packet;
-    client->transaction.sequence = packet->w[6];
-    packet->w[8] = serverId;
-    packet->w[5] = EE_ADDR(packet);
-    packet->w[7] = EE_ADDR(client);
+    client->transaction.sequence = packet->header.sequence;
+    packet->payload.words[0] = serverId;
+    packet->header.packetAddress = packet;
+    packet->header.clientAddress = client;
     if ((mode & 1) == 0) {
         param.maxCount = 1;
         param.initCount = 0;
@@ -1491,34 +1563,126 @@ s32 sceSifBindRpc(rpcClient *client, u32 serverId, s32 mode)
     return 0;
 }
 
-INCLUDE_ASM(const s32, "sdk/libkernl", _request_call);
+/* Current typed request payload, with native queue publication before metadata. */
+extern s32 iWakeupThread(s32 threadId);
+void _request_call(void *incoming, void *unusedQueue)
+{
+    rpcPacket *packet = incoming;
+    sifRpcServerData_t *server = packet->payload.call.server;
+    sifRpcDataQueue_t *queue = server->queue;
+    void *packetAddress;
+    void *client;
 
-INCLUDE_ASM(const s32, "sdk/libkernl", sceSifCallRpc);
+    if (queue->start == NULL) {
+        queue->start = server;
+    } else {
+        queue->end->next = server;
+    }
+    queue->end = server;
+    /* The newly published tail is live for the next queue insertion.  Keep
+     * this real initialized field at the native publication phase; this
+     * localized operand is not a barrier for unrelated memory accesses. */
+    FAKEMATCH_ASM_READ_MEM(queue->end);
+    packetAddress = packet->header.packetAddress;
+    client = packet->header.clientAddress;
+    server->packetAddress = packetAddress;
+    server->client = client;
+    server->rpcNumber = packet->payload.call.function;
+    server->size = packet->payload.call.sendBytes;
+    server->receiveBuffer = packet->payload.call.receive;
+    server->receiveSize = packet->payload.call.receiveBytes;
+    server->mode = packet->payload.call.responseMode;
+    server->requestId = packet->header.flags;
+    if (queue->threadId >= 0 && queue->active == 0) {
+        iWakeupThread(queue->threadId);
+    }
+}
+
+s32 sceSifCallRpc(void *clientAddress, s32 function, s32 mode, void *send,
+                   s32 sendBytes, void *receive, s32 receiveBytes,
+                   void *endFunction, void *endParameter)
+{
+    rpcClient *client = clientAddress;
+    rpcPacket *packet = _sceRpcGetPacket_0(&sifRpcQueue);
+    rpcSemaParam param;
+    void *server;
+    if (packet == NULL) return -1;
+    client->endParam = endParameter;
+    client->transaction.packet = packet;
+    client->transaction.sequence = packet->header.sequence;
+    client->endFunction = (void (*)(void *))endFunction;
+    packet->payload.call.function = function;
+    packet->payload.call.sendBytes = sendBytes;
+    packet->payload.call.receive = receive;
+    packet->payload.call.receiveBytes = receiveBytes;
+    packet->header.packetAddress = packet;
+    /* Capture the server before publishing the client routing field. */
+    server = client->server;
+    packet->header.clientAddress = client;
+    packet->payload.call.server = server;
+    if (!(mode & 2)) {
+        if (send == receive) {
+            sceSifWriteBackDCache(send, sendBytes < receiveBytes ? receiveBytes : sendBytes);
+        } else {
+            if (sendBytes > 0) sceSifWriteBackDCache(send, sendBytes);
+            if (receiveBytes > 0) sceSifWriteBackDCache(receive, receiveBytes);
+        }
+    }
+    if (mode & 1) {
+        if (endFunction == NULL) {
+            packet->payload.call.responseMode = 0;
+        } else {
+            packet->payload.call.responseMode = 1;
+        }
+        client->transaction.sema = -1;
+        if (sceSifSendCmd(0x8000000A, packet, 0x40, send, client->buffer, sendBytes)) goto success;
+    } else {
+        param.initCount = 0;
+        param.maxCount = 1;
+        client->transaction.sema = CreateSema(&param);
+        if (client->transaction.sema < 0) {
+            _sceRpcFreePacket_0(packet);
+            return -3;
+        }
+        packet->payload.call.responseMode = 1;
+        if (sceSifSendCmd(0x8000000A, packet, 0x40, send, client->buffer, sendBytes)) goto completed;
+        DeleteSema(client->transaction.sema);
+    }
+    _sceRpcFreePacket_0(packet);
+    return -2;
+completed:
+    WaitSema(client->transaction.sema);
+    DeleteSema(client->transaction.sema);
+success:
+    return 0;
+}
+
 
 typedef struct rpcClientPrefix {
     void *packet;
     u32 sequence;
 } rpcClientPrefix;
 
-/* NON_MATCHING: 44 of 60 native bytes, 5 of 11 compared words match;
- * the final active-bit test becomes a direct boolean return. */
-#ifdef NON_MATCHING
+/* Keep the shared zero exit before the successful return. */
 s32 sceSifCheckStatRpc(rpcClientPrefix *client)
 {
     rpcPacket *packet = client->packet;
 
     if (packet != NULL) {
-        if (client->sequence == packet->w[6]) {
-            if ((packet->w[4] & 1) != 0) {
-                return 1;
+        if (client->sequence == packet->header.sequence) {
+            if ((packet->header.flags & 1) != 0) {
+                goto active;
             }
         }
     }
     return 0;
+active:
+    {
+        s32 result = 1;
+        return result;
+    }
 }
-#else
-INCLUDE_ASM(const s32, "sdk/libkernl", sceSifCheckStatRpc);
-#endif
+
 
 void sceSifSetRpcQueue(sifRpcDataQueue_t *queue, s32 threadId)
 {
@@ -1636,7 +1800,7 @@ sifRpcServerData_t *sceSifGetNextRequest(sifRpcDataQueue_t *queue)
 void sceSifExecRequest(sifRpcServerData_t *server)
 {
     sifDmaTransfer_t transfers[2];
-    rpcPacket *packet;
+    rpcResponsePacket *packet;
     void *reply;
     s32 replySize = 0;
     s32 count;
@@ -1660,16 +1824,16 @@ void sceSifExecRequest(sifRpcServerData_t *server)
         packet = _sceRpcGetFPacket(&sifRpcQueue);
     }
     EIntr();
-    packet->w[8] = 0x8000000A;
-    packet->w[7] = EE_ADDR(server->client);
+    packet->header[8] = 0x8000000A;
+    packet->header[7] = EE_ADDR(server->client);
     if (server->mode != 0) {
         while (sceSifSendCmd(0x80000008, packet, 0x40, reply, server->receiveBuffer, replySize) == 0) {
         }
         return;
     }
-    packet->w[6] = 0;
+    packet->header[6] = 0;
     count = 0;
-    packet->w[4] = 0;
+    packet->header[4] = 0;
     if (replySize > 0) {
         transfers[0].source = EE_ADDR(reply);
         transfers[0].destination = EE_ADDR(server->receiveBuffer);
@@ -2175,9 +2339,7 @@ typedef union fsRequest_t {
 } fsRequest_t;
 extern fsRequest_t fsRequest;
 
-/* NON_MATCHING: 640/644 bytes; opposite saved-register assignments
- * and final slot-return scheduling remain unresolved. */
-#ifdef NON_MATCHING
+/* Publish the returned descriptor after waiting for the I/O table lock. */
 s32 sceOpen(const char *name, s32 flags, ...)
 {
     rpcSemaParam param;
@@ -2190,6 +2352,7 @@ s32 sceOpen(const char *name, s32 flags, ...)
     s32 slot;
     s32 sema;
     s32 accepted;
+    s32 descriptor;
 
     _sceFsWaitS(0);
     if (fsInitialized == 0) {
@@ -2245,16 +2408,15 @@ s32 sceOpen(const char *name, s32 flags, ...)
         SignalSema(fsIobSema);
         return result;
     }
+    accepted = slot;
     WaitSema(fsIobSema);
+    descriptor = result;
+    entry->word0 = descriptor;
     entry->active |= flags;
-    entry->word0 = result;
     SignalSema(fsIobSema);
-    return slot;
+    return accepted;
 }
 
-#else
-INCLUDE_ASM(const s32, "sdk/libkernl", sceOpen);
-#endif
 
 s32 sceClose(s32 descriptor)
 {

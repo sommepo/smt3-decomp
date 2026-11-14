@@ -43,11 +43,19 @@ def load_elf(path):
 
 def load_syms(path):
     syms = {}
-    for line in Path(path).read_text().splitlines():
+    lines = {}
+    for line_number, line in enumerate(Path(path).read_text().splitlines(), 1):
         m = SYM.match(line.strip())
         if not m:
             continue
         name, addr, tail = m.group(1), int(m.group(2), 16), m.group(3) or ""
+        # This flat name-keyed inventory cannot represent duplicate or overlay
+        # definitions. Refuse instead of silently choosing the last extent.
+        if name in syms:
+            raise ValueError(f"{path}:{line_number}: duplicate symbol {name}; "
+                             f"first defined on line {lines[name]}. "
+                             "Duplicate-name inventories are unsupported.")
+        lines[name] = line_number
         size = re.search(r"size:(0x[0-9A-Fa-f]+|\d+)", tail)
         typ = re.search(r"type:(\w+)", tail)
         syms[name] = dict(name=name, addr=addr, size=int(size.group(1), 0) if size else None,
@@ -66,6 +74,24 @@ STORE_W = {0x28: 1, 0x29: 2, 0x2B: 4, 0x39: 4, 0x3F: 8, 0x1F: 16, 0x3A: 4, 0x3E:
 CALLER_SAVED = list(range(1, 16)) + [24, 25]
 
 
+def memory_span(op, addr):
+    """Bytes transferred by an EE little-endian memory operation.
+
+    Merge operations transfer only part of an aligned word/doubleword, not a
+    single byte and not necessarily the whole word. Left transfers end at the
+    effective address; right transfers start there. Keep the original register
+    base separately for provenance and extent checks.
+    """
+    if op in (0x22, 0x2A, 0x1A, 0x2C):  # LWL/SWL, LDL/SDL
+        size = 4 if op in (0x22, 0x2A) else 8
+        offset = addr & (size - 1)
+        return addr - offset, offset + 1
+    if op in (0x26, 0x2E, 0x1B, 0x2D):  # LWR/SWR, LDR/SDR
+        size = 4 if op in (0x26, 0x2E) else 8
+        return addr, size - (addr & (size - 1))
+    return addr, LOAD_W.get(op) or STORE_W[op]
+
+
 def scan_text(b, secs, func_starts, gp):
     """Yield (pc, base, addr, width, via_reg, exact_addr) for each memory access with a known constant address,
     and ('const', value) events for addiu/ori built addresses."""
@@ -80,13 +106,31 @@ def scan_text(b, secs, func_starts, gp):
         clear = set(func_starts)
         for i, w in enumerate(words):
             op = w >> 26
+            if op == 2:  # direct jump: its destination is also a control-flow join
+                pc = base_pc + i * 4
+                clear.add(((pc + 4) & 0xF0000000) | ((w & 0x03FFFFFF) << 2))
             if op in (4, 5, 6, 7, 0x14, 0x15, 0x16, 0x17, 1) or (op in (0x10, 0x11, 0x12) and (w >> 21) & 31 == 8):
                 clear.add(base_pc + (i + 1) * 4 + (sx16(w & 0xFFFF) << 2))
         regs = {}
         pending_call = False
+        likely_fallthrough = None
+        link_return = None
         jump_seen = 0  # 1 on a j/jr's delay slot, 2 on the first instruction after it
         for i, w in enumerate(words):
             pc = base_pc + i * 4
+            if likely_fallthrough is not None and pc == likely_fallthrough[0]:
+                # A likely branch annuls its delay slot when not taken. The
+                # linear fallthrough therefore sees the pre-slot registers,
+                # not writes made while examining the taken-path delay slot.
+                regs = likely_fallthrough[1]
+                likely_fallthrough = None
+            if pc == link_return:
+                # A conditional branch-and-link may return after clobbering
+                # caller-saved registers. Join taken/return and not-taken paths
+                # conservatively, after restoring a likely branch's annulled slot.
+                for r in CALLER_SAVED:
+                    regs.pop(r, None)
+                link_return = None
             if pc in clear:
                 regs = {}
             if jump_seen == 2:
@@ -98,26 +142,40 @@ def scan_text(b, secs, func_starts, gp):
                 jump_seen = 1
             op, rs, rt, imm = w >> 26, (w >> 21) & 31, (w >> 16) & 31, w & 0xFFFF
             rd = (w >> 11) & 31
+            if op == 1 and rt in (16, 17, 18, 19):
+                # REGIMM branch-and-link writes $ra before its delay slot,
+                # including non-likely forms. The slot still sees arguments.
+                regs.pop(31, None)
+                link_return = pc + 8
+            if (op in (0x14, 0x15, 0x16, 0x17)
+                    or (op == 1 and rt in (2, 3, 18, 19))
+                    or (op in (0x10, 0x11, 0x12) and rs == 8 and rt & 2)):
+                likely_fallthrough = (pc + 8, regs.copy())
             kill = []
             if op == 0x0F:
                 regs[rt] = ((imm << 16) & 0xFFFFFFFF, "hi", pc)
                 regs.pop(0, None)
             elif op in (0x09, 0x0D, 0x19) and rs in regs:
-                v = regs[rs][0]
+                # Capture provenance before writing rt: address construction often
+                # uses the same register for both the high half and result.
+                v, kind, _ = regs[rs]
                 v = (v + sx16(imm)) & 0xFFFFFFFF if op != 0x0D else v | imm
                 regs[rt] = (v, "addr", pc)
-                consts.append((pc, v, regs[rs][1] == "hi"))
+                if rt != 0:
+                    consts.append((pc, v, kind == "hi"))
             elif op in (0x09, 0x19) and rs == 28 and gp:
                 v = (gp + sx16(imm)) & 0xFFFFFFFF
                 regs[rt] = (v, "addr", pc)
-                consts.append((pc, v, True))
+                if rt != 0:
+                    consts.append((pc, v, True))
             elif op in LOAD_W or op in STORE_W:
-                width = LOAD_W.get(op) or STORE_W.get(op)
                 if rs in regs:
                     v, kind, _ = regs[rs]
-                    accesses.append((pc, (v + sx16(imm)) & 0xFFFFFFFF, width, kind == "addr", v, op in STORE_W))
+                    addr, width = memory_span(op, (v + sx16(imm)) & 0xFFFFFFFF)
+                    accesses.append((pc, addr, width, kind == "addr", v, op in STORE_W))
                 elif rs == 28 and gp:
-                    accesses.append((pc, (gp + sx16(imm)) & 0xFFFFFFFF, width, False, None, op in STORE_W))
+                    addr, width = memory_span(op, (gp + sx16(imm)) & 0xFFFFFFFF)
+                    accesses.append((pc, addr, width, False, None, op in STORE_W))
                 if op in LOAD_W and op not in (0x31, 0x32, 0x36):
                     kill.append(rt)
             elif op == 0:
@@ -132,6 +190,9 @@ def scan_text(b, secs, func_starts, gp):
                 if funct == 9:
                     pending_call = True
             elif op == 3:
+                # jal overwrites the link before its delay slot. Do not let an
+                # old constant in $ra seed delay-slot or return-path addresses.
+                regs.pop(31, None)
                 pending_call = True
             elif op in (0x08, 0x0A, 0x0B, 0x0C, 0x0E, 0x18, 0x09, 0x0D, 0x19):
                 kill.append(rt)
@@ -140,6 +201,9 @@ def scan_text(b, secs, func_starts, gp):
                     kill.append(rt)
             elif op == 0x1C:
                 kill += [rd, rt]
+            # GPR zero discards every write, including arithmetic and moves.
+            # Never let a discarded address seed later accesses or symbols.
+            regs.pop(0, None)
             for r in kill:
                 regs.pop(r, None)
             if pending_call and op not in (3,) and not (op == 0 and (w & 63) == 9):
@@ -230,6 +294,17 @@ def cover_crossings(extents, starts):
     return [(addr, addr + size, o) for addr, size in extents for o in starts if addr < o < addr + size]
 
 
+def load_csizes(path):
+    """Reject a known-incomplete probe cache rather than report partial C coverage."""
+    with open(path) as f:
+        cache = json.load(f)
+    failed = cache.get("failed_units", [])
+    if failed:
+        raise ValueError("incomplete C-size cache: %d unit(s) failed to probe: %s" %
+                         (len(failed), ", ".join(failed)))
+    return cache["symbols"]
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--symbols", default=str(ROOT / "config/smt3/symbol_addrs.txt"))
@@ -239,6 +314,11 @@ def main():
     ap.add_argument("--classes", default=None)
     ap.add_argument("--dump-universe", default=None, help="write the symbol universe and reference sets as JSON")
     a = ap.parse_args()
+    try:
+        cs = load_csizes(a.csizes) if a.csizes else None
+        syms = load_syms(a.symbols)
+    except ValueError as e:
+        ap.error(str(e))
 
     run_controls()
     word_addrs = load_word_addrs(ROOT / "asm")
@@ -260,7 +340,6 @@ def main():
         o = s["off"] + addr - s["addr"]
         return struct.unpack_from("<I", b, o)[0] if addr + 4 <= s["addr"] + s["size"] else None
 
-    syms = load_syms(a.symbols)
     funcs = {s["addr"] for s in syms.values() if s["type"] == "func" or (not sec_of(s["addr"]))}
     gp = None
     for s in secs:
@@ -413,8 +492,7 @@ def main():
         add("TAIL", s, "size 0x%X, 0x%X bytes before %s, %d nonzero words, gap start is referenced by nothing" %
             (s["size"], gap, owner(gend)["name"] if owner(gend) else "?", sum(1 for x in gb if x)))
     # CSIZE
-    if a.csizes:
-        cs = json.load(open(a.csizes))["symbols"]
+    if cs is not None:
         for addr in starts:
             s = uni[addr]
             if s["name"] not in cs:

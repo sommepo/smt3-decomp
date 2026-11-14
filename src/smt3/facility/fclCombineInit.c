@@ -1298,12 +1298,16 @@ extern s32 cmbGetBirthPhase(void);
 s32 cmbRunBirthDevilStep(void)
 {
     if (CMB_GBWK->unk_00004 == 1) {
-        if (CMB_GBWK->unk_00003 == 5) {
+        switch (CMB_GBWK->unk_00003) {
+        case 5:
             cmbSetupBirthPanel(0);
-        } else if (CMB_GBWK->unk_00003 == 6) {
+            break;
+        case 6:
             cmbSetupBirthPanel(1);
-        } else if (CMB_GBWK->unk_00003 == 8) {
+            break;
+        case 8:
             cmbSetupBirthPanel(2);
+            break;
         }
     }
     return cmbGetBirthPhase();
@@ -3429,10 +3433,15 @@ void cmbDrawStockRow(s32 x, s32 y, s32 z, u16 firstWidth, u16 secondWidth, u16 h
                      s32 timer, s32 ot)
 {
     s32 colors[4];
-    u8 blink;
+    u32 blink;
 
     fclDrawPanelSprite2(0x48, ot);
     blink = cmpCursorBlinkColor(timer);
+    /* Keep the actual callback result live before its byte conversion.
+     * This target-specific constraint retains the native full-width multiply;
+     * the guarded reconstruction is still not an exact match. */
+    FAKEMATCH_ASM_LIVE(blink);
+    blink = (u8)blink;
     colors[0] = firstColor;
     colors[1] = middleColor;
     colors[2] = firstColor;
@@ -3442,9 +3451,9 @@ void cmbDrawStockRow(s32 x, s32 y, s32 z, u16 firstWidth, u16 secondWidth, u16 h
     colors[1] = lastColor;
     colors[2] = middleColor;
     colors[3] = lastColor;
-    cmpDrawBoxGDefault(x + firstWidth * 16, y, z, secondWidth, height, colors, ot);
+    cmpDrawBoxGDefault((s32)((u32)x + (u32)firstWidth * 16U), y, z, secondWidth, height, colors, ot);
     fclDrawPanelSprite2(0x44, ot);
-    cmpDrawBoxF(0x1000, y, z + 1, 0xF0, height, (blink * 38) >> 7, ot);
+    cmpDrawBoxF(0x1000, y, (s32)((u32)z + 1U), 0xF0, height, (blink * 38) >> 7, ot);
 }
 #else
 INCLUDE_ASM(const s32, "facility/fclCombineInit", cmbDrawStockRow);

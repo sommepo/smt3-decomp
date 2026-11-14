@@ -199,3 +199,68 @@ qualification, 450 tests, 817 layout assertions, inline/shell checks, seven
 IRX modules, retail SHA1/byte comparison/no-op and reconciled reports pass.
 Game coverage is 8594 functions / 1485744 bytes, including the separate peer
 StageLoad addition; this batch adds no exact matching credit.
+
+### Descriptor provenance and bounded reload control
+
+The provider `getPartsInfo` is a separate-owner 60-row lookup: it reads the
+signed ID argument and table IDs and returns the first matching row or null.
+Its exact owner has eight matches and no differences. It does not write the
+frame, link or position state and has no callbacks; an opaque same-symbol
+declaration cannot remove same-unit knowledge that this caller never had.
+The initialized/reached-row preconditions above still apply.
+
+A localized empty read/write operand on the actual `part` pointer immediately
+before its advancing frame use restores that native previous-frame load in a
+bounded control. The value is live only until the frame addition, before the
+next lookup replaces it. Nevertheless this control regresses from 23/66 to
+20/66 words at 264 bytes and is not retained. Recovering the reload alone is
+not sufficient: entry ordering, position allocation and tail selection still
+differ. This is measured source/output evidence, not a claim that the control
+reproduces every native access or proves a particular internal compiler pass.
+Both forms passed three-mode complete-owner plain/dump assembly and object
+parity; production and SKIP_ASM outputs were unchanged by the guarded control.
+Further work should target the remaining allocation/branch structure with
+native evidence, not posit provider writes or repeat blanket volatility.
+
+### Localized negative-position fallback constraint
+
+The retained guarded draft now reaches 30/66 aligned words at the native
+264-byte size (previously 23/66). Its negative-position fallback assigns the
+real value 10 to `next`, constrains only that live store value, and publishes
+it to `offsetCount`. The empty operand emits no instruction, has no fabricated
+consumer and ends at that store. This recovers the native branch/store tail
+rather than the previous conditional-move tail; it is a reconstruction aid,
+not evidence of original spelling. The positive store still uses a different
+register, and the previous-frame reload and other entry/loop differences
+remain. This is not an exact match or full native-access parity.
+
+An ordinary explicit branch without the operand produces 260 bytes and 21/66
+native-window words; moving the operand to the positive path instead produces
+268 bytes and 22/66. Neither control is retained. The selected change leaves
+all assembly outside `pipeOffset` equal modulo local-label numbering in the
+guarded owner and leaves normal/SKIP_ASM complete assembly and objects
+unchanged. Both source forms pass all three modes' plain/dump assembly and
+object parity. A bounded 100,005-case integer model supplements the direct
+fallback-value review.
+
+### Reload-control allocation priority
+
+A qualified read-only compiler observation of the earlier 23/66 draft and
+its rejected live-`part` reload control resolves their allocation-order swap.
+In the ordinary draft, position pseudo 96 has ten references over 21 live
+instructions and priority 14285; comparison pseudo 115 has four references
+over six instructions and priority 13333. The comparator returns -952 and
+orders position first. In the reload control, their live lengths become 20
+and five, yielding priorities 15000 and 16000; the comparator returns 1000
+and orders the comparison first. Both decisions use the priority tier, not
+an equal-priority tie or range-copy preference.
+
+This explains the observed ordering reversal that accompanies the register
+swap, not the original source spelling or a complete repair. The reload
+control remains rejected; the retained negative-position-tail draft remains
+30/66. A next source experiment must address the real lifetime/interference
+change rather than assume a scheduling-only difference or add dummy uses.
+The two whole-owner observations preserve all six baseline artifacts each;
+fresh normal, SKIP_ASM and guarded plain/dump compilations also preserve
+complete assembly and object parity. No source change or matching credit is
+claimed by this diagnostic.
