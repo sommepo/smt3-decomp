@@ -43,9 +43,11 @@ uses assembly fallbacks while its source, names and types are recovered.
 | Version | Game | Serial | ELF SHA-1 |
 |---|---|---|---|
 | `smt3` | Shin Megami Tensei III: Nocturne (USA) | `SLUS_209.11` | `5facfbf7916836613449c922e26a4ec412207b32` |
+| `mnax` | Shin Megami Tensei III: Nocturne Maniax (Japan), [this fork](#maniax-build-this-fork) | `SLPM_654.62` | `a2dee659dcf6111f4e4ff82b6c5b3ebe086d9c13` |
 
-The ELF is 4,551,696 bytes, entry `0x00100008`, `gp` `0x00554170`, built
-`Sep  3 2004`. It is symbol-stripped but keeps section headers, so the build
+The USA ELF is 4,551,696 bytes, entry `0x00100008`, `gp` `0x00554170`, built
+`Sep  3 2004`. The Maniax ELF is 4,543,376 bytes, entry `0x00100008`, `gp`
+`0x00552470`, built `Oct 16 2003`. Both are symbol-stripped but keep section headers, so each build
 also has to reproduce `.vutext`, `.vudata`, `.ctors`, `.dtors`, `.eh_frame`,
 the `.DVP.*` VU overlay tables and the section-header region byte for byte.
 
@@ -63,6 +65,11 @@ bytes (66.32%) and 8,238 of 9,045 game functions (91.08%) from C. The remaining
 drafts. SDK/runtime reconstruction is a separate category.
 Function coverage runs ahead of byte coverage because small functions count
 as much as large ones; neither drafts nor assembly fallbacks earn C credit.
+
+The Maniax build in this fork is also verified byte-identical: about 86.7% of
+its `.text` bytes, SDK code included, build from C (2026-11-14). That count is
+this fork's own, not the linked-image report above. See
+[Maniax build](#maniax-build-this-fork).
 
 The badges above track matched game and engine code bytes and function
 counts. Assembly fallbacks earn zero credit, and SDK/runtime code, handwritten
@@ -99,10 +106,6 @@ checksum troubleshooting. The [toolchain notes](docs/toolchain.md) explain the
 original compiler, assembler and pinned 32-bit runtime.
 
 ## Maniax build (this fork)
-
-| Version | Game | Serial | ELF SHA-1 |
-|---|---|---|---|
-| `mnax` | Shin Megami Tensei III: Nocturne Maniax (Japan) | `SLPM_654.62` | `a2dee659dcf6111f4e4ff82b6c5b3ebe086d9c13` |
 
 The `mnax` target rebuilds the Maniax executable byte for byte. It is a port,
 not a separate decompilation. The shared C lives in `src/smt3`, and the places
